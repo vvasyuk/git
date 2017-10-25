@@ -11,7 +11,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan("com.example.demo.trax")
+@ComponentScan("com.example.demo.conf")
 @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class})
 public class DemoApplication {
 

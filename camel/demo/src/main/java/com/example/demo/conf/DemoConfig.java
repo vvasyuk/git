@@ -1,12 +1,10 @@
-package com.example.demo.trax;
+package com.example.demo.conf;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.io.File;
 
 /**
  * Created by Jopa on 10/23/2017.

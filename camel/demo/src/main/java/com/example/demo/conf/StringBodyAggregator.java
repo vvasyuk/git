@@ -1,4 +1,4 @@
-package com.example.demo.trax;
+package com.example.demo.conf;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.processor.aggregate.AggregationStrategy;

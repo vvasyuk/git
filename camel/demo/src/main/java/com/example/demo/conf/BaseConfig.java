@@ -1,4 +1,4 @@
-package com.example.demo.trax;
+package com.example.demo.conf;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
