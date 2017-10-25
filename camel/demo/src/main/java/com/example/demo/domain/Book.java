@@ -17,4 +17,9 @@ public class Book {
     public void setGenre(String genre) {this.genre = genre;}
     public String getPrice() {return price;}
     public void setPrice(String price) {this.price = price;}
+
+    @Override
+    public String toString() {
+        return "Book{" + "author='" + author + '\'' + ", title='" + title + '\'' + ", genre='" + genre + '\'' + ", price='" + price + '\'' + '}';
+    }
 }
