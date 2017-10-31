@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="US-ASCII"?>
+<?xml version="1.0"?>
 <xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm"
-    package-name="com.example.demo.domain">
+    version="2.3" package-name="com.example.demo.domain">
  
     <java-types>
         <java-type name="Book">

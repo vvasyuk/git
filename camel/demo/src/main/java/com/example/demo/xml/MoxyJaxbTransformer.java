@@ -27,7 +27,7 @@ public class MoxyJaxbTransformer<T extends Book> {
         return JAXBContext.newInstance(new Class[] {beanClazz}, props);
     }
 
-    public Book unmarshaller(InputStream xml) throws JAXBException {
+    public Book unmarshall(InputStream xml) throws JAXBException {
         HashMap<String, Object> props = new HashMap<>();
         props.put(JAXBContextProperties.OXM_METADATA_SOURCE, "xml-bindings.xml");
         JAXBContext jc = JAXBContext.newInstance(new Class[] {beanClazz}, props);

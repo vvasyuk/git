@@ -25,6 +25,12 @@ public class RouteConfig {
                 DataFormat jaxb = new JaxbDataFormat(jaxbContext);
                 from("file:.\\src\\main\\resources?fileName=book.xml&noop=true")
                         .split().tokenizeXML("book").streaming()
+                        .process(new Processor() {
+                            public void process(Exchange exchange) throws Exception {
+                                System.out.println(exchange.getIn().getBody(String.class));
+                                System.out.println("#######################################");
+                            }
+                        })
                         //.aggregate(header(Exchange.FILE_NAME_ONLY), new StringBodyAggregator()).completionSize(2).completionTimeout(1500)
                         .unmarshal(jaxb)
                         .process(new Processor() {
