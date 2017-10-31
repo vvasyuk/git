@@ -19,12 +19,12 @@ import java.util.HashMap;
 @Component
 public class MoxyJaxbTransformer<T extends Book> {
     private Class<Book> beanClazz = Book.class;
-
+//https://dzone.com/articles/introduction-to-jaxb-20
     @Bean
     public JAXBContext newJaxbContext() throws JAXBException {
         HashMap<String, Object> props = new HashMap<>();
         props.put(JAXBContextProperties.OXM_METADATA_SOURCE, "xml-bindings.xml");
-        return JAXBContext.newInstance(new Class[] {beanClazz}, props);
+        return JAXBContext.newInstance(new Class[] {Book.class}, props);
     }
 
     public Book unmarshall(InputStream xml) throws JAXBException {
@@ -33,7 +33,7 @@ public class MoxyJaxbTransformer<T extends Book> {
         JAXBContext jc = JAXBContext.newInstance(new Class[] {beanClazz}, props);
         StreamSource xmlSource = new StreamSource(xml);
         Unmarshaller unmarshaller = jc.createUnmarshaller();
-        JAXBElement<T> je1 = unmarshaller.unmarshal(xmlSource, (Class<T>) beanClazz);
+        JAXBElement<T> je1 = unmarshaller.unmarshal(xmlSource, (Class<T>) Book.class);
         return je1.getValue();
     }
 }

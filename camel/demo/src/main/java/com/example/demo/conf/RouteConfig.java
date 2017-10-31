@@ -1,6 +1,7 @@
 package com.example.demo.conf;
 
 import com.example.demo.domain.Book;
+import com.example.demo.domain.Book2;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.converter.jaxb.JaxbDataFormat;
 import javax.xml.bind.JAXBContext;
@@ -21,9 +22,12 @@ public class RouteConfig {
     public RouteBuilder demoRoute(final JAXBContext jaxbContext) throws JAXBException {
 
         return new RouteBuilder() {
-            public void configure() {
+            public void configure() throws JAXBException {
 
-                DataFormat jaxb = new JaxbDataFormat(jaxbContext);
+
+                JAXBContext jaxbContext2 = JAXBContext.newInstance(Book2.class);
+//                DataFormat jaxb = new JaxbDataFormat(jaxbContext);
+                DataFormat jaxb = new JaxbDataFormat(jaxbContext2);
                 from("file:.\\src\\main\\resources?fileName=book.xml&noop=true")
                         .split().tokenizeXML("book").streaming()
                         .process(new Processor() {
@@ -36,7 +40,7 @@ public class RouteConfig {
                         .unmarshal(jaxb)
                         .process(new Processor() {
                             public void process(Exchange exchange) throws Exception {
-                                Book obj = (Book) exchange.getIn().getBody();
+                                Book2 obj = (Book2) exchange.getIn().getBody();
                                 System.out.println(obj.toString());
                                 //System.out.println(exchange.getIn().getBody(String.class));
                                 System.out.println("#######################################");
