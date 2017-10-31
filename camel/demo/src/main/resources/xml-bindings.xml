@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm"
-    version="2.3" package-name="com.example.demo.domain">
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              version="2.3" package-name="com.example.demo.domain">
  
     <java-types>
         <java-type name="Book">

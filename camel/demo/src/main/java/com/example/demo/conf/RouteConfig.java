@@ -22,6 +22,7 @@ public class RouteConfig {
 
         return new RouteBuilder() {
             public void configure() {
+
                 DataFormat jaxb = new JaxbDataFormat(jaxbContext);
                 from("file:.\\src\\main\\resources?fileName=book.xml&noop=true")
                         .split().tokenizeXML("book").streaming()
