@@ -1,22 +1,15 @@
 package com.example.demo.conf;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-
 import com.example.demo.domain.Book;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.converter.jaxb.JaxbDataFormat;
-
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.eclipse.persistence.jaxb.JAXBContextProperties;
+import org.apache.camel.spi.DataFormat;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-
 
 /**
  * Created by Jopa on 10/23/2017.
@@ -25,18 +18,12 @@ import java.util.Map;
 public class RouteConfig {
 
     @Bean
-    public RouteBuilder demoRoute() throws JAXBException {
-
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        InputStream iStream = classLoader.getResourceAsStream("xml-bindings.xml");
-        Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
-        JAXBContext ctx = JAXBContext.newInstance(new Class[] { Book.class }, properties);
-        JaxbDataFormat jaxb = new JaxbDataFormat(ctx);
+    public RouteBuilder demoRoute(final JAXBContext jaxbContext) throws JAXBException {
 
         return new RouteBuilder() {
             public void configure() {
-                from("file:.\\src\\main\\resources?fileName=book.xml")
+                DataFormat jaxb = new JaxbDataFormat(jaxbContext);
+                from("file:.\\src\\main\\resources?fileName=book.xml&noop=true")
                         .split().tokenizeXML("book").streaming()
                         //.aggregate(header(Exchange.FILE_NAME_ONLY), new StringBodyAggregator()).completionSize(2).completionTimeout(1500)
                         .unmarshal(jaxb)
@@ -48,7 +35,9 @@ public class RouteConfig {
                                 System.out.println("#######################################");
                             }
                         })
-                        .end();
+                        .end()
+                        .to("bean:SomeService?method=doOPrint");
+
 
 //                from("quartz2://myTimer?trigger.repeatInterval=2000&trigger.repeatCount=-1")
 //                        .process(new Processor() {

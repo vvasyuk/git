@@ -5,6 +5,7 @@
     <java-types>
         <java-type name="Book">
             <xml-root-element name="book" />
+            <xml-virtual-access-methods get-method="getAttribute" set-method="setAttribute"/>
             <java-attributes>
                 <xml-attribute java-attribute="author" name="author" />
                 <xml-attribute java-attribute="title" name="title" />

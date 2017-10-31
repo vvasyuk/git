@@ -2,6 +2,7 @@ package com.example.demo;
 
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.spring.SpringCamelContext;
+import org.apache.camel.util.concurrent.ThreadHelper;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -11,7 +12,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan("com.example.demo.conf")
+@ComponentScan({"com.example.demo"})
 @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class})
 public class DemoApplication {
 
@@ -20,10 +21,9 @@ public class DemoApplication {
 		app.setBannerMode(Banner.Mode.LOG);
         ConfigurableApplicationContext context = app.run(args);
 
-        while(true){
-            Thread.sleep(5000);
-        }
-
+		while(true){
+			Thread.sleep(3000);
+		}
 //        ProducerTemplate producer = context.getBean(SpringCamelContext.class).createProducerTemplate();
 //        producer.sendBody("direct:start1", "World");
 	}
