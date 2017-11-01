@@ -9,8 +9,11 @@ import javax.xml.bind.JAXBException;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.spi.DataFormat;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
 
 /**
  * Created by Jopa on 10/23/2017.
@@ -19,7 +22,7 @@ import org.springframework.context.annotation.Configuration;
 public class RouteConfig {
 
     @Bean
-    public RouteBuilder demoRoute(final JAXBContext jaxbContext) throws JAXBException {
+    public RouteBuilder demoRoute(final @Autowired JAXBContext jaxbContext) throws JAXBException {
 
         return new RouteBuilder() {
             public void configure() throws JAXBException {
@@ -30,25 +33,25 @@ public class RouteConfig {
                 DataFormat jaxb = new JaxbDataFormat(jaxbContext2);
                 from("file:.\\src\\main\\resources?fileName=book.xml&noop=true")
                         .split().tokenizeXML("book").streaming()
-                        .process(new Processor() {
-                            public void process(Exchange exchange) throws Exception {
-                                System.out.println(exchange.getIn().getBody(String.class));
-                                System.out.println("#######################################");
-                            }
-                        })
-                        //.aggregate(header(Exchange.FILE_NAME_ONLY), new StringBodyAggregator()).completionSize(2).completionTimeout(1500)
-                        .unmarshal(jaxb)
-                        .process(new Processor() {
-                            public void process(Exchange exchange) throws Exception {
-                                Book2 obj = (Book2) exchange.getIn().getBody();
-                                System.out.println(obj.toString());
-                                //System.out.println(exchange.getIn().getBody(String.class));
-                                System.out.println("#######################################");
-                            }
-                        })
+                            //.log("${header.CamelSplitComplete}")
+                            .to("direct-vm:process")
                         .end()
-                        .to("bean:SomeService?method=doOPrint");
+                        .to("direct-vm:end");
 
+                from("direct-vm:end")
+                    .to("bean:SomeService?method=doOPrint");
+
+                from("direct-vm:process")
+                        .unmarshal(jaxb)
+                        .aggregate(header(Exchange.FILE_NAME_ONLY), new ArrayListAggregationStrategy()).completionSize(2).completionPredicate(header("CamelSplitComplete"))
+                        .process(new Processor() {
+                            public void process(Exchange exchange) throws Exception {
+                                List<Book2> bookList = (List<Book2>) exchange.getIn().getBody();
+                                bookList.forEach(x -> System.out.println(x));
+                                System.out.println("#######################################");
+                            }
+                        });
+                        //.end();
 
 //                from("quartz2://myTimer?trigger.repeatInterval=2000&trigger.repeatCount=-1")
 //                        .process(new Processor() {
@@ -64,6 +67,9 @@ public class RouteConfig {
 //                        .convertBodyTo(String.class)
 //                        .process(new Processor() {
 //                            public void process(Exchange exchange) throws Exception {
+//                                Book2 obj = (Book2) exchange.getIn().getBody();
+//                                Book obj = (Book) exchange.getIn().getBody();
+//                                System.out.println(obj.toString());
 //                                System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXxxx");
 //                                System.out.println(exchange.getIn().getBody());
 //                        // do some business logic with the input body
