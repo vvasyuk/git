@@ -248,12 +248,12 @@
       environment.</description>
       <subTrees>
          <subTree>
-            <name>10n</name>
-            <value>10v</value>
+            <name>last</name>
+            <value>last</value>
          </subTree>
          <subTree>
-            <name>1010n</name>
-            <value>1010v</value>
+            <name>last</name>
+            <value>last</value>
          </subTree>
       </subTrees>
    </book>   

@@ -2,6 +2,8 @@ package com.example.demo.conf;
 
 import com.example.demo.domain.Book;
 import com.example.demo.domain.Book2;
+import org.apache.camel.Predicate;
+import org.apache.camel.builder.PredicateBuilder;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.converter.jaxb.JaxbDataFormat;
 import javax.xml.bind.JAXBContext;
@@ -26,14 +28,17 @@ public class RouteConfig {
 
         return new RouteBuilder() {
             public void configure() throws JAXBException {
-
+                Predicate p1 = header("CamelSplitIndex").isEqualTo(0);
+                Predicate p3 = header("CamelSplitIndex").isEqualTo(1);
+                Predicate p2 = header("CamelSplitComplete").isEqualTo(true);
+                Predicate p1Orp2 = PredicateBuilder.or(p1, p2, p3);
 
                 JAXBContext jaxbContext2 = JAXBContext.newInstance(Book2.class);
 //                DataFormat jaxb = new JaxbDataFormat(jaxbContext);
                 DataFormat jaxb = new JaxbDataFormat(jaxbContext2);
                 from("file:.\\src\\main\\resources?fileName=book.xml&noop=true")
                         .split().tokenizeXML("book").streaming()
-                            //.log("${header.CamelSplitComplete}")
+                            .log("${header.CamelSplitComplete}")
                             .to("direct-vm:process")
                         .end()
                         .to("direct-vm:end");
@@ -43,7 +48,7 @@ public class RouteConfig {
 
                 from("direct-vm:process")
                         .unmarshal(jaxb)
-                        .aggregate(header(Exchange.FILE_NAME_ONLY), new ArrayListAggregationStrategy()).completionSize(2).completionPredicate(header("CamelSplitComplete"))
+                        .aggregate(header(Exchange.FILE_NAME_ONLY), new ArrayListAggregationStrategy()).completionSize(15).completionPredicate(p2)
                         .process(new Processor() {
                             public void process(Exchange exchange) throws Exception {
                                 List<Book2> bookList = (List<Book2>) exchange.getIn().getBody();
