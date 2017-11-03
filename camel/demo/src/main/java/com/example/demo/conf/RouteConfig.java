@@ -28,10 +28,6 @@ public class RouteConfig {
 
         return new RouteBuilder() {
             public void configure() throws JAXBException {
-                Predicate p1 = header("CamelSplitIndex").isEqualTo(0);
-                Predicate p3 = header("CamelSplitIndex").isEqualTo(1);
-                Predicate p2 = header("CamelSplitComplete").isEqualTo(true);
-                Predicate p1Orp2 = PredicateBuilder.or(p1, p2, p3);
 
                 JAXBContext jaxbContext2 = JAXBContext.newInstance(Book2.class);
 //                DataFormat jaxb = new JaxbDataFormat(jaxbContext);
@@ -48,7 +44,7 @@ public class RouteConfig {
 
                 from("direct-vm:process")
                         .unmarshal(jaxb)
-                        .aggregate(header(Exchange.FILE_NAME_ONLY), new ArrayListAggregationStrategy()).completionSize(15).completionPredicate(p2)
+                        .aggregate(header(Exchange.FILE_NAME_ONLY), new ArrayListAggregationStrategy()).completionSize(15).completionPredicate(header("CamelSplitComplete")).eagerCheckCompletion()
                         .process(new Processor() {
                             public void process(Exchange exchange) throws Exception {
                                 List<Book2> bookList = (List<Book2>) exchange.getIn().getBody();
