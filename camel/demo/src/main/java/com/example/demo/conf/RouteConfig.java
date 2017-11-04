@@ -2,8 +2,6 @@ package com.example.demo.conf;
 
 import com.example.demo.domain.Book;
 import com.example.demo.domain.Book2;
-import org.apache.camel.Predicate;
-import org.apache.camel.builder.PredicateBuilder;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.converter.jaxb.JaxbDataFormat;
 import javax.xml.bind.JAXBContext;
@@ -24,17 +22,20 @@ import java.util.List;
 public class RouteConfig {
 
     @Bean
-    public RouteBuilder demoRoute(final @Autowired JAXBContext jaxbContext) throws JAXBException {
+    public RouteBuilder demoRoute() throws JAXBException {
 
         return new RouteBuilder() {
             public void configure() throws JAXBException {
 
                 JAXBContext jaxbContext2 = JAXBContext.newInstance(Book2.class);
-//                DataFormat jaxb = new JaxbDataFormat(jaxbContext);
                 DataFormat jaxb = new JaxbDataFormat(jaxbContext2);
-                from("file:.\\src\\main\\resources?fileName=book.xml&noop=true")
+                from("file:.\\src\\main\\resources?antInclude=book*.xml")
+                        //.log("${header.CamelFileNameOnly}")
+                        .setHeader("theHeader", simple("${header.CamelFileNameOnly} regexp  '(^_)'"))
+                        //<simple>${body.replaceAll("foo([A-Z])bar", "bar$1foo")}</simple>
+                        .log("${header.theHeader}")
                         .split().tokenizeXML("book").streaming()
-                            .log("${header.CamelSplitComplete}")
+                            //.log("${header.CamelSplitComplete}")
                             .to("direct-vm:process")
                         .end()
                         .to("direct-vm:end");
