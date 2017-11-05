@@ -30,10 +30,11 @@ public class RouteConfig {
                 JAXBContext jaxbContext2 = JAXBContext.newInstance(Book2.class);
                 DataFormat jaxb = new JaxbDataFormat(jaxbContext2);
                 from("file:.\\src\\main\\resources?antInclude=book*.xml")
-                        //.log("${header.CamelFileNameOnly}")
-                        .setHeader("theHeader", simple("${header.CamelFileNameOnly} regexp  '(^_)'"))
-                        //<simple>${body.replaceAll("foo([A-Z])bar", "bar$1foo")}</simple>
-                        .log("${header.theHeader}")
+                        .log("${header.CamelFileNameOnly}")
+                        .setHeader("currentNumber", regexReplaceAll(header("CamelFileNameOnly"), ".*_.*_(.*)_.*", "$1"))
+                        .setHeader("totalNumber", regexReplaceAll(header("CamelFileNameOnly"), ".*_.*_.*_(.*)\\.xml", "$1"))
+                        .log("${header.currentNumber}")
+                        .log("${header.totalNumber}")
                         .split().tokenizeXML("book").streaming()
                             //.log("${header.CamelSplitComplete}")
                             .to("direct-vm:process")
