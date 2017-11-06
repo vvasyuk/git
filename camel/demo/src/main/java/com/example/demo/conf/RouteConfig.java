@@ -42,27 +42,27 @@ public class RouteConfig {
 
                 from("file:.\\src\\main\\resources?antInclude=book*.xml")
                         .log("${header.CamelFileNameOnly}")
-                        .setHeader("currentNumber", regexReplaceAll(header("CamelFileNameOnly"), "(.*_){2}(.*)_.*", "$2"))
                         .setHeader("totalNumber", regexReplaceAll(header("CamelFileNameOnly"), "(.*_){3}(.*)\\.xml", "$2"))
                         .process(new Processor() {
                             private int count = 0;
                             public void process(Exchange exchange){
                                 count++;
-                                exchange.getIn().setHeader("test", count);}
+                                exchange.getIn().setHeader("fileCount", count);}
                         })
                         .choice()
-                            .when(header("test").isEqualTo("1"))
+                            .when(header("fileCount").isEqualTo("1"))
                                 .log("index first")
-                            .when(header("test").isEqualTo(header("totalNumber")))
-                                .log("index last")
                         .end()
-                        .log("after choice")
-                        .split().tokenizeXML("book").streaming().to("direct-vm:process");
+                        .split().tokenizeXML("book").streaming()
+                        .to("direct-vm:process")
+                        .end()
+                        .to("direct-vm:end");
 
                 from("direct-vm:end")
-                    .log("${header.currentNumber}")
-                    .log("${header.totalNumber}")
-                    .to("bean:SomeService?method=doOPrint");
+                        .choice()
+                            .when(header("fileCount").isEqualTo(header("totalNumber")))
+                                .to("bean:SomeService?method=doOPrint")
+                        .end();
 
                 from("direct-vm:process")
                         .unmarshal(jaxb)
@@ -70,11 +70,10 @@ public class RouteConfig {
                         .process(new Processor() {
                             public void process(Exchange exchange) throws Exception {
                                 List<Book2> bookList = (List<Book2>) exchange.getIn().getBody();
-                                bookList.forEach(x -> System.out.println(x));
-                                System.out.println("#######################################");
+//                                bookList.forEach(x -> System.out.println(x));
+//                                System.out.println("#######################################");
                             }
                         });
-                        //.end();
 
 //                from("direct:order")
 //                        //.resequence(header("currentNumber")).stream(new StreamResequencerConfig(5000, 4000L))
@@ -111,8 +110,6 @@ public class RouteConfig {
 //                                System.out.println("Processed");
 //                            }
 //                        });
-//                from("direct:start1")
-//                        .log("Hello, ${body}!");
 
 //                from("file:D:\\work\\camel\\data?fileName=book.xml")
 //                        .convertBodyTo(String.class)
