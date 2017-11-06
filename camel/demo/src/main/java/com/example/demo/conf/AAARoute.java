@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * Created by Jopa on 11/5/2017.
  */
-@Configuration
+//@Configuration
 public class AAARoute {
 
     @Autowired

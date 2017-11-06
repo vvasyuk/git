@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * Created by Jopa on 10/23/2017.
  */
-//@Configuration
+@Configuration
 public class RouteConfig {
 
     @Autowired
@@ -35,51 +35,28 @@ public class RouteConfig {
 
         return new RouteBuilder() {
             public void configure() throws JAXBException {
-//                camelContext.setStreamCaching(true);
-//                camelContext.getProperties().put(CachedOutputStream.TEMP_DIR, ".\\src\\main\\resources\\cache");
-//                camelContext.getProperties().put(CachedOutputStream.THRESHOLD, "1048576");
-//                camelContext.getProperties().put(CachedOutputStream.BUFFER_SIZE, "131072");
-//                camelContext.getProperties().put(CachedOutputStream.THRESHOLD, "0");
-
-                camelContext.setTracing(true);
+                //camelContext.setTracing(true);
 
                 JAXBContext jaxbContext2 = JAXBContext.newInstance(Book2.class);
                 DataFormat jaxb = new JaxbDataFormat(jaxbContext2);
 
                 from("file:.\\src\\main\\resources?antInclude=book*.xml")
-                        .streamCaching()
-                        .log("${header.CamelFileNameOnly}");
-//                        .setHeader("currentNumber", regexReplaceAll(header("CamelFileNameOnly"), ".*_.*_(.*)_.*", "$1"))
-//                        .setHeader("totalNumber", regexReplaceAll(header("CamelFileNameOnly"), ".*_.*_.*_(.*)\\.xml", "$1"))
-//                        .resequence(header("currentNumber")).stream()
-//                        .split()
-//                        .tokenizeXML("book")
-//                        .streaming()
-//                        .to("direct-vm:process");
-                //body().tokenize('TOKEN')
-//                        .process(new Processor() {
-//                            public void process(Exchange exchange) throws Exception {
-//                                System.out.println(exchange.getIn().getBody());
-//                                System.out.println("#######################################");
-//                            }
-//                        });
-
-
-//                        .to("direct:order")
-//                        .to("direct-vm:split")
-//                        .to("direct-vm:end");
-
-                from("direct:order")
-                        //.resequence(header("currentNumber")).stream(new StreamResequencerConfig(5000, 4000L))
-                        .resequence(header("currentNumber")).stream()
-                        .to("direct:split");
-                from("direct:split")
-//                        .process(new Processor() {
-//                            public void process(Exchange exchange) throws Exception {
-//                                System.out.println("#######################################");
-//                            }
-//                        })
-
+                        .log("${header.CamelFileNameOnly}")
+                        .setHeader("currentNumber", regexReplaceAll(header("CamelFileNameOnly"), "(.*_){2}(.*)_.*", "$2"))
+                        .setHeader("totalNumber", regexReplaceAll(header("CamelFileNameOnly"), "(.*_){3}(.*)\\.xml", "$2"))
+                        .process(new Processor() {
+                            private int count = 0;
+                            public void process(Exchange exchange){
+                                count++;
+                                exchange.getIn().setHeader("test", count);}
+                        })
+                        .choice()
+                            .when(header("test").isEqualTo("1"))
+                                .log("index first")
+                            .when(header("test").isEqualTo(header("totalNumber")))
+                                .log("index last")
+                        .end()
+                        .log("after choice")
                         .split().tokenizeXML("book").streaming().to("direct-vm:process");
 
                 from("direct-vm:end")
@@ -99,6 +76,10 @@ public class RouteConfig {
                         });
                         //.end();
 
+//                from("direct:order")
+//                        //.resequence(header("currentNumber")).stream(new StreamResequencerConfig(5000, 4000L))
+//                        .resequence(header("currentNumber")).stream()
+//                        .to("direct:split");
 
 //                .process(new Processor() {
 //                    @Override
