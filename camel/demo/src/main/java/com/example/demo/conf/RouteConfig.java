@@ -40,31 +40,61 @@ public class RouteConfig {
                 JAXBContext jaxbContext2 = JAXBContext.newInstance(Book2.class);
                 DataFormat jaxb = new JaxbDataFormat(jaxbContext2);
 
-                from("file:.\\src\\main\\resources?antInclude=book*.xml")
+                from("file:.\\src\\main\\resources?antInclude=book*.xml").routeId("fileRoute")
+                        .onCompletion()
+                            .to("direct-vm:shutdown")
+                        .end()
                         .log("${header.CamelFileNameOnly}")
                         .setHeader("totalNumber", regexReplaceAll(header("CamelFileNameOnly"), "(.*_){3}(.*)\\.xml", "$2"))
+                        .to("direct-vm:fileCounter")
+                        .to("direct-vm:processFirstFile")
+                        .split().tokenizeXML("book").streaming()
+                            .to("direct-vm:process")
+                        .end()
+                        .to("direct-vm:end");
+
+                from("direct-vm:processFirstFile").routeId("processFirstFileRoute")
+                        .choice()
+                            .when(header("fileCount").isEqualTo("1"))
+                                .log("index first")
+                        .end();
+
+                from("direct-vm:fileCounter").routeId("fileCounterRoute")
                         .process(new Processor() {
                             private int count = 0;
                             public void process(Exchange exchange){
                                 count++;
                                 exchange.getIn().setHeader("fileCount", count);}
-                        })
-                        .choice()
-                            .when(header("fileCount").isEqualTo("1"))
-                                .log("index first")
-                        .end()
-                        .split().tokenizeXML("book").streaming()
-                        .to("direct-vm:process")
-                        .end()
-                        .to("direct-vm:end");
+                        });
 
-                from("direct-vm:end")
+                from("direct-vm:shutdown").routeId("shutdownRoute")
+                        .choice()
+                            .when(header("fileCount").isEqualTo(header("totalNumber")))
+                                .process((exchange) -> {
+//                                    exchange.getContext().getInflightRepository().remove(exchange);
+//                                    exchange.getContext().stopRoute("fileRoute");
+//                                    getContext().getShutdownStrategy().setTimeout(2);
+//                                    System.exit(0);
+
+                                    new Thread(() -> {
+                                            try {
+                                                getContext().stopRoute("fileRoute");
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
+                                            System.exit(0);
+                                    }).start();
+
+                                })
+                        .end();
+
+                from("direct-vm:end").routeId("endRoute")
                         .choice()
                             .when(header("fileCount").isEqualTo(header("totalNumber")))
                                 .to("bean:SomeService?method=doOPrint")
                         .end();
 
-                from("direct-vm:process")
+                from("direct-vm:process").routeId("processRoute")
                         .unmarshal(jaxb)
                         .aggregate(header(Exchange.FILE_NAME_ONLY), new ArrayListAggregationStrategy()).completionSize(15).completionPredicate(header("CamelSplitComplete")).eagerCheckCompletion()
                         .process(new Processor() {
