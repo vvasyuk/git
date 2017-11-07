@@ -22,9 +22,9 @@ public class DemoApplication {
 		app.setBannerMode(Banner.Mode.LOG);
         ConfigurableApplicationContext context = app.run(args);
 
-		CamelSpringBootApplicationController applicationController =
-				context.getBean(CamelSpringBootApplicationController.class);
-		applicationController.blockMainThread();
+//		CamelSpringBootApplicationController applicationController =
+//				context.getBean(CamelSpringBootApplicationController.class);
+//		applicationController.blockMainThread();
 
 //		while(true){
 //			Thread.sleep(3000);
