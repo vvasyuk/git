@@ -1,12 +1,19 @@
 package com.example.demo.conf;
 
+import com.example.demo.domain.Book2;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import org.apache.camel.converter.jaxb.JaxbDataFormat;
+import org.apache.camel.spi.DataFormat;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.ConfigurableEnvironment;
 
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,4 +51,16 @@ public class BaseConfig {
             }
         });
     }
+
+    @Bean
+    JAXBContext newJaxbContext2 () throws JAXBException {
+        return JAXBContext.newInstance(Book2.class);
+    }
+
+    @Bean
+    @Scope("prototype")
+    DataFormat newJaxb (JAXBContext jaxbContext2){
+        return new JaxbDataFormat(jaxbContext2);
+    }
+
 }

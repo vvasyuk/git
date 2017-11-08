@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * Created by Jopa on 10/23/2017.
  */
-@Configuration
+//@Configuration
 public class RouteConfig {
 
     @Autowired
@@ -40,10 +40,15 @@ public class RouteConfig {
                 JAXBContext jaxbContext2 = JAXBContext.newInstance(Book2.class);
                 DataFormat jaxb = new JaxbDataFormat(jaxbContext2);
 
-                from("file:.\\src\\main\\resources?antInclude=book*.xml").routeId("fileRoute")
-                        .onCompletion()
-                            .to("direct-vm:shutdown")
-                        .end()
+//                onException(Exception.class)
+//                        .maximumRedeliveries(1)
+//                        .handled(true);
+
+                from(   "file:.\\\\src\\\\main\\\\resources?antInclude=book_test_*.xml",
+                        "file:.\\\\src\\\\main\\\\resources?antInclude=book_test1_*.xml").routeId("fileRoute")
+//                        .onCompletion()
+//                            .to("direct-vm:shutdown")
+//                        .end()
                         .log("${header.CamelFileNameOnly}")
                         .setHeader("totalNumber", regexReplaceAll(header("CamelFileNameOnly"), "(.*_){3}(.*)\\.xml", "$2"))
                         .to("direct-vm:fileCounter")
@@ -100,8 +105,8 @@ public class RouteConfig {
                         .process(new Processor() {
                             public void process(Exchange exchange) throws Exception {
                                 List<Book2> bookList = (List<Book2>) exchange.getIn().getBody();
-//                                bookList.forEach(x -> System.out.println(x));
-//                                System.out.println("#######################################");
+                                bookList.forEach(x -> System.out.println(x));
+                                System.out.println("#######################################");
                             }
                         });
 
