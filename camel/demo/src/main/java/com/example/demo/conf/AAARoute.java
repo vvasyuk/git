@@ -15,6 +15,8 @@ import org.springframework.context.annotation.Configuration;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
@@ -31,10 +33,12 @@ public class AAARoute {
 
         return new RouteBuilder() {
             public void configure(){
-
+                Map<String,Boolean> concurrentMap = new ConcurrentHashMap<String,Boolean>();
                 from(   "file:.\\src\\main\\resources?antInclude=book_test_*.xml"
-                        //,"file:.\\src\\main\\resources?antInclude=book_test1_*.xml"
+                        ,"file:.\\src\\main\\resources?antInclude=book_test1_*.xml"
                 )
+                        .setHeader("totalNumber", regexReplaceAll(header("CamelFileNameOnly"), "(.*_){3}(.*)\\.xml", "$2"))
+                        .setHeader("fileType", regexReplaceAll(header("CamelFileNameOnly"), ".*_(.*)_.*_.*", "$1"))
                         .to("direct:fileCounter")
                         .split().tokenizeXML("book").streaming()
                         .unmarshal(jaxb)
@@ -44,23 +48,34 @@ public class AAARoute {
 //                            System.out.println("#######################################");
 //                            }
 //                        )
-                        .end();
-//                        .to("direct:end");
+                        .end()
+                        .to("direct:end");
 
                 from("direct:fileCounter")
                         .process((exchange) -> {
+                                    String fileType = (String) exchange.getIn().getHeader("fileType");
+                                    String totalNumber = (String) exchange.getIn().getHeader("totalNumber");
+                                    Integer totalNumberInt = Integer.parseInt(totalNumber);
                                     Integer cnt = ThreadAttributes.get("cnt");
                                     cnt=cnt==null?1:cnt+1;
                                     ThreadAttributes.set("cnt", cnt); //to set an attribute
                                     System.out.println(Thread.currentThread() + " - " + cnt +  " - " + exchange.getIn().getHeader("CamelFileNameOnly"));
+
+//                                    concurrentMap.put(fileType, cnt);
+
+                                    if (totalNumberInt.equals(cnt)){
+                                        concurrentMap.putIfAbsent(fileType, true);
+                                    }
+
                                 }
                         );
 
                 from("direct:end").routeId("endRoute")
-                        .choice()
-                            .when(header("fileCount").isEqualTo(header("totalNumber")))
-                                .to("bean:SomeService?method=doOPrint")
-                        .end();
+                        .process((exchange) -> {
+                                    concurrentMap.forEach((k,v) -> System.out.println(Thread.currentThread() + " k: " + k + " | v: " + v ));
+                                    System.out.println("---");
+                                }
+                        );
 
                 from("direct:process")
                         .unmarshal(jaxb)
@@ -76,4 +91,7 @@ public class AAARoute {
         };
     }
 }
+
+
+
 
