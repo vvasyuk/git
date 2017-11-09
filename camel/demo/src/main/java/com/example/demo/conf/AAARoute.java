@@ -59,10 +59,8 @@ public class AAARoute {
 
                                     Integer cnt = ThreadAttributes.get("cnt");
                                     cnt=cnt==null?1:cnt+1;
-                                    ThreadAttributes.set("cnt", cnt); //to set an attribute
+                                    ThreadAttributes.set("cnt", cnt);
                                     System.out.println(Thread.currentThread() + " - " + cnt +  " - " + exchange.getIn().getHeader("CamelFileNameOnly"));
-
-//                                    concurrentMap.put(fileType, cnt);
 
                                     if (totalNumber==cnt){
                                         concurrentMap.put(fileType, true);
