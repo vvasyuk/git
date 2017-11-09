@@ -54,8 +54,9 @@ public class AAARoute {
                 from("direct:fileCounter")
                         .process((exchange) -> {
                                     String fileType = (String) exchange.getIn().getHeader("fileType");
-                                    String totalNumber = (String) exchange.getIn().getHeader("totalNumber");
-                                    Integer totalNumberInt = Integer.parseInt(totalNumber);
+                                    int totalNumber = Integer.parseInt((String) exchange.getIn().getHeader("totalNumber")) ;
+                                    concurrentMap.putIfAbsent(fileType, false);
+
                                     Integer cnt = ThreadAttributes.get("cnt");
                                     cnt=cnt==null?1:cnt+1;
                                     ThreadAttributes.set("cnt", cnt); //to set an attribute
@@ -63,8 +64,8 @@ public class AAARoute {
 
 //                                    concurrentMap.put(fileType, cnt);
 
-                                    if (totalNumberInt.equals(cnt)){
-                                        concurrentMap.putIfAbsent(fileType, true);
+                                    if (totalNumber==cnt){
+                                        concurrentMap.put(fileType, true);
                                     }
 
                                 }
@@ -72,8 +73,11 @@ public class AAARoute {
 
                 from("direct:end").routeId("endRoute")
                         .process((exchange) -> {
-                                    concurrentMap.forEach((k,v) -> System.out.println(Thread.currentThread() + " k: " + k + " | v: " + v ));
-                                    System.out.println("---");
+                                    //concurrentMap.forEach((k,v) -> System.out.println(Thread.currentThread() + " k: " + k + " | v: " + v ));
+                                    if (concurrentMap.values().stream().allMatch(x -> x.equals(true))){
+                                        System.out.println("will end");
+                                    }
+
                                 }
                         );
 
