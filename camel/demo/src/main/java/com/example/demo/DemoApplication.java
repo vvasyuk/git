@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import com.example.demo.util.DatabaseUtil;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.spring.SpringCamelContext;
 import org.apache.camel.spring.boot.CamelSpringBootApplicationController;
@@ -12,6 +13,11 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 

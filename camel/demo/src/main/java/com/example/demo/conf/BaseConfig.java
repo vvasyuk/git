@@ -1,6 +1,7 @@
 package com.example.demo.conf;
 
 import com.example.demo.domain.Book2;
+import com.example.demo.util.DatabaseUtil;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import org.apache.camel.converter.jaxb.JaxbDataFormat;
@@ -12,9 +13,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.ConfigurableEnvironment;
 
 
+import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.File;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -25,10 +29,11 @@ import java.util.stream.Collectors;
 @Configuration
 public class BaseConfig {
 
+    Connection con;
     Config config;
     Map map = new HashMap();
 
-    public BaseConfig(@Value("${config}") String configFileName, ConfigurableEnvironment environment) {
+    public BaseConfig(@Value("${config}") String configFileName, ConfigurableEnvironment environment) throws Exception {
         final File configFile = new File(configFileName);
         this.config = ConfigFactory.parseFile(configFile);
         System.out.println("test");
@@ -40,6 +45,12 @@ public class BaseConfig {
 
         //System.out.println(map.get("name"));
         //System.out.println(map.get("age"));
+
+        con = DatabaseUtil.getConnection();
+        if (con==null || con.isClosed()){
+            throw new Exception("Shiit");
+        }
+
         environment.getPropertySources().addLast(new org.springframework.core.env.PropertySource<Config>("configFile", config) {
             @Override
             public String getProperty(String s) {
@@ -51,6 +62,11 @@ public class BaseConfig {
             }
         });
     }
+
+//    @Bean
+//    Connection getConnection() {
+//        return DatabaseUtil.getConnection();
+//    }
 
     @Bean
     JAXBContext newJaxbContext2 () throws JAXBException {
