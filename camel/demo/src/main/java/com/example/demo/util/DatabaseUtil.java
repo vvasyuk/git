@@ -28,7 +28,7 @@ public class DatabaseUtil {
     public static Connection getConnection() {
         Connection con =null;
         try {
-            con = getOracleDataSource("jdbc:oracle:thin:@localhost:1521:XE", "test1", "12345678").getConnection();
+            con = getOracleDataSource("jdbc:oracle:thin:@localhost:1521:XE", "test", "12345678").getConnection();
         } catch (SQLException e) {
             e.printStackTrace();
         }

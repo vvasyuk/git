@@ -11,6 +11,7 @@ import org.apache.camel.spi.DataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -23,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by Jopa on 11/5/2017.
  */
 @Configuration
+@Profile("regularMode")
 public class AAARoute {
 
     @Autowired

@@ -48,7 +48,7 @@ public class BaseConfig {
 
         con = DatabaseUtil.getConnection();
         if (con==null || con.isClosed()){
-            throw new Exception("Shiit");
+            throw new Exception("Could not get a working connection.");
         }
 
         environment.getPropertySources().addLast(new org.springframework.core.env.PropertySource<Config>("configFile", config) {

@@ -44,8 +44,8 @@ public class RouteConfig {
 //                        .maximumRedeliveries(1)
 //                        .handled(true);
 
-                from(   "file:.\\\\src\\\\main\\\\resources?antInclude=book_test_*.xml",
-                        "file:.\\\\src\\\\main\\\\resources?antInclude=book_test1_*.xml").routeId("fileRoute")
+                from(   "file:.\\src\\main\\resources?antInclude=book_test_*.xml",
+                        "file:.\\src\\main\\resources?antInclude=book_test1_*.xml").routeId("fileRoute")
 //                        .onCompletion()
 //                            .to("direct-vm:shutdown")
 //                        .end()
