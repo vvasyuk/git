@@ -30,6 +30,7 @@ public class ReplayRoute {
                         .onCompletion()
                             .to("direct:shutdown")
                         .end()
+                        .log("${header.CamelFileNameOnly}")
                         .pollEnrich("file:.\\src\\main\\resources?fileName=book_test_001_003.xml")
                         .process(new Processor() {
                             public void process(Exchange exchange) throws Exception {
