@@ -29,15 +29,15 @@ public class DemoApplication {
 	private static final Logger logger = LogManager.getLogger(DemoApplication.class);
 
 	public static void main(String[] args) throws InterruptedException {
-//		logger.debug("Debugging log");
-//		logger.info("Info log");
-//		logger.warn("Hey, This is a warning!");
-//		logger.error("Oops! We have an Error. OK");
-//		logger.fatal("Damn! Fatal error. Please fix me.");
-
 		SpringApplication app = new SpringApplication(DemoApplication.class);
 		app.setBannerMode(Banner.Mode.LOG);
         ConfigurableApplicationContext context = app.run(args);
+
+//		logger.debug("Debugging log");
+//		logger.info("Info log");
+//		logger.warn("Hey, This is a warning!");
+		logger.error("Oops! We have an Error. OK");
+//		logger.fatal("Damn! Fatal error. Please fix me.");
 
 //		CamelSpringBootApplicationController applicationController =
 //				context.getBean(CamelSpringBootApplicationController.class);
