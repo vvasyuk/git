@@ -5,19 +5,18 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
-
-import org.apache.camel.converter.jaxb.JaxbDataFormat;
 import org.apache.camel.spi.DataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static org.apache.camel.component.stax.StAXBuilder.stax;
 
 
 /**
@@ -41,16 +40,22 @@ public class AAARoute {
                 )
                         .setHeader("totalNumber", regexReplaceAll(header("CamelFileNameOnly"), "(.*_){3}(.*)\\.xml", "$2"))
                         .setHeader("fileType", regexReplaceAll(header("CamelFileNameOnly"), ".*_(.*)_.*_.*", "$1"))
-                        .to("direct:fileCounter")
-                        .split().tokenizeXML("book").streaming()
-                        .unmarshal(jaxb)
-//                        .process((exchange) -> {
-//                            List<Book2> bookList = (List<Book2>) exchange.getIn().getBody();
-//                            bookList.forEach(x -> System.out.println(x));
-//                            System.out.println("#######################################");
-//                            }
-//                        )
+                        .setHeader("version", xpath("/catalog/head/version/text()[1]"))
+                        .log("${header.version}")
+//                        .to("direct:fileCounter")
+
+                        .split(stax(Book2.class)).streaming()
+
+//                        .split().tokenizeXML("book").streaming()
+//                        .unmarshal(jaxb)
+                        .process((exchange) -> {
+                            Book2 book = (Book2) exchange.getIn().getBody();
+                            System.out.println(book);
+                            System.out.println("#######################################");
+                            }
+                        )
                         .end()
+                        .log("the end")
                         .to("direct:end");
 
                 from("direct:fileCounter")
@@ -74,9 +79,9 @@ public class AAARoute {
                 from("direct:end").routeId("endRoute")
                         .process((exchange) -> {
                                     //concurrentMap.forEach((k,v) -> System.out.println(Thread.currentThread() + " k: " + k + " | v: " + v ));
-                                    if (concurrentMap.values().stream().allMatch(x -> x.equals(true))){
+//                                    if (concurrentMap.values().stream().allMatch(x -> x.equals(true))){
                                         System.out.println("will end");
-                                    }
+//                                    }
 
                                 }
                         );

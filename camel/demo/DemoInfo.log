@@ -1,4 +1,4 @@
-[INFO ] 2017-11-12 17:57:04.006 [main] SpringApplication - 
+[INFO ] 2017-11-17 00:17:37.640 [main] SpringApplication - 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
 ( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
@@ -8,26 +8,67 @@
  :: Spring Boot ::        (v1.5.6.RELEASE)
 
 
-[INFO ] 2017-11-12 17:57:04.026 [background-preinit] Version - HV000001: Hibernate Validator 5.2.4.Final
-[INFO ] 2017-11-12 17:57:04.139 [main] DemoApplication - Starting DemoApplication on Jopa with PID 4804 (D:\work\git\camel\demo\target\classes started by Jopa in D:\work\git\camel\demo)
-[INFO ] 2017-11-12 17:57:04.139 [main] DemoApplication - The following profiles are active: replayMode
-[INFO ] 2017-11-12 17:57:04.181 [main] AnnotationConfigApplicationContext - Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@179ece50: startup date [Sun Nov 12 17:57:04 EET 2017]; root of context hierarchy
-[INFO ] 2017-11-12 17:57:04.913 [main] PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'org.apache.camel.spring.boot.CamelAutoConfiguration' of type [org.apache.camel.spring.boot.CamelAutoConfiguration$$EnhancerBySpringCGLIB$$f28a59c1] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
-[INFO ] 2017-11-12 17:57:05.807 [main] DefaultTypeConverter - Loaded 193 type converters
-[INFO ] 2017-11-12 17:57:06.291 [main] AnnotationMBeanExporter - Registering beans for JMX exposure on startup
-[INFO ] 2017-11-12 17:57:06.339 [main] RoutesCollector - Loading additional Camel XML routes from: classpath:camel/*.xml
-[INFO ] 2017-11-12 17:57:06.339 [main] RoutesCollector - Loading additional Camel XML rests from: classpath:camel-rest/*.xml
-[INFO ] 2017-11-12 17:57:06.340 [main] RoutesCollector - Starting CamelMainRunController to ensure the main thread keeps running
-[INFO ] 2017-11-12 17:57:06.342 [CamelMainRunController] SpringCamelContext - Apache Camel 2.19.2 (CamelContext: camel-1) is starting
-[INFO ] 2017-11-12 17:57:06.343 [CamelMainRunController] ManagedManagementStrategy - JMX is enabled
-[INFO ] 2017-11-12 17:57:06.344 [main] DemoApplication - Started DemoApplication in 2.562 seconds (JVM running for 3.183)
-[ERROR] 2017-11-12 17:57:06.344 [main] DemoApplication - Oops! We have an Error. OK
-[INFO ] 2017-11-12 17:57:06.631 [CamelMainRunController] DefaultRuntimeEndpointRegistry - Runtime endpoint registry is in extended mode gathering usage statistics of all incoming and outgoing endpoints (cache limit: 1000)
-[INFO ] 2017-11-12 17:57:06.752 [CamelMainRunController] SpringCamelContext - StreamCaching is not in use. If using streams then its recommended to enable stream caching. See more details at http://camel.apache.org/stream-caching.html
-[INFO ] 2017-11-12 17:57:06.782 [CamelMainRunController] AggregateProcessor - Defaulting to MemoryAggregationRepository
-[INFO ] 2017-11-12 17:57:06.804 [CamelMainRunController] SpringCamelContext - Route: replayRoute started and consuming from: timer://runOnce?repeatCount=1
-[INFO ] 2017-11-12 17:57:06.806 [CamelMainRunController] SpringCamelContext - Route: processRoute started and consuming from: direct://process
-[INFO ] 2017-11-12 17:57:06.807 [CamelMainRunController] SpringCamelContext - Route: shutdownRoute started and consuming from: direct://shutdown
-[INFO ] 2017-11-12 17:57:06.809 [CamelMainRunController] SpringCamelContext - Total 3 routes, of which 3 are started.
-[INFO ] 2017-11-12 17:57:06.810 [CamelMainRunController] SpringCamelContext - Apache Camel 2.19.2 (CamelContext: camel-1) started in 0.467 seconds
-[INFO ] 2017-11-12 17:57:07.820 [Camel (camel-1) thread #0 - timer://runOnce] replayRoute - null
+[INFO ] 2017-11-17 00:17:37.671 [background-preinit] Version - HV000001: Hibernate Validator 5.2.4.Final
+[INFO ] 2017-11-17 00:17:37.755 [main] DemoApplication - Starting DemoApplication on Jopa with PID 648 (D:\work\git\camel\demo\target\classes started by Jopa in D:\work\git\camel\demo)
+[INFO ] 2017-11-17 00:17:37.755 [main] DemoApplication - The following profiles are active: regularMode
+[INFO ] 2017-11-17 00:17:37.809 [main] AnnotationConfigApplicationContext - Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@40005471: startup date [Fri Nov 17 00:17:37 EET 2017]; root of context hierarchy
+[INFO ] 2017-11-17 00:17:38.605 [main] PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'org.apache.camel.spring.boot.CamelAutoConfiguration' of type [org.apache.camel.spring.boot.CamelAutoConfiguration$$EnhancerBySpringCGLIB$$8ba61420] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+[INFO ] 2017-11-17 00:17:39.371 [main] DefaultTypeConverter - Loaded 193 type converters
+[INFO ] 2017-11-17 00:17:39.839 [main] AnnotationMBeanExporter - Registering beans for JMX exposure on startup
+[INFO ] 2017-11-17 00:17:39.896 [main] RoutesCollector - Loading additional Camel XML routes from: classpath:camel/*.xml
+[INFO ] 2017-11-17 00:17:39.896 [main] RoutesCollector - Loading additional Camel XML rests from: classpath:camel-rest/*.xml
+[INFO ] 2017-11-17 00:17:39.897 [main] RoutesCollector - Starting CamelMainRunController to ensure the main thread keeps running
+[INFO ] 2017-11-17 00:17:39.900 [CamelMainRunController] SpringCamelContext - Apache Camel 2.19.2 (CamelContext: camel-1) is starting
+[INFO ] 2017-11-17 00:17:39.901 [CamelMainRunController] ManagedManagementStrategy - JMX is enabled
+[INFO ] 2017-11-17 00:17:39.902 [main] DemoApplication - Started DemoApplication in 2.484 seconds (JVM running for 3.074)
+[INFO ] 2017-11-17 00:17:39.986 [CamelMainRunController] DefaultRuntimeEndpointRegistry - Runtime endpoint registry is in extended mode gathering usage statistics of all incoming and outgoing endpoints (cache limit: 1000)
+[INFO ] 2017-11-17 00:17:40.117 [CamelMainRunController] SpringCamelContext - StreamCaching is not in use. If using streams then its recommended to enable stream caching. See more details at http://camel.apache.org/stream-caching.html
+[INFO ] 2017-11-17 00:17:40.167 [CamelMainRunController] AggregateProcessor - Defaulting to MemoryAggregationRepository
+[INFO ] 2017-11-17 00:17:40.187 [CamelMainRunController] SpringCamelContext - Route: route1 started and consuming from: file://.%5Csrc%5Cmain%5Cresources?antInclude=book_test1_*.xml
+[INFO ] 2017-11-17 00:17:40.190 [CamelMainRunController] SpringCamelContext - Route: route1 started and consuming from: file://.%5Csrc%5Cmain%5Cresources?antInclude=book_test_*.xml
+[INFO ] 2017-11-17 00:17:40.191 [CamelMainRunController] SpringCamelContext - Route: route2 started and consuming from: direct://fileCounter
+[INFO ] 2017-11-17 00:17:40.191 [CamelMainRunController] SpringCamelContext - Route: endRoute started and consuming from: direct://end
+[INFO ] 2017-11-17 00:17:40.192 [CamelMainRunController] SpringCamelContext - Route: route3 started and consuming from: direct://process
+[INFO ] 2017-11-17 00:17:40.192 [CamelMainRunController] SpringCamelContext - Total 5 routes, of which 5 are started.
+[INFO ] 2017-11-17 00:17:40.192 [CamelMainRunController] SpringCamelContext - Apache Camel 2.19.2 (CamelContext: camel-1) started in 0.293 seconds
+[INFO ] 2017-11-17 00:17:44.719 [Camel (camel-1) thread #0 - file://.%5Csrc%5Cmain%5Cresources] XPathBuilder - Created default XPathFactory com.sun.org.apache.xpath.internal.jaxp.XPathFactoryImpl@3da7e308
+[INFO ] 2017-11-17 00:17:44.810 [Camel (camel-1) thread #0 - file://.%5Csrc%5Cmain%5Cresources] route1 - 12345
+[INFO ] 2017-11-17 00:17:44.831 [Camel (camel-1) thread #0 - file://.%5Csrc%5Cmain%5Cresources] StaxConverter - Created XMLInputFactory: com.sun.xml.internal.stream.XMLInputFactoryImpl@3be5c490. DOMSource/DOMResult may have issues with com.sun.xml.internal.stream.XMLInputFactoryImpl@3be5c490. We suggest using Woodstox.
+[INFO ] 2017-11-17 00:17:44.888 [Camel (camel-1) thread #0 - file://.%5Csrc%5Cmain%5Cresources] route1 - the end
+[INFO ] 2017-11-17 00:18:14.879 [main] SpringApplication - 
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::        (v1.5.6.RELEASE)
+
+
+[INFO ] 2017-11-17 00:18:14.922 [background-preinit] Version - HV000001: Hibernate Validator 5.2.4.Final
+[INFO ] 2017-11-17 00:18:15.034 [main] DemoApplication - Starting DemoApplication on Jopa with PID 6772 (D:\work\git\camel\demo\target\classes started by Jopa in D:\work\git\camel\demo)
+[INFO ] 2017-11-17 00:18:15.038 [main] DemoApplication - The following profiles are active: regularMode
+[INFO ] 2017-11-17 00:18:15.093 [main] AnnotationConfigApplicationContext - Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@1fa121e2: startup date [Fri Nov 17 00:18:15 EET 2017]; root of context hierarchy
+[INFO ] 2017-11-17 00:18:15.942 [main] PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'org.apache.camel.spring.boot.CamelAutoConfiguration' of type [org.apache.camel.spring.boot.CamelAutoConfiguration$$EnhancerBySpringCGLIB$$670d656] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+[INFO ] 2017-11-17 00:18:16.708 [main] DefaultTypeConverter - Loaded 193 type converters
+[INFO ] 2017-11-17 00:18:17.172 [main] AnnotationMBeanExporter - Registering beans for JMX exposure on startup
+[INFO ] 2017-11-17 00:18:17.230 [main] RoutesCollector - Loading additional Camel XML routes from: classpath:camel/*.xml
+[INFO ] 2017-11-17 00:18:17.230 [main] RoutesCollector - Loading additional Camel XML rests from: classpath:camel-rest/*.xml
+[INFO ] 2017-11-17 00:18:17.231 [main] RoutesCollector - Starting CamelMainRunController to ensure the main thread keeps running
+[INFO ] 2017-11-17 00:18:17.233 [CamelMainRunController] SpringCamelContext - Apache Camel 2.19.2 (CamelContext: camel-1) is starting
+[INFO ] 2017-11-17 00:18:17.234 [main] DemoApplication - Started DemoApplication in 2.598 seconds (JVM running for 3.216)
+[INFO ] 2017-11-17 00:18:17.236 [CamelMainRunController] ManagedManagementStrategy - JMX is enabled
+[INFO ] 2017-11-17 00:18:17.326 [CamelMainRunController] DefaultRuntimeEndpointRegistry - Runtime endpoint registry is in extended mode gathering usage statistics of all incoming and outgoing endpoints (cache limit: 1000)
+[INFO ] 2017-11-17 00:18:17.473 [CamelMainRunController] SpringCamelContext - StreamCaching is not in use. If using streams then its recommended to enable stream caching. See more details at http://camel.apache.org/stream-caching.html
+[INFO ] 2017-11-17 00:18:17.556 [CamelMainRunController] AggregateProcessor - Defaulting to MemoryAggregationRepository
+[INFO ] 2017-11-17 00:18:17.578 [CamelMainRunController] SpringCamelContext - Route: route1 started and consuming from: file://.%5Csrc%5Cmain%5Cresources?antInclude=book_test_*.xml
+[INFO ] 2017-11-17 00:18:17.582 [CamelMainRunController] SpringCamelContext - Route: route1 started and consuming from: file://.%5Csrc%5Cmain%5Cresources?antInclude=book_test1_*.xml
+[INFO ] 2017-11-17 00:18:17.584 [CamelMainRunController] SpringCamelContext - Route: route2 started and consuming from: direct://fileCounter
+[INFO ] 2017-11-17 00:18:17.586 [CamelMainRunController] SpringCamelContext - Route: endRoute started and consuming from: direct://end
+[INFO ] 2017-11-17 00:18:17.587 [CamelMainRunController] SpringCamelContext - Route: route3 started and consuming from: direct://process
+[INFO ] 2017-11-17 00:18:17.587 [CamelMainRunController] SpringCamelContext - Total 5 routes, of which 5 are started.
+[INFO ] 2017-11-17 00:18:17.587 [CamelMainRunController] SpringCamelContext - Apache Camel 2.19.2 (CamelContext: camel-1) started in 0.354 seconds
+[INFO ] 2017-11-17 00:18:24.140 [Camel (camel-1) thread #1 - file://.%5Csrc%5Cmain%5Cresources] XPathBuilder - Created default XPathFactory com.sun.org.apache.xpath.internal.jaxp.XPathFactoryImpl@3ca599ff
+[INFO ] 2017-11-17 00:18:24.241 [Camel (camel-1) thread #1 - file://.%5Csrc%5Cmain%5Cresources] route1 - 12345
+[INFO ] 2017-11-17 00:18:24.246 [Camel (camel-1) thread #1 - file://.%5Csrc%5Cmain%5Cresources] StaxConverter - Created XMLInputFactory: com.sun.xml.internal.stream.XMLInputFactoryImpl@54c75f5b. DOMSource/DOMResult may have issues with com.sun.xml.internal.stream.XMLInputFactoryImpl@54c75f5b. We suggest using Woodstox.
+[INFO ] 2017-11-17 00:18:24.321 [Camel (camel-1) thread #1 - file://.%5Csrc%5Cmain%5Cresources] route1 - the end

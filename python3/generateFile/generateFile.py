@@ -1,5 +1,8 @@
 start = """<?xml version="1.0"?>
 <catalog>
+   <head id="bk101">
+      <version>12345</version>
+   </head>
 """
 
 s = """    <book id="bk101">

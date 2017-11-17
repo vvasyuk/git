@@ -1,5 +1,8 @@
 <?xml version="1.0"?>
 <catalog>
+   <head id="bk101">
+      <version>12345</version>
+   </head>
    <book id="bk101">
       <author>Gambardella, Matthew</author>
       <title>XML Developer's Guide</title>
