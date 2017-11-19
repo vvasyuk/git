@@ -27,18 +27,11 @@ public class DemoApplicationTests {
 	@Test
 	public void contextLoads() throws IOException {
 		ProducerTemplate producerTemplate=ctx.createProducerTemplate();
-		producerTemplate.sendBodyAndHeader("file:.\\src\\main\\resources?antInclude=book_test_*.xml", FileUtils.readFileToString(new File("src/test/data/book_test_001_003.xml")), Exchange.FILE_NAME, "book_test_001_003.xml");
+		producerTemplate.sendBodyAndHeader("file:.\\src\\main\\resources?antInclude=book_test_*.xml", FileUtils.readFileToString(new File("src/test/data/book_test_001_003.xml"), "UTF-8"), Exchange.FILE_NAME, "book_test_001_003.xml");
 		try {
 			Thread.sleep(3000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-	}
-
-	public String streamToString(InputStream str){
-		Scanner scanner = new Scanner(str, "UTF-8").useDelimiter("\\A");
-			if (scanner.hasNext())
-				return scanner.next();
-		return "";
 	}
 }
