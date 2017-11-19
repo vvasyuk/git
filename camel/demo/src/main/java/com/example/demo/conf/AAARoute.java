@@ -38,22 +38,20 @@ public class AAARoute {
                 from(   "file:.\\src\\main\\resources?antInclude=book_test_*.xml"
                         ,"file:.\\src\\main\\resources?antInclude=book_test1_*.xml"
                 )
-                        .setHeader("totalNumber", regexReplaceAll(header("CamelFileNameOnly"), "(.*_){3}(.*)\\.xml", "$2"))
+                        .setHeader("version", regexReplaceAll(header("CamelFileNameOnly"), "(.*_){3}(.*)\\.xml", "$2"))
                         .setHeader("fileType", regexReplaceAll(header("CamelFileNameOnly"), ".*_(.*)_.*_.*", "$1"))
-                        .setHeader("version", xpath("/catalog/head/version/text()[1]"))
-                        .log("${header.version}")
+                        .log("${header.version}").log("${header.fileType}")
 //                        .to("direct:fileCounter")
 
-                        .split(stax(Book2.class)).streaming()
 
 //                        .split().tokenizeXML("book").streaming()
 //                        .unmarshal(jaxb)
-                        .process((exchange) -> {
-                            Book2 book = (Book2) exchange.getIn().getBody();
-                            System.out.println(book);
-                            System.out.println("#######################################");
-                            }
-                        )
+//                        .process((exchange) -> {
+//                            Book2 book = (Book2) exchange.getIn().getBody();
+//                            System.out.println(book);
+//                            System.out.println("#######################################");
+//                            }
+//                        )
                         .end()
                         .log("the end")
                         .to("direct:end");
