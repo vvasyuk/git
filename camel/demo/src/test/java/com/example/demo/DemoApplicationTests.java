@@ -28,8 +28,6 @@ public class DemoApplicationTests {
 	public void contextLoads() throws IOException {
 		ProducerTemplate producerTemplate=ctx.createProducerTemplate();
 		producerTemplate.sendBodyAndHeader("file:.\\src\\main\\resources?antInclude=book_test_*.xml", FileUtils.readFileToString(new File("src/test/data/book_test_001_003.xml")), Exchange.FILE_NAME, "book_test_001_003.xml");
-		//producerTemplate.sendBodyAndHeader("file:.\\src\\main\\resources?antInclude=book_test_*.xml", streamToString(ObjectHelper.loadResourceAsStream(".\\src\\test\\data\\book_test_001_003.xml")), Exchange.FILE_NAME, "book_test_001_003.xml");
-		//producerTemplate.sendBodyAndHeader("file:.\\src\\main\\resources?antInclude=book_test_*.xml", "Hello World", Exchange.FILE_NAME, "book_test_001_003.xml");
 		try {
 			Thread.sleep(3000);
 		} catch (InterruptedException e) {
