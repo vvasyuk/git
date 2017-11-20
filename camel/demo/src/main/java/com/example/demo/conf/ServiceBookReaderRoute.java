@@ -1,12 +1,15 @@
 package com.example.demo.conf;
 
 import com.example.demo.domain.Book2;
+import com.example.demo.util.ArrayListAggregationStrategy;
+import com.example.demo.util.ThreadAttributes;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.spi.DataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -24,7 +27,12 @@ import static org.apache.camel.component.stax.StAXBuilder.stax;
  */
 @Configuration
 @Profile("regularMode")
-public class AAARoute {
+public class ServiceBookReaderRoute {
+
+    @Value("${FILE_URI}")
+    private String fileUri;
+    @Value("${FILE_URI2}")
+    private String fileUri2;
 
     @Autowired
     CamelContext camelContext;
@@ -34,15 +42,16 @@ public class AAARoute {
 
         return new RouteBuilder() {
             public void configure(){
+//                camelContext.setTracing(true);
                 Map<String,Boolean> concurrentMap = new ConcurrentHashMap<String,Boolean>();
-                from(   "file:.\\src\\main\\resources?antInclude=book_test_*.xml"
-                        ,"file:.\\src\\main\\resources?antInclude=book_test1_*.xml"
-                )
+
+//                onException(Exception.class)
+//                        .maximumRedeliveries(1)
+//                        .handled(true);
+                from(   fileUri,fileUri2).routeId("fileRoute")
                         .setHeader("version", regexReplaceAll(header("CamelFileNameOnly"), "(.*_){3}(.*)\\.xml", "$2"))
                         .setHeader("fileType", regexReplaceAll(header("CamelFileNameOnly"), ".*_(.*)_.*_.*", "$1"))
                         .log("${header.version}").log("${header.fileType}")
-//                        .to("direct:fileCounter")
-
 
 //                        .split().tokenizeXML("book").streaming()
 //                        .unmarshal(jaxb)
@@ -70,7 +79,6 @@ public class AAARoute {
                                     if (totalNumber==cnt){
                                         concurrentMap.put(fileType, true);
                                     }
-
                                 }
                         );
 
@@ -80,7 +88,6 @@ public class AAARoute {
 //                                    if (concurrentMap.values().stream().allMatch(x -> x.equals(true))){
                                         System.out.println("will end");
 //                                    }
-
                                 }
                         );
 
@@ -94,6 +101,35 @@ public class AAARoute {
                                 System.out.println("#######################################");
                             }
                         });
+
+                from("direct-vm:shutdown").routeId("shutdownRoute")
+                        .choice()
+                        .when(header("fileCount").isEqualTo(header("totalNumber")))
+                        .process((exchange) -> {
+//                                    exchange.getContext().getInflightRepository().remove(exchange);
+//                                    exchange.getContext().stopRoute("fileRoute");
+//                                    getContext().getShutdownStrategy().setTimeout(2);
+//                                    System.exit(0);
+
+                            new Thread(() -> {
+                                try {
+                                    getContext().stopRoute("fileRoute");
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                                System.exit(0);
+                            }).start();
+
+                        })
+                        .end();
+
+//                from("quartz2://myTimer?trigger.repeatInterval=2000&trigger.repeatCount=-1")
+//                        .process(new Processor() {
+//                            @Override
+//                            public void process(Exchange exchange) throws Exception {
+//                                System.out.println("Processed");
+//                            }
+//                        });
             }
         };
     }

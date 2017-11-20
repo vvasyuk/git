@@ -1,4 +1,4 @@
-package com.example.demo.conf;
+package com.example.demo.util;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.processor.aggregate.AggregationStrategy;
@@ -8,7 +8,7 @@ import java.util.ArrayList;
 /**
  * Created by Jopa on 11/1/2017.
  */
-class ArrayListAggregationStrategy implements AggregationStrategy {
+public class ArrayListAggregationStrategy implements AggregationStrategy {
 
     public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
         Object newBody = newExchange.getIn().getBody();

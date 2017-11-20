@@ -1,4 +1,4 @@
-package com.example.demo.conf;
+package com.example.demo.util;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.processor.aggregate.AggregationStrategy;

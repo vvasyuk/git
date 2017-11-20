@@ -1,6 +1,7 @@
 package com.example.demo.conf;
 
 import com.example.demo.domain.Book2;
+import com.example.demo.util.ArrayListAggregationStrategy;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
@@ -18,7 +19,7 @@ import java.util.List;
  */
 @Configuration
 @Profile("replayMode")
-public class ReplayRoute {
+public class SingleBookReaderRoute {
 
     @Bean
     public RouteBuilder demoRoute(@Autowired DataFormat jaxb) throws JAXBException {
