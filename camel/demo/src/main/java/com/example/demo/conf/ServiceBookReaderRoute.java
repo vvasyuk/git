@@ -9,6 +9,7 @@ import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.spi.DataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,9 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.apache.camel.component.stax.StAXBuilder.stax;
-
-
 /**
  * Created by Jopa on 11/5/2017.
  */
@@ -29,26 +27,30 @@ import static org.apache.camel.component.stax.StAXBuilder.stax;
 @Profile("regularMode")
 public class ServiceBookReaderRoute {
 
-    @Value("${FILE_URI}")
-    private String fileUri;
-    @Value("${FILE_URI2}")
-    private String fileUri2;
+    @Value("${FILE_URI}") private String fileUri;
+    @Value("${FILE_URI2}") private String fileUri2;
 
     @Autowired
     CamelContext camelContext;
+
+    @Autowired
+    @Qualifier("fileUris")
+    List<String> fileUris;
 
     @Bean
     public RouteBuilder demoRoute(@Autowired DataFormat jaxb) throws JAXBException {
 
         return new RouteBuilder() {
             public void configure(){
+                System.out.println(fileUris.get(0));
+                System.out.println(fileUris.get(1));
 //                camelContext.setTracing(true);
                 Map<String,Boolean> concurrentMap = new ConcurrentHashMap<String,Boolean>();
 
 //                onException(Exception.class)
 //                        .maximumRedeliveries(1)
 //                        .handled(true);
-                from(   fileUri,fileUri2).routeId("fileRoute")
+                from(   fileUris.get(0),fileUri2).routeId("fileRoute")
                         .setHeader("version", regexReplaceAll(header("CamelFileNameOnly"), "(.*_){3}(.*)\\.xml", "$2"))
                         .setHeader("fileType", regexReplaceAll(header("CamelFileNameOnly"), ".*_(.*)_.*_.*", "$1"))
                         .log("${header.version}").log("${header.fileType}")

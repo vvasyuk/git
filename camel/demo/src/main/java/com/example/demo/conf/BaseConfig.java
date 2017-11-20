@@ -20,6 +20,7 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -61,6 +62,11 @@ public class BaseConfig {
                 }
             }
         });
+    }
+
+    @Bean("fileUris")
+    List<String> getFileUris(){
+        return config.getStringList("fileUris");
     }
 
 //    @Bean
