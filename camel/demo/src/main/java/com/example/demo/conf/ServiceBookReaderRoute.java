@@ -42,8 +42,6 @@ public class ServiceBookReaderRoute {
 
         return new RouteBuilder() {
             public void configure(){
-                System.out.println(fileUris.get(0));
-                System.out.println(fileUris.get(1));
 //                camelContext.setTracing(true);
                 Map<String,Boolean> concurrentMap = new ConcurrentHashMap<String,Boolean>();
 
