@@ -26,16 +26,12 @@ import java.util.concurrent.ConcurrentHashMap;
 @Configuration
 @Profile("regularMode")
 public class ServiceBookReaderRoute {
-
-    @Value("${FILE_URI}") private String fileUri;
-    @Value("${FILE_URI2}") private String fileUri2;
-
+    //@Value("${FILE_URI}") private String fileUri;
     @Autowired
     CamelContext camelContext;
-
     @Autowired
-    @Qualifier("fileUris")
-    List<String> fileUris;
+    @Qualifier("routeConfig")
+    Map<String, String> routeConfig;
 
     @Bean
     public RouteBuilder demoRoute(@Autowired DataFormat jaxb) throws JAXBException {
@@ -48,19 +44,10 @@ public class ServiceBookReaderRoute {
 //                onException(Exception.class)
 //                        .maximumRedeliveries(1)
 //                        .handled(true);
-                from(   fileUris.get(0),fileUri2).routeId("fileRoute")
-                        .setHeader("version", regexReplaceAll(header("CamelFileNameOnly"), "(.*_){3}(.*)\\.xml", "$2"))
-                        .setHeader("fileType", regexReplaceAll(header("CamelFileNameOnly"), ".*_(.*)_.*_.*", "$1"))
-                        .log("${header.version}").log("${header.fileType}")
-
-//                        .split().tokenizeXML("book").streaming()
-//                        .unmarshal(jaxb)
-//                        .process((exchange) -> {
-//                            Book2 book = (Book2) exchange.getIn().getBody();
-//                            System.out.println(book);
-//                            System.out.println("#######################################");
-//                            }
-//                        )
+                from(   routeConfig.get("TEST_ROUTE_URI"),routeConfig.get("TEST1_ROUTE_URI")).routeId("fileRoute")
+                        .setHeader("seq", header("CamelFileNameOnly").regexReplaceAll(routeConfig.get("SEQ_REGEX"), routeConfig.get("SEQ_REGEX_GROUP")))
+                        .log("${header.seq}")
+                        .to("direct:process")
                         .end()
                         .log("the end")
                         .to("direct:end");
@@ -92,6 +79,7 @@ public class ServiceBookReaderRoute {
                         );
 
                 from("direct:process")
+                        .split().tokenizeXML("book").streaming()
                         .unmarshal(jaxb)
                         .aggregate(header(Exchange.FILE_NAME_ONLY), new ArrayListAggregationStrategy()).completionSize(15).completionPredicate(header("CamelSplitComplete")).eagerCheckCompletion()
                         .process(new Processor() {

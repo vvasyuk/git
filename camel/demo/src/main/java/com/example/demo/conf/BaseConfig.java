@@ -37,15 +37,7 @@ public class BaseConfig {
     public BaseConfig(@Value("${config}") String configFileName, ConfigurableEnvironment environment) throws Exception {
         final File configFile = new File(configFileName);
         this.config = ConfigFactory.parseFile(configFile);
-        System.out.println("test");
         System.out.println(config.getString("VAR"));
-
-        map = config.getConfig("testmap").entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().unwrapped()));
-        System.out.println("isEmpty " + map.isEmpty());
-        System.out.println("hasPath (testmap1) " + config.hasPath("testmap1"));
-
-        //System.out.println(map.get("name"));
-        //System.out.println(map.get("age"));
 
 //        con = DatabaseUtil.getConnection();
 //        if (con==null || con.isClosed()){
@@ -64,9 +56,9 @@ public class BaseConfig {
         });
     }
 
-    @Bean("fileUris")
-    List<String> getFileUris(){
-        return config.getStringList("fileUris");
+    @Bean("routeConfig")
+    Map<String, String> getRouteConfig(){
+        return config.getConfig("routeConfig").entrySet().stream().collect(Collectors.toMap(e -> e.getKey().toString(), e -> e.getValue().unwrapped().toString()));
     }
 
 //    @Bean
