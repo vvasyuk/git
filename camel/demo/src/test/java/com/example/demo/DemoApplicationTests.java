@@ -12,12 +12,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.apache.commons.io.FileUtils;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.FileSystemUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 @RunWith(SpringRunner.class)
@@ -42,6 +41,10 @@ public class DemoApplicationTests {
 				Exchange.FILE_NAME, "book_test_001_003.xml");
 
 		boolean done = notify.matches(100000, TimeUnit.SECONDS);
+
+		if(!FileSystemUtils.deleteRecursively(new File("src\\test\\resources\\.camel"))) {
+			System.out.println("Problem occurs when deleting the directory : ");
+		}
 
 	}
 }
