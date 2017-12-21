@@ -31,6 +31,7 @@ public class DemoApplication {
 
 	public static void main(String[] args) throws InterruptedException {
 		SpringApplication app = new SpringApplication(DemoApplication.class);
+		app.addInitializers();
 		app.setBannerMode(Banner.Mode.LOG);
         ConfigurableApplicationContext context = app.run(args);
 
