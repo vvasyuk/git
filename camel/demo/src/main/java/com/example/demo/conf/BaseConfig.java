@@ -6,6 +6,7 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import org.apache.camel.converter.jaxb.JaxbDataFormat;
 import org.apache.camel.spi.DataFormat;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -56,7 +57,13 @@ public class BaseConfig {
         });
     }
 
-    @Bean("routeConfig")
+    @Bean
+    Config config(){
+        return this.config;
+    }
+
+    @Bean
+    @Qualifier("routeConfig")
     Map<String, String> getRouteConfig(){
         return config.getConfig("routeConfig").entrySet().stream().collect(Collectors.toMap(e -> e.getKey().toString(), e -> e.getValue().unwrapped().toString()));
     }

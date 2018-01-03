@@ -49,7 +49,7 @@ public class ServiceBookReaderRoute {
                         .log("${header.seq}")
                         .to("direct:process")
                         .end()
-                        .log("the end")
+                        .log("the end ${header.seq}")
                         .to("direct:end");
 
                 from("direct:fileCounter")
@@ -84,9 +84,9 @@ public class ServiceBookReaderRoute {
                         .aggregate(header(Exchange.FILE_NAME_ONLY), new ArrayListAggregationStrategy()).completionSize(15).completionPredicate(header("CamelSplitComplete")).eagerCheckCompletion()
                         .process(new Processor() {
                             public void process(Exchange exchange) throws Exception {
-                                List<Book2> bookList = (List<Book2>) exchange.getIn().getBody();
-                                bookList.forEach(x -> System.out.println(x));
-                                System.out.println("#######################################");
+//                                List<Book2> bookList = (List<Book2>) exchange.getIn().getBody();
+//                                bookList.forEach(x -> System.out.println(x));
+//                                System.out.println("#######################################");
                             }
                         });
 
