@@ -16,7 +16,7 @@
 ///**
 // * Created by Jopa on 12/30/2017.
 // */
-//@Configuration
+////@Configuration
 //@EnableJms
 //@Profile("queueMode")
 //public class QueueConfig {
