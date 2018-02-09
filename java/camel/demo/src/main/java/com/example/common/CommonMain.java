@@ -17,7 +17,7 @@ public class CommonMain {
         SpringApplication app = new SpringApplication(DemoApplication.class);
         app.addInitializers();
         app.setBannerMode(Banner.Mode.LOG);
-        ConfigurableApplicationContext context = app.run(args);
+        app.run(args);
 
 //		logger.debug("Debugging log");
 //		logger.info("Info log");
