@@ -44,6 +44,7 @@ public class API {
 
     public static void apiSelect(){
         // Connecting to the cluster.
+        Ignition.setClientMode(true);
         Ignite ignite = Ignition.start();
 
         // Getting a reference to an underlying cache created for City table above.

@@ -17,13 +17,13 @@ public class BaseConfig {
         System.out.println("Im on TV");
 
         // Register JDBC driver
-        Class.forName("org.apache.ignite.IgniteJdbcThinDriver");
+        //Class.forName("org.apache.ignite.IgniteJdbcThinDriver");
         // Open JDBC connection
-        Connection conn = DriverManager.getConnection("jdbc:ignite:thin://127.0.0.1/");
+        //Connection conn = DriverManager.getConnection("jdbc:ignite:thin://127.0.0.1/");
 
         //DDL.sqlTableCreate(conn);
         //DML.sqlInsert(conn);
-        DML.sqlSelect(conn);
+        //DML.sqlSelect(conn);
         API.apiSelect();
     }
 }
