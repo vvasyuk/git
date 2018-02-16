@@ -14,6 +14,20 @@ import java.util.List;
  */
 public class API {
 
+    public static void createCache(){
+        Ignite ignite = Ignition.start();
+        IgniteCache<Object, Object> cache = ignite.getOrCreateCache("test");
+        cache.put("1", "one");
+    }
+
+    public static void printCache(){
+        Ignition.setClientMode(true);
+        Ignite ignite = Ignition.start();
+        IgniteCache<Object, Object> cache = ignite.getOrCreateCache("test");
+        System.out.println(cache.get("1"));
+
+    }
+
 //    public static void apiInsert(){
 //        // Connecting to the cluster.
 //        Ignite ignite = Ignition.start();

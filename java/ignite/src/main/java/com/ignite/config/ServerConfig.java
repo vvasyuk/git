@@ -4,6 +4,7 @@ import com.ignite.dao.API;
 import com.ignite.dao.DDL;
 import com.ignite.dao.DML;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 import java.sql.*;
 
@@ -11,9 +12,10 @@ import java.sql.*;
  * Created by Jopa on 2/11/2018.
  */
 @Configuration
-public class BaseConfig {
+@Profile("server")
+public class ServerConfig {
 
-    public BaseConfig() throws Exception {
+    public ServerConfig() throws Exception {
         System.out.println("Im on TV");
 
         // Register JDBC driver
@@ -24,6 +26,10 @@ public class BaseConfig {
         //DDL.sqlTableCreate(conn);
         //DML.sqlInsert(conn);
         //DML.sqlSelect(conn);
-        API.apiSelect();
+        //API.apiSelect();
+
+        System.out.println("creating cache");
+        API.createCache();
+        //System.out.println("printing cache");
     }
 }
