@@ -1,6 +1,6 @@
 package com.ignite.config;
 
-import com.ignite.util.StringUtil;
+import com.ignite.util.Utils;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +22,7 @@ public class ServerConfig {
         IgniteCache<Object, Object> cache = ignite.getOrCreateCache("test");
 
         IntStream.range(0, 10).forEach(i -> {
-                    cache.put(i, StringUtil.getRandonString(8) + "idx" + i);
+                    cache.put(i, Utils.getRandonString(8) + "idx" + i);
                 }
         );
 

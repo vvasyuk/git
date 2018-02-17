@@ -1,12 +1,13 @@
 package com.ignite.config;
 
-import com.ignite.util.StringUtil;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.stream.IntStream;
 
 /**
@@ -21,7 +22,11 @@ public class ClientConfig {
         System.out.println("ClientConfig start");
         IgniteCache<Object, Object> cache = ignite.getOrCreateCache("test");
         IntStream.range(0, 10).forEach(i -> {
-            System.out.println(cache.get(i));
+            Instant a = Instant.now();
+            String s = (String) cache.get(i);
+            Instant b = Instant.now();
+            Duration timeElapsed = Duration.between(a, b);
+            System.out.println(s + " | elapsed time : " + timeElapsed);
         });
     }
 
