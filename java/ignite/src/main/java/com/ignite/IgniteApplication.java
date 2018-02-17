@@ -11,16 +11,16 @@ public class IgniteApplication {
 
 	public static void main(String[] args) {
 
-		//SpringApplication.run(IgniteApplication.class, args);
+		SpringApplication.run(IgniteApplication.class, args);
 
 
-		Utils.methodElapsedTime(() -> {
-			System.out.println("Hello");
-			try {
-				Thread.sleep(1200);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		});
+//		Utils.methodElapsedTime(() -> {
+//			System.out.println("Hello");
+//			try {
+//				Thread.sleep(1200);
+//			} catch (InterruptedException e) {
+//				e.printStackTrace();
+//			}
+//		});
 	}
 }
