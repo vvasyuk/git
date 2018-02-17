@@ -1,10 +1,13 @@
 package com.ignite.config;
 
+import com.ignite.util.StringUtil;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
+
+import java.util.stream.IntStream;
 
 /**
  * Created by Jopa on 2/11/2018.
@@ -17,7 +20,11 @@ public class ServerConfig {
     public ServerConfig(Ignite ignite) throws Exception {
         System.out.println("ServerConfig start");
         IgniteCache<Object, Object> cache = ignite.getOrCreateCache("test");
-        cache.put("1", "one");
+
+        IntStream.range(0, 10).forEach(i -> {
+                    cache.put(i, StringUtil.getRandonString(8) + "idx" + i);
+                }
+        );
 
         // Register JDBC driver
         //Class.forName("org.apache.ignite.IgniteJdbcThinDriver");
