@@ -3,11 +3,18 @@ package com.ignite.config;
 import com.ignite.util.Utils;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
+import org.apache.ignite.IgniteCompute;
+import org.apache.ignite.cluster.ClusterGroup;
+import org.apache.ignite.lang.IgniteCallable;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 
 import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Random;
 import java.util.stream.IntStream;
 
@@ -33,6 +40,20 @@ public class ClientConfig {
                 }
         ).average().getAsDouble();
         System.out.println("average get time : " + avg + "milliseconds");
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+        int id = 5;
+        String res = ignite.compute().affinityCall("test", id, () -> {
+            Instant a = Instant.now();
+            String str = (String) cache.get(id);
+            long upperCase = str.chars().filter((s)->Character.isUpperCase(s)).count();
+            long lowerCase = str.chars().filter((s)->Character.isLowerCase(s)).count();
+            Instant b = Instant.now();
+            Duration timeElapsed = Duration.between(a, b);
+            return new String("timeElapsed: " + timeElapsed + " - " + str + " | UpperCaseCount: " + upperCase + "| lowerCaseCount: " + lowerCase);
+        });
+        System.out.println(res);
     }
 
 }
