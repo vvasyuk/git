@@ -5,22 +5,21 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
+import java.time.Duration;
+import java.time.Instant;
+
 @SpringBootApplication
 @ComponentScan("com.ignite.config")
 public class IgniteApplication {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException {
 
 		SpringApplication.run(IgniteApplication.class, args);
 
-
-//		Utils.methodElapsedTime(() -> {
-//			System.out.println("Hello");
-//			try {
-//				Thread.sleep(1200);
-//			} catch (InterruptedException e) {
-//				e.printStackTrace();
-//			}
-//		});
+//		Instant a = Instant.now();
+//		Thread.sleep(700);
+//		Instant b = Instant.now();
+//		Duration timeElapsed = Duration.between(a, b);
+//		System.out.println(timeElapsed.getNano()/1000000);
 	}
 }
