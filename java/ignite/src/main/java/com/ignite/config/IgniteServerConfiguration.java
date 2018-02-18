@@ -10,8 +10,7 @@ import org.springframework.context.annotation.Profile;
 /**
  * Created by Jopa on 2/16/2018.
  */
-//@Configuration
-//@Profile("server")
+
 public class IgniteServerConfiguration {
 
     Ignite ignite;
