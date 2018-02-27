@@ -3,6 +3,7 @@ package com.ignite.config;
 import com.ignite.domain.Book;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
+import org.apache.ignite.binary.BinaryObject;
 import org.apache.ignite.cache.query.QueryCursor;
 import org.apache.ignite.cache.query.ScanQuery;
 import org.apache.ignite.internal.util.typedef.F;
@@ -68,6 +69,24 @@ public class ShellCommands {
         @Override
         public Integer apply(Cache.Entry<Integer, Book> integerBookEntry) {
             return integerBookEntry.getKey();
+        }
+    }
+
+    @ShellMethod("scanQuer")
+    public void querybi(){
+        IgniteCache<Integer, BinaryObject> cache1 = ignite.getOrCreateCache("test").withKeepBinary();
+        ScanQuery<Integer, BinaryObject> scan = new ScanQuery<>(new CustomPredicateBi());
+        QueryCursor<Cache.Entry<Integer, BinaryObject>> cur = cache.query(scan);
+        for (Cache.Entry<Integer, BinaryObject> e : cur) {
+            System.out.println(e.getKey());
+        }
+    }
+
+    private static class CustomPredicateBi implements IgniteBiPredicate<Integer, BinaryObject> {
+        private static final long serialVersionUID = 1L;
+        @Override
+        public boolean apply(Integer i, BinaryObject b) {
+            return i/1==2;
         }
     }
 }
