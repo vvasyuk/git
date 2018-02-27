@@ -2,9 +2,14 @@ package com.ignite.config;
 
 import org.apache.ignite.Ignite;
 import org.apache.ignite.Ignition;
+import org.apache.ignite.configuration.IgniteConfiguration;
+import org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi;
+import org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+
+import java.util.Arrays;
 
 /**
  * Created by Jopa on 2/16/2018.
@@ -14,8 +19,19 @@ public class IgniteClientConfiguration {
 
     public IgniteClientConfiguration() {
         System.out.println("starting ignite client");
-        Ignition.setClientMode(true);
-        this.ignite = Ignition.start();
+
+        TcpDiscoverySpi spi = new TcpDiscoverySpi();
+        TcpDiscoveryVmIpFinder ipFinder = new TcpDiscoveryVmIpFinder();
+        ipFinder.setAddresses(Arrays.asList("127.0.0.1", "127.0.0.1:47500..47509"));
+        spi.setIpFinder(ipFinder);
+
+        IgniteConfiguration cfg = new IgniteConfiguration();
+        cfg.setPeerClassLoadingEnabled(true);
+        cfg.setClientMode(true);
+        cfg.setDiscoverySpi(spi);
+
+        this.ignite = Ignition.start(cfg);
+
     }
 
     @Bean

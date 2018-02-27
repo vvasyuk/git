@@ -1,5 +1,6 @@
 package com.ignite.util;
 
+import com.ignite.domain.Book;
 import org.apache.commons.text.CharacterPredicates;
 import org.apache.commons.text.RandomStringGenerator;
 import org.apache.ignite.IgniteCache;
@@ -23,13 +24,13 @@ public class Utils {
         return randomStringGenerator.generate(8);
     }
 
-    public static Duration cacheGetWrapper(BiFunction<IgniteCache<Object, Object>,Integer, Duration> iTimeElapsed, IgniteCache<Object, Object> cache, int idx) {
+    public static Duration cacheGetWrapper(BiFunction<IgniteCache<Integer, Book>,Integer, Duration> iTimeElapsed, IgniteCache<Integer, Book> cache, int idx) {
         return iTimeElapsed.apply(cache, idx);
     }
 
-    public static BiFunction<IgniteCache<Object, Object>,Integer, Duration> elapsedTimeWrapper = (cache, idx) -> {
+    public static BiFunction<IgniteCache<Integer, Book>,Integer, Duration> elapsedTimeWrapper = (cache, idx) -> {
         Instant a = Instant.now();
-        String s = (String) cache.get(idx);
+        Book s = (Book) cache.get(idx);
         Instant b = Instant.now();
         Duration timeElapsed = Duration.between(a, b);
         System.out.println(s + " | elapsed time to get : " + timeElapsed);
