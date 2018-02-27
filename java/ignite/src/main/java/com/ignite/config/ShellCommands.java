@@ -78,7 +78,7 @@ public class ShellCommands {
         ScanQuery<Integer, BinaryObject> scan = new ScanQuery<>(new CustomPredicateBi());
         QueryCursor<Cache.Entry<Integer, BinaryObject>> cur = cache.query(scan);
         for (Cache.Entry<Integer, BinaryObject> e : cur) {
-            System.out.println(e.getKey());
+            System.out.println(e.getKey() + (String) e.getValue().field("title"));
         }
     }
 
