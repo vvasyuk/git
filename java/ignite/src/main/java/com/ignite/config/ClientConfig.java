@@ -5,6 +5,7 @@ import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.cache.query.QueryCursor;
 import org.apache.ignite.cache.query.ScanQuery;
+import org.apache.ignite.configuration.CacheConfiguration;
 import org.apache.ignite.lang.IgniteBiPredicate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,7 +28,8 @@ public class ClientConfig {
 
     public ClientConfig(Ignite ignite) {
         this.ignite = ignite;
-        this.cache = ignite.getOrCreateCache("test");
+        CacheConfiguration<Integer, Book> cacheCfg = new CacheConfiguration<>("test");
+        this.cache = ignite.getOrCreateCache(cacheCfg);
         System.out.println("ClientConfig start");
 
         Book book1 = new Book("A", "ABC");
