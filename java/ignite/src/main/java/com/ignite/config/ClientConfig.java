@@ -29,7 +29,7 @@ public class ClientConfig {
     public ClientConfig(Ignite ignite) {
         this.ignite = ignite;
         CacheConfiguration<Integer, Book> cacheCfg = new CacheConfiguration<>("test");
-        this.cache = ignite.getOrCreateCache(cacheCfg).withKeepBinary();
+        this.cache = ignite.getOrCreateCache(cacheCfg);//.withKeepBinary();
         System.out.println("ClientConfig start");
 
         Book book1 = new Book("A", "ABC");

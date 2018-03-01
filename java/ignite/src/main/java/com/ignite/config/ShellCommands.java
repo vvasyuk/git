@@ -1,9 +1,12 @@
 package com.ignite.config;
 
 import com.ignite.domain.Book;
+import com.ignite.util.Utils;
+import org.apache.ignite.DataRegionMetrics;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.binary.BinaryObject;
+import org.apache.ignite.cache.CachePeekMode;
 import org.apache.ignite.cache.query.QueryCursor;
 import org.apache.ignite.cache.query.ScanQuery;
 import org.apache.ignite.internal.util.typedef.F;
@@ -11,6 +14,8 @@ import org.apache.ignite.lang.IgniteBiPredicate;
 import org.apache.ignite.lang.IgniteCallable;
 import org.apache.ignite.lang.IgniteClosure;
 import org.apache.ignite.resources.IgniteInstanceResource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 
@@ -18,17 +23,67 @@ import javax.cache.Cache;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.IntStream;
 
 @ShellComponent
+@Profile("client")
 public class ShellCommands {
 
     Ignite ignite;
     IgniteCache<Integer, Book> cache;
 
 
+    @Autowired
     public ShellCommands(Ignite ignite, IgniteCache<Integer, Book> cache) {
         this.ignite = ignite;
         this.cache = cache;
+    }
+
+    @ShellMethod("get from cache.")
+    public Book get(int a) {
+        return cache.get(a);
+    }
+
+    @ShellMethod("scanQuer")
+    public void mem2(){
+        Collection<Long> lists = ignite.compute().broadcast(new IgniteCallable<Long>() {
+
+            @IgniteInstanceResource
+            private Ignite ignite;
+
+            @Override
+            public Long call() throws Exception {
+                DataRegionMetrics regionsMetrics = ignite.dataRegionMetrics("Default_Region");
+                return regionsMetrics.getTotalAllocatedPages();
+            }
+        });
+        lists.forEach(i-> System.out.println(i));
+    }
+
+    @ShellMethod("scanQuer")
+    public void mem(){
+        Collection<DataRegionMetrics> regionsMetrics = ignite.dataRegionMetrics();
+
+
+        for (DataRegionMetrics metrics : regionsMetrics) {
+            System.out.println(">>> Memory Region Name: " + metrics.getName());
+            System.out.println(">>> Allocation Rate: " + metrics.getAllocationRate());
+            System.out.println(">>> Fill Factor: " + metrics.getPagesFillFactor());
+            System.out.println(">>> getTotalAllocatedPages: " + metrics.getTotalAllocatedPages());
+        }
+    }
+
+    @ShellMethod("scanQuer")
+    public int size(){
+        return cache.size(CachePeekMode.ALL);
+    }
+
+    @ShellMethod("scanQuer")
+    public void cacheadd(){
+        int num = cache.size();
+        IntStream.range(num, num+100).forEach(i -> {
+            cache.put(i, new Book(Utils.getRandonString(50), Utils.getRandonString(50)));
+        });
     }
 
     @ShellMethod("computeQuery")
