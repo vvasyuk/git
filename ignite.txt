@@ -1,0 +1,4 @@
+###WINFOWS
+cd D:\work\installed\ignite
+set IGNITE_HOME=D:\work\installed\ignite
+bin\ignite.bat examples\config\example-ignite.xml
