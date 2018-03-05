@@ -2,6 +2,7 @@ package com.ignite.config;
 
 import com.ignite.domain.Book;
 import com.ignite.util.Utils;
+import org.apache.ignite.DataRegionMetrics;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.springframework.context.annotation.Bean;
@@ -10,6 +11,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 
 import java.util.stream.IntStream;
+
+import static com.ignite.util.Utils.createDataSize;
 
 /**
  * Created by Jopa on 2/11/2018.
@@ -26,7 +29,7 @@ public class ServerConfig {
         this.cache = ignite.getOrCreateCache("test");
 
         IntStream.range(0, 10).forEach(i -> {
-                    cache.put(i, new Book(Utils.getRandonString(50), Utils.getRandonString(50)));
+                    cache.put(i, new Book(createDataSize(1024), Utils.getRandonString(2)));
                 }
         );
 

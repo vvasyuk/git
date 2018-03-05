@@ -37,6 +37,16 @@ public class Utils {
         return timeElapsed;
     };
 
+    public static String createDataSize(int msgSize) {
+        msgSize = msgSize/2;
+        msgSize = msgSize * 1024;
+        StringBuilder sb = new StringBuilder(msgSize);
+        for (int i=0; i<msgSize; i++) {
+            sb.append('f');
+        }
+        return sb.toString();
+    }
+
 
 //Option1
 //    public static void cacheGetWrapper(ITimeElapsed iTimeElapsed, IgniteCache<Object, Object> cache, int idx) {

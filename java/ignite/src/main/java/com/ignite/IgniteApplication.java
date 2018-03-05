@@ -1,6 +1,6 @@
 package com.ignite;
 
-import net.sourceforge.sizeof.SizeOf;
+//import net.sourceforge.sizeof.SizeOf;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
@@ -29,16 +29,12 @@ public class IgniteApplication {
 //		System.out.println(timeElapsed.getNano()/1000000);
 	}
 
-
-
-	public static Iterator<String> getSome() {
-		List<String> l = new ArrayList<>();
-		for (int i=0; i<100000;i++ ){
-			l.add("aassddffgg");
-		}
-
-		System.out.println(SizeOf.deepSizeOf(l)); //this will print the object size in bytes
-
-		return l.iterator();
-	}
+//	public static Iterator<String> getSome() {
+//		List<String> l = new ArrayList<>();
+//		for (int i=0; i<100000;i++ ){
+//			l.add("aassddffgg");
+//		}
+//		//System.out.println(SizeOf.deepSizeOf(l)); //this will print the object size in bytes
+//		return l.iterator();
+//	}
 }

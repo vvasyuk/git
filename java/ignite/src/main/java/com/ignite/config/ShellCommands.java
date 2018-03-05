@@ -25,8 +25,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import static com.ignite.util.Utils.createDataSize;
+
 @ShellComponent
-@Profile("client")
+//@Profile("client")
 public class ShellCommands {
 
     Ignite ignite;
@@ -42,6 +44,14 @@ public class ShellCommands {
     @ShellMethod("get from cache.")
     public Book get(int a) {
         return cache.get(a);
+    }
+
+    @ShellMethod("get from cache.")
+    public void initdummycache() {
+        IntStream.range(cache.size(CachePeekMode.ALL)+1, cache.size(CachePeekMode.ALL)+1+10).forEach(i -> {
+                    cache.put(i, new Book(createDataSize(1024), Utils.getRandonString(2)));
+                }
+        );
     }
 
     @ShellMethod("scanQuer")
@@ -62,15 +72,9 @@ public class ShellCommands {
 
     @ShellMethod("scanQuer")
     public void mem(){
-        Collection<DataRegionMetrics> regionsMetrics = ignite.dataRegionMetrics();
+        DataRegionMetrics regionsMetrics = ignite.dataRegionMetrics("Default_Region");
+        System.out.println(">>> regionsMetrics.getTotalAllocatedPages(): " + regionsMetrics.getTotalAllocatedPages());
 
-
-        for (DataRegionMetrics metrics : regionsMetrics) {
-            System.out.println(">>> Memory Region Name: " + metrics.getName());
-            System.out.println(">>> Allocation Rate: " + metrics.getAllocationRate());
-            System.out.println(">>> Fill Factor: " + metrics.getPagesFillFactor());
-            System.out.println(">>> getTotalAllocatedPages: " + metrics.getTotalAllocatedPages());
-        }
     }
 
     @ShellMethod("scanQuer")
