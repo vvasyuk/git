@@ -46,8 +46,8 @@ public class ShellCommands {
     @ShellMethod("computeQuery")
     public void compute2(){
         List<Integer> var = cache.query(new ScanQuery<Integer, Book>(
-                        // Remote filter.
-                        new CustomPredicate()),
+                // Remote filter.
+                new CustomPredicate()),
                 // Transformer.
                 new CustomClosure()
         ).getAll();
