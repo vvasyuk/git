@@ -5,6 +5,7 @@ import com.ignite.util.Utils;
 import org.apache.ignite.DataRegionMetrics;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
+import org.apache.ignite.IgniteCompute;
 import org.apache.ignite.binary.BinaryObject;
 import org.apache.ignite.cache.CachePeekMode;
 import org.apache.ignite.cache.query.QueryCursor;
@@ -21,6 +22,7 @@ import org.springframework.shell.standard.ShellMethod;
 
 import javax.cache.Cache;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -40,6 +42,46 @@ public class ShellCommands {
         this.ignite = ignite;
         this.cache = cache;
     }
+
+    @ShellMethod("computeQuery")
+    public void compute2(){
+        List<Integer> var = cache.query(new ScanQuery<Integer, Book>(
+                        // Remote filter.
+                        new CustomPredicate()),
+                // Transformer.
+                new CustomClosure()
+        ).getAll();
+
+        var.forEach(i-> System.out.println(i));
+    }
+
+    //works
+    @ShellMethod("computeQuery")
+    public void compute4(){
+        IgniteCompute compute = ignite.compute();
+        Collection<Integer> res = compute.apply(
+                new IgniteClosure<String, Integer>() {
+                    @Override
+                    public Integer apply(String word) {
+                        return word.length();
+                    }
+                },
+                Arrays.asList("Count characters using closure".split(" "))
+        );
+        res.forEach(i-> System.out.println(i));
+    }
+
+    //works
+    @ShellMethod("computeQuery")
+    public void compute3(){
+        Integer var = cache.query(new ScanQuery()).getAll().size();
+        System.out.println(var);
+    }
+
+
+
+
+////////////////////////////////////////////////
 
     @ShellMethod("get from cache.")
     public Book get(int a) {
@@ -82,14 +124,6 @@ public class ShellCommands {
         return cache.size(CachePeekMode.ALL);
     }
 
-    @ShellMethod("scanQuer")
-    public void cacheadd(){
-        int num = cache.size();
-        IntStream.range(num, num+100).forEach(i -> {
-            cache.put(i, new Book(Utils.getRandonString(50), Utils.getRandonString(50)));
-        });
-    }
-
     @ShellMethod("computeQuery")
     public void compute(){
         Collection<List<Integer>> lists = ignite.compute().broadcast(new IgniteCallable<List<Integer>>() {
@@ -99,7 +133,8 @@ public class ShellCommands {
 
             @Override
             public List<Integer> call() throws Exception {
-                return ignite.cache("test").query(new ScanQuery<>(new CustomPredicate3()).setLocal(true), new CustomClosure()).getAll();
+                IgniteCache<Integer, Book> c = ignite.cache("test");
+                return c.query(new ScanQuery<>(new CustomPredicate()).setLocal(true), new CustomClosure()).getAll();
             }
         });
         List<Integer> res = new ArrayList<>(F.flatCollections(lists));
@@ -108,14 +143,14 @@ public class ShellCommands {
 
     @ShellMethod("scanQuer")
     public void query(){
-        ScanQuery<Integer, Book> scan = new ScanQuery<>(new CustomPredicate3());
+        ScanQuery<Integer, Book> scan = new ScanQuery<>(new CustomPredicate());
         QueryCursor<Cache.Entry<Integer, Book>> cur = cache.query(scan);
         for (Cache.Entry<Integer, Book> e : cur) {
             System.out.println(e.getKey());
         }
     }
 
-    private static class CustomPredicate3 implements IgniteBiPredicate<Integer, Book> {
+    private static class CustomPredicate implements IgniteBiPredicate<Integer, Book> {
         private static final long serialVersionUID = 1L;
         @Override
         public boolean apply(Integer i, Book book) {
