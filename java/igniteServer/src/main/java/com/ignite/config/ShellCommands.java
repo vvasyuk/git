@@ -30,7 +30,7 @@ import java.util.stream.IntStream;
 import static com.ignite.util.Utils.createDataSize;
 
 @ShellComponent
-//@Profile("client")
+@Profile("server")
 public class ShellCommands {
 
     Ignite ignite;
@@ -44,10 +44,51 @@ public class ShellCommands {
     }
 
     @ShellMethod("computeQuery")
+    public void exec(){
+        String s = affCall(1, "test");
+        System.out.println(s);
+    }
+
+    public String affCall(Integer key, String cacheName){
+        String s = ignite.compute().affinityCall(cacheName, key, new IgniteCallable<String>() {
+            @IgniteInstanceResource
+            private Ignite ignite;
+
+            @Override
+            public String call() throws Exception {
+                IgniteCache<Integer, Book> cache = ignite.getOrCreateCache("test");
+                Book b = cache.get(key);
+                return new CustomLogic().process(b);
+            }
+        });
+        return s;
+    }
+
+    public static class CustomLogic {
+        public String process(Book b){
+            return b.toString();
+        }
+    }
+////////////////////////////////////////////////
+
+    @ShellMethod("get from cache.")
+    public Book get(int a) {
+        return cache.get(a);
+    }
+
+    @ShellMethod("get from cache.")
+    public void initdummycache() {
+        IntStream.range(cache.size(CachePeekMode.ALL)+1, cache.size(CachePeekMode.ALL)+1+10).forEach(i -> {
+                    cache.put(i, new Book(createDataSize(1024), Utils.getRandonString(2)));
+                }
+        );
+    }
+
+    @ShellMethod("computeQuery")
     public void compute2(){
         List<Integer> var = cache.query(new ScanQuery<Integer, Book>(
-                // Remote filter.
-                new CustomPredicate()),
+                        // Remote filter.
+                        new CustomPredicate()),
                 // Transformer.
                 new CustomClosure()
         ).getAll();
@@ -76,24 +117,6 @@ public class ShellCommands {
     public void compute3(){
         Integer var = cache.query(new ScanQuery()).getAll().size();
         System.out.println(var);
-    }
-
-
-
-
-////////////////////////////////////////////////
-
-    @ShellMethod("get from cache.")
-    public Book get(int a) {
-        return cache.get(a);
-    }
-
-    @ShellMethod("get from cache.")
-    public void initdummycache() {
-        IntStream.range(cache.size(CachePeekMode.ALL)+1, cache.size(CachePeekMode.ALL)+1+10).forEach(i -> {
-                    cache.put(i, new Book(createDataSize(1024), Utils.getRandonString(2)));
-                }
-        );
     }
 
     @ShellMethod("scanQuer")
