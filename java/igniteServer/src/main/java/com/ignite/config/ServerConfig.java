@@ -1,7 +1,7 @@
 package com.ignite.config;
 
-import com.ignite.domain.Book;
-import com.ignite.util.Utils;
+//import com.ignite.domain.Book;
+//import com.ignite.util.Utils;
 import org.apache.ignite.DataRegionMetrics;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
@@ -21,17 +21,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.IntStream;
 
-import static com.ignite.util.Utils.createDataSize;
+//import static com.ignite.util.Utils.createDataSize;
 
 /**
  * Created by Jopa on 2/11/2018.
  */
 @Configuration
-@Profile("server")
 public class ServerConfig {
 
     Ignite ignite;
-    IgniteCache<Integer, Book> cache;
+    //IgniteCache<Integer, Book> cache;
 
     public ServerConfig(Environment e) throws Exception {
         System.out.println("Starting ignite server");
@@ -56,7 +55,7 @@ public class ServerConfig {
         cfg.setPeerClassLoadingEnabled(true);
 
         this.ignite = Ignition.start(cfg);
-        this.cache = ignite.getOrCreateCache("test");
+        //this.cache = ignite.getOrCreateCache("test");
     }
 
     @Bean
@@ -64,8 +63,8 @@ public class ServerConfig {
         return this.ignite;
     }
 
-    @Bean
-    public IgniteCache<Integer, Book> getCache(){
-        return this.cache;
-    }
+//    @Bean
+//    public IgniteCache<Integer, Book> getCache(){
+//        return this.cache;
+//    }
 }

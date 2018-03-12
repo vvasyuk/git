@@ -1,14 +1,22 @@
 package com.ignite.domain;
 
+import org.apache.ignite.cache.affinity.AffinityKey;
+import org.apache.ignite.cache.affinity.AffinityKeyMapped;
+
 import java.io.Serializable;
 
 public class Book implements Serializable{
     private static final long serialVersionUID = 1L;
+
+    @AffinityKeyMapped
+    private AffinityKey libId;
     private String author;
     private String title;
     private String genre;
     private String price;
 
+    public AffinityKey getLibId() {return libId;}
+    public void setLibId(AffinityKey libId) {this.libId = libId;}
     public String getAuthor() {return author;}
     public void setAuthor(String author) {this.author = author;}
     public String getTitle() {return title;}
@@ -18,7 +26,8 @@ public class Book implements Serializable{
     public String getPrice() {return price;}
     public void setPrice(String price) {this.price = price;}
 
-    public Book(String author, String title) {
+    public Book(AffinityKey libId,String author, String title) {
+        this.libId=libId;
         this.author=author;
         this.title=title;
     }

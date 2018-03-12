@@ -1,6 +1,7 @@
 package com.ignite.config;
 
 import com.ignite.domain.Book;
+import com.ignite.domain.Library;
 import com.ignite.util.Utils;
 import org.apache.ignite.DataRegionMetrics;
 import org.apache.ignite.Ignite;
@@ -30,7 +31,6 @@ import java.util.stream.IntStream;
 import static com.ignite.util.Utils.createDataSize;
 
 @ShellComponent
-@Profile("client")
 public class ShellCommands {
 
     Ignite ignite;
@@ -79,7 +79,7 @@ public class ShellCommands {
     @ShellMethod("get from cache.")
     public void initdummycache() {
         IntStream.range(cache.size(CachePeekMode.ALL)+1, cache.size(CachePeekMode.ALL)+1+10).forEach(i -> {
-                    cache.put(i, new Book(createDataSize(1024), Utils.getRandonString(2)));
+                    //cache.put(i, new Book("1",createDataSize(1024), Utils.getRandonString(2)));
                 }
         );
     }
