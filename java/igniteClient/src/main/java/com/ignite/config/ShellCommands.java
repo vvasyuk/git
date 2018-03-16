@@ -6,8 +6,10 @@ import com.ignite.util.Utils;
 import org.apache.ignite.*;
 import org.apache.ignite.binary.BinaryObject;
 import org.apache.ignite.cache.CachePeekMode;
+import org.apache.ignite.cache.affinity.AffinityKey;
 import org.apache.ignite.cache.query.QueryCursor;
 import org.apache.ignite.cache.query.ScanQuery;
+import org.apache.ignite.cluster.ClusterNode;
 import org.apache.ignite.internal.util.typedef.F;
 import org.apache.ignite.lang.IgniteBiInClosure;
 import org.apache.ignite.lang.IgniteBiPredicate;
@@ -42,77 +44,97 @@ public class ShellCommands {
 
     @ShellMethod("computeQuery")
     public void test_stream(){
-        IgniteCache<Integer, String> bookC = ignite.getOrCreateCache("bookC");
-        IgniteCache<Integer, String> bookD = ignite.getOrCreateCache("bookD");
-
-        bookD.put(1,"v1");
-        bookD.put(2,"v2");
-        bookD.put(3,"v3");
-
+        IgniteCache<AffinityKey, Book> bookC = ignite.getOrCreateCache("bookC");
+        IgniteCache<Integer, String> libC = ignite.getOrCreateCache("libC");
         bookC.removeAll();
-        System.out.println("bookC cleaned size: " + bookC.size(CachePeekMode.ALL));
+        libC.removeAll();
+
+        System.out.println("bookC/libC cleaned size: " + bookC.size(CachePeekMode.ALL) + "/" + libC.size(CachePeekMode.ALL));
         checkNodes(ignite);
 
-        try(IgniteDataStreamer<Integer, String> stream = ignite.dataStreamer("bookC")){
+        libC.put(1,"libName1");
+        libC.put(2,"libName2");
+
+        List<Book> l = getBookList();
+
+        try(IgniteDataStreamer<AffinityKey, Book> stream = ignite.dataStreamer("bookC")){
             stream.allowOverwrite(true);
-            stream.receiver(new StreamVisitor<Integer, String>(){
+            stream.receiver(new StreamVisitor<AffinityKey, Book>(){
                 @IgniteInstanceResource
                 private Ignite ign;
 
                 @Override
-                public void apply(IgniteCache<Integer, String> cache, Map.Entry<Integer, String> e) {
+                public void apply(IgniteCache<AffinityKey, Book> cache, Map.Entry<AffinityKey, Book> e) {
                     System.out.println("XYIXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-                    System.out.println("input_key: " + e.getKey());
-                    System.out.println("input_value: " + e.getValue());
-                    //cache.put(e.getKey(), e.getValue());
-                    IgniteCache<Integer, String> c = ign.getOrCreateCache("bookD");
-                    String s = c.get(e.getKey());
-                    System.out.println("value from another cache: " + s);
+
+                    String var1 = e.getValue().getId();
+                    String var2 = (String) ign.cache("libC").get(Integer.valueOf(e.getValue().getLibId()));
+
+                    com.ignite.config.ShellCommands.CustomClassLogic logic = new CustomClassLogic();
+
+                    System.out.println(logic.process(var1, var2));
                 }
             });
-            stream.addData(2, "test");
+            l.forEach(e->stream.addData(e.key(), e));
         }
 
-        System.out.println("bookC inited size: " + bookC.size(CachePeekMode.ALL));
+        System.out.println("total bookC/libC inited size: " + bookC.size(CachePeekMode.ALL) + "/" + libC.size(CachePeekMode.ALL));
         checkNodes(ignite);
-
     }
 
-    public static void testSimple(Ignite ignite){
-        IgniteCache<Integer, Object> bookC = ignite.getOrCreateCache("bookC");
-        Book b1 = new Book("1", "auth1", "title1");
-        Book b2 = new Book("1", "auth2", "title1");
-        Book b3 = new Book("1", "auth3", "title1");
-        Book b4 = new Book("1", "auth4", "title1");
-        Book b5 = new Book("1", "auth5", "title1");
+    public static class CustomClassLogic{
+        public String process(String var1, String var2){
+            return "input_value/libName: " + var1 + "/" + var2;
+        }
+    }
 
-        bookC.put(1, b1);
-        bookC.put(2, b2);
-        bookC.put(3, b3);
-        bookC.put(4, b4);
-        bookC.put(5, b5);
-
-        System.out.println("bookC size: " + bookC.size(CachePeekMode.ALL));
-        checkNodes(ignite);
-
+    private static List<Book> getBookList(){
+        List<Book> l = new ArrayList<>();
+        l.add(new Book("bookId1", "1", "auth1", "title1"));
+        l.add(new Book("bookId2", "1", "auth2", "title2"));
+        l.add(new Book("bookId3", "1", "auth3", "title3"));
+        l.add(new Book("bookId4", "2", "auth4", "title4"));
+        l.add(new Book("bookId5", "2", "auth5", "title5"));
+        l.add(new Book("bookId6", "2", "auth6", "title6"));
+        return l;
     }
 
     public static void checkNodes(Ignite ignite){
-        Collection<Long> lists = ignite.compute().broadcast(new IgniteCallable<Long>() {
+        Collection<String> lists = ignite.compute().broadcast(new IgniteCallable<String>() {
 
             @IgniteInstanceResource
             private Ignite ign;
 
             @Override
-            public Long call() throws Exception {
-                System.out.println("server name: " + ignite.cluster().localNode().id() + " cache size: " + ign.getOrCreateCache("bookC").localSize(CachePeekMode.ALL));
-
-                return 1l;
+            public String call() throws Exception {
+                return "server name: " + ignite.cluster().localNode().id() + "bookC/libC cache size: " + ign.getOrCreateCache("bookC").localSize(CachePeekMode.ALL) + "/" + ign.getOrCreateCache("libC").localSize(CachePeekMode.ALL);
             }
         });
         lists.forEach(i-> System.out.println(i));
     }
 
+
+
+    @ShellMethod("computeQuery")
+    public void test_simple(){
+        IgniteCache<AffinityKey, Book> bookC = ignite.getOrCreateCache("bookC");
+        IgniteCache<Integer, String> libC = ignite.getOrCreateCache("libC");
+
+        bookC.removeAll();
+        libC.removeAll();
+        System.out.println("bookC/libC cleaned size: " + bookC.size(CachePeekMode.ALL) + "/" + libC.size(CachePeekMode.ALL));
+        checkNodes(ignite);
+
+        libC.put(1,"v1");
+        libC.put(2,"v2");
+
+        List<Book> l = getBookList();
+
+        l.forEach(e->bookC.put(e.key(), e));
+
+        System.out.println("total bookC/libC inited size: " + bookC.size(CachePeekMode.ALL) + "/" + libC.size(CachePeekMode.ALL));
+        checkNodes(ignite);
+    }
     public static void testAff(Ignite ignite){
         //AffinityKey bookKey1 = new AffinityKey("myBookId1", "myLibId");
         //AffinityKey bookKey2 = new AffinityKey("myBookId2", "myLibId");

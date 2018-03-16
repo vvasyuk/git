@@ -50,7 +50,7 @@ public class ClientConfig {
 
         TcpDiscoverySpi spi = new TcpDiscoverySpi();
         TcpDiscoveryVmIpFinder ipFinder = new TcpDiscoveryVmIpFinder();
-        ipFinder.setAddresses(Arrays.asList(e.getProperty("servers", "localhost").split(",")));
+        ipFinder.setAddresses(Arrays.asList("127.0.0.1:48500..48520"));
         spi.setIpFinder(ipFinder);
 
         cfg.setPeerClassLoadingEnabled(true);

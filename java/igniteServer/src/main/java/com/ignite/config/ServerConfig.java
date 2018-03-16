@@ -1,27 +1,15 @@
 package com.ignite.config;
 
-//import com.ignite.domain.Book;
-//import com.ignite.util.Utils;
-import org.apache.ignite.DataRegionMetrics;
 import org.apache.ignite.Ignite;
-import org.apache.ignite.IgniteCache;
 import org.apache.ignite.Ignition;
-import org.apache.ignite.configuration.DataStorageConfiguration;
 import org.apache.ignite.configuration.IgniteConfiguration;
+import org.apache.ignite.spi.communication.tcp.TcpCommunicationSpi;
 import org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi;
 import org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
-
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.IntStream;
-
-//import static com.ignite.util.Utils.createDataSize;
 
 /**
  * Created by Jopa on 2/11/2018.
@@ -30,41 +18,29 @@ import java.util.stream.IntStream;
 public class ServerConfig {
 
     Ignite ignite;
-    //IgniteCache<Integer, Book> cache;
 
     public ServerConfig(Environment e) throws Exception {
         System.out.println("Starting ignite server");
         IgniteConfiguration cfg = new IgniteConfiguration();
 
-        TcpDiscoverySpi spi = new TcpDiscoverySpi();
+        TcpDiscoverySpi discoverySpi = new TcpDiscoverySpi();
+        discoverySpi.setLocalPort(48500);
+        discoverySpi.setLocalPortRange(20);
         TcpDiscoveryVmIpFinder ipFinder = new TcpDiscoveryVmIpFinder();
-        ipFinder.setAddresses(Arrays.asList(e.getProperty("servers", "localhost").split(",")));
-        spi.setIpFinder(ipFinder);
+        ipFinder.setAddresses(Arrays.asList("127.0.0.1:48500..48520"));
+        discoverySpi.setIpFinder(ipFinder);
+        TcpCommunicationSpi commSpi = new TcpCommunicationSpi();
+        commSpi.setLocalPort(48100);
 
-        DataStorageConfiguration storageCfg = new DataStorageConfiguration();
-        storageCfg.getDefaultDataRegionConfiguration().setMaxSize(1L * 1024 * 1024 * 1024);
-        storageCfg.setMetricsEnabled(true);
-
-        Map<String, String> map = new HashMap<>();
-        map.put("KEY", "VALUE");
-
-        cfg.setDataStorageConfiguration(storageCfg);
-        cfg.setDiscoverySpi(spi);
-        cfg.setUserAttributes(map);
-
+        cfg.setDiscoverySpi(discoverySpi);
+        cfg.setCommunicationSpi(commSpi);
         cfg.setPeerClassLoadingEnabled(true);
 
         this.ignite = Ignition.start(cfg);
-        //this.cache = ignite.getOrCreateCache("test");
     }
 
     @Bean
     public Ignite getIgnite(){
         return this.ignite;
     }
-
-//    @Bean
-//    public IgniteCache<Integer, Book> getCache(){
-//        return this.cache;
-//    }
 }
