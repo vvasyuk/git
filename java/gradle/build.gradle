@@ -15,6 +15,10 @@ apply plugin: 'org.springframework.boot'
 distributions {
     main {
         contents {
+            into('bin') {
+                from { 'src/main/config/1.txt' }
+                fileMode = 0755
+            }
             into('lib') {
                 from jar
                 from(project.configurations.runtime)
