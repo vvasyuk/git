@@ -11,7 +11,12 @@ apply plugin: 'java'
 apply plugin: 'distribution'
 apply plugin: 'org.springframework.boot'
 
-tasks.distTar.enabled = false
+
+bootRepackage {
+    enabled = false
+}
+
+
 distributions {
     main {
         contents {
@@ -27,6 +32,9 @@ distributions {
     }
 }
 configurations.archives.artifacts.removeAll { it.archiveTask.is jar } 
+[distTar].each { task ->  configurations.archives.artifacts.removeAll { it.class.simpleName == "ArchivePublishArtifact" && it.archiveTask == task }
+  task.enabled = false
+}
 uploadArchives {
 repositories {
    flatDir {dirs "./tempRepo"}
