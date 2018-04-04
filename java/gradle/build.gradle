@@ -11,12 +11,6 @@ apply plugin: 'java'
 apply plugin: 'distribution'
 apply plugin: 'org.springframework.boot'
 
-
-bootRepackage {
-    enabled = false
-}
-
-
 distributions {
     main {
         contents {
@@ -36,6 +30,7 @@ configurations.archives.artifacts.removeAll { it.archiveTask.is jar }
   task.enabled = false
 }
 uploadArchives {
+uploadDescriptor false
 repositories {
    flatDir {dirs "./tempRepo"}
 }
