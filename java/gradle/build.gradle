@@ -4,10 +4,11 @@ apply plugin: 'org.springframework.boot'
 
 buildscript {
     repositories {
-        mavenCentral()
+        jcenter()
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.10.RELEASE")
+		classpath "nu.studer:gradle-credentials-plugin:1.0.4"
     }
 }
 
@@ -48,5 +49,15 @@ uploadArchives {
 		flatDir {dirs "./tempRepo"}
 	}
 }
+
+apply plugin: 'nu.studer.credentials'
+
+//stores in home/.gradle
+//gradlew -b build.gradle addCredentials --key password --value abcdefg
+println "##########"
+println credentials.password
+println "##########"
+println project.gradle.gradleUserHomeDir
+
 
 

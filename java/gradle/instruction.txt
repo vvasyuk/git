@@ -14,6 +14,9 @@ gradlew installDist
 
 gradle distZip
 
+gradlew -b build.gradle addCredentials --key password --value abcdefg
+D:\work\tryout\java\gradle\gradlew -b "D:\work\tryout\java\gradle\build.gradle" clean uploadArchives
+
 #########################################################################################
 
 repositories {
