@@ -1,3 +1,7 @@
+apply plugin: 'java'
+apply plugin: 'distribution'
+apply plugin: 'org.springframework.boot'
+
 buildscript {
     repositories {
         mavenCentral()
@@ -5,35 +9,6 @@ buildscript {
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.10.RELEASE")
     }
-}
-
-apply plugin: 'java'
-apply plugin: 'distribution'
-apply plugin: 'org.springframework.boot'
-
-distributions {
-    main {
-        contents {
-            into('bin') {
-                from { 'src/main/config/1.txt' }
-                fileMode = 0755
-            }
-            into('lib') {
-                from jar
-                from(project.configurations.runtime)
-            } 
-        }
-    }
-}
-configurations.archives.artifacts.removeAll { it.archiveTask.is jar } 
-[distTar].each { task ->  configurations.archives.artifacts.removeAll { it.class.simpleName == "ArchivePublishArtifact" && it.archiveTask == task }
-  task.enabled = false
-}
-uploadArchives {
-uploadDescriptor false
-repositories {
-   flatDir {dirs "./tempRepo"}
-}
 }
 
 repositories {
@@ -47,3 +22,31 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter')
     //compile('org.springframework.shell:spring-shell-starter:2.0.0.M2')
 }
+
+distributions {
+    main {
+        contents {
+            into('/bin') {
+                from { 'src/main/config/1.txt' }
+                fileMode = 0755
+            }
+            into('/lib') {
+                from jar
+                from(project.configurations.runtime)
+            }
+        }
+    }
+}
+
+configurations.archives.artifacts.removeAll { it.archiveTask.is jar } 
+[distTar].each { task ->  configurations.archives.artifacts.removeAll { it.class.simpleName == "ArchivePublishArtifact" && it.archiveTask == task }
+  task.enabled = false
+}
+uploadArchives {
+	uploadDescriptor false
+	repositories {
+		flatDir {dirs "./tempRepo"}
+	}
+}
+
+
