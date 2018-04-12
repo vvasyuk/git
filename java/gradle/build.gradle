@@ -46,7 +46,8 @@ configurations.archives.artifacts.removeAll { it.archiveTask.is jar }
 uploadArchives {
 	uploadDescriptor false
 	repositories {
-		flatDir {dirs "./tempRepo"}
+		//flatDir {dirs "./tempRepo"}
+        flatDir {dirs "$var"}
 	}
 }
 
