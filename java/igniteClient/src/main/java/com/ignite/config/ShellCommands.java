@@ -5,11 +5,15 @@ import com.ignite.domain.Library;
 import com.ignite.util.Utils;
 import org.apache.ignite.*;
 import org.apache.ignite.binary.BinaryObject;
+import org.apache.ignite.cache.CacheAtomicityMode;
+import org.apache.ignite.cache.CacheMode;
 import org.apache.ignite.cache.CachePeekMode;
+import org.apache.ignite.cache.CacheRebalanceMode;
 import org.apache.ignite.cache.affinity.AffinityKey;
 import org.apache.ignite.cache.query.QueryCursor;
 import org.apache.ignite.cache.query.ScanQuery;
 import org.apache.ignite.cluster.ClusterNode;
+import org.apache.ignite.configuration.CacheConfiguration;
 import org.apache.ignite.internal.util.typedef.F;
 import org.apache.ignite.lang.IgniteBiInClosure;
 import org.apache.ignite.lang.IgniteBiPredicate;
@@ -42,17 +46,59 @@ public class ShellCommands {
         this.ignite = ignite;
     }
 
-    public static void checkNodes(Ignite ignite){
-        Collection<String> lists = ignite.compute().broadcast(new IgniteCallable<String>() {
+    @ShellMethod("get from cache.")
+    public String get(int a) {
+        return ignite.cache(C).get(a).toString();
+    }
 
+    @ShellMethod("get from cache.")
+    public void activate() {
+        ignite.cluster().active(true);
+    }
+
+    @ShellMethod("get from cache.")
+    public void showtopo() {
+        ignite.cluster().currentBaselineTopology().stream().map(i-> i.consistentId().toString()).forEach(i-> System.out.println(i));
+    }
+
+    @ShellMethod("get from cache.")
+    public void topo(int topVer) {
+//        System.out.println("topo will be changed to nodes: ");
+//        ignite.cluster().forServers().nodes().stream().forEach(i-> System.out.println(i.consistentId()));
+//        ignite.cluster().setBaselineTopology(ignite.cluster().forServers().nodes());
+
+        ignite.cluster().setBaselineTopology(topVer);
+    }
+
+    @ShellMethod("get from cache.")
+    public void init() {
+        CacheConfiguration<Integer, String> cfg = new CacheConfiguration<>();
+        cfg.setName(C);
+        cfg.setBackups(1);
+        cfg.setRebalanceDelay(1000L);
+        cfg.setCacheMode(CacheMode.PARTITIONED);
+        cfg.setAtomicityMode(CacheAtomicityMode.ATOMIC);
+        cfg.setRebalanceMode(CacheRebalanceMode.SYNC);
+        IgniteCache cache = ignite.getOrCreateCache(cfg);
+
+        IntStream.range(cache.size(CachePeekMode.ALL)+1, cache.size(CachePeekMode.ALL)+1+10).forEach(i -> {
+                    cache.put(i, Utils.getRandonString(2));
+                }
+        );
+    }
+
+    @ShellMethod("get from cache.")
+    public void ls (){
+        Collection<String> lists = ignite.compute().broadcast(new IgniteCallable<String>() {
             @IgniteInstanceResource
             private Ignite ign;
-
             @Override
             public String call() throws Exception {
                 IgniteCache<Integer, String> cache = ign.cache(C);
-                return "server name: " + ignite.cluster().localNode().id() + C + " cache size: " + cache.localSize(CachePeekMode.ALL) + " entries: " +
-                        StreamSupport.stream(cache.localEntries(CachePeekMode.PRIMARY).spliterator(), true).map(i->i.getKey().toString()).collect(Collectors.joining(","));
+                return "server name: " + ign.cluster().localNode().consistentId() + C + " cache size: " + cache.localSize(CachePeekMode.ALL) + " entries: " +
+                        StreamSupport.stream(cache.localEntries(CachePeekMode.PRIMARY).spliterator(), true).map(i->i.getKey().toString()).collect(Collectors.joining(",")) +
+                        " backup entries: " +
+                        StreamSupport.stream(cache.localEntries(CachePeekMode.BACKUP).spliterator(), true).map(i->i.getKey().toString()).collect(Collectors.joining(","));
             }
         });
         lists.forEach(i-> System.out.println(i));

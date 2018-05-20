@@ -2,6 +2,7 @@ package com.ignite.config;
 
 import org.apache.ignite.Ignite;
 import org.apache.ignite.Ignition;
+import org.apache.ignite.configuration.DataStorageConfiguration;
 import org.apache.ignite.configuration.IgniteConfiguration;
 import org.apache.ignite.spi.communication.tcp.TcpCommunicationSpi;
 import org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi;
@@ -32,6 +33,11 @@ public class ServerConfig {
         TcpCommunicationSpi commSpi = new TcpCommunicationSpi();
         commSpi.setLocalPort(48100);
 
+        DataStorageConfiguration storageCfg = new DataStorageConfiguration();
+        storageCfg.getDefaultDataRegionConfiguration().setMaxSize(100L * 1024 * 1024);
+        storageCfg.getDefaultDataRegionConfiguration().setPersistenceEnabled(true);
+
+        cfg.setDataStorageConfiguration(storageCfg);
         cfg.setDiscoverySpi(discoverySpi);
         cfg.setCommunicationSpi(commSpi);
         cfg.setPeerClassLoadingEnabled(true);
