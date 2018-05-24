@@ -52,8 +52,25 @@ public class ShellCommands {
     }
 
     @ShellMethod("get from cache.")
-    public void activate() {
+    public void act() {
         ignite.cluster().active(true);
+        //ignite.getOrCreateCache(C).put(13, "666");
+    }
+
+    @ShellMethod("get from cache.")
+    public void act2() {
+        ignite.cluster().active();
+    }
+
+    @ShellMethod("get from cache.")
+    public void dact() {
+        ignite.cluster().active(false);
+    }
+
+    @ShellMethod("get from cache.")
+    public void checkact() {
+        System.out.println(ignite.cluster().active());
+
     }
 
     @ShellMethod("get from cache.")
@@ -68,6 +85,13 @@ public class ShellCommands {
 //        ignite.cluster().setBaselineTopology(ignite.cluster().forServers().nodes());
 
         ignite.cluster().setBaselineTopology(topVer);
+    }
+
+    @ShellMethod("get from cache.")
+    public void topo2() {
+        System.out.println("topo will be changed to nodes: ");
+        ignite.cluster().forServers().nodes().stream().forEach(i-> System.out.println(i.consistentId()));
+        ignite.cluster().setBaselineTopology(ignite.cluster().forServers().nodes());
     }
 
     @ShellMethod("get from cache.")

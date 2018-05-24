@@ -36,6 +36,9 @@ public class ServerConfig {
         DataStorageConfiguration storageCfg = new DataStorageConfiguration();
         storageCfg.getDefaultDataRegionConfiguration().setMaxSize(100L * 1024 * 1024);
         storageCfg.getDefaultDataRegionConfiguration().setPersistenceEnabled(true);
+        storageCfg.setStoragePath("c:\\Users\\vvasy\\Downloads\\ignitePersistence\\");
+        storageCfg.setWalPath("c:\\Users\\vvasy\\Downloads\\ignitePersistence\\");
+        storageCfg.setWalArchivePath("c:\\Users\\vvasy\\Downloads\\ignitePersistence\\");
 
         cfg.setDataStorageConfiguration(storageCfg);
         cfg.setDiscoverySpi(discoverySpi);
