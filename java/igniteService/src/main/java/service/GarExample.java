@@ -13,9 +13,6 @@ import java.util.Map;
 
 public class GarExample extends ComputeTaskAdapter<String, Integer> {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     @Override
