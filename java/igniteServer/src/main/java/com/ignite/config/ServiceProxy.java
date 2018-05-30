@@ -21,7 +21,6 @@ public class ServiceProxy implements Service {
 
     @Override
     public void execute(ServiceContext ctx) throws Exception {
-        System.out.println("proxy execute");
-        //ignite.compute().execute("sname", "var");
+        ignite.compute().execute("service.GarExample", "a b c d e f");
     }
 }

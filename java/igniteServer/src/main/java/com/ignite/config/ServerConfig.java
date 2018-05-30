@@ -53,9 +53,8 @@ public class ServerConfig {
 
         this.ignite = Ignition.start(cfg);
 
-//        ClusterGroup cg = ignite.cluster().forServers();
-//        ignite.services(cg).deployNodeSingleton("sname", new ServiceProxy());
-        ignite.services().deployNodeSingleton("sname", new ServiceProxy());
+        ignite.services(ignite.cluster().forServers()).deployNodeSingleton("ServiceProxy", new ServiceProxy());
+        //ignite.compute().execute("service.GarExample", "a b c d e f");
     }
 
     @Bean
