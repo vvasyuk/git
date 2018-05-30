@@ -55,6 +55,7 @@ public class ServerConfig {
 
         ignite.services(ignite.cluster().forServers()).deployNodeSingleton("ServiceProxy", new ServiceProxy());
         //ignite.compute().execute("service.GarExample", "a b c d e f");
+        ignite.services().serviceDescriptors().stream().forEach(i-> System.out.println(i.serviceClass()));
     }
 
     @Bean
