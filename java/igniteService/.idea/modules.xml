@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/igniteService.iml" filepath="$PROJECT_DIR$/igniteService.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/igniteService_main.iml" filepath="$PROJECT_DIR$/.idea/modules/igniteService_main.iml" group="igniteService" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/igniteService_test.iml" filepath="$PROJECT_DIR$/.idea/modules/igniteService_test.iml" group="igniteService" />
+    </modules>
+  </component>
+</project>

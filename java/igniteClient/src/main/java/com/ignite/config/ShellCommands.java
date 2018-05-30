@@ -98,14 +98,15 @@ public class ShellCommands {
     public void init() {
         CacheConfiguration<Integer, String> cfg = new CacheConfiguration<>();
         cfg.setName(C);
-        cfg.setBackups(1);
-        cfg.setRebalanceDelay(1000L);
-        cfg.setCacheMode(CacheMode.PARTITIONED);
-        cfg.setAtomicityMode(CacheAtomicityMode.ATOMIC);
-        cfg.setRebalanceMode(CacheRebalanceMode.SYNC);
+//        cfg.setBackups(1);
+//        cfg.setRebalanceDelay(1000L);
+//        cfg.setCacheMode(CacheMode.PARTITIONED);
+//        cfg.setAtomicityMode(CacheAtomicityMode.ATOMIC);
+//        cfg.setRebalanceMode(CacheRebalanceMode.SYNC);
         IgniteCache cache = ignite.getOrCreateCache(cfg);
 
-        IntStream.range(cache.size(CachePeekMode.ALL)+1, cache.size(CachePeekMode.ALL)+1+10).forEach(i -> {
+        IntStream.range(cache.size(CachePeekMode.ALL)+1, cache.size(CachePeekMode.ALL)+1+1000000
+        ).forEach(i -> {
                     cache.put(i, Utils.getRandonString(2));
                 }
         );

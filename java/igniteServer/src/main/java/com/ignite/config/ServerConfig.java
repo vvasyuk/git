@@ -2,9 +2,11 @@ package com.ignite.config;
 
 import org.apache.ignite.Ignite;
 import org.apache.ignite.Ignition;
+import org.apache.ignite.cluster.ClusterGroup;
 import org.apache.ignite.configuration.DataStorageConfiguration;
 import org.apache.ignite.configuration.IgniteConfiguration;
 import org.apache.ignite.spi.communication.tcp.TcpCommunicationSpi;
+import org.apache.ignite.spi.deployment.uri.UriDeploymentSpi;
 import org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi;
 import org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder;
 import org.springframework.context.annotation.Bean;
@@ -33,19 +35,27 @@ public class ServerConfig {
         TcpCommunicationSpi commSpi = new TcpCommunicationSpi();
         commSpi.setLocalPort(48100);
 
+        UriDeploymentSpi spi = new UriDeploymentSpi();
+        spi.setUriList(Arrays.asList(System.getenv("GARFILE")));
+
         DataStorageConfiguration storageCfg = new DataStorageConfiguration();
         storageCfg.getDefaultDataRegionConfiguration().setMaxSize(100L * 1024 * 1024);
-        storageCfg.getDefaultDataRegionConfiguration().setPersistenceEnabled(true);
-        storageCfg.setStoragePath("c:\\Users\\vvasy\\Downloads\\ignitePersistence\\");
-        storageCfg.setWalPath("c:\\Users\\vvasy\\Downloads\\ignitePersistence\\");
-        storageCfg.setWalArchivePath("c:\\Users\\vvasy\\Downloads\\ignitePersistence\\");
+//        storageCfg.getDefaultDataRegionConfiguration().setPersistenceEnabled(true);
+//        storageCfg.setStoragePath("c:\\Users\\vvasy\\Downloads\\ignitePersistence\\");
+//        storageCfg.setWalPath("c:\\Users\\vvasy\\Downloads\\ignitePersistence\\");
+//        storageCfg.setWalArchivePath("c:\\Users\\vvasy\\Downloads\\ignitePersistence\\");
 
         cfg.setDataStorageConfiguration(storageCfg);
         cfg.setDiscoverySpi(discoverySpi);
         cfg.setCommunicationSpi(commSpi);
         cfg.setPeerClassLoadingEnabled(true);
+        cfg.setDeploymentSpi(spi);
 
         this.ignite = Ignition.start(cfg);
+
+//        ClusterGroup cg = ignite.cluster().forServers();
+//        ignite.services(cg).deployNodeSingleton("sname", new ServiceProxy());
+        ignite.services().deployNodeSingleton("sname", new ServiceProxy());
     }
 
     @Bean
