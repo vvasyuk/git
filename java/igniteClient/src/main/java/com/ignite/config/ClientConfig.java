@@ -45,7 +45,7 @@ public class ClientConfig {
     public ClientConfig(Environment e) {
 
         System.out.println("Starting ignite client");
-
+        System.setProperty("IGNITE_SKIP_CONFIGURATION_CONSISTENCY_CHECK", String.valueOf(true));
         IgniteConfiguration cfg = new IgniteConfiguration();
 
         TcpDiscoverySpi spi = new TcpDiscoverySpi();

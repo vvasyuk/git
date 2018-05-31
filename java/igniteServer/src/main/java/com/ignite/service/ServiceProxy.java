@@ -1,11 +1,11 @@
-package com.ignite.config;
+package com.ignite.service;
 
 import org.apache.ignite.Ignite;
 import org.apache.ignite.resources.IgniteInstanceResource;
 import org.apache.ignite.services.Service;
 import org.apache.ignite.services.ServiceContext;
 
-public class ServiceProxy implements Service {
+public class ServiceProxy implements Service, MyService {
     @IgniteInstanceResource
     private Ignite ignite;
 
@@ -21,6 +21,11 @@ public class ServiceProxy implements Service {
 
     @Override
     public void execute(ServiceContext ctx) throws Exception {
+        System.out.println("proxy execute");
+    }
+
+    @Override
+    public void doStuff() {
         ignite.compute().execute("service.GarExample", "a b c d e f");
     }
 }

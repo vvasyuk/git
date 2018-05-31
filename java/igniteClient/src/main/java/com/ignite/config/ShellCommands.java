@@ -2,6 +2,7 @@ package com.ignite.config;
 
 import com.ignite.domain.Book;
 import com.ignite.domain.Library;
+import com.ignite.service.MyService;
 import com.ignite.util.Utils;
 import org.apache.ignite.*;
 import org.apache.ignite.binary.BinaryObject;
@@ -129,7 +130,11 @@ public class ShellCommands {
         lists.forEach(i-> System.out.println(i));
     }
 
-
+    @ShellMethod("get from cache.")
+    public void exec() {
+        MyService myService = ignite.services().serviceProxy("ServiceProxy", MyService.class, false);
+        myService.doStuff();
+    }
 
 //    @ShellMethod("computeQuery")
 //    public void test_stream(){
