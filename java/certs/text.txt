@@ -1,0 +1,17 @@
+trustStore is to verify credentials - stores certificates from third party, your Java application communicate or certificates signed by CA which can be used to identify third party.
+keyStore is to provide credential - stores private key and certificates corresponding to their public keys and require if you are SSL Server or SSL requires client authentication
+
+trustStore is used by TrustManager and keyStore is used by KeyManager.
+TrustManager determines whether remote connection should be trusted or not i.e. whether remote party is who it claims to.
+KeyManager decides which authentication credentials should be sent to the remote host for authentication during SSL handshake.
+
+if you are an SSL Server you will use private key during key exchange algorithm and send certificates corresponding to your public keys to client, this certificate is acquired from keyStore.
+On SSL client side, if its written in Java, it will use certificates stored in trustStore to verify identity of Server. 
+
+
+keytool -genkey -keyalg RSA -alias tryout -keystore selfsigned.jks -validity 365 -keysize 2048
+keytool -list -v -keystore test.jks
+
+echo Generate a certificate and private key pair for ${artifact}.
+keytool -genkey -keyalg RSA -keysize 1024 -dname "emailAddress=${artifact}@ignite.com, CN=${artifact}, OU=Dev, O=Ignite, L=SPb, ST=SPb, C=RU" -validity 7305 -alias ${artifact} -keypass ${pwd} -keystore ${artifact}.jks -storepass ${pwd}
+
