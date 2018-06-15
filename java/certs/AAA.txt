@@ -1,15 +1,26 @@
+set PATH=%PATH%;D:\work\installed\java\bin\
+set PATH=%PATH%;D:\work\installed\OpenSSL\bin\
+
+
 ### generate a public-private key pair
-D:\work\installed\java\bin\keytool -genkey -keystore ca.jks -alias caKey -storepass password -keypass password -dname "CN=cn, OU=ou, O=o, L=l, S=s, C=UA"
+keytool -genkey -keystore ca.jks -alias caKey -storepass password -keypass password -dname "CN=cn, OU=ou, O=o, L=l, S=s, C=UA"
 
 ### check jks
-D:\work\installed\java\bin\keytool -list -v -keystore ca.jks -storepass password
-D:\work\installed\java\bin\keytool -list -v -keystore truststore.jks -storepass password
+keytool -list -v -keystore ca.jks -storepass password
+keytool -list -v -keystore truststore.jks -storepass password
 
 ### export cert from jks
-D:\work\installed\java\bin\keytool -export -keystore ca.jks -alias caKey -file ca.cer -storepass password
+keytool -export -keystore ca.jks -alias caKey -file ca.cer -storepass password
 
 ### print cert
-D:\work\installed\java\bin\keytool -printcert -file ca.cer
+keytool -printcert -file ca.cer
 
 ### create jks from cert
-D:\work\installed\java\bin\keytool -import -alias caKey -file ca.cer -keystore truststore.jks -storepass password
+keytool -import -alias caKey -file ca.cer -keystore truststore.jks -storepass password
+
+### create server jks
+keytool -genkey -keystore server.jks -alias server -storepass password -keypass password -dname "CN=cn, OU=ou, O=o, L=l, S=s, C=UA"
+
+### generate csr (cert sign request) from server.jks
+keytool -certreq –keyalg rsa -alias server -file server.csr -keystore server.jks -storepass password
+
