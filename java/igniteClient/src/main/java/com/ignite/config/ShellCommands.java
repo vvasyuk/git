@@ -1,40 +1,27 @@
 package com.ignite.config;
 
-import com.ignite.domain.Book;
-import com.ignite.domain.Library;
 import com.ignite.service.MyService;
 import com.ignite.util.Utils;
 import org.apache.ignite.*;
-import org.apache.ignite.binary.BinaryObject;
-import org.apache.ignite.cache.CacheAtomicityMode;
-import org.apache.ignite.cache.CacheMode;
 import org.apache.ignite.cache.CachePeekMode;
-import org.apache.ignite.cache.CacheRebalanceMode;
-import org.apache.ignite.cache.affinity.AffinityKey;
-import org.apache.ignite.cache.query.QueryCursor;
+import org.apache.ignite.cache.query.ContinuousQuery;
 import org.apache.ignite.cache.query.ScanQuery;
-import org.apache.ignite.cluster.ClusterNode;
 import org.apache.ignite.configuration.CacheConfiguration;
-import org.apache.ignite.internal.util.typedef.F;
-import org.apache.ignite.lang.IgniteBiInClosure;
 import org.apache.ignite.lang.IgniteBiPredicate;
 import org.apache.ignite.lang.IgniteCallable;
-import org.apache.ignite.lang.IgniteClosure;
 import org.apache.ignite.resources.IgniteInstanceResource;
-import org.apache.ignite.stream.StreamReceiver;
-import org.apache.ignite.stream.StreamVisitor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 
-import javax.cache.Cache;
+import javax.cache.configuration.Factory;
+import javax.cache.event.CacheEntryEvent;
+import javax.cache.event.CacheEntryEventFilter;
+import javax.cache.event.CacheEntryUpdatedListener;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
-
-import static com.ignite.util.Utils.createDataSize;
 
 @ShellComponent
 public class ShellCommands {
@@ -60,7 +47,7 @@ public class ShellCommands {
 
     @ShellMethod("get from cache.")
     public void act2() {
-        ignite.cluster().active();
+        ignite.cluster().active(true);
     }
 
     @ShellMethod("get from cache.")
@@ -106,12 +93,75 @@ public class ShellCommands {
 //        cfg.setRebalanceMode(CacheRebalanceMode.SYNC);
         IgniteCache cache = ignite.getOrCreateCache(cfg);
 
-        IntStream.range(cache.size(CachePeekMode.ALL)+1, cache.size(CachePeekMode.ALL)+1+1000000
+        IntStream.range(cache.size(CachePeekMode.ALL)+1, cache.size(CachePeekMode.ALL)+1+10
         ).forEach(i -> {
                     cache.put(i, Utils.getRandonString(2));
                 }
         );
     }
+
+    public void cachePut(int i, int j) {
+        CacheConfiguration<Integer, String> cfg = new CacheConfiguration<>();
+        cfg.setName(C);
+        IgniteCache cache = ignite.getOrCreateCache(cfg);
+
+        IntStream.range(i, j).forEach(x -> { cache.put(x, Utils.getRandonString(2)); });
+    }
+
+    @ShellMethod("get from cache.")
+    public void threads() {
+        Thread t1 = new Thread(new Runnable() {
+            public void run() {
+                CacheConfiguration<Integer, String> cfg = new CacheConfiguration<>();
+                cfg.setName(C);
+                IgniteCache cache = ignite.getOrCreateCache(cfg);
+                cachePut(1,10);
+            }
+        });
+
+        Thread t2 = new Thread(new Runnable() {
+            public void run() {
+                CacheConfiguration<Integer, String> cfg = new CacheConfiguration<>();
+                cfg.setName(C);
+                IgniteCache cache = ignite.getOrCreateCache(cfg);
+                cachePut(10,20);
+            }
+        });
+
+        Thread t3 = new Thread(new Runnable() {
+            public void run() {
+                CacheConfiguration<Integer, String> cfg = new CacheConfiguration<>();
+                cfg.setName(C);
+                IgniteCache cache = ignite.getOrCreateCache(cfg);
+                cachePut(20,30);
+            }
+        });
+
+        Thread t4 = new Thread(new Runnable() {
+            public void run() {
+                CacheConfiguration<Integer, String> cfg = new CacheConfiguration<>();
+                cfg.setName(C);
+                IgniteCache cache = ignite.getOrCreateCache(cfg);
+                cachePut(30,40);
+            }
+        });
+
+        Thread t5 = new Thread(new Runnable() {
+            public void run() {
+                CacheConfiguration<Integer, String> cfg = new CacheConfiguration<>();
+                cfg.setName(C);
+                IgniteCache cache = ignite.getOrCreateCache(cfg);
+                cachePut(40,50);
+            }
+        });
+
+        t1.start();
+        t2.start();
+        t3.start();
+        t4.start();
+        t5.start();
+    }
+
 
     @ShellMethod("get from cache.")
     public void ls (){
@@ -134,6 +184,33 @@ public class ShellCommands {
     public void exec() {
         MyService myService = ignite.services().serviceProxy("ServiceProxy", MyService.class, false);
         myService.doStuff();
+    }
+
+    @ShellMethod("create continious qry.")
+    public void contqry() {
+        ContinuousQuery<Integer, String> qry = new ContinuousQuery<>();
+        qry.setInitialQuery(new ScanQuery<>(new IgniteBiPredicate<Integer, String>() {
+            @Override public boolean apply(Integer key, String val) {
+                return true;
+            }
+        }));
+        qry.setLocalListener(new CacheEntryUpdatedListener<Integer, String>() {
+            @Override public void onUpdated(Iterable<CacheEntryEvent<? extends Integer, ? extends String>> evts) {
+                for (CacheEntryEvent<? extends Integer, ? extends String> e : evts)
+                    System.out.println("Updated entry [key=" + e.getKey() + ", val=" + e.getValue() + ']');
+            }
+        });
+        qry.setRemoteFilterFactory(new Factory<CacheEntryEventFilter<Integer, String>>() {
+            @Override public CacheEntryEventFilter<Integer, String> create() {
+                return new CacheEntryEventFilter<Integer, String>() {
+                    @Override public boolean evaluate(CacheEntryEvent<? extends Integer, ? extends String> e) {
+                        return true;
+                    }
+                };
+            }
+        });
+
+        ignite.cache(C).query(qry);
     }
 
 //    @ShellMethod("computeQuery")
