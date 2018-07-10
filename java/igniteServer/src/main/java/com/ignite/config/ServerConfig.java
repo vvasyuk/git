@@ -10,6 +10,7 @@ import org.apache.ignite.cache.query.ScanQuery;
 import org.apache.ignite.configuration.CacheConfiguration;
 import org.apache.ignite.configuration.DataStorageConfiguration;
 import org.apache.ignite.configuration.IgniteConfiguration;
+import org.apache.ignite.lang.IgniteAsyncCallback;
 import org.apache.ignite.lang.IgniteBiPredicate;
 import org.apache.ignite.spi.communication.tcp.TcpCommunicationSpi;
 import org.apache.ignite.spi.deployment.uri.UriDeploymentSpi;
@@ -32,6 +33,7 @@ import java.util.Arrays;
 public class ServerConfig {
 
     Ignite ignite;
+    IgniteAtomicLong atomicLong;
 
     public ServerConfig(Environment e) throws Exception {
         System.out.println("Starting ignite server");
@@ -64,7 +66,7 @@ public class ServerConfig {
 
         this.ignite = Ignition.start(cfg);
 
-        IgniteAtomicLong atomicLong = ignite.atomicLong("atomicName", 0, true);
+        atomicLong = ignite.atomicLong("atomicName", 0, true);
 
         ContinuousQuery<Integer, String> qry = new ContinuousQuery<>();
         qry.setInitialQuery(new ScanQuery<>(new IgniteBiPredicate<Integer, String>() {
@@ -72,15 +74,7 @@ public class ServerConfig {
                 return true;
             }
         }));
-        qry.setLocalListener(new CacheEntryUpdatedListener<Integer, String>() {
-            @Override public void onUpdated(Iterable<CacheEntryEvent<? extends Integer, ? extends String>> evts) {
-                for (CacheEntryEvent<? extends Integer, ? extends String> e : evts){
-
-                    System.out.println("Updated entry [key=" + e.getKey() + ", val=" + e.getValue() + ']');
-                    System.out.println("Incremented value: " + atomicLong.incrementAndGet());
-                }
-            }
-        });
+        qry.setLocalListener(new MyCacheEntryUpdatedListener());
         qry.setRemoteFilterFactory(new Factory<CacheEntryEventFilter<Integer, String>>() {
             @Override public CacheEntryEventFilter<Integer, String> create() {
                 return new CacheEntryEventFilter<Integer, String>() {
@@ -93,7 +87,7 @@ public class ServerConfig {
 
         CacheConfiguration<Integer, String> c = new CacheConfiguration<>();
         c.setName("test");
-        c.setBackups(2);
+        c.setBackups(1);
         IgniteCache cache = ignite.getOrCreateCache(c);
         ignite.cache("test").query(qry);
 
@@ -106,4 +100,15 @@ public class ServerConfig {
 //    public Ignite getIgnite(){
 //        return this.ignite;
 //    }
+
+    @IgniteAsyncCallback
+    class MyCacheEntryUpdatedListener implements CacheEntryUpdatedListener<Integer, String> {
+        @Override public void onUpdated(Iterable<CacheEntryEvent<? extends Integer, ? extends String>> evts) {
+            for (CacheEntryEvent<? extends Integer, ? extends String> e : evts){
+
+                System.out.println("Updated entry [key=" + e.getKey() + ", val=" + e.getValue() + ']');
+                System.out.println("Incremented value: " + atomicLong.incrementAndGet());
+            }
+        }
+    }
 }
