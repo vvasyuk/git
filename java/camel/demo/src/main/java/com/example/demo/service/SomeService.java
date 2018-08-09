@@ -1,7 +1,10 @@
 package com.example.demo.service;
 
+import org.apache.camel.Exchange;
 import org.springframework.stereotype.Component;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.HashMap;
 
 /**
@@ -19,5 +22,10 @@ public class SomeService {
 
         //resultMap=CustomXmlParser.getMapFromXml(msg, whatToTakeFromXmlMap, namespaceMap);
         System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
+    }
+
+    public void getInputStream(Exchange exchange) {
+        InputStream inputStream = new ByteArrayInputStream("test string, test huistring".getBytes());
+        exchange.getIn().setBody(inputStream);
     }
 }
