@@ -66,30 +66,30 @@ public class ServerConfig {
 
         this.ignite = Ignition.start(cfg);
 
-        atomicLong = ignite.atomicLong("atomicName", 0, true);
-
-        ContinuousQuery<Integer, String> qry = new ContinuousQuery<>();
-        qry.setInitialQuery(new ScanQuery<>(new IgniteBiPredicate<Integer, String>() {
-            @Override public boolean apply(Integer key, String val) {
-                return true;
-            }
-        }));
-        qry.setLocalListener(new MyCacheEntryUpdatedListener());
-        qry.setRemoteFilterFactory(new Factory<CacheEntryEventFilter<Integer, String>>() {
-            @Override public CacheEntryEventFilter<Integer, String> create() {
-                return new CacheEntryEventFilter<Integer, String>() {
-                    @Override public boolean evaluate(CacheEntryEvent<? extends Integer, ? extends String> e) {
-                        return true;
-                    }
-                };
-            }
-        });
-
-        CacheConfiguration<Integer, String> c = new CacheConfiguration<>();
-        c.setName("test");
-        c.setBackups(1);
-        IgniteCache cache = ignite.getOrCreateCache(c);
-        ignite.cache("test").query(qry);
+//        atomicLong = ignite.atomicLong("atomicName", 0, true);
+//
+//        ContinuousQuery<Integer, String> qry = new ContinuousQuery<>();
+//        qry.setInitialQuery(new ScanQuery<>(new IgniteBiPredicate<Integer, String>() {
+//            @Override public boolean apply(Integer key, String val) {
+//                return true;
+//            }
+//        }));
+//        qry.setLocalListener(new MyCacheEntryUpdatedListener());
+//        qry.setRemoteFilterFactory(new Factory<CacheEntryEventFilter<Integer, String>>() {
+//            @Override public CacheEntryEventFilter<Integer, String> create() {
+//                return new CacheEntryEventFilter<Integer, String>() {
+//                    @Override public boolean evaluate(CacheEntryEvent<? extends Integer, ? extends String> e) {
+//                        return true;
+//                    }
+//                };
+//            }
+//        });
+//
+//        CacheConfiguration<Integer, String> c = new CacheConfiguration<>();
+//        c.setName("test");
+//        c.setBackups(1);
+//        IgniteCache cache = ignite.getOrCreateCache(c);
+//        ignite.cache("test").query(qry);
 
 //        ignite.services(ignite.cluster().forServers()).deployNodeSingleton("ServiceProxy", new ServiceProxy());
 //        ignite.compute().execute("service.GarExample", "a b c d e f");
@@ -101,14 +101,14 @@ public class ServerConfig {
 //        return this.ignite;
 //    }
 
-    @IgniteAsyncCallback
-    class MyCacheEntryUpdatedListener implements CacheEntryUpdatedListener<Integer, String> {
-        @Override public void onUpdated(Iterable<CacheEntryEvent<? extends Integer, ? extends String>> evts) {
-            for (CacheEntryEvent<? extends Integer, ? extends String> e : evts){
-
-                System.out.println("Updated entry [key=" + e.getKey() + ", val=" + e.getValue() + ']');
-                System.out.println("Incremented value: " + atomicLong.incrementAndGet());
-            }
-        }
-    }
+//    @IgniteAsyncCallback
+//    class MyCacheEntryUpdatedListener implements CacheEntryUpdatedListener<Integer, String> {
+//        @Override public void onUpdated(Iterable<CacheEntryEvent<? extends Integer, ? extends String>> evts) {
+//            for (CacheEntryEvent<? extends Integer, ? extends String> e : evts){
+//
+//                System.out.println("Updated entry [key=" + e.getKey() + ", val=" + e.getValue() + ']');
+//                System.out.println("Incremented value: " + atomicLong.incrementAndGet());
+//            }
+//        }
+//    }
 }
