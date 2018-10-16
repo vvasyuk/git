@@ -48,8 +48,8 @@ public class ServerConfig {
         TcpCommunicationSpi commSpi = new TcpCommunicationSpi();
         commSpi.setLocalPort(48100);
 
-//        UriDeploymentSpi spi = new UriDeploymentSpi();
-//        spi.setUriList(Arrays.asList(System.getenv("GARFILE")));
+        UriDeploymentSpi spi = new UriDeploymentSpi();
+        spi.setUriList(Arrays.asList(System.getenv("GARFILE")));
 
         DataStorageConfiguration storageCfg = new DataStorageConfiguration();
         storageCfg.getDefaultDataRegionConfiguration().setMaxSize(100L * 1024 * 1024);
@@ -62,7 +62,7 @@ public class ServerConfig {
         cfg.setDiscoverySpi(discoverySpi);
         cfg.setCommunicationSpi(commSpi);
         cfg.setPeerClassLoadingEnabled(true);
-//        cfg.setDeploymentSpi(spi);
+        cfg.setDeploymentSpi(spi);
 
         this.ignite = Ignition.start(cfg);
 
@@ -91,9 +91,9 @@ public class ServerConfig {
 //        IgniteCache cache = ignite.getOrCreateCache(c);
 //        ignite.cache("test").query(qry);
 
-//        ignite.services(ignite.cluster().forServers()).deployNodeSingleton("ServiceProxy", new ServiceProxy());
-//        ignite.compute().execute("service.GarExample", "a b c d e f");
-//        ignite.services().serviceDescriptors().stream().forEach(i-> System.out.println(i.serviceClass()));
+        ignite.services(ignite.cluster().forServers()).deployNodeSingleton("ServiceProxy", new ServiceProxy());
+        ignite.compute().execute("service.GarExample", "a b c d e f");
+        ignite.services().serviceDescriptors().stream().forEach(i-> System.out.println(i.serviceClass()));
     }
 
 //    @Bean
