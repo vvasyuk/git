@@ -1,36 +1,17 @@
 package com.ignite.config;
 
 import com.ignite.domain.Book;
-import com.ignite.domain.Library;
 import org.apache.ignite.*;
-import org.apache.ignite.binary.BinaryBasicIdMapper;
-import org.apache.ignite.binary.BinaryBasicNameMapper;
-import org.apache.ignite.cache.CachePeekMode;
-import org.apache.ignite.cache.affinity.AffinityKey;
-import org.apache.ignite.cache.query.QueryCursor;
-import org.apache.ignite.cache.query.ScanQuery;
-import org.apache.ignite.configuration.BinaryConfiguration;
-import org.apache.ignite.configuration.CacheConfiguration;
 import org.apache.ignite.configuration.IgniteConfiguration;
-import org.apache.ignite.lang.IgniteBiInClosure;
-import org.apache.ignite.lang.IgniteBiPredicate;
-import org.apache.ignite.lang.IgniteCallable;
-import org.apache.ignite.resources.IgniteInstanceResource;
+import org.apache.ignite.spi.deployment.uri.UriDeploymentSpi;
 import org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi;
 import org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder;
-import org.apache.ignite.stream.StreamVisitor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
-import org.springframework.shell.standard.ShellMethod;
 
-import javax.cache.Cache;
+
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
 
 
 /**
@@ -53,6 +34,10 @@ public class ClientConfig {
         ipFinder.setAddresses(Arrays.asList("127.0.0.1:48500..48520"));
         spi.setIpFinder(ipFinder);
 
+//        UriDeploymentSpi spiDeployment = new UriDeploymentSpi();
+//        spiDeployment.setUriList(Arrays.asList(System.getenv("GARFILE")));
+//
+//        cfg.setDeploymentSpi(spiDeployment);
         cfg.setPeerClassLoadingEnabled(true);
         cfg.setClientMode(true);
         cfg.setDiscoverySpi(spi);

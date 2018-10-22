@@ -213,6 +213,14 @@ public class ShellCommands {
         ignite.cache(C).query(qry);
     }
 
+    @ShellMethod("start compute")
+    public void startcompute() {
+        //needs to have gar file imported on client side as well
+        ignite.compute().execute("service.GarExample", "a b c d e f");
+    }
+
+
+
 //    @ShellMethod("computeQuery")
 //    public void test_stream(){
 //        IgniteCache<AffinityKey, Book> bookC = ignite.getOrCreateCache("bookC");

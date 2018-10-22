@@ -91,9 +91,9 @@ public class ServerConfig {
 //        IgniteCache cache = ignite.getOrCreateCache(c);
 //        ignite.cache("test").query(qry);
 
-        ignite.services(ignite.cluster().forServers()).deployNodeSingleton("ServiceProxy", new ServiceProxy());
+//        ignite.services(ignite.cluster().forServers()).deployNodeSingleton("ServiceProxy", new ServiceProxy());
         ignite.compute().execute("service.GarExample", "a b c d e f");
-        ignite.services().serviceDescriptors().stream().forEach(i-> System.out.println(i.serviceClass()));
+//        ignite.services().serviceDescriptors().stream().forEach(i-> System.out.println(i.serviceClass()));
     }
 
 //    @Bean
