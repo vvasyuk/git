@@ -10,8 +10,14 @@ import org.apache.ignite.cache.query.ScanQuery;
 import org.apache.ignite.configuration.CacheConfiguration;
 import org.apache.ignite.configuration.DataStorageConfiguration;
 import org.apache.ignite.configuration.IgniteConfiguration;
+import org.apache.ignite.events.CacheEvent;
+import org.apache.ignite.events.EventType;
+import org.apache.ignite.internal.GridKernalContextImpl;
+import org.apache.ignite.internal.IgniteKernal;
 import org.apache.ignite.lang.IgniteAsyncCallback;
 import org.apache.ignite.lang.IgniteBiPredicate;
+import org.apache.ignite.lang.IgnitePredicate;
+import org.apache.ignite.resources.IgniteInstanceResource;
 import org.apache.ignite.spi.communication.tcp.TcpCommunicationSpi;
 import org.apache.ignite.spi.deployment.uri.UriDeploymentSpi;
 import org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi;
@@ -63,52 +69,84 @@ public class ServerConfig {
         cfg.setCommunicationSpi(commSpi);
         cfg.setPeerClassLoadingEnabled(true);
         cfg.setDeploymentSpi(spi);
+        cfg.setIncludeEventTypes(EventType.EVT_CACHE_STARTED);
 
         this.ignite = Ignition.start(cfg);
 
 //        atomicLong = ignite.atomicLong("atomicName", 0, true);
-//
-//        ContinuousQuery<Integer, String> qry = new ContinuousQuery<>();
+
+        String cacheName = "test";
+
+        registerCacheCreationListener();
+
+        IgniteCache<Integer, String> cache = startCache(cacheName);
+        //startCQ(cacheName, ignite);
+        cache.put(1,"one");
+    }
+
+
+
+    private void registerCacheCreationListener(){
+
+        IgnitePredicate<CacheEvent> locLsnr = new IgnitePredicate<CacheEvent>(){
+            @IgniteInstanceResource
+            private Ignite ignite;
+            @Override
+            public boolean apply(CacheEvent evt) {
+                System.out.println("Received event [evt=" + evt.name() + " cacheName=" + evt.cacheName());
+                IgniteCache<Integer, String > cache = ignite.cache(evt.cacheName());
+                return true; // Continue listening.
+            }
+
+        };
+
+        ignite.events().localListen(locLsnr, EventType.EVT_CACHE_STARTED);
+    }
+
+    private void startCQ(String cacheName, Ignite ign){
+        ContinuousQuery<Integer, String> qry = new ContinuousQuery<>();
 //        qry.setInitialQuery(new ScanQuery<>(new IgniteBiPredicate<Integer, String>() {
 //            @Override public boolean apply(Integer key, String val) {
 //                return true;
 //            }
 //        }));
-//        qry.setLocalListener(new MyCacheEntryUpdatedListener());
-//        qry.setRemoteFilterFactory(new Factory<CacheEntryEventFilter<Integer, String>>() {
-//            @Override public CacheEntryEventFilter<Integer, String> create() {
-//                return new CacheEntryEventFilter<Integer, String>() {
-//                    @Override public boolean evaluate(CacheEntryEvent<? extends Integer, ? extends String> e) {
-//                        return true;
-//                    }
-//                };
-//            }
-//        });
-//
-//        CacheConfiguration<Integer, String> c = new CacheConfiguration<>();
-//        c.setName("test");
-//        c.setBackups(1);
-//        IgniteCache cache = ignite.getOrCreateCache(c);
-//        ignite.cache("test").query(qry);
-
-//        ignite.services(ignite.cluster().forServers()).deployNodeSingleton("ServiceProxy", new ServiceProxy());
-        ignite.compute().execute("service.GarExample", "a b c d e f");
-//        ignite.services().serviceDescriptors().stream().forEach(i-> System.out.println(i.serviceClass()));
+        qry.setLocalListener(new MyCacheEntryUpdatedListener());
+        qry.setRemoteFilterFactory(new Factory<CacheEntryEventFilter<Integer, String>>() {
+            @Override public CacheEntryEventFilter<Integer, String> create() {
+                return new CacheEntryEventFilter<Integer, String>() {
+                    @Override public boolean evaluate(CacheEntryEvent<? extends Integer, ? extends String> e) {
+                        return true;
+                    }
+                };
+            }
+        });
+        ign.cache(cacheName).query(qry);
     }
 
-//    @Bean
-//    public Ignite getIgnite(){
-//        return this.ignite;
-//    }
+    @IgniteAsyncCallback
+    class MyCacheEntryUpdatedListener implements CacheEntryUpdatedListener<Integer, String> {
+        @Override public void onUpdated(Iterable<CacheEntryEvent<? extends Integer, ? extends String>> evts) {
+            for (CacheEntryEvent<? extends Integer, ? extends String> e : evts){
+                System.out.println("Updated entry [key=" + e.getKey() + ", val=" + e.getValue() + ']');
+                //System.out.println("Incremented value: " + atomicLong.incrementAndGet());
+            }
+        }
+    }
 
-//    @IgniteAsyncCallback
-//    class MyCacheEntryUpdatedListener implements CacheEntryUpdatedListener<Integer, String> {
-//        @Override public void onUpdated(Iterable<CacheEntryEvent<? extends Integer, ? extends String>> evts) {
-//            for (CacheEntryEvent<? extends Integer, ? extends String> e : evts){
-//
-//                System.out.println("Updated entry [key=" + e.getKey() + ", val=" + e.getValue() + ']');
-//                System.out.println("Incremented value: " + atomicLong.incrementAndGet());
-//            }
-//        }
-//    }
+    private <K,V> IgniteCache<K,V> startCache(String cacheName){
+        CacheConfiguration<K, V> c = new CacheConfiguration<>(cacheName);
+        c.setBackups(1);
+        return ignite.getOrCreateCache(c);
+    }
+
+    private void executeService(){
+        ignite.services(ignite.cluster().forServers()).deployNodeSingleton("ServiceProxy", new ServiceProxy());
+        ignite.compute().execute("service.GarExample", "a b c d e f");
+        ignite.services().serviceDescriptors().stream().forEach(i-> System.out.println(i.serviceClass()));
+    }
+
+    @Bean
+    public Ignite getIgnite(){
+        return this.ignite;
+    }
 }

@@ -5,6 +5,8 @@ import java.util.stream.IntStream;
 
 public class GenericsTest {
 
+    Object o;
+
     public static <U> void addBox(U u, List<Box<U>> boxes) {
         Box<U> box = new Box<>(u);
         //box.set(u);
