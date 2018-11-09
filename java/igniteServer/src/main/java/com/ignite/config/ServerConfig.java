@@ -45,32 +45,28 @@ public class ServerConfig {
         System.out.println("Starting ignite server");
         IgniteConfiguration cfg = new IgniteConfiguration();
 
-        TcpDiscoverySpi discoverySpi = new TcpDiscoverySpi();
-        discoverySpi.setLocalPort(48500);
-        discoverySpi.setLocalPortRange(20);
-        TcpDiscoveryVmIpFinder ipFinder = new TcpDiscoveryVmIpFinder();
-        ipFinder.setAddresses(Arrays.asList("127.0.0.1:48500..48520"));
-        discoverySpi.setIpFinder(ipFinder);
-        TcpCommunicationSpi commSpi = new TcpCommunicationSpi();
-        commSpi.setLocalPort(48100);
-
-        UriDeploymentSpi spi = new UriDeploymentSpi();
-        spi.setUriList(Arrays.asList(System.getenv("GARFILE")));
-
-        DataStorageConfiguration storageCfg = new DataStorageConfiguration();
-        storageCfg.getDefaultDataRegionConfiguration().setMaxSize(100L * 1024 * 1024);
+//        TcpDiscoverySpi discoverySpi = new TcpDiscoverySpi();
+//        discoverySpi.setLocalPort(48500);
+//        discoverySpi.setLocalPortRange(20);
+//        TcpDiscoveryVmIpFinder ipFinder = new TcpDiscoveryVmIpFinder();
+//        ipFinder.setAddresses(Arrays.asList("127.0.0.1:48500..48520"));
+//        discoverySpi.setIpFinder(ipFinder);
+//        TcpCommunicationSpi commSpi = new TcpCommunicationSpi();
+//        commSpi.setLocalPort(48100);
+//        UriDeploymentSpi spi = new UriDeploymentSpi();
+//        spi.setUriList(Arrays.asList(System.getenv("GARFILE")));
+//        DataStorageConfiguration storageCfg = new DataStorageConfiguration();
+//        storageCfg.getDefaultDataRegionConfiguration().setMaxSize(100L * 1024 * 1024);
 //        storageCfg.getDefaultDataRegionConfiguration().setPersistenceEnabled(true);
 //        storageCfg.setStoragePath("F:\\ignite\\");
 //        storageCfg.setWalPath("F:\\ignite\\");
 //        storageCfg.setWalArchivePath("F:\\ignite\\");
-
-        cfg.setDataStorageConfiguration(storageCfg);
-        cfg.setDiscoverySpi(discoverySpi);
-        cfg.setCommunicationSpi(commSpi);
+//        cfg.setDataStorageConfiguration(storageCfg);
+//        cfg.setDiscoverySpi(discoverySpi);
+//        cfg.setCommunicationSpi(commSpi);
+//        cfg.setDeploymentSpi(spi);
         cfg.setPeerClassLoadingEnabled(true);
-        cfg.setDeploymentSpi(spi);
         cfg.setIncludeEventTypes(EventType.EVT_CACHE_STARTED);
-
         this.ignite = Ignition.start(cfg);
 
 //        atomicLong = ignite.atomicLong("atomicName", 0, true);
@@ -79,12 +75,12 @@ public class ServerConfig {
 
         registerCacheCreationListener();
 
+        System.out.println("creating cache " + cacheName);
         IgniteCache<Integer, String> cache = startCache(cacheName);
         //startCQ(cacheName, ignite);
         cache.put(1,"one");
+        System.out.println(cache.get(1));
     }
-
-
 
     private void registerCacheCreationListener(){
 
@@ -95,11 +91,10 @@ public class ServerConfig {
             public boolean apply(CacheEvent evt) {
                 System.out.println("Received event [evt=" + evt.name() + " cacheName=" + evt.cacheName());
                 IgniteCache<Integer, String > cache = ignite.cache(evt.cacheName());
+                System.out.println("finished listening");
                 return true; // Continue listening.
             }
-
         };
-
         ignite.events().localListen(locLsnr, EventType.EVT_CACHE_STARTED);
     }
 
@@ -134,9 +129,9 @@ public class ServerConfig {
     }
 
     private <K,V> IgniteCache<K,V> startCache(String cacheName){
-        CacheConfiguration<K, V> c = new CacheConfiguration<>(cacheName);
-        c.setBackups(1);
-        return ignite.getOrCreateCache(c);
+//        CacheConfiguration<K, V> c = new CacheConfiguration<>(cacheName);
+//        c.setBackups(1);
+        return ignite.<K,V>getOrCreateCache("test");
     }
 
     private void executeService(){
