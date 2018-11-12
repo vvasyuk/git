@@ -45,26 +45,27 @@ public class ServerConfig {
         System.out.println("Starting ignite server");
         IgniteConfiguration cfg = new IgniteConfiguration();
 
-//        TcpDiscoverySpi discoverySpi = new TcpDiscoverySpi();
-//        discoverySpi.setLocalPort(48500);
-//        discoverySpi.setLocalPortRange(20);
-//        TcpDiscoveryVmIpFinder ipFinder = new TcpDiscoveryVmIpFinder();
-//        ipFinder.setAddresses(Arrays.asList("127.0.0.1:48500..48520"));
-//        discoverySpi.setIpFinder(ipFinder);
-//        TcpCommunicationSpi commSpi = new TcpCommunicationSpi();
-//        commSpi.setLocalPort(48100);
-//        UriDeploymentSpi spi = new UriDeploymentSpi();
-//        spi.setUriList(Arrays.asList(System.getenv("GARFILE")));
-//        DataStorageConfiguration storageCfg = new DataStorageConfiguration();
-//        storageCfg.getDefaultDataRegionConfiguration().setMaxSize(100L * 1024 * 1024);
+        TcpDiscoverySpi discoverySpi = new TcpDiscoverySpi();
+        //change this if you want to start two nodes on one machine
+        discoverySpi.setLocalPort(48500);
+        discoverySpi.setLocalPortRange(20);
+        TcpDiscoveryVmIpFinder ipFinder = new TcpDiscoveryVmIpFinder();
+        ipFinder.setAddresses(Arrays.asList("127.0.0.1:49500..49520"));
+        discoverySpi.setIpFinder(ipFinder);
+        TcpCommunicationSpi commSpi = new TcpCommunicationSpi();
+        commSpi.setLocalPort(49100);
+        UriDeploymentSpi spi = new UriDeploymentSpi();
+        spi.setUriList(Arrays.asList(System.getenv("GARFILE")));
+        DataStorageConfiguration storageCfg = new DataStorageConfiguration();
+        storageCfg.getDefaultDataRegionConfiguration().setMaxSize(100L * 1024 * 1024);
 //        storageCfg.getDefaultDataRegionConfiguration().setPersistenceEnabled(true);
 //        storageCfg.setStoragePath("F:\\ignite\\");
 //        storageCfg.setWalPath("F:\\ignite\\");
 //        storageCfg.setWalArchivePath("F:\\ignite\\");
-//        cfg.setDataStorageConfiguration(storageCfg);
-//        cfg.setDiscoverySpi(discoverySpi);
-//        cfg.setCommunicationSpi(commSpi);
-//        cfg.setDeploymentSpi(spi);
+        cfg.setDataStorageConfiguration(storageCfg);
+        cfg.setDiscoverySpi(discoverySpi);
+        cfg.setCommunicationSpi(commSpi);
+        cfg.setDeploymentSpi(spi);
         cfg.setPeerClassLoadingEnabled(true);
         cfg.setIncludeEventTypes(EventType.EVT_CACHE_STARTED);
         this.ignite = Ignition.start(cfg);
@@ -73,7 +74,7 @@ public class ServerConfig {
 
         String cacheName = "test";
 
-        registerCacheCreationListener();
+        //registerCacheCreationListener();
 
         System.out.println("creating cache " + cacheName);
         IgniteCache<Integer, String> cache = startCache(cacheName);

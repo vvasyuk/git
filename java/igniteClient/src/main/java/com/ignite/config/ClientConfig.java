@@ -31,13 +31,13 @@ public class ClientConfig {
 
         TcpDiscoverySpi spi = new TcpDiscoverySpi();
         TcpDiscoveryVmIpFinder ipFinder = new TcpDiscoveryVmIpFinder();
-        ipFinder.setAddresses(Arrays.asList("127.0.0.1:48500..48520"));
+        ipFinder.setAddresses(Arrays.asList("127.0.0.1:49500..49520"));
         spi.setIpFinder(ipFinder);
 
-//        UriDeploymentSpi spiDeployment = new UriDeploymentSpi();
-//        spiDeployment.setUriList(Arrays.asList(System.getenv("GARFILE")));
-//
-//        cfg.setDeploymentSpi(spiDeployment);
+        UriDeploymentSpi spiDeployment = new UriDeploymentSpi();
+        spiDeployment.setUriList(Arrays.asList(System.getenv("GARFILE")));
+
+        cfg.setDeploymentSpi(spiDeployment);
         cfg.setPeerClassLoadingEnabled(true);
         cfg.setClientMode(true);
         cfg.setDiscoverySpi(spi);
