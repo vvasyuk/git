@@ -46,8 +46,8 @@ public class ServerConfig {
         IgniteConfiguration cfg = new IgniteConfiguration();
 
         TcpDiscoverySpi discoverySpi = new TcpDiscoverySpi();
-        //change this if you want to start two nodes on one machine
-        discoverySpi.setLocalPort(48500);
+        //change this if you want to start two nodes on one machine (first node 49500)
+        discoverySpi.setLocalPort(49500);
         discoverySpi.setLocalPortRange(20);
         TcpDiscoveryVmIpFinder ipFinder = new TcpDiscoveryVmIpFinder();
         ipFinder.setAddresses(Arrays.asList("127.0.0.1:49500..49520"));

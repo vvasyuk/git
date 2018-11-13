@@ -11,34 +11,28 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class GarExample extends ComputeTaskAdapter<String, Integer> {
+public class ComputeTask2 extends ComputeTaskAdapter<String, Integer> {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     @Override
     public Map<? extends ComputeJob, ClusterNode> map(List<ClusterNode> nodes, String arg) {
         Map<ComputeJob, ClusterNode> map = new HashMap<>();
 
-        Iterator<ClusterNode> it = nodes.iterator();
-
-        for (final String word : arg.split(" ")) {
-            // If we used all nodes, restart the iterator.
-            if (!it.hasNext())
-                it = nodes.iterator();
-
-            ClusterNode node = it.next();
-
             map.put(new ComputeJobAdapter() {
                 @Override
                 public Object execute() {
-                    System.out.println();
-                    System.out.println(">>> Printing '" + word + "' on this node from ignite job.");
 
-                    // Return number of letters in the word.
-                    return word.length();
+                    if (CounterHolder.counter == null){
+                        CounterHolder.counter = new Counter();
+                    }
+
+                    CounterHolder.counter.incrementI();
+                    System.out.println(CounterHolder.counter.getI());
+
+                    return 0;
                 }
-            }, node);
-        }
+            }, nodes.get(0));
 
         return map;
     }

@@ -1,7 +1,7 @@
 package service;
 
 public class Counter {
-    int i;
+    private int i;
 
     public int getI() {
         return i;
