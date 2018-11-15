@@ -31,6 +31,7 @@ import javax.cache.event.CacheEntryEvent;
 import javax.cache.event.CacheEntryEventFilter;
 import javax.cache.event.CacheEntryUpdatedListener;
 import java.util.Arrays;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Created by Jopa on 2/11/2018.
@@ -72,26 +73,35 @@ public class ServerConfig {
 
 //        atomicLong = ignite.atomicLong("atomicName", 0, true);
 
-        String cacheName = "test";
+//        String cacheName = "test";
 
-        //registerCacheCreationListener();
+//        registerCacheCreationListener();
 
-        System.out.println("creating cache " + cacheName);
-        IgniteCache<Integer, String> cache = startCache(cacheName);
-        //startCQ(cacheName, ignite);
-        cache.put(1,"one");
-        System.out.println(cache.get(1));
+//        System.out.println("creating cache " + cacheName);
+//        IgniteCache<Integer, String> cache = startCache(cacheName);
+//        //startCQ(cacheName, ignite);
+//        cache.put(1,"one");
+//        System.out.println(cache.get(1));
     }
 
     private void registerCacheCreationListener(){
 
         IgnitePredicate<CacheEvent> locLsnr = new IgnitePredicate<CacheEvent>(){
-            @IgniteInstanceResource
-            private Ignite ignite;
             @Override
             public boolean apply(CacheEvent evt) {
                 System.out.println("Received event [evt=" + evt.name() + " cacheName=" + evt.cacheName());
-                IgniteCache<Integer, String > cache = ignite.cache(evt.cacheName());
+
+                CompletableFuture<String> fut = CompletableFuture.supplyAsync(()->{
+                    while (ignite.cache(evt.cacheName())== null){
+                        System.out.println(evt.cacheName() + " is null");
+                        continue;
+                    }
+
+                    startCQ(evt.cacheName(), ignite);
+                    System.out.println("CQ finished");
+                    return "";
+                });
+
                 System.out.println("finished listening");
                 return true; // Continue listening.
             }
@@ -124,7 +134,6 @@ public class ServerConfig {
         @Override public void onUpdated(Iterable<CacheEntryEvent<? extends Integer, ? extends String>> evts) {
             for (CacheEntryEvent<? extends Integer, ? extends String> e : evts){
                 System.out.println("Updated entry [key=" + e.getKey() + ", val=" + e.getValue() + ']');
-                //System.out.println("Incremented value: " + atomicLong.incrementAndGet());
             }
         }
     }
@@ -136,9 +145,10 @@ public class ServerConfig {
     }
 
     private void executeService(){
-        ignite.services(ignite.cluster().forServers()).deployNodeSingleton("ServiceProxy", new ServiceProxy());
-        ignite.compute().execute("service.GarExample", "a b c d e f");
-        ignite.services().serviceDescriptors().stream().forEach(i-> System.out.println(i.serviceClass()));
+//        ignite.services(ignite.cluster().forServers()).deployNodeSingleton("ServiceProxy", new ServiceProxy());
+//        ignite.compute().execute("service.GarExample", "a b c d e f");
+//        ignite.services().serviceDescriptors().stream().forEach(i-> System.out.println(i.serviceClass()));
+        ignite.compute().execute("service.CacheCreateLsnrWithCQ", "a b c d e f");
     }
 
     @Bean

@@ -36,7 +36,7 @@ public class ShellCommands {
 
     @ShellMethod("get from cache.")
     public String get(int a) {
-        return ignite.cache(C).get(a).toString();
+        return ignite.cache("test").get(a).toString();
     }
 
     @ShellMethod("get from cache.")
@@ -85,13 +85,19 @@ public class ShellCommands {
     @ShellMethod("get from cache.")
     public void init() {
         CacheConfiguration<Integer, String> cfg = new CacheConfiguration<>();
-        cfg.setName(C);
+        cfg.setName("test");
 //        cfg.setBackups(1);
 //        cfg.setRebalanceDelay(1000L);
 //        cfg.setCacheMode(CacheMode.PARTITIONED);
 //        cfg.setAtomicityMode(CacheAtomicityMode.ATOMIC);
 //        cfg.setRebalanceMode(CacheRebalanceMode.SYNC);
         IgniteCache cache = ignite.getOrCreateCache(cfg);
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         IntStream.range(cache.size(CachePeekMode.ALL)+1, cache.size(CachePeekMode.ALL)+1+10
         ).forEach(i -> {
@@ -225,6 +231,11 @@ public class ShellCommands {
         ignite.compute().execute("service.ComputeTask2", "a b c d e f");
     }
 
+    @ShellMethod("start compute2")
+    public void startcompute3() {
+        //needs to have gar file imported on client side as well
+        ignite.compute().execute("service.CacheCreateLsnrWithCQ", "a");
+    }
 
 
 //    @ShellMethod("computeQuery")
