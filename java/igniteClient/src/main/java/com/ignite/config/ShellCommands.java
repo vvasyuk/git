@@ -91,13 +91,12 @@ public class ShellCommands {
 //        cfg.setCacheMode(CacheMode.PARTITIONED);
 //        cfg.setAtomicityMode(CacheAtomicityMode.ATOMIC);
 //        cfg.setRebalanceMode(CacheRebalanceMode.SYNC);
-        IgniteCache cache = ignite.getOrCreateCache(cfg);
+        ignite.getOrCreateCache(cfg);
+    }
 
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    @ShellMethod("get from cache.")
+    public void initdata() {
+        IgniteCache<Integer, String> cache = ignite.cache("test");
 
         IntStream.range(cache.size(CachePeekMode.ALL)+1, cache.size(CachePeekMode.ALL)+1+10
         ).forEach(i -> {

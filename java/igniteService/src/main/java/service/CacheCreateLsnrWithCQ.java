@@ -25,7 +25,7 @@ public class CacheCreateLsnrWithCQ extends ComputeTaskAdapter<String, Integer> {
     @IgniteInstanceResource
     public void setIgnite(Ignite ignite) {
         this.ignite = ignite;
-
+        System.out.println("inside setIgnite");
         if (CounterHolder.counter == null){
             CounterHolder.init(ignite);
         }
@@ -47,7 +47,7 @@ public class CacheCreateLsnrWithCQ extends ComputeTaskAdapter<String, Integer> {
             map.put(new ComputeJobAdapter() {
                 @Override
                 public Object execute() {
-                    System.out.println("CounterHolder.counter - " + CounterHolder.counter.getI());
+                    //System.out.println("CounterHolder.counter - " + CounterHolder.counter.getI());
                     return word.length();
                 }
             }, node);
