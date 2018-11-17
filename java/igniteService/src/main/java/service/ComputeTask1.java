@@ -21,8 +21,8 @@ public class ComputeTask1 extends ComputeTaskAdapter<String, Integer> {
     public void setIgnite(Ignite ignite) {
         //this.ignite = ignite;
 
-        if (CounterHolder.counter == null){
-            CounterHolder.init(ignite);
+        if (CacheCreateLsnr.counter == null){
+            CacheCreateLsnr.init(ignite);
         }
     }
 
@@ -45,7 +45,7 @@ public class ComputeTask1 extends ComputeTaskAdapter<String, Integer> {
 //                    System.out.println();
 //                    System.out.println(">>> Printing '" + word + "' on this node from ignite job.");
 
-                    System.out.println("CounterHolder.counter - " + CounterHolder.counter.getI());
+                    System.out.println("CacheCreateLsnr.counter - " + CacheCreateLsnr.counter.getI());
 
                     // Return number of letters in the word.
                     return word.length();

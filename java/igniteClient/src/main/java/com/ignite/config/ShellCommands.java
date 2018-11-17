@@ -91,7 +91,13 @@ public class ShellCommands {
 //        cfg.setCacheMode(CacheMode.PARTITIONED);
 //        cfg.setAtomicityMode(CacheAtomicityMode.ATOMIC);
 //        cfg.setRebalanceMode(CacheRebalanceMode.SYNC);
-        ignite.getOrCreateCache(cfg);
+        IgniteCache<Integer, String> cache = ignite.getOrCreateCache(cfg);
+
+        IntStream.range(cache.size(CachePeekMode.ALL)+1, cache.size(CachePeekMode.ALL)+1+10
+        ).forEach(i -> {
+                    cache.put(i, Utils.getRandonString(2));
+                }
+        );
     }
 
     @ShellMethod("get from cache.")
@@ -233,7 +239,7 @@ public class ShellCommands {
     @ShellMethod("start compute2")
     public void startcompute3() {
         //needs to have gar file imported on client side as well
-        ignite.compute().execute("service.CacheCreateLsnrWithCQ", "a");
+        ignite.compute().execute("service.CacheCreateLsnrTask", "a");
     }
 
 

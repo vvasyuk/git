@@ -1,15 +1,12 @@
 package service;
 
-import org.apache.ignite.Ignite;
 import org.apache.ignite.cluster.ClusterNode;
 import org.apache.ignite.compute.ComputeJob;
 import org.apache.ignite.compute.ComputeJobAdapter;
 import org.apache.ignite.compute.ComputeJobResult;
 import org.apache.ignite.compute.ComputeTaskAdapter;
-import org.apache.ignite.resources.IgniteInstanceResource;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -25,12 +22,12 @@ public class ComputeTask2 extends ComputeTaskAdapter<String, Integer> {
                 @Override
                 public Object execute() {
 
-                    if(CounterHolder.counter == null){
-                        System.out.println("CounterHolder.counter is null - will init");
-//                        CounterHolder.counter = new Counter(ignite);
+                    if(CacheCreateLsnr.counter == null){
+                        System.out.println("CacheCreateLsnr.counter is null - will init");
+//                        CacheCreateLsnr.counter = new Counter(ignite);
                     }
-                    CounterHolder.counter.incrementI();
-                    System.out.println("CounterHolder.counter - " + CounterHolder.counter.getI());
+                    CacheCreateLsnr.counter.incrementI();
+                    System.out.println("CacheCreateLsnr.counter - " + CacheCreateLsnr.counter.getI());
 
                     return 0;
                 }
