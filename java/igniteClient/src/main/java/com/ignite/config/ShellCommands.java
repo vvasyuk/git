@@ -227,13 +227,13 @@ public class ShellCommands {
     @ShellMethod("start compute")
     public void startcompute() {
         //needs to have gar file imported on client side as well
-        ignite.compute().execute("service.ComputeTask1", "a b c d e f");
+        ignite.compute().execute("service.InitCounterTask", "a b c d e f");
     }
 
     @ShellMethod("start compute2")
     public void startcompute2() {
         //needs to have gar file imported on client side as well
-        ignite.compute().execute("service.ComputeTask2", "a b c d e f");
+        ignite.compute().execute("service.UseCounterTask", "a b c d e f");
     }
 
     @ShellMethod("start compute2")

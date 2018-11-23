@@ -13,16 +13,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class ComputeTask1 extends ComputeTaskAdapter<String, Integer> {
+public class InitCounterTask extends ComputeTaskAdapter<String, Integer> {
 
     private static final long serialVersionUID = 1L;
 
     @IgniteInstanceResource
     public void setIgnite(Ignite ignite) {
-        //this.ignite = ignite;
-
-        if (CacheCreateLsnr.counter == null){
-            CacheCreateLsnr.init(ignite);
+        System.out.println("inside setIgnite");
+        if (Counter.Holder.instance==null){
+            System.out.println("Counter.init()");
+            Counter.init();
         }
     }
 
@@ -42,10 +42,11 @@ public class ComputeTask1 extends ComputeTaskAdapter<String, Integer> {
             map.put(new ComputeJobAdapter() {
                 @Override
                 public Object execute() {
-//                    System.out.println();
-//                    System.out.println(">>> Printing '" + word + "' on this node from ignite job.");
+                    System.out.println(">>> Printing '" + word + "' on this node from ignite job.");
 
-                    System.out.println("CacheCreateLsnr.counter - " + CacheCreateLsnr.counter.getI());
+                    if(Counter.Holder.instance!=null){
+                        System.out.println("counter - " + Counter.Holder.instance.getx());
+                    }
 
                     // Return number of letters in the word.
                     return word.length();

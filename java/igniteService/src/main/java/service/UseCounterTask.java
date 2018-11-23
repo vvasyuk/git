@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ComputeTask2 extends ComputeTaskAdapter<String, Integer> {
+public class UseCounterTask extends ComputeTaskAdapter<String, Integer> {
 
     private static final long serialVersionUID = 2L;
 
@@ -22,12 +22,11 @@ public class ComputeTask2 extends ComputeTaskAdapter<String, Integer> {
                 @Override
                 public Object execute() {
 
-                    if(CacheCreateLsnr.counter == null){
-                        System.out.println("CacheCreateLsnr.counter is null - will init");
-//                        CacheCreateLsnr.counter = new Counter(ignite);
+                    if(Counter.Holder.instance == null){
+                        Counter.init();
                     }
-                    CacheCreateLsnr.counter.incrementI();
-                    System.out.println("CacheCreateLsnr.counter - " + CacheCreateLsnr.counter.getI());
+                    Counter.Holder.instance.incrementx();
+                    System.out.println("counter - " + Counter.Holder.instance.getx());
 
                     return 0;
                 }
