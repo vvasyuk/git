@@ -15,13 +15,11 @@ import java.util.Map;
 public class CacheCreateLsnrTask extends ComputeTaskAdapter<String, Integer> {
 
     private static final long serialVersionUID = 3L;
-    private Ignite ignite;
-
+    
     @IgniteInstanceResource
     public void setIgnite(Ignite ignite) {
-        this.ignite = ignite;
         System.out.println("inside setIgnite");
-        if (CacheCreateLsnr.counter == null){
+        if (CacheCreateLsnr.counter == null) {
             CacheCreateLsnr.init(ignite);
         }
     }
@@ -31,7 +29,9 @@ public class CacheCreateLsnrTask extends ComputeTaskAdapter<String, Integer> {
         Map<ComputeJob, ClusterNode> map = new HashMap<>();
 
         map.put(new ComputeJobAdapter() {
-                @Override
+                private static final long serialVersionUID = 1L;
+
+            @Override
                 public Object execute() {
             //System.out.println("CacheCreateLsnr.counter - " + CacheCreateLsnr.counter.getI());
             return "";

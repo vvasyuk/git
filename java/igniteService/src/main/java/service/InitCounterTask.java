@@ -40,6 +40,8 @@ public class InitCounterTask extends ComputeTaskAdapter<String, Integer> {
             ClusterNode node = it.next();
 
             map.put(new ComputeJobAdapter() {
+                private static final long serialVersionUID = 1L;
+
                 @Override
                 public Object execute() {
                     System.out.println(">>> Printing '" + word + "' on this node from ignite job.");

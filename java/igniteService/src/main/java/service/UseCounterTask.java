@@ -19,7 +19,9 @@ public class UseCounterTask extends ComputeTaskAdapter<String, Integer> {
         Map<ComputeJob, ClusterNode> map = new HashMap<>();
 
             map.put(new ComputeJobAdapter() {
-                @Override
+                private static final long serialVersionUID = 1L;
+
+            @Override
                 public Object execute() {
 
                     if(Counter.Holder.instance == null){

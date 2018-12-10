@@ -24,6 +24,8 @@ public class CacheCreateLsnr {
     private static void registerCQ(Ignite ignite){
 
         IgnitePredicate<CacheEvent> locLsnr = new IgnitePredicate<CacheEvent>(){
+            private static final long serialVersionUID = 1L;
+
             @Override
             public boolean apply(CacheEvent evt) {
                 System.out.println("Received event [evt=" + evt.name() + " cacheName=" + evt.cacheName());
