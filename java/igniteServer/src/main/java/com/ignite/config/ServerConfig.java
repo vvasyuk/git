@@ -71,6 +71,7 @@ public class ServerConfig {
         cfg.setIncludeEventTypes(EventType.EVT_CACHE_STARTED);
         this.ignite = Ignition.start(cfg);
 
+        executeService();
 //        atomicLong = ignite.atomicLong("atomicName", 0, true);
 
 //        String cacheName = "test";
@@ -145,10 +146,10 @@ public class ServerConfig {
     }
 
     private void executeService(){
-//        ignite.services(ignite.cluster().forServers()).deployNodeSingleton("ServiceProxy", new ServiceProxy());
+        ignite.services(ignite.cluster().forServers()).deployNodeSingleton("ServiceProxy", new ServiceProxy());
 //        ignite.compute().execute("service.GarExample", "a b c d e f");
 //        ignite.services().serviceDescriptors().stream().forEach(i-> System.out.println(i.serviceClass()));
-        ignite.compute().execute("service.CacheCreateLsnrWithCQ", "a b c d e f");
+//        ignite.compute().execute("service.CacheCreateLsnrWithCQ", "a b c d e f");
     }
 
     @Bean

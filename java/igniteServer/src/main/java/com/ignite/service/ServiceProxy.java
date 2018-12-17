@@ -26,6 +26,6 @@ public class ServiceProxy implements Service, MyService {
 
     @Override
     public void doStuff() {
-        ignite.compute().execute("service.GarExample", "a b c d e f");
+        ignite.compute().execute("service.InitCounterTask", "a b c d e f");
     }
 }

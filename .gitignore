@@ -2,3 +2,5 @@
 *.log
 java/igniteClient/spring-shell.log
 *.log
+*.log
+*.log

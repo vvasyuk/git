@@ -16,14 +16,17 @@ import java.util.Map;
 public class InitCounterTask extends ComputeTaskAdapter<String, Integer> {
 
     private static final long serialVersionUID = 1L;
+    Counter counter;
 
     @IgniteInstanceResource
     public void setIgnite(Ignite ignite) {
         System.out.println("inside setIgnite");
-        if (Counter.Holder.instance==null){
-            System.out.println("Counter.init()");
-            Counter.init();
-        }
+//        if (Counter.Holder.instance==null){
+//            System.out.println("Counter.init()");
+//            Counter.init();
+//        }
+        counter = new Counter();
+        System.out.println(counter.getx());
     }
 
     @Override
