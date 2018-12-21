@@ -8,6 +8,7 @@ import org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi;
 import org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 
 
@@ -17,6 +18,7 @@ import java.util.Arrays;
 /**
  * Created by Jopa on 2/16/2018.
  */
+@Profile("regular")
 @Configuration
 public class ClientConfig {
 

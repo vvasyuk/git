@@ -11,8 +11,16 @@ import org.apache.ignite.lang.IgniteBiPredicate;
 import org.apache.ignite.lang.IgniteCallable;
 import org.apache.ignite.resources.IgniteInstanceResource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Profile;
+import org.springframework.shell.SpringShellAutoConfiguration;
+import org.springframework.shell.jcommander.JCommanderParameterResolverAutoConfiguration;
+import org.springframework.shell.jline.JLineShellAutoConfiguration;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
+import org.springframework.shell.standard.StandardAPIAutoConfiguration;
+import org.springframework.shell.standard.commands.StandardCommandsAutoConfiguration;
 
 import javax.cache.configuration.Factory;
 import javax.cache.event.CacheEntryEvent;
@@ -23,7 +31,15 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
 
+@Profile("regular")
 @ShellComponent
+@Import({
+        SpringShellAutoConfiguration.class,
+        JLineShellAutoConfiguration.class,
+        JCommanderParameterResolverAutoConfiguration.class,
+        StandardAPIAutoConfiguration.class,
+        StandardCommandsAutoConfiguration.class,
+})
 public class ShellCommands {
 
     Ignite ignite;
