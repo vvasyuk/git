@@ -23,7 +23,6 @@ import java.util.stream.Stream;
 public class IgniteApplication {
 
 	public static void main(String[] args) throws InterruptedException {
-
 		SpringApplication.run(IgniteApplication.class, args);
 		//Iterator<String> s = getSome();
 		//System.out.println("s " + SizeOf.deepSizeOf(s));

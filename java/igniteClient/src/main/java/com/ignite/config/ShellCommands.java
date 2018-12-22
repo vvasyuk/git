@@ -43,6 +43,7 @@ import java.util.stream.StreamSupport;
 public class ShellCommands {
 
     Ignite ignite;
+
     static String C = "test";
 
     @Autowired
