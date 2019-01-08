@@ -208,12 +208,6 @@ public class ShellCommands {
         lists.forEach(i-> System.out.println(i));
     }
 
-    @ShellMethod("get from cache.")
-    public void exec() {
-        MyService myService = ignite.services().serviceProxy("ServiceProxy", MyService.class, false);
-        myService.doStuff();
-    }
-
     @ShellMethod("create continious qry.")
     public void contqry() {
         ContinuousQuery<Integer, String> qry = new ContinuousQuery<>();
@@ -259,6 +253,11 @@ public class ShellCommands {
         ignite.compute().execute("service.CacheCreateLsnrTask", "a");
     }
 
+    @ShellMethod("get from cache.")
+    public void exec() {
+        MyService myService = ignite.services().serviceProxy("ServiceProxy", MyService.class, false);
+        myService.doStuff();
+    }
 
 //    @ShellMethod("computeQuery")
 //    public void test_stream(){

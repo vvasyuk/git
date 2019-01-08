@@ -44,13 +44,13 @@ public class ServiceBookReaderRoute {
 //                onException(Exception.class)
 //                        .maximumRedeliveries(1)
 //                        .handled(true);
-                from(   routeConfig.get("TEST_ROUTE_URI"),routeConfig.get("TEST1_ROUTE_URI")).routeId("fileRoute")
-                        .setHeader("seq", header("CamelFileNameOnly").regexReplaceAll(routeConfig.get("SEQ_REGEX"), routeConfig.get("SEQ_REGEX_GROUP")))
-                        .log("${header.seq}")
-                        .to("direct:process")
-                        .end()
-                        .log("the end ${header.seq}")
-                        .to("direct:end");
+//                from(   routeConfig.get("TEST_ROUTE_URI"),routeConfig.get("TEST1_ROUTE_URI")).routeId("fileRoute")
+//                        .setHeader("seq", header("CamelFileNameOnly").regexReplaceAll(routeConfig.get("SEQ_REGEX"), routeConfig.get("SEQ_REGEX_GROUP")))
+//                        .log("${header.seq}")
+//                        .to("direct:process")
+//                        .end()
+//                        .log("the end ${header.seq}")
+//                        .to("direct:end");
 
                 from("direct:fileCounter")
                         .process((exchange) -> {
@@ -111,13 +111,21 @@ public class ServiceBookReaderRoute {
                         })
                         .end();
 
-//                from("quartz2://myTimer?trigger.repeatInterval=2000&trigger.repeatCount=-1")
-//                        .process(new Processor() {
-//                            @Override
-//                            public void process(Exchange exchange) throws Exception {
-//                                System.out.println("Processed");
-//                            }
-//                        });
+                from("quartz2://myTimer?trigger.repeatInterval=2000&trigger.repeatCount=3")
+                        .onCompletion()
+                            .process(new Processor() {
+                                @Override
+                                public void process(Exchange exchange) throws Exception {
+                                    System.out.println("onCompletion");
+                                }
+                            })
+                        .end()
+                        .process(new Processor() {
+                            @Override
+                            public void process(Exchange exchange) throws Exception {
+                                System.out.println("Processed");
+                            }
+                        });
             }
         };
     }
