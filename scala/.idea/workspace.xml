@@ -2,84 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="cf555566-8c3b-46f8-8a00-ada7ebfd2822" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/compiler.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/encodings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__ch_qos_logback_logback_classic_1_1_11.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__ch_qos_logback_logback_core_1_1_11.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__com_fasterxml_classmate_1_3_4.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__com_h2database_h2_1_4_196.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__commons_codec_commons_codec_1_10.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__javax_cache_cache_api_1_0_0.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__javax_validation_validation_api_1_1_0_Final.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__net_java_dev_jna_jna_4_2_2.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_apache_commons_commons_lang3_3_7.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_apache_commons_commons_text_1_2.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_apache_ignite_ignite_core_2_3_0.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_apache_ignite_ignite_indexing_2_3_0.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_apache_ignite_ignite_spring_2_3_0.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_apache_lucene_lucene_analyzers_common_5_5_2.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_apache_lucene_lucene_core_5_5_2.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_apache_lucene_lucene_queries_5_5_2.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_apache_lucene_lucene_queryparser_5_5_2.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_apache_lucene_lucene_sandbox_5_5_2.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_apache_tomcat_embed_tomcat_embed_el_8_5_27.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_gridgain_ignite_shmem_1_0_0.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_hibernate_hibernate_validator_5_3_6_Final.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_jboss_logging_jboss_logging_3_3_1_Final.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_jetbrains_annotations_13_0.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_jline_jline_3_4_0.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_jline_jline_terminal_3_4_0.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_jline_jline_terminal_jna_3_4_0.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_projectlombok_lombok_1_16_20.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_slf4j_jcl_over_slf4j_1_7_25.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_slf4j_jul_to_slf4j_1_7_25.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_slf4j_log4j_over_slf4j_1_7_25.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_slf4j_slf4j_api_1_7_25.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_springframework_boot_spring_boot_1_5_10_RELEASE.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_springframework_boot_spring_boot_autoconfigure_1_5_10_RELEASE.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_1_5_10_RELEASE.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_logging_1_5_10_RELEASE.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_springframework_boot_spring_boot_starter_validation_1_5_10_RELEASE.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_springframework_shell_spring_shell_core_2_0_0_RELEASE.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_springframework_shell_spring_shell_jcommander_adapter_2_0_0_RELEASE.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_springframework_shell_spring_shell_shell1_adapter_2_0_0_RELEASE.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_springframework_shell_spring_shell_standard_2_0_0_RELEASE.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_springframework_shell_spring_shell_standard_commands_2_0_0_RELEASE.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_springframework_shell_spring_shell_starter_2_0_0_RELEASE.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_springframework_shell_spring_shell_table_2_0_0_RELEASE.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_springframework_spring_aop_4_3_14_RELEASE.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_springframework_spring_beans_4_3_14_RELEASE.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_springframework_spring_context_4_3_14_RELEASE.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_springframework_spring_core_4_3_14_RELEASE.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_springframework_spring_expression_4_3_14_RELEASE.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_springframework_spring_jdbc_4_3_14_RELEASE.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_springframework_spring_tx_4_3_14_RELEASE.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/Maven__org_yaml_snakeyaml_1_17.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/libraries/SizeOf.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/.idea/workspace.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/ignite.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/target/classes/application.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/target/classes/com/ignite/IgniteApplication.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/target/classes/com/ignite/config/ClientConfig.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/target/classes/com/ignite/config/IgniteClientConfiguration.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/target/classes/com/ignite/config/IgniteServerConfiguration.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/target/classes/com/ignite/config/ServerConfig.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/target/classes/com/ignite/config/ShellCommands$1.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/target/classes/com/ignite/config/ShellCommands$2.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/target/classes/com/ignite/config/ShellCommands$3.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/target/classes/com/ignite/config/ShellCommands$CustomClosure.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/target/classes/com/ignite/config/ShellCommands$CustomPredicate.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/target/classes/com/ignite/config/ShellCommands$CustomPredicateBi.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/target/classes/com/ignite/config/ShellCommands.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/target/classes/com/ignite/dao/API.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/target/classes/com/ignite/dao/DDL.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/target/classes/com/ignite/dao/DML.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/target/classes/com/ignite/domain/Book.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/ignite/target/classes/com/ignite/util/Utils.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../java/java8feat/src/main/java/com/example/java8feat/generics/GenericsTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../java/java8feat/src/main/java/com/example/java8feat/generics/GenericsTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Hello.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/Hello.scala" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -88,47 +11,19 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="FUSProjectUsageTrigger">
-    <session id="1341687372">
-      <usages-collector id="statistics.lifecycle.project">
-        <counts>
-          <entry key="project.closed" value="5" />
-          <entry key="project.open.time.0" value="1" />
-          <entry key="project.open.time.15" value="2" />
-          <entry key="project.open.time.16" value="1" />
-          <entry key="project.open.time.3" value="1" />
-          <entry key="project.opened" value="5" />
-        </counts>
-      </usages-collector>
-      <usages-collector id="statistics.file.extensions.open">
-        <counts>
-          <entry key="scala" value="2" />
-        </counts>
-      </usages-collector>
-      <usages-collector id="statistics.file.types.open">
-        <counts>
-          <entry key="Scala" value="2" />
-        </counts>
-      </usages-collector>
-      <usages-collector id="statistics.file.extensions.edit">
-        <counts>
-          <entry key="scala" value="781" />
-        </counts>
-      </usages-collector>
-      <usages-collector id="statistics.file.types.edit">
-        <counts>
-          <entry key="Scala" value="781" />
-        </counts>
-      </usages-collector>
-    </session>
-  </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Hello.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="450">
-              <caret line="28" column="17" selection-start-line="28" selection-start-column="17" selection-end-line="28" selection-end-column="17" />
+            <state relative-caret-position="332">
+              <caret line="17" column="10" lean-forward="true" selection-start-line="17" selection-start-column="10" selection-end-line="17" selection-end-column="10" />
+              <folding>
+                <element signature="e#119#663#0" />
+                <element signature="e#666#690#1" />
+                <element signature="e#734#1039#0" />
+                <element signature="e#1054#1131#1" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -136,7 +31,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/SimpleClass.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="34">
+            <state relative-caret-position="40">
               <caret line="2" column="1" selection-start-line="2" selection-start-column="1" selection-end-line="2" selection-end-column="1" />
             </state>
           </provider>
@@ -168,6 +63,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -188,8 +85,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -232,13 +127,13 @@
     <frame x="-8" y="-8" width="1936" height="1176" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.17324094" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.1748401" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Designer" order="2" />
       <window_info id="Favorites" order="3" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.31957772" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.17066155" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39923224" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -246,7 +141,8 @@
       <window_info anchor="bottom" id="Version Control" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Terminal" order="8" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
-      <window_info anchor="bottom" id="Messages" order="10" weight="0.32917467" />
+      <window_info active="true" anchor="bottom" id="Messages" order="10" visible="true" weight="0.32885906" />
+      <window_info anchor="right" id="Maven" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -254,21 +150,24 @@
       <window_info anchor="right" id="Maven Projects" order="4" />
     </layout>
   </component>
-  <component name="VcsContentAnnotationSettings">
-    <option name="myLimit" value="2678400000" />
-  </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/Hello.scala">
+    <entry file="file://$PROJECT_DIR$/src/SimpleClass.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="450">
-          <caret line="28" column="17" selection-start-line="28" selection-start-column="17" selection-end-line="28" selection-end-column="17" />
+        <state relative-caret-position="40">
+          <caret line="2" column="1" selection-start-line="2" selection-start-column="1" selection-end-line="2" selection-end-column="1" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/SimpleClass.scala">
+    <entry file="file://$PROJECT_DIR$/src/Hello.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="2" column="1" selection-start-line="2" selection-start-column="1" selection-end-line="2" selection-end-column="1" />
+        <state relative-caret-position="332">
+          <caret line="17" column="10" lean-forward="true" selection-start-line="17" selection-start-column="10" selection-end-line="17" selection-end-column="10" />
+          <folding>
+            <element signature="e#119#663#0" />
+            <element signature="e#666#690#1" />
+            <element signature="e#734#1039#0" />
+            <element signature="e#1054#1131#1" />
+          </folding>
         </state>
       </provider>
     </entry>

@@ -2,7 +2,24 @@ import scala.collection.mutable
 
 object Hello {
   def main(args: Array[String]): Unit = {
+    //keeperWithThreads
 
+    val states = Map("AL" -> "Alabama", "AK" -> "Alaska")
+    states.foreach(x => println(x._1 + " " + x._2))
+    //println(states.contains("AL"))
+
+    val func =
+      for {
+        v <- states
+      } yield {
+        ( key: String) => { v.asInstanceOf[Map[String, String]].contains(key)}
+      }
+
+    //func("AK")
+
+  }
+
+  def keeperWithThreads: Unit = {
     val thread1 = new Thread {
       override def run {
         Thread.sleep(7000)
