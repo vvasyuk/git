@@ -5,17 +5,22 @@ object Hello {
     //keeperWithThreads
 
     val states = Map("AL" -> "Alabama", "AK" -> "Alaska")
+    val huetes = Map("CA" -> "Cali", "NY" -> "NewYork")
     states.foreach(x => println(x._1 + " " + x._2))
     //println(states.contains("AL"))
 
     val func =
       for {
-        v <- states
+        a <- "1"
+        b <- states
+        c <- huetes
       } yield {
-        ( key: String) => { v.asInstanceOf[Map[String, String]].contains(key)}
+        //( key: String) => { v.asInstanceOf[Map[String, String]].contains(key)}
+        a
       }
 
     //func("AK")
+    println(func)
 
   }
 
