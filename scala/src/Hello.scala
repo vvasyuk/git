@@ -4,23 +4,27 @@ object Hello {
   def main(args: Array[String]): Unit = {
     //keeperWithThreads
 
-    val states = Map("AL" -> "Alabama", "AK" -> "Alaska")
-    val huetes = Map("CA" -> "Cali", "NY" -> "NewYork")
-    states.foreach(x => println(x._1 + " " + x._2))
-    //println(states.contains("AL"))
+    val states: Either[Int,Map[String, String]] = Right(Map("AL" -> "Alabama", "AK" -> "Alaska"))
+    val huetes: Either[Int,Map[String, String]] = Right(Map("CA" -> "Cali", "NY" -> "NewYork"))
+
+    def get(m: Either[Int,Map[String, String]])  = {
+      m match{
+        case Right(m) => Right(m)
+        //case Left(m) => Right(m)
+      }
+    }
 
     val func =
       for {
-        a <- "1"
         b <- states
-        c <- huetes
       } yield {
-        //( key: String) => { v.asInstanceOf[Map[String, String]].contains(key)}
-        a
+        ( key: String) => { b.contains(key)}
       }
 
-    //func("AK")
-    println(func)
+    func("CA")    //Pattern: func: Either[Nothing, String => Boolean]
+
+    //Error:(24, 9) scala.util.Either[Int,String => Boolean] does not take parameters
+    //func("CA")    //Pattern: func: Either[Nothing, String => Boolean]
 
   }
 
