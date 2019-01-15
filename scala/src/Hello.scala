@@ -17,15 +17,12 @@ object Hello {
     val func =
       for {
         b <- states
+        c <- get(huetes)
       } yield {
-        ( key: String) => { b.contains(key)}
+        ( key: String) => { b.contains(key) || c.contains((key))}
       }
 
-    func("CA")    //Pattern: func: Either[Nothing, String => Boolean]
-
-    //Error:(24, 9) scala.util.Either[Int,String => Boolean] does not take parameters
-    //func("CA")    //Pattern: func: Either[Nothing, String => Boolean]
-
+    println(func.right.get("CA"))
   }
 
   def keeperWithThreads: Unit = {
