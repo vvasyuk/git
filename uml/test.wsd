@@ -1,0 +1,9 @@
+@startuml
+rectangle A{
+    abc->def
+    def->g
+}
+rectangle B{
+    g->h
+}
+@enduml
