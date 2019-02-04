@@ -1,0 +1,8 @@
+https://github.com/mermaidjs/mermaid.cli/issues/23
+
+PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=1
+npm install mermaid.cli
+modify node\mermaid\node_modules\mermaid.cli
+  const browser = yield puppeteer.launch({executablePath: 'D:/work/installed/node/mermaid/node_modules/mermaid.cli/chrome/chrome.exe'});
+
+mmdc -t neutral -i D:\work\tryout\uml\test.md -o D:\work\tryout\uml\output.svg
