@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Profile;
 
 @Configuration
 @Profile("testInputStream")
-public class TestRouteInputStream {
+public class InputStreamRoute {
 
     @Bean
     public RouteBuilder demoRoute() {
