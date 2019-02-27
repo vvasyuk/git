@@ -10,5 +10,5 @@ import org.springframework.core.env.ConfigurableEnvironment;
  */
 @Configuration
 @Import({CommonBaseConfig.class})
-public class BaseConfig {}
+public class BaseConfig { }
 

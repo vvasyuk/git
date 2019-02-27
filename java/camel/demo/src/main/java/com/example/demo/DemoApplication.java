@@ -10,4 +10,5 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan({"com.example.demo"})
 @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class})
 public class DemoApplication extends CommonMain {
+
 }

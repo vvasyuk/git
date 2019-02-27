@@ -14,6 +14,7 @@ public class CommonMain {
     private static final Logger logger = LogManager.getLogger(DemoApplication.class);
 
     public static void main(String[] args) throws InterruptedException {
+
         SpringApplication app = new SpringApplication(DemoApplication.class);
         app.addInitializers();
         app.setBannerMode(Banner.Mode.LOG);
