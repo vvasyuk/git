@@ -8,9 +8,15 @@ import org.apache.camel.spi.DataFormat;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
+import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.File;
@@ -76,5 +82,27 @@ public class CommonBaseConfig {
     DataFormat newJaxb (JAXBContext jaxbContext2){
         return new JaxbDataFormat(jaxbContext2);
     }
+
+
+    @Bean
+    @Profile("multiThreading")
+    public DataSource dataSource() {
+        EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
+        EmbeddedDatabase db = builder
+                .setType(EmbeddedDatabaseType.DERBY)
+                .addScript("db/sql/create-db.sql")
+                .addScript("db/sql/insert-data.sql")
+                .build();
+        return db;
+    }
+
+//    @Profile("multiThreading")
+//    @Configuration
+//    public static class EmbeddedDatasource {
+//        @Bean
+//        public MyBean myBean(){
+//            return new MyBean();
+//        }
+//    }
 
 }

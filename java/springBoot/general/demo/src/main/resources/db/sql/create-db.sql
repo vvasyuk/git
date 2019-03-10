@@ -1,0 +1,4 @@
+CREATE TABLE test (
+  col1 VARCHAR(10),
+  col2 VARCHAR(10)
+);
