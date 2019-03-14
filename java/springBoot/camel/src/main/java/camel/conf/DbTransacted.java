@@ -6,11 +6,9 @@ import org.apache.camel.impl.DefaultMessage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.util.LinkedCaseInsensitiveMap;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Configuration
 @Profile("DbTransacted")
@@ -38,11 +36,17 @@ public class DbTransacted {
                         .to("direct:process");
 
                 from("direct:process")
+                        //.log("${header[key]} ${header[value]}")
                         //.transacted()
-                        .to("sql:call my_pack.set_v1(:#value)")
-                        .to("sql:select :#key key, my_pack.get_v1 value from dual?outputType=StreamList")
+                        //.to("sql:call my_pack.set_v1(:#value)")
+                        //.to("sql:select :#key key, my_pack.get_v1 value from dual?outputType=StreamList")
+                        .to("bean:SqlTransaction?method=executeTransaction")
                         .split(body()).streaming()
-                            .to("log:row")
+//                            .to("log:row")
+                            .process((exchange) -> {
+                                LinkedCaseInsensitiveMap cols = (LinkedCaseInsensitiveMap) exchange.getIn().getBody();
+                                System.out.println(exchange.getIn().getHeader("key")+":"+cols.get("GET_V1"));
+                            })
                         .end();
 
 //                Map<String, String> map = new HashMap<>();
