@@ -1,11 +1,12 @@
 package com.tryout;
 
 import com.tryout.generics.GenericsTest;
+import com.tryout.regex.RegexTest;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class Java8featApplication {
+public class JavaApplication {
 
 	public static void main(String[] args) {
 
@@ -33,11 +34,14 @@ public class Java8featApplication {
 //		GenericsTest.Box<String> b = new GenericsTest.Box<>("abc");
 //		b.inspect(13);
 
-		List<Integer> li = Arrays.asList(1, 2, 3);
-		List<Double> ld = Arrays.asList(1.2, 2.3, 3.5);
-		System.out.println("sum = " + GenericsTest.upperBoundedWildcard(li));
-		System.out.println("sum = " + GenericsTest.upperBoundedWildcard(ld));
-		GenericsTest.unboundedWildcards(li);
+//		List<Integer> li = Arrays.asList(1, 2, 3);
+//		List<Double> ld = Arrays.asList(1.2, 2.3, 3.5);
+//		System.out.println("sum = " + GenericsTest.upperBoundedWildcard(li));
+//		System.out.println("sum = " + GenericsTest.upperBoundedWildcard(ld));
+//		GenericsTest.unboundedWildcards(li);
+
+		// ### regex ###
+		RegexTest.runRegexTest();
 
 		System.out.println("Main ended");
 	}

@@ -30,6 +30,9 @@ public class DbTransacted {
                     from("timer://runOnce?repeatCount=1")
                             .setHeader("key", constant(key))
                             .setHeader("value", constant(values))
+                            .setHeader("pre", constant("sql:call my_pack.set_v1(:#value)"))
+                            .setHeader("statement", constant("select my_pack.get_v1 from dual"))
+
                             .inOnly("seda:processParallel");
                 });
                 from("seda:processParallel?concurrentConsumers=5")

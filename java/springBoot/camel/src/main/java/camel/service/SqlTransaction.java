@@ -11,6 +11,9 @@ import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.stereotype.Component;
 
 import java.sql.*;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component("SqlTransaction")
 public class SqlTransaction {
@@ -19,14 +22,30 @@ public class SqlTransaction {
     JdbcTemplate jdbcTemplate;
 
     public void executeTransaction(Exchange exchange) throws SQLException {
+
+        String pre = (String) exchange.getIn().getHeader("pre");
+        String statement = (String) exchange.getIn().getHeader("statement");
+
+        pre = prepareSql(pre,
+                ":#(\\w+)'?",
+                (s)->{return (String) exchange.getIn().getHeader(s);},
+                "'", "'");
+
+        pre = prepareSql(pre,
+                "(sql:)'?",
+                (s)->{return "";},
+                "", "");
+
+        System.out.println(pre);
+
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
 
         try {
             con = jdbcTemplate.getDataSource().getConnection();
-            execCallable(con, "my_pack.set_v1", (String) exchange.getIn().getHeader("key"));
-            ps=con.prepareStatement("select my_pack.get_v1 from dual");
+            execCallable(con, pre);
+            ps=con.prepareStatement(statement);
             boolean isResultSet = ps.execute();
             if (isResultSet) {
                 rs = ps.getResultSet();
@@ -46,11 +65,25 @@ public class SqlTransaction {
         }
     }
 
-    private void execCallable(Connection con, String procedure, String param) throws SQLException {
-        String sql = "call my_pack.set_v1(?)";
+    private void execCallable(Connection con, String sql) throws SQLException {
         CallableStatement cStmt = con.prepareCall(sql);
-        cStmt.setString(1, param);
         cStmt.execute();
+    }
+
+    private String prepareSql(String input, String pattern, Function<String, String> f, String left, String right){
+        StringBuffer newString = new StringBuffer();
+        Pattern p = Pattern.compile(pattern);
+        Matcher m = p.matcher(input);
+
+        while (m.find()) {
+            String id= m.group(1);
+            //String newId = "'"+(String) ex.getIn().getHeader(id)+"'";
+            String newId = left + f.apply(id) + right;
+            m.appendReplacement(newString, newId);
+        }
+        m.appendTail(newString);
+
+        return newString.toString();
     }
 }
 
