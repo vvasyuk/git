@@ -1,5 +1,7 @@
 package com.tryout;
 
+import com.tryout.eenum.EnumSingleton;
+import com.tryout.eenum.EnumTest;
 import com.tryout.generics.GenericsTest;
 import com.tryout.regex.RegexTest;
 
@@ -41,8 +43,16 @@ public class JavaApplication {
 //		GenericsTest.unboundedWildcards(li);
 
 		// ### regex ###
-		RegexTest.runRegexTest();
+//		RegexTest.runRegexTest();
+//		System.out.println("Main ended");
 
-		System.out.println("Main ended");
+		// ### enum ###
+//		System.out.println(EnumTest.FOO.print());
+//		System.out.println(EnumTest.BAR.getAbreviation());
+
+//		EnumSingleton enumSingleton = EnumSingleton.INSTANCE;
+//		enumSingleton.setValue(2);
+//		System.out.println(enumSingleton.getValue());
+
 	}
 }
