@@ -43,13 +43,13 @@ public class JavaApplication {
 //		GenericsTest.unboundedWildcards(li);
 
 		// ### regex ###
-//		RegexTest.runRegexTest();
-//		System.out.println("Main ended");
+		RegexTest.runRegexTest();
+		System.out.println("Main ended");
 
 		// ### enum ###
 //		System.out.println(EnumTest.FOO.print());
 //		System.out.println(EnumTest.BAR.getAbreviation());
-
+//
 //		EnumSingleton enumSingleton = EnumSingleton.INSTANCE;
 //		enumSingleton.setValue(2);
 //		System.out.println(enumSingleton.getValue());
