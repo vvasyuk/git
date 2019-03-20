@@ -1,5 +1,6 @@
 package com.tryout;
 
+import com.tryout.callstack.CallStackTest;
 import com.tryout.eenum.EnumSingleton;
 import com.tryout.eenum.EnumTest;
 import com.tryout.generics.GenericsTest;
@@ -13,6 +14,10 @@ public class JavaApplication {
 	public static void main(String[] args) {
 
 		System.out.println("Main started");
+
+		// ### callStack ###
+		CallStackTest cs = new CallStackTest();
+		cs.methodA();
 
 		// ### future ###
 		//CompletableFutureTest futureTest = new CompletableFutureTest();
@@ -43,8 +48,8 @@ public class JavaApplication {
 //		GenericsTest.unboundedWildcards(li);
 
 		// ### regex ###
-		RegexTest.runRegexTest();
-		System.out.println("Main ended");
+//		RegexTest.runRegexTest();
+//		System.out.println("Main ended");
 
 		// ### enum ###
 //		System.out.println(EnumTest.FOO.print());
