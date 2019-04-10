@@ -37,3 +37,10 @@ for i in {1..5}; do
     echo "Welcome $i"
 done
 ###    LOOPS    ###
+
+###    SLICE    ###
+A=( a b c d e f )
+echo "${A[@]:1:2}"    # slice b c
+echo "${A[0]}"        # a
+echo "${A[@]:1}"      # slice to the end of the array starting from b
+###    SLICE    ###
