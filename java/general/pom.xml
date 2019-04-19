@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.example</groupId>
-	<artifactId>java8feat</artifactId>
+	<artifactId>general</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<build>
 		<plugins>
@@ -20,7 +20,7 @@
 	</build>
 	<packaging>jar</packaging>
 
-	<name>java8feat</name>
+	<name>general</name>
 	<description>Demo project</description>
 
 	<!--<parent>-->
