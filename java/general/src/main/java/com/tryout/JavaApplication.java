@@ -1,6 +1,6 @@
 package com.tryout;
 
-import com.tryout.DailyCodingProblems.NumbersInArrayAddUpToK;
+import com.tryout.DailyCodingProblems.*;
 import com.tryout.callstack.CallStackTest;
 import com.tryout.eenum.EnumSingleton;
 import com.tryout.eenum.EnumTest;
@@ -61,8 +61,12 @@ public class JavaApplication {
 //		System.out.println(enumSingleton.getValue());
 
 		// ### DailyCodingProblems ###
-		int ar[] = { 10, 15, 3, 7 };
-		int x=17;
-		System.out.println(NumbersInArrayAddUpToK.execute(ar, x));
+		//NumbersInArrayAddUpToK
+//		int ar[] = { 10, 15, 3, 7 };
+//		int x=17;
+//		System.out.println(NumbersInArrayAddUpToK.execute(ar, x));
+		//MissingNumberInArray
+		int ar[] = { 3, 4, -1, 1 };
+		System.out.println(MissingNumberInArray.execute(ar));
 	}
 }
