@@ -69,6 +69,6 @@ public class JavaApplication {
 //		int ar[] = { 3, 4, -1, -2, 1 };
 //		System.out.println(MissingNumberInArray.execute(ar));
 		//WaysToDecodeANumber
-		System.out.println(WaysToDecodeANumber.execute("12345"));
+		System.out.println(WaysToDecodeANumber.execute("122345"));
 	}
 }
