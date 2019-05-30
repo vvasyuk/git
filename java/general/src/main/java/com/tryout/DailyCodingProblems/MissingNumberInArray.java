@@ -35,8 +35,7 @@ public class MissingNumberInArray {
         int shift = segregate (arr, size);
         int arr2[] = new int[size-shift];
         int j=0;
-        for(int i=shift;i<size;i++)
-        {
+        for(int i=shift;i<size;i++){
             arr2[j] = arr[i];
             j++;
         }

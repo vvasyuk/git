@@ -66,7 +66,9 @@ public class JavaApplication {
 //		int x=17;
 //		System.out.println(NumbersInArrayAddUpToK.execute(ar, x));
 		//MissingNumberInArray
-		int ar[] = { 3, 4, -1, 1 };
-		System.out.println(MissingNumberInArray.execute(ar));
+//		int ar[] = { 3, 4, -1, -2, 1 };
+//		System.out.println(MissingNumberInArray.execute(ar));
+		//WaysToDecodeANumber
+		System.out.println(WaysToDecodeANumber.execute("12345"));
 	}
 }
