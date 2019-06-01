@@ -69,6 +69,8 @@ public class JavaApplication {
 //		int ar[] = { 3, 4, -1, -2, 1 };
 //		System.out.println(MissingNumberInArray.execute(ar));
 		//WaysToDecodeANumber
-		System.out.println(WaysToDecodeANumber.execute("2222"));
+//		System.out.println(WaysToDecodeANumber.execute("2222"));
+		//UniversalSubtreeCount
+		System.out.println(UniversalSubtreeCount.execute());
 	}
 }
