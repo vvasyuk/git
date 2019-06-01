@@ -7,19 +7,25 @@ public class WaysToDecodeANumber {
         return iterHelper(s);
     }
 
+    //"2222"
     public static int recHelper(String s, int k){
         int res=0;
         if (k==0) return 1;
 
-        int idx=s.length()-k;
+        int subIdx=s.length()-k;
 
         res=recHelper(s, k-1);
-        if(k>=2 && Integer.valueOf(s.substring(idx, idx+2)) <= 26)
+        if(k>=2 && Integer.valueOf(s.substring(subIdx, subIdx+2)) <= 26)
             res+=recHelper(s, k-2);
         return res;
     }
 
-    //"122345"
+    //"22222"
+//    2:1 - a
+//    22:2 - a,x
+//    222:3 - aaa,ax,xa
+//    2222:5 - aaaa, xaa, axa, aax, xx
+    //fibonacci sequence
     public static int iterHelper(String s){
         int[] cache = new int[s.length() + 1];
 
@@ -27,24 +33,16 @@ public class WaysToDecodeANumber {
         cache[s.length()] = 1;
 
         for (int i = s.length()-1; i >= 0; i--) {
-            //System.out.println("main " + s.charAt(i));
-            // sum directly into the cache
             for (int len=1; len<=2 && len+i<=s.length(); len++) {
-                //System.out.println(s.substring(i, i+len));
-                if (Integer.parseInt(s.substring(i, i + len)) > 26) {
-                    break;
+                if (Integer.parseInt(s.substring(i, i + len)) <= 26) {
+                    cache[i] += cache[i + len];
                 }
-                cache[i] += cache[i + len];
+                System.out.printf("cache[%d] += cache[%d] (res=%d) \n",i,i + len, cache[i]);
             }
         }
-//0:5
-//1:3
-//2:2
-//3:1
-//4:1
-//5:1
-//6:1
-
+        for(int i=0; i<cache.length;i++){
+            System.out.printf("cache[%d] = %d \n",i,cache[i]);
+        }
         return cache[0];
     }
 
