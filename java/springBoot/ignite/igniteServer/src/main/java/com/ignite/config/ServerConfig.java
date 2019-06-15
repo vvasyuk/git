@@ -6,24 +6,20 @@ import org.apache.ignite.IgniteAtomicLong;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.Ignition;
 import org.apache.ignite.cache.query.ContinuousQuery;
-import org.apache.ignite.cache.query.ScanQuery;
 import org.apache.ignite.configuration.CacheConfiguration;
 import org.apache.ignite.configuration.DataStorageConfiguration;
 import org.apache.ignite.configuration.IgniteConfiguration;
 import org.apache.ignite.events.CacheEvent;
 import org.apache.ignite.events.EventType;
-import org.apache.ignite.internal.GridKernalContextImpl;
-import org.apache.ignite.internal.IgniteKernal;
 import org.apache.ignite.lang.IgniteAsyncCallback;
-import org.apache.ignite.lang.IgniteBiPredicate;
 import org.apache.ignite.lang.IgnitePredicate;
-import org.apache.ignite.resources.IgniteInstanceResource;
 import org.apache.ignite.spi.communication.tcp.TcpCommunicationSpi;
 import org.apache.ignite.spi.deployment.uri.UriDeploymentSpi;
 import org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi;
 import org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 
 import javax.cache.configuration.Factory;
@@ -37,6 +33,7 @@ import java.util.concurrent.CompletableFuture;
  * Created by Jopa on 2/11/2018.
  */
 @Configuration
+@Profile("general")
 public class ServerConfig {
 
     Ignite ignite;
@@ -71,17 +68,14 @@ public class ServerConfig {
         cfg.setIncludeEventTypes(EventType.EVT_CACHE_STARTED);
         this.ignite = Ignition.start(cfg);
 
-        executeService();
+        IgniteCache<Integer, String> cache = startCache("test");
+        cache.put(1,"one");
+
+//        executeService();
 //        atomicLong = ignite.atomicLong("atomicName", 0, true);
-
-//        String cacheName = "test";
-
 //        registerCacheCreationListener();
-
 //        System.out.println("creating cache " + cacheName);
-//        IgniteCache<Integer, String> cache = startCache(cacheName);
 //        //startCQ(cacheName, ignite);
-//        cache.put(1,"one");
 //        System.out.println(cache.get(1));
     }
 
@@ -140,9 +134,9 @@ public class ServerConfig {
     }
 
     private <K,V> IgniteCache<K,V> startCache(String cacheName){
-//        CacheConfiguration<K, V> c = new CacheConfiguration<>(cacheName);
+        CacheConfiguration<K, V> c = new CacheConfiguration<>(cacheName);
 //        c.setBackups(1);
-        return ignite.<K,V>getOrCreateCache("test");
+        return ignite.<K,V>getOrCreateCache(c);
     }
 
     private void executeService(){
@@ -155,5 +149,10 @@ public class ServerConfig {
     @Bean
     public Ignite getIgnite(){
         return this.ignite;
+    }
+
+    @Bean("MyBean")
+    public String getMyBean(){
+        return "MyBean";
     }
 }

@@ -71,6 +71,8 @@ public class JavaApplication {
 		//WaysToDecodeANumber
 //		System.out.println(WaysToDecodeANumber.execute("2222"));
 		//UniversalSubtreeCount
-		System.out.println(UniversalSubtreeCount.execute());
+//		System.out.println(UniversalSubtreeCount.execute());
+		//StaircasePaths
+		System.out.println(StaircasePaths.execute());
 	}
 }
