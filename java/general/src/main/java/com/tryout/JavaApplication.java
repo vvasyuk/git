@@ -4,6 +4,7 @@ import com.tryout.DailyCodingProblems.*;
 import com.tryout.callstack.CallStackTest;
 import com.tryout.eenum.EnumSingleton;
 import com.tryout.eenum.EnumTest;
+import com.tryout.generalPuzzles.Hanoi;
 import com.tryout.generics.GenericsTest;
 import com.tryout.regex.RegexTest;
 
@@ -73,6 +74,10 @@ public class JavaApplication {
 		//UniversalSubtreeCount
 //		System.out.println(UniversalSubtreeCount.execute());
 		//StaircasePaths
-		System.out.println(StaircasePaths.execute());
+		//System.out.println(StaircasePaths.execute());
+
+		// ### General Puzzles ###
+		int[] ar = new int[1]; ar[0]=0;
+		Hanoi.execute(4, 'a', 'b', 't');
 	}
 }
