@@ -4,6 +4,8 @@ import com.tryout.DailyCodingProblems.*;
 import com.tryout.callstack.CallStackTest;
 import com.tryout.eenum.EnumSingleton;
 import com.tryout.eenum.EnumTest;
+import com.tryout.generalPuzzles.Fibonacci;
+import com.tryout.generalPuzzles.FibonacciLasDigit;
 import com.tryout.generalPuzzles.Hanoi;
 import com.tryout.generics.GenericsTest;
 import com.tryout.regex.RegexTest;
@@ -76,8 +78,15 @@ public class JavaApplication {
 		//StaircasePaths
 		//System.out.println(StaircasePaths.execute());
 
+		
 		// ### General Puzzles ###
-		int[] ar = new int[1]; ar[0]=0;
-		Hanoi.execute(4, 'a', 'b', 't');
+		// Hanoi
+		//int[] ar = new int[1]; ar[0]=0;
+		//Hanoi.execute(4, 'a', 'b', 't');
+
+		// Fibonacci
+		//System.out.println(Fibonacci.execute(8));
+		// Fibonacci last digit
+		System.out.println(FibonacciLasDigit.execute(10));
 	}
 }
