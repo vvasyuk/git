@@ -4,9 +4,7 @@ import com.tryout.DailyCodingProblems.*;
 import com.tryout.callstack.CallStackTest;
 import com.tryout.eenum.EnumSingleton;
 import com.tryout.eenum.EnumTest;
-import com.tryout.generalPuzzles.Fibonacci;
-import com.tryout.generalPuzzles.FibonacciLasDigit;
-import com.tryout.generalPuzzles.Hanoi;
+import com.tryout.generalPuzzles.*;
 import com.tryout.generics.GenericsTest;
 import com.tryout.regex.RegexTest;
 
@@ -87,6 +85,19 @@ public class JavaApplication {
 		// Fibonacci
 		//System.out.println(Fibonacci.execute(8));
 		// Fibonacci last digit
-		System.out.println(FibonacciLasDigit.execute(10));
+		//System.out.println(FibonacciLasDigit.execute(10));
+		//GreatestCommonDivisor
+		//System.out.println(GreatestCommonDivisor.execute(30, 20));
+		//LeastCommonMultuply
+		//System.out.println(LeastCommonMultuply.execute(15, 20));
+		System.out.println(1%3);
+		System.out.println(2%3);
+		System.out.println(3%3);
+		System.out.println(4%3);
+		System.out.println(5%3);
+		System.out.println(6%3);
+		System.out.println(7%3);
+		System.out.println(8%3);
+		System.out.println(9%3);
 	}
 }
