@@ -10,6 +10,9 @@ import com.tryout.regex.RegexTest;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class JavaApplication {
 
@@ -91,6 +94,11 @@ public class JavaApplication {
 		//LeastCommonMultuply
 		//System.out.println(LeastCommonMultuply.execute(15, 20));
 		//MoneyChange
-		System.out.println(MoneyChange.execute(28));
+		//System.out.println(MoneyChange.execute(28));
+
+		//MaximumValueOfLoot
+		Map<Integer, Integer> map = Stream.of(new Object[][] {{ 60, 20 }, { 100, 50 }, { 120, 30 },
+		}).collect(Collectors.toMap(data -> (Integer) data[0], data -> (Integer) data[1]));
+		System.out.println(MaximumValueOfLoot.execute(50, map));
 	}
 }

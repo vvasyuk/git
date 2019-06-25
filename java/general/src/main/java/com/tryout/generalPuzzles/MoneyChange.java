@@ -11,6 +11,9 @@ public class MoneyChange {
         nominals[0]=1;
         nominals[1]=5;
         nominals[2]=10;
+//        nominals[0]=1;
+//        nominals[1]=4;
+//        nominals[2]=6;
         int res=0;
 
 //        for(int i = nominals.length-1; i>=0; i--){
