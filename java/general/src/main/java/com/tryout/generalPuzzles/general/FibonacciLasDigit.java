@@ -1,6 +1,6 @@
-package com.tryout.generalPuzzles;
+package com.tryout.generalPuzzles.general;
 
-public class Fibonacci {
+public class FibonacciLasDigit {
 
     public static int execute(int n) {
 
@@ -10,10 +10,11 @@ public class Fibonacci {
         int n1=0, n2=1, n3=0;
 
         for (int i=2; i<n; i++) {
-            n3=n1+n2;
+            n3=(n1+n2)%10;
             n1=n2;
             n2=n3;
         }
         return n3;
     }
+
 }

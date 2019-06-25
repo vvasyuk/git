@@ -1,15 +1,8 @@
 package com.tryout;
 
-import com.tryout.DailyCodingProblems.*;
-import com.tryout.callstack.CallStackTest;
-import com.tryout.eenum.EnumSingleton;
-import com.tryout.eenum.EnumTest;
-import com.tryout.generalPuzzles.*;
-import com.tryout.generics.GenericsTest;
-import com.tryout.regex.RegexTest;
+import com.tryout.generalPuzzles.greedy.MaximumAdvertisementRevenue;
+import com.tryout.generalPuzzles.greedy.MaximumValueOfLoot;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -100,5 +93,10 @@ public class JavaApplication {
 		Map<Integer, Integer> map = Stream.of(new Object[][] {{ 60, 20 }, { 100, 50 }, { 120, 30 },
 		}).collect(Collectors.toMap(data -> (Integer) data[0], data -> (Integer) data[1]));
 		System.out.println(MaximumValueOfLoot.execute(50, map));
+
+		//MaximumAdvertisementRevenue
+		int a[] = { 2,3,9 };
+		int b[] = { 7,4,2 };
+		System.out.println(MaximumAdvertisementRevenue.execute(a, b));
 	}
 }

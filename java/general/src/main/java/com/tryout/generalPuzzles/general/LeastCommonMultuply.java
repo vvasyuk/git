@@ -1,4 +1,4 @@
-package com.tryout.generalPuzzles;
+package com.tryout.generalPuzzles.general;
 
 public class LeastCommonMultuply {
     //The least common multiple LCM(a;b) of two positive integers a and b

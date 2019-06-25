@@ -1,4 +1,4 @@
-package com.tryout.generalPuzzles;
+package com.tryout.generalPuzzles.greedy;
 
 public class MoneyChange {
 

@@ -1,4 +1,4 @@
-package com.tryout.generalPuzzles;
+package com.tryout.generalPuzzles.general;
 
 public class GreatestCommonDivisor {
     //The greatest common divisor GCD(a;b) of two positive integers a and b

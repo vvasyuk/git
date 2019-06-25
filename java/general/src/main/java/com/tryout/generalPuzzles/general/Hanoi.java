@@ -1,4 +1,4 @@
-package com.tryout.generalPuzzles;
+package com.tryout.generalPuzzles.general;
 
 public class Hanoi {
     public static void  execute(int n, char from, char to, char temp){
