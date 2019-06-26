@@ -1,8 +1,12 @@
 package com.tryout;
 
+import com.tryout.generalPuzzles.greedy.CollectingSignatures;
 import com.tryout.generalPuzzles.greedy.MaximumAdvertisementRevenue;
+import com.tryout.generalPuzzles.greedy.MaximumNumberOfPrizes;
 import com.tryout.generalPuzzles.greedy.MaximumValueOfLoot;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -90,13 +94,25 @@ public class JavaApplication {
 		//System.out.println(MoneyChange.execute(28));
 
 		//MaximumValueOfLoot
-		Map<Integer, Integer> map = Stream.of(new Object[][] {{ 60, 20 }, { 100, 50 }, { 120, 30 },
-		}).collect(Collectors.toMap(data -> (Integer) data[0], data -> (Integer) data[1]));
-		System.out.println(MaximumValueOfLoot.execute(50, map));
+		//Map<Integer, Integer> map = Stream.of(new Object[][] {{ 60, 20 }, { 100, 50 }, { 120, 30 },
+		//}).collect(Collectors.toMap(data -> (Integer) data[0], data -> (Integer) data[1]));
+		//System.out.println(MaximumValueOfLoot.execute(50, map));
 
 		//MaximumAdvertisementRevenue
-		int a[] = { 2,3,9 };
-		int b[] = { 7,4,2 };
-		System.out.println(MaximumAdvertisementRevenue.execute(a, b));
+		//int a[] = { 2,3,9 };
+		//int b[] = { 7,4,2 };
+		//System.out.println(MaximumAdvertisementRevenue.execute(a, b));
+
+		//MaximumAdvertisementRevenue
+		//int a[] = { 1,3 };
+		//int b[] = { 2,5 };
+		//int c[] = { 3,6 };
+		//int d[] = { 10,11 };
+		//List<int[]> l = new ArrayList<>();
+		//l.add(a);l.add(b);l.add(c);l.add(d);
+		//System.out.println(CollectingSignatures.execute(l));
+
+		//MaximumNumberOfPrizes
+		System.out.println(MaximumNumberOfPrizes.execute(10));
 	}
 }
