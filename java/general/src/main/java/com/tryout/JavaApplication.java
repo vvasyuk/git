@@ -1,9 +1,6 @@
 package com.tryout;
 
-import com.tryout.generalPuzzles.greedy.CollectingSignatures;
-import com.tryout.generalPuzzles.greedy.MaximumAdvertisementRevenue;
-import com.tryout.generalPuzzles.greedy.MaximumNumberOfPrizes;
-import com.tryout.generalPuzzles.greedy.MaximumValueOfLoot;
+import com.tryout.generalPuzzles.greedy.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -113,6 +110,13 @@ public class JavaApplication {
 		//System.out.println(CollectingSignatures.execute(l));
 
 		//MaximumNumberOfPrizes
-		System.out.println(MaximumNumberOfPrizes.execute(10));
+		//System.out.println(MaximumNumberOfPrizes.execute(10));
+
+		//MaximumSalary
+		int input[] = { 21,2 }; //221
+		//int input[] = { 9,4,6,1,9 };	//99641
+		//int input[] = { 23,39,92 };	//923923
+		System.out.println(MaximumSalary.execute(input));
 	}
 }
+
