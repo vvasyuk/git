@@ -1,5 +1,7 @@
 package com.tryout;
 
+import com.tryout.generalPuzzles.divideAndConquer.MajorityElement;
+import com.tryout.generalPuzzles.divideAndConquer.SortedArraySearch;
 import com.tryout.generalPuzzles.greedy.*;
 
 import java.util.ArrayList;
@@ -113,10 +115,19 @@ public class JavaApplication {
 		//System.out.println(MaximumNumberOfPrizes.execute(10));
 
 		//MaximumSalary
-		int input[] = { 21,2 }; //221
+		//int input[] = { 21,2 }; //221
 		//int input[] = { 9,4,6,1,9 };	//99641
 		//int input[] = { 23,39,92 };	//923923
-		System.out.println(MaximumSalary.execute(input));
+		//System.out.println(MaximumSalary.execute(input));
+
+		//SortedArraySearch
+		//int input[] = { 1,2,3,4,5,6,7,8,9,10 };
+		//System.out.println(SortedArraySearch.execute(input, 7));
+
+		//MajorityElement
+		int input[] = { 1,2,1,1,5,1,7,8,1,10 };
+		System.out.println(MajorityElement.execute(input));
+
 	}
 }
 
