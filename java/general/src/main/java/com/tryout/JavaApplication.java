@@ -1,6 +1,7 @@
 package com.tryout;
 
 import com.tryout.generalPuzzles.divideAndConquer.MajorityElement;
+import com.tryout.generalPuzzles.divideAndConquer.NumberOfInversions;
 import com.tryout.generalPuzzles.divideAndConquer.SortedArraySearch;
 import com.tryout.generalPuzzles.greedy.*;
 
@@ -125,8 +126,14 @@ public class JavaApplication {
 		//System.out.println(SortedArraySearch.execute(input, 7));
 
 		//MajorityElement
-		int input[] = { 1,2,1,1,5,1,7,8,1,10 };
-		System.out.println(MajorityElement.execute(input));
+		//int input[] = { 1,2,1,1,5,1,7,8,1,10 };
+		//System.out.println(MajorityElement.execute(input));
+
+		//NumberOfInversions
+		int input[] = { 3,9,2,2 };
+		System.out.println(NumberOfInversions.execute(input));
+
+
 
 	}
 }
