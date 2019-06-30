@@ -2,6 +2,7 @@ package com.tryout;
 
 import com.tryout.generalPuzzles.divideAndConquer.MajorityElement;
 import com.tryout.generalPuzzles.divideAndConquer.NumberOfInversions;
+import com.tryout.generalPuzzles.divideAndConquer.OrganizingALottery;
 import com.tryout.generalPuzzles.divideAndConquer.SortedArraySearch;
 import com.tryout.generalPuzzles.greedy.*;
 
@@ -129,9 +130,15 @@ public class JavaApplication {
 		//int input[] = { 1,2,1,1,5,1,7,8,1,10 };
 		//System.out.println(MajorityElement.execute(input));
 
-		//NumberOfInversions
-		int input[] = { 3,9,2,2 };
-		System.out.println(NumberOfInversions.execute(input));
+		//OrganizingALottery
+		int points[] = { 1,6 };
+		int segmentA[] = { 0,5 };
+		int segmentB[] = { -3,2 };
+		int segmentC[] = { 7,10 };
+		List<int[]> list=new ArrayList<>();
+		list.add(segmentA);list.add(segmentB);list.add(segmentC);
+
+		System.out.println(OrganizingALottery.execute(list,points));
 
 
 
