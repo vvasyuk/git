@@ -1,9 +1,6 @@
 package com.tryout;
 
-import com.tryout.generalPuzzles.divideAndConquer.MajorityElement;
-import com.tryout.generalPuzzles.divideAndConquer.NumberOfInversions;
-import com.tryout.generalPuzzles.divideAndConquer.OrganizingALottery;
-import com.tryout.generalPuzzles.divideAndConquer.SortedArraySearch;
+import com.tryout.generalPuzzles.divideAndConquer.*;
 import com.tryout.generalPuzzles.greedy.*;
 
 import java.util.ArrayList;
@@ -131,17 +128,34 @@ public class JavaApplication {
 		//System.out.println(MajorityElement.execute(input));
 
 		//OrganizingALottery
-		int points[] = { 1,6 };
-		int segmentA[] = { 0,5 };
-		int segmentB[] = { -3,2 };
-		int segmentC[] = { 7,10 };
+		//int points[] = { 1,6 };
+		//int segmentA[] = { 0,5 };
+		//int segmentB[] = { -3,2 };
+		//int segmentC[] = { 7,10 };
+		//List<int[]> list=new ArrayList<>();
+		//list.add(segmentA);list.add(segmentB);list.add(segmentC);
+		//System.out.println(OrganizingALottery.execute(list,points));
+
+		//ClosestPoints
+		int segmentA[] = { 4, 4};
+		int segmentB[] = { -2, -2 };
+		int segmentC[] = { -3, -4 };
+		int segmentD[] = { -1, 3 };
+		int segmentE[] = { 2, 3 };
+		int segmentF[] = { -4, 0 };
+		int segmentG[] = { 1, 1 };
+		int segmentH[] = { -1, -1 };
+		int segmentI[] = { 3, -1 };
+		int segmentJ[] = { -4, 2 };
+		int segmentK[] = { -2,4 };
 		List<int[]> list=new ArrayList<>();
 		list.add(segmentA);list.add(segmentB);list.add(segmentC);
-
-		System.out.println(OrganizingALottery.execute(list,points));
-
-
+		list.add(segmentD);list.add(segmentE);list.add(segmentF);
+		list.add(segmentG);list.add(segmentH);list.add(segmentI);
+		list.add(segmentJ);list.add(segmentK);
+		System.out.println(ClosestPoints.execute(list));
 
 	}
 }
+
 
