@@ -1,0 +1,4 @@
+{
+  "bar": true,
+  "foo": {"$ref": "#/bar"}
+}

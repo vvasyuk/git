@@ -1,0 +1,19 @@
+{
+
+  "a" : {"A":"a"},
+
+  "color" : "Black",
+  "type" : "FIAT",
+  "feature" : ["a", "b", "c"],
+  "nested" : {
+    "a" : "x",
+    "b" : "y",
+    "c" : "i"
+ },
+
+  "nested2" : {
+    "a" : {"$ref": "#/a"},
+    "b" : {"B":"b"}
+  }
+
+}

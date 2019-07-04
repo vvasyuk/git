@@ -2,7 +2,10 @@ package com.tryout;
 
 import com.tryout.generalPuzzles.divideAndConquer.*;
 import com.tryout.generalPuzzles.greedy.*;
+import com.tryout.jsonMapper.JsonMapper;
+import com.tryout.yamlMapper.YamlMapper;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +58,13 @@ public class JavaApplication {
 //		System.out.println(EnumTest.FOO.print());
 //		System.out.println(EnumTest.BAR.getAbreviation());
 //
+
+		// ### JsonMapper ###
+		//new JsonMapper().execute();
+
+		// ### YamlMapper ###
+		new YamlMapper().execute();
+
 //		EnumSingleton enumSingleton = EnumSingleton.INSTANCE;
 //		enumSingleton.setValue(2);
 //		System.out.println(enumSingleton.getValue());
@@ -137,23 +147,23 @@ public class JavaApplication {
 		//System.out.println(OrganizingALottery.execute(list,points));
 
 		//ClosestPoints
-		int segmentA[] = { 4, 4};
-		int segmentB[] = { -2, -2 };
-		int segmentC[] = { -3, -4 };
-		int segmentD[] = { -1, 3 };
-		int segmentE[] = { 2, 3 };
-		int segmentF[] = { -4, 0 };
-		int segmentG[] = { 1, 1 };
-		int segmentH[] = { -1, -1 };
-		int segmentI[] = { 3, -1 };
-		int segmentJ[] = { -4, 2 };
-		int segmentK[] = { -2,4 };
-		List<int[]> list=new ArrayList<>();
-		list.add(segmentA);list.add(segmentB);list.add(segmentC);
-		list.add(segmentD);list.add(segmentE);list.add(segmentF);
-		list.add(segmentG);list.add(segmentH);list.add(segmentI);
-		list.add(segmentJ);list.add(segmentK);
-		System.out.println(ClosestPoints.execute(list));
+//		int segmentA[] = { 4, 4};
+//		int segmentB[] = { -2, -2 };
+//		int segmentC[] = { -3, -4 };
+//		int segmentD[] = { -1, 3 };
+//		int segmentE[] = { 2, 3 };
+//		int segmentF[] = { -4, 0 };
+//		int segmentG[] = { 1, 1 };
+//		int segmentH[] = { -1, -1 };
+//		int segmentI[] = { 3, -1 };
+//		int segmentJ[] = { -4, 2 };
+//		int segmentK[] = { -2,4 };
+//		List<int[]> list=new ArrayList<>();
+//		list.add(segmentA);list.add(segmentB);list.add(segmentC);
+//		list.add(segmentD);list.add(segmentE);list.add(segmentF);
+//		list.add(segmentG);list.add(segmentH);list.add(segmentI);
+//		list.add(segmentJ);list.add(segmentK);
+//		System.out.println(ClosestPoints.execute(list));
 
 	}
 }
