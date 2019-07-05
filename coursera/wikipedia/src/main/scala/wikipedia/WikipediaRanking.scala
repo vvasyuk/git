@@ -21,6 +21,7 @@ object WikipediaRanking {
 
   val conf: SparkConf = new SparkConf().setAppName("test").setMaster("local")
   val sc: SparkContext = new SparkContext(conf)
+  sc.setLogLevel("ERROR")
   // Hint: use a combination of `sc.textFile`, `WikipediaData.filePath` and `WikipediaData.parse`
   val myWikiRdd: RDD[String] = sc.textFile(WikipediaData.filePath)
   val wikiRdd: RDD[WikipediaArticle] = sc.textFile(WikipediaData.filePath).map(WikipediaData.parse(_))
@@ -66,8 +67,8 @@ object WikipediaRanking {
   def main(args: Array[String]) {
 
     println("running main")
-    println(myWikiRdd.take(1))
-    //println(wikiRdd.map(x=>x.title).take(1))
+    myWikiRdd.take(1).foreach(println)
+    wikiRdd.map(x=>x.title).take(1).foreach(println)
 
     /* Languages ranked according to (1) */
 //    val langsRanked: List[(String, Int)] = timed("Part 1: naive ranking", rankLangs(langs, wikiRdd))
