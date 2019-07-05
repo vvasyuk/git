@@ -7,3 +7,4 @@ java/igniteClient/spring-shell.log
 *.class
 scala/.idea/workspace.xml
 scala/.idea/workspace.xml
+target
