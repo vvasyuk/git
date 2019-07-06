@@ -1,0 +1,39 @@
+root:
+  cat1:
+    blockA:
+      type: "regular"
+      cols: 2
+      properties:
+        header: "regular"
+        footer: "regular"
+    blockB:
+      type: "regular"
+      cols: 3
+      properties:
+        header: "regular"
+        footer: "regular"
+    blockC:
+      type: "regular"
+      cols: 4
+      properties:
+        header: "regular"
+        footer: "regular"
+  cat2:
+    blockD:
+      type: "regular"
+      cols: 2
+      properties:
+        header: "regular"
+        footer: "regular"
+    blockA:
+      type: "regular"
+      cols: 2
+      properties:
+        header: "regular"
+        footer: "regular"
+    blockB:
+      type: "regular"
+      cols: 3
+      properties:
+        header: "regular"
+        footer: "regular"
