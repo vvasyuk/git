@@ -9,3 +9,9 @@ scala/.idea/workspace.xml
 scala/.idea/workspace.xml
 target
 .idea/*.*
+.idea/
+*.iml
+*.iws
+target/
+coursera/wikipedia/project/*
+coursera/wikipedia/.idea/*
