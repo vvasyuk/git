@@ -1,7 +1,14 @@
 package com.tryout.yamlMapper;
 
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 import org.yaml.snakeyaml.Yaml;
 
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -34,9 +41,11 @@ public class YamlMapper {
 
         DataSet dummyData = createDummyDataSet(cfg);
 
-        mergeDataAndConfig(dummyData, cfg);
+        List<MergedDataSet> listMergedDataSet = mergeDataAndConfig(dummyData, cfg);
 
-        System.out.println("End");
+        buildPdf(listMergedDataSet);
+
+        listMergedDataSet.forEach(x-> System.out.println(x));
     }
 
     private LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<String, Object>>>> createConfig() {
@@ -45,31 +54,39 @@ public class YamlMapper {
         return yaml.load(inputStream);
     }
 
-    private void mergeDataAndConfig(DataSet dummyData, LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<String, Object>>>> cfg) {
-        System.out.println("mergeDataAndConfig");
-        System.out.println("category from data: " + dummyData.getType());
+    private List<MergedDataSet> mergeDataAndConfig(DataSet dummyData, LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<String, Object>>>> cfg) {
+//        System.out.println("mergeDataAndConfig");
+//        System.out.println("category from data: " + dummyData.getType());
 
-        LinkedHashMap<String, LinkedHashMap<String, Object>> catCfg = cfg.get("root").get(dummyData.getType());
+        List<MergedDataSet> listMergedDataSet = new LinkedList<>();
 
-        Iterator<Map.Entry<String, LinkedHashMap<String, Object>>> cfgIter = catCfg.entrySet().iterator();
+        Iterator<Map.Entry<String, LinkedHashMap<String, Object>>> cfgIter = cfg.get("root").get(dummyData.getType()).entrySet().iterator();
         Iterator<Map.Entry<String, Map<String, List<Integer>>>> dataIter = dummyData.getData().entrySet().iterator();
         while(dataIter.hasNext()){
             Map.Entry<String, Map<String, List<Integer>>> data = dataIter.next();
             Map.Entry<String, LinkedHashMap<String, Object>> c = cfgIter.next();
 
-            System.out.println("block: " + data.getKey() + " | "
-                    + "cfg: " + c.getKey() + " | "
-                    + "type: " + c.getValue().get("type") + " | "
-                    + "cols: " + c.getValue().get("cols") + " | "
-                    + "props: " + ((LinkedHashMap<String, String>)c.getValue().get("properties")).keySet()
-            );
-
-            for (String k : data.getValue().keySet()){
-                System.out.println("row: " + k + " | "
-                        + "cells: " + data.getValue().get(k) + " | ");
-            }
+            MergedDataSet mergedDataSet = new MergedDataSet();
+            mergedDataSet.setHeader(data.getKey());
+            mergedDataSet.setMappedCfgBlockName(c.getKey());
+            mergedDataSet.setType((String) c.getValue().get("type"));
+            mergedDataSet.setCols((Integer) c.getValue().get("cols"));
+            mergedDataSet.setProperties((LinkedHashMap<String, String>)c.getValue().get("properties"));
+            mergedDataSet.setRows(data.getValue());
+            listMergedDataSet.add(mergedDataSet);
+//            System.out.println("block: " + data.getKey() + " | "
+//                    + "cfg: " + c.getKey() + " | "
+//                    + "type: " + c.getValue().get("type") + " | "
+//                    + "cols: " + c.getValue().get("cols") + " | "
+//                    + "props: " + ((LinkedHashMap<String, String>)c.getValue().get("properties")).keySet()
+//            );
+//
+//            for (String k : data.getValue().keySet()){
+//                System.out.println("row: " + k + " | "
+//                        + "cells: " + data.getValue().get(k) + " | ");
+//            }
         }
-
+        return listMergedDataSet;
     }
 
     private DataSet createDummyDataSet(LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<String, Object>>>> cfg){
@@ -133,7 +150,32 @@ public class YamlMapper {
         return r.nextInt((max - min) + 1) + min;
     }
 
-    private void buildTableFromConfig(LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<String, Object>>>> cfg){
+    private void buildPdf(List<MergedDataSet> listMergedDataSet){
+        Document document = new Document();
+        try {
+            PdfWriter.getInstance(document, new FileOutputStream("Hello.pdf"));
+            document.open();
+            for(MergedDataSet mergedDataSet : listMergedDataSet){
+                addTable(document, 3, mergedDataSet.getHeader(), mergedDataSet.getRows());
+            }
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        document.close();
+    }
+
+    private void addTable(Document document, Integer cols, String header, Map<String, List<Integer>> rows) throws DocumentException {
+        PdfPTable table = new PdfPTable(cols);
+        PdfPCell headerCell = getHeader(cols, header);
+        table.addCell(headerCell);
+
+        document.add(table);
+    }
+
+    private PdfPCell getHeader(Integer cols, String header){
+        PdfPCell cell = new PdfPCell((new Paragraph(header+ " " + cols)));
+        cell.setColspan(cols);
+        return  cell;
     }
 }
