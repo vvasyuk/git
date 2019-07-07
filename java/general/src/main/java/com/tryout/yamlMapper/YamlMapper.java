@@ -156,7 +156,7 @@ public class YamlMapper {
             PdfWriter.getInstance(document, new FileOutputStream("Hello.pdf"));
             document.open();
             for(MergedDataSet mergedDataSet : listMergedDataSet){
-                addTable(document, 3, mergedDataSet.getHeader(), mergedDataSet.getRows());
+                addTable(document, mergedDataSet.cols, mergedDataSet.getHeader(), mergedDataSet.getRows());
             }
 
         } catch (Exception e) {
@@ -169,12 +169,16 @@ public class YamlMapper {
         PdfPTable table = new PdfPTable(cols);
         PdfPCell headerCell = getHeader(cols, header);
         table.addCell(headerCell);
-
+        for(String row:rows.keySet()){
+            table.addCell(row);
+            rows.get(row).forEach(x->table.addCell(String.valueOf(x)));
+        }
+        table.setSpacingAfter(10f);
         document.add(table);
     }
 
     private PdfPCell getHeader(Integer cols, String header){
-        PdfPCell cell = new PdfPCell((new Paragraph(header+ " " + cols)));
+        PdfPCell cell = new PdfPCell((new Paragraph("header: " + header+ " column number: " + cols)));
         cell.setColspan(cols);
         return  cell;
     }
