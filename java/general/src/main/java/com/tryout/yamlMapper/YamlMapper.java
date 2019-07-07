@@ -51,13 +51,23 @@ public class YamlMapper {
 
         LinkedHashMap<String, LinkedHashMap<String, Object>> catCfg = cfg.get("root").get(dummyData.getType());
 
-        Iterator<Map.Entry<String, LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<String, Object>>>>> cfgIter = cfg.entrySet().iterator();
+        Iterator<Map.Entry<String, LinkedHashMap<String, Object>>> cfgIter = catCfg.entrySet().iterator();
         Iterator<Map.Entry<String, Map<String, List<Integer>>>> dataIter = dummyData.getData().entrySet().iterator();
-        while(dataIter.hasNext()) {
+        while(dataIter.hasNext()){
             Map.Entry<String, Map<String, List<Integer>>> data = dataIter.next();
-            Map.Entry<String, LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<String, Object>>>> c = cfgIter.next();
+            Map.Entry<String, LinkedHashMap<String, Object>> c = cfgIter.next();
 
-            System.out.println("block: " + data.getKey() + "|");
+            System.out.println("block: " + data.getKey() + " | "
+                    + "cfg: " + c.getKey() + " | "
+                    + "type: " + c.getValue().get("type") + " | "
+                    + "cols: " + c.getValue().get("cols") + " | "
+                    + "props: " + ((LinkedHashMap<String, String>)c.getValue().get("properties")).keySet()
+            );
+
+            for (String k : data.getValue().keySet()){
+                System.out.println("row: " + k + " | "
+                        + "cells: " + data.getValue().get(k) + " | ");
+            }
         }
 
     }
@@ -67,25 +77,26 @@ public class YamlMapper {
         DataSet ds = new DataSet();
 
         List<String> blockList = getBlocksList();
-        List<List<String>> ListofOfRows = getListofRows();
-
         LinkedHashMap<String, LinkedHashMap<String, Object>> c = cfg.get("root").get("cat1");
 
-        int index=0;
-        for (String s : blockList){
-            LinkedHashMap<String, Object> configured = getByIndex(c, index);
+        Iterator<String> blockIter = blockList.iterator();
+        Iterator<Map.Entry<String, LinkedHashMap<String, Object>>> cfgIter = c.entrySet().iterator();
+        Iterator<List<String>> rowsIter = getListofRows().iterator();
+        
+        while (blockIter.hasNext()){
+            String blockNext = blockIter.next();
+            LinkedHashMap<String, Object> cfgNext = cfgIter.next().getValue();
             LinkedHashMap<String, List<Integer>> rowsMap = new LinkedHashMap();
+            Map<String, List<Integer>> rowsInnerMap = new LinkedHashMap<>();
 
-            for(String row:ListofOfRows.get(index)){
-                Map<String, List<Integer>> m = new LinkedHashMap<>();
-                List<Integer> listOfInts = getListOfRandomInts((Integer) configured.get("cols")-1);
-                m.put(row,listOfInts);
-                dummyData.put(s, m);
+            for(String row:rowsIter.next()){
+                List<Integer> listOfInts = getListOfRandomInts((Integer) cfgNext.get("cols")-1);
+                rowsInnerMap.put(row,listOfInts);
+                dummyData.put(blockNext, rowsInnerMap);
 //                System.out.println("header:" + s + "|" + "type:" + configured.get("type") + "|" + "cols:" + configured.get("cols") + "|" + "row:" + row + "|" + "listOfInts:" + listOfInts);
             }
-            index++;
         }
-
+        
         ds.setType("cat1");
         ds.setData(dummyData);
         return ds;
@@ -96,12 +107,12 @@ public class YamlMapper {
         List<String> rowsB=Stream.of("bRow1", "bRow2").collect(Collectors.toList());
         List<String> rowsC=Stream.of("cRow1").collect(Collectors.toList());
         List<String> rowsD=Stream.of("dRow1","dRow2","dRow3","dRow4").collect(Collectors.toList());
-        List<List<String>> ListofOfRows = new ArrayList<>();
-        ListofOfRows.add(rowsA);
-        ListofOfRows.add(rowsB);
-        ListofOfRows.add(rowsC);
-        ListofOfRows.add(rowsD);
-        return ListofOfRows;
+        List<List<String>> listofOfRows = new ArrayList<>();
+        listofOfRows.add(rowsA);
+        listofOfRows.add(rowsB);
+        listofOfRows.add(rowsC);
+        listofOfRows.add(rowsD);
+        return listofOfRows;
     }
 
     private List<String> getBlocksList() {
@@ -120,10 +131,6 @@ public class YamlMapper {
     private static int getRandomNumberInRange(int min, int max) {
         Random r = new Random();
         return r.nextInt((max - min) + 1) + min;
-    }
-
-    public LinkedHashMap<String, Object> getByIndex(LinkedHashMap<String, LinkedHashMap<String, Object>> lMap, int index){
-        return (LinkedHashMap<String, Object>) lMap.values().toArray()[index];
     }
 
     private void buildTableFromConfig(LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<String, Object>>>> cfg){
