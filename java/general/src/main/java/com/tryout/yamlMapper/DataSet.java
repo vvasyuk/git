@@ -1,17 +1,18 @@
 package com.tryout.yamlMapper;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class DataSet {
     String type;
-    Map<String, Map<String, List<Integer>>> data;
+    LinkedHashMap<String, LinkedHashMap<String, List<String>>> data;
 
     public void setType(String type) {
         this.type = type;
     }
 
-    public void setData(Map<String, Map<String, List<Integer>>> data) {
+    public void setData(LinkedHashMap<String, LinkedHashMap<String, List<String>>> data) {
         this.data = data;
     }
 
@@ -19,7 +20,7 @@ public class DataSet {
         return type;
     }
 
-    public Map<String, Map<String, List<Integer>>> getData() {
+    public LinkedHashMap<String, LinkedHashMap<String, List<String>>> getData() {
         return data;
     }
 }

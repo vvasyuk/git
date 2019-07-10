@@ -1,39 +1,91 @@
+CellProperties: &CellProperties
+  UseAscender: "true"
+  UseDescender: "true"
+  Padding: "2f"
+  VerticalAlignment: "5"
+
+SingleRowProperties: &SingleRowProperties
+  MidColCell:
+    <<: *CellProperties
+    Type: "Cell"
+    FontStyle: "0"
+    FontColor: "0,0,0"
+    NegFontColor: "255,0,0"
+    Background: "237,213,213"
+    Alignment: "2"
+  FirstColCell:
+    <<: *CellProperties
+    Type: "FirstColCell"
+    FontStyle: "0"
+    FontColor: "0,0,0"
+    Background: "237,213,213"
+    Alignment: "0"
+
+DefaultProperties: &DefaultProperties
+  MidColCell: &MidColCell
+    <<: *CellProperties
+    Type: "Cell"
+    FontStyle: "0"
+    FontColor: "0,0,0"
+    NegFontColor: "255,0,0"
+    Alignment: "2"
+  MidCol2RowCell:
+    <<: *CellProperties
+    Type: "2RowCell"
+    FontStyle: "1"
+    FontColor: "0,0,0"
+    Alignment: "1"
+  MidColTotlCell:
+    <<: *MidColCell
+    Type: "TotalCell"
+    Background: "206,206,206"
+  FirstColCell: &FirstColCell
+    <<: *CellProperties
+    Type: "FirstColCell"
+    FontStyle: "0"
+    FontColor: "0,0,0"
+    Alignment: "0"
+  FirstCol2RowCell:
+    <<: *FirstColCell
+  FirstColTotalCell:
+    <<: *FirstColCell
+    Background: "206,206,206"
+  Header:
+    <<: *CellProperties
+    Background:
+    FontStyle: "1"
+    FontColor: "0,0,0"
+    Alignment: "0"
+    Colspan: "24"
+
+
 root:
   cat1:
     blockA:
       type: "regular"
-      cols: 2
-      properties:
-        header: "regular"
-        footer: "regular"
+      cols: 24
+      header: true
+      properties: *DefaultProperties
     blockB:
       type: "regular"
-      cols: 3
-      properties:
-        header: "regular"
-        footer: "regular"
+      cols: 24
+      header: true
+      properties: *DefaultProperties
     blockC:
-      type: "regular"
-      cols: 4
-      properties:
-        header: "regular"
-        footer: "regular"
+      type: "singleRow"
+      cols: 23
+      header: false
+      properties: *SingleRowProperties
   cat2:
     blockD:
       type: "regular"
       cols: 2
-      properties:
-        header: "regular"
-        footer: "regular"
+      properties: *DefaultProperties
     blockA:
       type: "regular"
       cols: 2
-      properties:
-        header: "regular"
-        footer: "regular"
+      properties: *DefaultProperties
     blockB:
       type: "regular"
       cols: 3
-      properties:
-        header: "regular"
-        footer: "regular"
+      properties: *DefaultProperties

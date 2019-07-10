@@ -5,15 +5,24 @@ import java.util.List;
 import java.util.Map;
 
 public class MergedDataSet {
-    String header;
+    String headerText;
+    Boolean header;
     String mappedCfgBlockName;
     String type;
     Integer cols;
-    LinkedHashMap<String, String> properties;
-    Map<String, List<Integer>> rows;
+    LinkedHashMap<String, Object> properties;
+    Map<String, List<String>> rows;
 
-    public void setHeader(String header) {
+    public void setHeader(Boolean header) {
         this.header = header;
+    }
+
+    public Boolean getHeader() {
+        return header;
+    }
+
+    public void setHeaderText(String headerText) {
+        this.headerText = headerText;
     }
 
     public void setMappedCfgBlockName(String mappedCfgBlockName) {
@@ -28,16 +37,16 @@ public class MergedDataSet {
         this.cols = cols;
     }
 
-    public void setProperties(LinkedHashMap<String, String> properties) {
+    public void setProperties(LinkedHashMap<String, Object> properties) {
         this.properties = properties;
     }
 
-    public void setRows(Map<String, List<Integer>> rows) {
+    public void setRows(Map<String, List<String>> rows) {
         this.rows = rows;
     }
 
-    public String getHeader() {
-        return header;
+    public String getHeaderText() {
+        return headerText;
     }
 
     public String getMappedCfgBlockName() {
@@ -52,23 +61,11 @@ public class MergedDataSet {
         return cols;
     }
 
-    public LinkedHashMap<String, String> getProperties() {
+    public LinkedHashMap<String, Object> getProperties() {
         return properties;
     }
 
-    public Map<String, List<Integer>> getRows() {
+    public Map<String, List<String>> getRows() {
         return rows;
-    }
-
-    @Override
-    public String toString() {
-        return "MergedDataSet{" +
-                "header='" + header + '\'' +
-                ", mappedCfgBlockName='" + mappedCfgBlockName + '\'' +
-                ", type='" + type + '\'' +
-                ", cols=" + cols +
-                ", properties=" + properties +
-                ", rows=" + rows +
-                '}';
     }
 }

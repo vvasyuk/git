@@ -1,8 +1,6 @@
 package com.tryout.yamlMapper;
 
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -11,11 +9,14 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class YamlMapper {
-
+    public static final Font FONT_DEFAULT = new Font(Font.FontFamily.TIMES_ROMAN, 8, Font.NORMAL, BaseColor.BLACK);
+    public static final Font FONT_RED = new Font(Font.FontFamily.TIMES_ROMAN, 8, Font.NORMAL, BaseColor.RED);
+    public static final Font FONT_TITLE= new Font(Font.FontFamily.TIMES_ROMAN, 8, Font.BOLD, BaseColor.BLACK);
     public void execute() {
         System.out.println("starting yaml mapper");
 
@@ -35,7 +36,10 @@ public class YamlMapper {
 //        System.out.println(fooBar.getF1().get("K1"));
 //        System.out.println(fooBar.getB1().get("K2"));
 
-        LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<String, Object>>>> cfg = createConfig();
+        LinkedHashMap<String,
+                LinkedHashMap<String,
+                        LinkedHashMap<String,
+                                LinkedHashMap<String, Object>>>> cfg = createConfig();
 //        System.out.println(cfg.get("root").get("cat1").get("blockA").get("type"));
 //        System.out.println(cfg.get("root").get("cat1").get("blockA").get("cols"));
 
@@ -61,17 +65,18 @@ public class YamlMapper {
         List<MergedDataSet> listMergedDataSet = new LinkedList<>();
 
         Iterator<Map.Entry<String, LinkedHashMap<String, Object>>> cfgIter = cfg.get("root").get(dummyData.getType()).entrySet().iterator();
-        Iterator<Map.Entry<String, Map<String, List<Integer>>>> dataIter = dummyData.getData().entrySet().iterator();
+        Iterator<Map.Entry<String, LinkedHashMap<String, List<String>>>> dataIter = dummyData.getData().entrySet().iterator();
         while(dataIter.hasNext()){
-            Map.Entry<String, Map<String, List<Integer>>> data = dataIter.next();
+            Map.Entry<String, LinkedHashMap<String, List<String>>> data = dataIter.next();
             Map.Entry<String, LinkedHashMap<String, Object>> c = cfgIter.next();
 
             MergedDataSet mergedDataSet = new MergedDataSet();
-            mergedDataSet.setHeader(data.getKey());
+            mergedDataSet.setHeaderText(data.getKey());
+            mergedDataSet.setHeader((Boolean) c.getValue().get("header"));
             mergedDataSet.setMappedCfgBlockName(c.getKey());
             mergedDataSet.setType((String) c.getValue().get("type"));
             mergedDataSet.setCols((Integer) c.getValue().get("cols"));
-            mergedDataSet.setProperties((LinkedHashMap<String, String>)c.getValue().get("properties"));
+            mergedDataSet.setProperties((LinkedHashMap<String, Object>)c.getValue().get("properties"));
             mergedDataSet.setRows(data.getValue());
             listMergedDataSet.add(mergedDataSet);
 //            System.out.println("block: " + data.getKey() + " | "
@@ -90,7 +95,7 @@ public class YamlMapper {
     }
 
     private DataSet createDummyDataSet(LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<String, Object>>>> cfg){
-        Map<String, Map<String, List<Integer>>> dummyData = new LinkedHashMap<>();
+        LinkedHashMap<String, LinkedHashMap<String, List<String>>> dummyData = new LinkedHashMap<>();
         DataSet ds = new DataSet();
 
         List<String> blockList = getBlocksList();
@@ -103,12 +108,17 @@ public class YamlMapper {
         while (blockIter.hasNext()){
             String blockNext = blockIter.next();
             LinkedHashMap<String, Object> cfgNext = cfgIter.next().getValue();
-            LinkedHashMap<String, List<Integer>> rowsMap = new LinkedHashMap();
-            Map<String, List<Integer>> rowsInnerMap = new LinkedHashMap<>();
+            LinkedHashMap<String, List<String>> rowsInnerMap = new LinkedHashMap<>();
 
             for(String row:rowsIter.next()){
-                List<Integer> listOfInts = getListOfRandomInts((Integer) cfgNext.get("cols")-1);
-                rowsInnerMap.put(row,listOfInts);
+                List<String> listOfCols;
+                if(" ".equals(row)){
+                    listOfCols = Stream.of("a", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b").collect(Collectors.toList());
+                }else{
+                    listOfCols = getListOfRandomInts((Integer) cfgNext.get("cols")-1);
+                }
+
+                rowsInnerMap.put(row,listOfCols);
                 dummyData.put(blockNext, rowsInnerMap);
 //                System.out.println("header:" + s + "|" + "type:" + configured.get("type") + "|" + "cols:" + configured.get("cols") + "|" + "row:" + row + "|" + "listOfInts:" + listOfInts);
             }
@@ -120,7 +130,7 @@ public class YamlMapper {
     }
 
     private List<List<String>> getListofRows() {
-        List<String> rowsA= Stream.of("aRow1", "aRow2", "aRow3").collect(Collectors.toList());
+        List<String> rowsA= Stream.of(" ", "aRow1", "aRow2", "aRow3").collect(Collectors.toList());
         List<String> rowsB=Stream.of("bRow1", "bRow2").collect(Collectors.toList());
         List<String> rowsC=Stream.of("cRow1").collect(Collectors.toList());
         List<String> rowsD=Stream.of("dRow1","dRow2","dRow3","dRow4").collect(Collectors.toList());
@@ -136,27 +146,27 @@ public class YamlMapper {
         return Stream.of("b1", "b2", "b3").collect(Collectors.toList());
     }
 
-    private List<Integer> getListOfRandomInts(Integer cols) {
-        List<Integer> res = new ArrayList<>();
-
+    private List<String> getListOfRandomInts(Integer cols) {
+        List<String> res = new ArrayList<>();
+        Random r = new Random();
         for (int i=0; i<cols; i++){
-            res.add(getRandomNumberInRange(-50, 50));
+            res.add(getRandomNumberInRange(r, -50, 50));
         }
         return res;
     }
 
-    private static int getRandomNumberInRange(int min, int max) {
-        Random r = new Random();
-        return r.nextInt((max - min) + 1) + min;
+    private static String getRandomNumberInRange(Random r,int min, int max) {
+        return String.valueOf(r.nextInt((max - min) + 1) + min);
     }
 
     private void buildPdf(List<MergedDataSet> listMergedDataSet){
-        Document document = new Document();
+        Document document = new Document(PageSize.A4.rotate());
         try {
             PdfWriter.getInstance(document, new FileOutputStream("Hello.pdf"));
             document.open();
+            document.newPage();
             for(MergedDataSet mergedDataSet : listMergedDataSet){
-                addTable(document, mergedDataSet.cols, mergedDataSet.getHeader(), mergedDataSet.getRows());
+                addTable(document, mergedDataSet);
             }
 
         } catch (Exception e) {
@@ -165,16 +175,90 @@ public class YamlMapper {
         document.close();
     }
 
-    private void addTable(Document document, Integer cols, String header, Map<String, List<Integer>> rows) throws DocumentException {
+    private void addTable(Document document, MergedDataSet mergedDataSet) throws DocumentException {
+        int cols = mergedDataSet.getCols();
+        Boolean header = mergedDataSet.getHeader();
+        String headerText = mergedDataSet.getHeaderText();
+        LinkedHashMap<String, Object> properties = mergedDataSet.getProperties();
+        Map<String, List<String>> rows = mergedDataSet.getRows();
+
+        float defaultTableWidth = 800f;
+        float defaultCellWidth = 29;
+
         PdfPTable table = new PdfPTable(cols);
-        PdfPCell headerCell = getHeader(cols, header);
-        table.addCell(headerCell);
-        for(String row:rows.keySet()){
-            table.addCell(row);
-            rows.get(row).forEach(x->table.addCell(String.valueOf(x)));
+        table.setTotalWidth(defaultTableWidth);
+        table.setLockedWidth(true);
+        table.setPaddingTop(1f);
+        table.setWidths(getColumnWidths(cols, defaultTableWidth, defaultCellWidth));
+
+        if(header){
+            table.addCell(cellFormatter(headerText, (LinkedHashMap<String, String>) properties.get("Header")));
         }
+
+        rows.keySet().forEach(row->{
+            String rowType="";
+            rowType = "".equals(rowType) && row.startsWith("Total ")?"TotalCell": rowType;
+            rowType = "".equals(rowType) && row.startsWith(" ")?"2RowCell": rowType;
+            rowType = "".equals(rowType)?"Cell": rowType;
+
+            table.addCell(cellFormatter(row, (LinkedHashMap<String, String>) properties.get("FirstCol"+rowType)));
+            String finalRowType = rowType;
+            rows.get(row).forEach(x->{
+                table.addCell(cellFormatter(x, (LinkedHashMap<String, String>) properties.get("MidCol"+ finalRowType)));
+            });
+        });
+
         table.setSpacingAfter(10f);
         document.add(table);
+    }
+
+    private float[] getColumnWidths(int cols, float defaultTableWidth, float defaultColWidth) {
+        float[] columnWidths = new float[cols];
+        columnWidths[0]=defaultTableWidth - (cols-1)*defaultColWidth;
+        for (int i=0; i<cols; i++){
+            columnWidths[i]=defaultColWidth;
+        }
+        return columnWidths;
+    }
+
+    private PdfPCell cellFormatter(String text, LinkedHashMap<String, String> properties) {
+        String background = properties.getOrDefault("Bacground", null);
+        Integer fontStyle = Integer.valueOf(properties.getOrDefault("FontStyle", "0"));
+        String fontColor = properties.getOrDefault("FontColor", null);
+        String negFontColor = properties.getOrDefault("NegFontColor", null);
+
+        PdfPCell cell = new PdfPCell();
+        Paragraph element;
+
+        if("cell".equals(properties.get("Type")) || "totalCell".equals(properties.get("Type"))){
+            Integer value = Integer.valueOf(text);
+            element = new Paragraph(text, value>=0 ? getFont(fontStyle, fontColor) : getFont(fontStyle, negFontColor));
+        }else{
+            element = new Paragraph(text, getFont(fontStyle, fontColor));
+        }
+        properties.getOrDefault("Alignment", "5");
+        cell.setUseAscender(Boolean.parseBoolean(properties.getOrDefault("UseAscender", "false")));
+        cell.setUseDescender(Boolean.parseBoolean(properties.getOrDefault("UseDescender", "false")));
+        cell.setPadding(Float.parseFloat(properties.getOrDefault("Padding", "2f")));
+        cell.setVerticalAlignment(Integer.parseInt(properties.getOrDefault("VerticalAlignment", "5")));
+        cell.setBackgroundColor(getColor(background));
+        cell.setColspan(Integer.parseInt(properties.getOrDefault("Colspan", "0")));
+        element.setAlignment(Integer.parseInt(properties.getOrDefault("Alignment", "5")));
+        cell.addElement(element);
+
+        return cell;
+    }
+
+    private Font getFont(Integer fontStyle, String fontColor) {
+        return new Font(Font.FontFamily.TIMES_ROMAN, 8, fontStyle, getColor(fontColor));
+    }
+
+    private BaseColor getColor(String fontColor) {
+        if(fontColor==null){
+            return null;
+        }
+        String[] colors = fontColor.split(",");
+        return new BaseColor(Integer.valueOf(colors[0]), Integer.valueOf(colors[1]), Integer.valueOf(colors[2]));
     }
 
     private PdfPCell getHeader(Integer cols, String header){
