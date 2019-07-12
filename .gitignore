@@ -16,3 +16,14 @@ target/
 coursera/wikipedia/project/*
 coursera/wikipedia/.idea/*
 coursera/wikipedia/.idea/workspace.xml
+coursera/stackoverflow/project/build.properties
+coursera/stackoverflow/project/buildSettings.sbt
+coursera/stackoverflow/project/CommonBuild.scala
+coursera/stackoverflow/project/Courses.scala
+coursera/stackoverflow/project/GradingFeedback.scala
+coursera/stackoverflow/project/plugins.sbt
+coursera/stackoverflow/project/ScalaTestRunner.scala
+coursera/stackoverflow/project/Settings.scala
+coursera/stackoverflow/project/StudentBuild.scala
+coursera/stackoverflow/project/StudentBuildLike.scala
+coursera/stackoverflow/project/StyleChecker.scala
