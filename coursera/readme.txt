@@ -1,16 +1,25 @@
 D:\work\installed\sbt\bin\sbt.bat
 submit vvasyuk@gmail.com 0xXzA3lNy9arnwtF
 
-stackoverflow
+#	def map[U]((f: T=>U): RDD[U]
+val wordsRdd = sc.parallelize(largeList)
+val lengthRdd = wordsRdd.map(_.length)
+val totalChars = lengthRdd.reduce(_+_))
 
-#####	Reduction	#####
+#	def flatMap[U]((f: T=>TraversableOnce[U]): RDD[U]
+val rdd = spark.textfile("hdfs://...")
+val count = rdd.flatMap(line=>line.split(" "))
+.map(word=>(word,1))
+.reduceByKey(_+_)
+
+#	def filter(f: T=>Boolean): RDD[T]
+val result = encyclopedia.filter(page=>page.contains("EPFL")).count()
+
+#	def reduce(f: (T,T)=>T): T
+
 #	def fold(z: A)(f: (A,A)=>A):A
 
-
-#	reduce
-
-
-#	aggregate
+#	def aggregate[B](z: B)(seqop: (B,A)=>B, combop: (B,B)=>B): B
 
 
 #####	Pair RDD`s	#####
@@ -67,3 +76,14 @@ val intermediate = eventsRdd.mapValues(b=>(b,1))						// (org, budget) => (org, 
 val avg = intermediate.mapValues { case (budget, numberOfEvebts) => budget/numberOfEvebts}
 //	(Prime, 42000)	
 //	(Sportorg, 12.3)
+
+
+#####	shuffle		#####
+val putchaseRdd: RDD[CFFPurchase] = sc.textFile()
+val purchasesPerMonth = putchaseRdd
+.map(p=>p.customerId, p.price).groupByKey().map(p=>(p._2.size, p._2.sum)).collect()		//pair may move between nodes here
+###better alternative:
+val purchasesPerMonth = putchaseRdd
+.map(p=>p.customerId, (1, p.price)).reduceByKey((v1,v2)=>(v1._1+v2._1, v1._2+v2._2)).collect() 
+
+
