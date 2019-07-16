@@ -130,7 +130,7 @@ public class YamlMapper {
     }
 
     private List<List<String>> getListofRows() {
-        List<String> rowsA= Stream.of(" ", "aRow1", "aRow2", "aRow3").collect(Collectors.toList());
+        List<String> rowsA= Stream.of(" ", "aRow1", "aRow2", "Total aRow3").collect(Collectors.toList());
         List<String> rowsB=Stream.of("bRow1", "bRow2").collect(Collectors.toList());
         List<String> rowsC=Stream.of("cRow1").collect(Collectors.toList());
         List<String> rowsD=Stream.of("dRow1","dRow2","dRow3","dRow4").collect(Collectors.toList());
@@ -222,7 +222,7 @@ public class YamlMapper {
     }
 
     private PdfPCell cellFormatter(String text, LinkedHashMap<String, String> properties) {
-        String background = properties.getOrDefault("Bacground", null);
+        String background = properties.getOrDefault("Background", null);
         Integer fontStyle = Integer.valueOf(properties.getOrDefault("FontStyle", "0"));
         String fontColor = properties.getOrDefault("FontColor", null);
         String negFontColor = properties.getOrDefault("NegFontColor", null);
