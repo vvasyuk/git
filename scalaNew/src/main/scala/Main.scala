@@ -15,7 +15,7 @@ object Main {
 
     println(t1Conf.getString("description"))
 
-    val d = readData("D:\\work\\tryout\\scalaNew\\src\\main\\resources\\t1.csv")
+    val d = readData("t1.csv")
 
     println("columns:" + d(0)._2.length)
     d.foreach(i=>println(i._1 + "-" + i._2.mkString(",")))
@@ -24,7 +24,7 @@ object Main {
 
   def readData(fileName:String): Vector[(String, Array[String])] = {
     for {
-      line <- Source.fromFile(fileName).getLines().toVector
+      line <- Source.fromResource(fileName).getLines().toVector
       splitted = line.split(",").map(_.trim)
     } yield (splitted.head, splitted.tail)
   }
