@@ -35,7 +35,7 @@ DefaultProperties: &DefaultProperties
     FontStyle: "1"
     FontColor: "0,0,0"
     Alignment: "1"
-  MidColTotlCell:
+  MidColTotalCell:
     <<: *MidColCell
     Type: "TotalCell"
     Background: "206,206,206"
