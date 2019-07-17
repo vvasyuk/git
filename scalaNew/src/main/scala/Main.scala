@@ -10,10 +10,14 @@ object Main {
     val conf = ConfigFactory.load
     val foo1 = conf.getInt("foo")
 
-    println(foo1)
+    val t1Desc = conf.getString("tableFormats.t1.description")
+    val t1Conf = conf.getConfig("tableFormats.t1")
+
+    println(t1Conf.getString("description"))
 
     val d = readData("D:\\work\\tryout\\scalaNew\\src\\main\\resources\\t1.csv")
 
+    println("columns:" + d(0)._2.length)
     d.foreach(i=>println(i._1 + "-" + i._2.mkString(",")))
 
   }
