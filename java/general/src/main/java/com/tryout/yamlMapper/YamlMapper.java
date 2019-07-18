@@ -49,7 +49,7 @@ public class YamlMapper {
 
         buildPdf(listMergedDataSet);
 
-        listMergedDataSet.forEach(x-> System.out.println(x));
+//        listMergedDataSet.forEach(x-> System.out.println(x));
     }
 
     private LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<String, LinkedHashMap<String, Object>>>> createConfig() {
@@ -209,7 +209,44 @@ public class YamlMapper {
         });
 
         table.setSpacingAfter(10f);
+
+        applyCustomParams(table, properties);
+
         document.add(table);
+    }
+
+    private void applyCustomParams(PdfPTable table, LinkedHashMap<String, Object> properties) {
+        if(properties.get("Custom")!=null){
+            LinkedHashMap<String, LinkedHashMap<String, String>> custom = (LinkedHashMap<String, LinkedHashMap<String, String>>)properties.get("Custom");
+
+            custom.forEach((x,y)->{
+                y.forEach((n,v)->{
+                    String[] coordinates = x.split(",");
+//                    System.out.println("x:" + coordinates[0] + " y:" + coordinates[1]);
+//                    System.out.println(n + ":" + v);
+                    PdfPCell cell = table.getRow(Integer.parseInt(coordinates[0])).getCells()[Integer.parseInt(coordinates[1])];
+                    Paragraph p = (Paragraph) cell.getCompositeElements().get(0);
+
+                    if("AllFont".equals(n)){
+                        String s = p.getContent();
+                        int align = p.getAlignment();
+                        p.clear();
+                        Paragraph nP = new Paragraph(s, getAllFont(v));
+                        nP.setAlignment(align);
+                        cell.addElement(nP);
+                    }
+
+                    if("Alignment".equals(n)){
+                        p.setAlignment(Integer.parseInt(v));
+                    }
+
+
+
+                });
+
+            });
+
+        }
     }
 
     private float[] getColumnWidths(int cols, float defaultTableWidth, float defaultColWidth) {
@@ -251,6 +288,22 @@ public class YamlMapper {
 
     private Font getFont(Integer fontStyle, String fontColor) {
         return new Font(Font.FontFamily.TIMES_ROMAN, 8, fontStyle, getColor(fontColor));
+    }
+
+    private Font getAllFont(String allFont) {
+        String[] splitted = allFont.split(",");
+        return new Font(Font.FontFamily.valueOf(splitted[0])
+                , Integer.valueOf(splitted[1])
+                , Integer.valueOf(splitted[2])
+                , getColor(Integer.valueOf(splitted[3]),Integer.valueOf(splitted[4]),Integer.valueOf(splitted[5])));
+    }
+
+    private BaseColor getColor(Integer s, Integer s1, Integer s2) {
+        return new BaseColor(s, s1, s2);
+    }
+
+    private Font getAllFont(Integer size, Integer fontStyle, String fontColor) {
+        return new Font(Font.FontFamily.TIMES_ROMAN, size, fontStyle, getColor(fontColor));
     }
 
     private BaseColor getColor(String fontColor) {

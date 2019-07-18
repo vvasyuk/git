@@ -16,10 +16,16 @@ SingleRowProperties: &SingleRowProperties
   FirstColCell:
     <<: *CellProperties
     Type: "FirstColCell"
-    FontStyle: "0"
+    FontStyle: "1"
     FontColor: "0,0,0"
     Background: "237,213,213"
     Alignment: "0"
+  Custom:
+    0,1:
+      Alignment: "1"
+      AllFont: "TIMES_ROMAN,8,1,0,0,0"   #font, size,style,basecolor(red,green,blue)
+
+
 
 DefaultProperties: &DefaultProperties
   MidColCell: &MidColCell
