@@ -2,6 +2,7 @@ package com.tryout;
 
 import com.tryout.generalPuzzles.divideAndConquer.*;
 import com.tryout.generalPuzzles.greedy.*;
+import com.tryout.hocon.HoconMapper;
 import com.tryout.jsonMapper.JsonMapper;
 import com.tryout.yamlMapper.YamlMapper;
 
@@ -63,7 +64,10 @@ public class JavaApplication {
 		//new JsonMapper().execute();
 
 		// ### YamlMapper ###
-		new YamlMapper().execute();
+		//new YamlMapper().execute();
+
+		// ### HoconMapper ###
+		new HoconMapper().execute();
 
 //		EnumSingleton enumSingleton = EnumSingleton.INSTANCE;
 //		enumSingleton.setValue(2);
