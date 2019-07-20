@@ -67,7 +67,7 @@ inner join:
 val mobileUsers = subscriptions.join(customers)								//result: RDD[(Int, ((String,Abonement), String))]
 
 
-###	actions
+#	actions
 #	def countByKey(): Map[K, Long]
 spark:
 // get (budget, #events)
@@ -85,5 +85,23 @@ val purchasesPerMonth = putchaseRdd
 ###better alternative:
 val purchasesPerMonth = putchaseRdd
 .map(p=>p.customerId, (1, p.price)).reduceByKey((v1,v2)=>(v1._1+v2._1, v1._2+v2._2)).collect() 
+
+
+#####	Partitioning	#####
+#	create partition:
+val pairs = rdd.map(p=>(p.custId, p.price))
+val tunedPartitioner = new RangePartitioner(8,pair)					# 8 - number of partitiions
+val partitioned = pairs.partitionBy(tunedPartitioner).persist()		# if not persisted = partitioning will be applied each time rdd used
+#	map, flaatMap make partitioning disappear (use mapValues instead which does not change the ykey and leaves partitioning)
+#	performance example:
+val userData = sc.sequenceFile[UserId, UserInfo]("hdfs://...")
+				.partitionBy(new HashPartitioner(100)).persist()	# crate 100 partitions. since this rdd is aprtitioned spart will used it during join
+userData.join(events)												# here spark will shuffle only events
+#	operations that can cause a shuffle:
+jooin, leftOutterJoin, rightOutterJoin, groupByKey, reduceByKey. combineByKey, distinct, intersection, repartition, coalesce, cogroup, groupWith
+#	avoid shuffle by partitioning:
+reduceByKey	- calues are computed locally, only final reduced value is send to driver
+join	- called on two rdd`s that are pre-partitioned with same partitioner and cached on same machine will cause join to be computed locally
+				
 
 
