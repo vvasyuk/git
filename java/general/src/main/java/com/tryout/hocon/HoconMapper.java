@@ -12,6 +12,8 @@ import com.typesafe.config.ConfigValue;
 import java.io.FileOutputStream;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class HoconMapper {
     public void execute(){
@@ -73,10 +75,35 @@ public class HoconMapper {
         });
 
         table.setSpacingAfter(10f);
-        //TODO: add custom thing
+        if (tableConfig.hasPath("customProperties")){
+            applyCustomParams(table, tableConfig.getConfig("customProperties"));
+        }
+
         document.add(table);
     }
+    private void applyCustomParams(PdfPTable table, Config properties) {
+        Set<Map.Entry<String, ConfigValue>> entries = properties.entrySet();
+        table.getRows().forEach(row->{
+            PdfPCell[] cells = row.getCells();
+            Paragraph firstColText = (Paragraph) cells[0].getCompositeElements().get(0);
+            entries.stream().forEach(x-> {
+                String value = (String) x.getValue().unwrapped();
+                String[] rangesValue = x.getKey().replaceAll("\"\\.", ",").replaceAll("\"", "").split(",");
+                //System.out.println(parsed[0] + "###" + parsed[1] + "###" + parsed[2]+ " = " +value);
+                if (rangesValue[0].equals(firstColText.getContent())){
+                    String[] cellRange = rangesValue[1].split("\\..");
+                    int start = Integer.parseInt(cellRange[0]);
+                    int end = cellRange[1].equals("n") ? cells.length-1 : Integer.parseInt(cellRange[1]);
+                    System.out.println("found a row");
+                    //array sublist
+                }
+            });
+        });
+        //alignment
+        //border
+        //font
 
+    }
     private float[] getColumnWidths(int cols, float defaultTableWidth, float defaultColWidth) {
         float[] columnWidths = new float[cols];
         columnWidths[0]=defaultTableWidth - (cols-1)*defaultColWidth;
