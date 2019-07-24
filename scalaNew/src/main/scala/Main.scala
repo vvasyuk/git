@@ -1,6 +1,5 @@
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
-
 import scala.io.Source
 
 object Main {
@@ -16,6 +15,8 @@ object Main {
     println(t1Conf.getString("description"))
 
     val d = readData("t1.csv")
+
+
 
     println("columns:" + d(0)._2.length)
     d.foreach(i=>println(i._1 + "-" + i._2.mkString(",")))

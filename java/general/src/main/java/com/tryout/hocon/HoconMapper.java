@@ -59,17 +59,31 @@ public class HoconMapper {
         table.setPaddingTop(1f);
         table.setWidths(getColumnWidths(cols, defaultTableWidth, defaultCellWidth));
 
+        int[] rowIdx = {0};
         rowsData.keySet().forEach(row->{
+
+            System.out.println(rowIdx[0]);
+
             String rowType="";
             rowType = "".equals(rowType) && row.startsWith("Total ")?"TotalCell": rowType;
             rowType = "".equals(rowType) && row.startsWith(" ")?"2RowCell": rowType;
             rowType = "".equals(rowType)?"Cell": rowType;
 
-            table.addCell(cellFormatter(row, properties.getConfig("FirstCol"+rowType)));
+            table.addCell(cellFormatter(row, properties.getConfig("FirstCol"+rowType),0));
             String finalRowType = rowType;
-            rowsData.get(row).forEach(x->{
-                table.addCell(cellFormatter(x, properties.getConfig("MidCol"+finalRowType)));
-            });
+            List<String> cellData = rowsData.get(row);
+
+            for (int i = 0; i < cellData.size(); i++) {
+                String text = cellData.get(i);
+                int colspan=0;
+                if(rowIdx[0]==0){           //second 0 is from config
+                    int currentIdx = i;
+                    colspan += getCntOfConseqCells(text, ++currentIdx, cellData);
+                    i+=colspan;
+                }
+                table.addCell(cellFormatter(text, properties.getConfig("MidCol"+finalRowType),colspan+1));
+            }
+            rowIdx[0]++;
         });
 
         table.setSpacingAfter(10f);
@@ -79,6 +93,20 @@ public class HoconMapper {
 
         document.add(table);
     }
+
+    private int getCntOfConseqCells(String elem, int idx, List<String> list) {
+        if(idx>list.size()-1){
+            return 0;
+        }
+
+        if(elem.equals(list.get(idx))){
+            return 1+getCntOfConseqCells(elem, ++idx, list);
+        } else {
+            return 0;
+        }
+
+    }
+
     private void applyCustomParams(PdfPTable table, Config properties) {
         Set<Map.Entry<String, ConfigValue>> entries = properties.entrySet();
         table.getRows().forEach(row->{
@@ -135,7 +163,7 @@ public class HoconMapper {
         return columnWidths;
     }
 
-    private PdfPCell cellFormatter(String text, Config properties) {
+    private PdfPCell cellFormatter(String text, Config properties, int colspan) {
         String negAllFont = properties.getString("NegFontColor");
         String allFont = properties.getString("AllFont");
 
@@ -154,7 +182,12 @@ public class HoconMapper {
         cell.setPadding(Float.parseFloat(properties.getString("Padding")));
         cell.setVerticalAlignment(properties.getInt("VerticalAlignment"));
         cell.setBackgroundColor(getColor(properties.getString("Background")));
-        cell.setColspan(Integer.parseInt(properties.getString("Colspan")));
+        if(colspan==1){
+            cell.setColspan(Integer.parseInt(properties.getString("Colspan")));
+        }else{
+            cell.setColspan(colspan);
+        }
+
         element.setAlignment(properties.getInt("Alignment"));
         cell.addElement(element);
 

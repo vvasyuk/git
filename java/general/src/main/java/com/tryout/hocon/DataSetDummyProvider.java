@@ -28,7 +28,7 @@ public class DataSetDummyProvider {
             for(String row : tableRowsList){
                 List<String> listOfCols;
                 if(" ".equals(row)){
-                    listOfCols = Stream.of("a", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b").collect(Collectors.toList());
+                    listOfCols = Stream.of("a", "b", "b", "b", "b", "b", "b", "b", "b", "b", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "b", "d", "d").collect(Collectors.toList());
                 }else{
                     listOfCols = getListOfRandomInts(conf.getConfig(blockName).getConfig(tableName).getInt("cols")-1);
                 }
