@@ -10,10 +10,8 @@ import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigValue;
 
 import java.io.FileOutputStream;
-import java.util.LinkedHashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class HoconMapper {
     public void execute(){
@@ -89,20 +87,44 @@ public class HoconMapper {
             entries.stream().forEach(x-> {
                 String value = (String) x.getValue().unwrapped();
                 String[] rangesValue = x.getKey().replaceAll("\"\\.", ",").replaceAll("\"", "").split(",");
-                //System.out.println(parsed[0] + "###" + parsed[1] + "###" + parsed[2]+ " = " +value);
+                //System.out.println(rangesValue[0] + "###" + rangesValue[1] + "###" + rangesValue[2]+ " = " +value);
                 if (rangesValue[0].equals(firstColText.getContent())){
                     String[] cellRange = rangesValue[1].split("\\..");
                     int start = Integer.parseInt(cellRange[0]);
-                    int end = cellRange[1].equals("n") ? cells.length-1 : Integer.parseInt(cellRange[1]);
-                    System.out.println("found a row");
-                    //array sublist
+                    int end = cellRange[1].equals("n") ? cells.length : Integer.parseInt(cellRange[1]);
+                    List<PdfPCell> subList = Arrays.asList(cells).subList(start, end);
+                    subList.forEach(cell->{
+                        Paragraph p = (Paragraph)cell.getCompositeElements().get(0);
+                        if("Alignment".equals(rangesValue[2])){
+                            p.setAlignment(Integer.parseInt(value));
+                        }
+                        if("AllFont".equals(rangesValue[2])){
+                            String s = p.getContent();
+                            int align = p.getAlignment();
+                            p.clear();
+                            Paragraph nP = new Paragraph(s, getAllFont(value));
+                            nP.setAlignment(align);
+                            cell.addElement(nP);
+                        }
+//                        if("BorderWidth".equals(rangesValue[2])){
+//                            cell.setBorderWidth(Float.parseFloat(value));
+//                        }
+                        if("BorderWidthBottom".equals(rangesValue[2])){
+                            cell.setBorderWidthBottom(Float.parseFloat(value));
+                        }
+                        if("BorderWidthTop".equals(rangesValue[2])){
+                            cell.setBorderWidthTop(Float.parseFloat(value));
+                        }
+                        if("BorderWidthLeft".equals(rangesValue[2])){
+                            cell.setBorderWidthLeft(Float.parseFloat(value));
+                        }
+                        if("BorderWidthRight".equals(rangesValue[2])){
+                            cell.setBorderWidthRight(Float.parseFloat(value));
+                        }
+                    });
                 }
             });
         });
-        //alignment
-        //border
-        //font
-
     }
     private float[] getColumnWidths(int cols, float defaultTableWidth, float defaultColWidth) {
         float[] columnWidths = new float[cols];

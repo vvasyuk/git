@@ -37,4 +37,8 @@ scalaNew/.gradle/4.10/gc.properties
 scalaNew/.gradle/4.10/fileHashes/fileHashes.lock
 scalaNew/.gradle/4.10/fileHashes/fileHashes.bin
 scalaNew/.gradle/4.10/fileChanges/last-build.bin
+# IntellijIdea files
+*.iml
+.idea
+out
 java/general/Hello.pdf
