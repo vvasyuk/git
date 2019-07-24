@@ -81,7 +81,7 @@ public class HoconMapper {
                     colspan += getCntOfConseqCells(text, ++currentIdx, cellData);
                     i+=colspan;
                 }
-                table.addCell(cellFormatter(text, properties.getConfig("MidCol"+finalRowType),colspan+1));
+                table.addCell(cellFormatter(text, properties.getConfig("MidCol"+finalRowType),colspan));
             }
             rowIdx[0]++;
         });
@@ -182,10 +182,10 @@ public class HoconMapper {
         cell.setPadding(Float.parseFloat(properties.getString("Padding")));
         cell.setVerticalAlignment(properties.getInt("VerticalAlignment"));
         cell.setBackgroundColor(getColor(properties.getString("Background")));
-        if(colspan==1){
+        if(colspan==0){
             cell.setColspan(Integer.parseInt(properties.getString("Colspan")));
         }else{
-            cell.setColspan(colspan);
+            cell.setColspan(colspan+1);
         }
 
         element.setAlignment(properties.getInt("Alignment"));
