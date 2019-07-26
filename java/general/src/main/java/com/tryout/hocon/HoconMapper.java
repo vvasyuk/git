@@ -10,6 +10,7 @@ import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigValue;
 
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
@@ -17,11 +18,11 @@ public class HoconMapper {
     public void execute(){
         Config conf = ConfigFactory.load("report.conf");
 
-//        System.out.println(conf.getConfigList("blockList").get(0).getConfig("tab1").getString("name"));
-//        System.out.println(conf.getConfigList("blockList").get(0).getList("order"));
+        CsvReader reader = new CsvReader();
+        List<List<String>> data = reader.read();
 
-        String block1Name = "block1";
-        DataSet block1DummyData = DataSetDummyProvider.getDummyDataSet(conf, block1Name);
+//        String block1Name = "block1";
+//        DataSet block1DummyData = DataSetDummyProvider.getDummyDataSet(conf, block1Name);
 
         Document document = new Document(PageSize.A4.rotate());
         try {
@@ -29,12 +30,75 @@ public class HoconMapper {
             document.open();
             document.newPage();
 
-            appendPdfWithBlock(document, block1Name, block1DummyData, conf.getConfig(block1Name));
+//            appendPdfWithBlock(document, block1Name, block1DummyData, conf.getConfig(block1Name));
+            appendPdfWithCsvTable(document, "tableName",data, conf.getConfig("csvtab1"));
 
         } catch (Exception e) {
             e.printStackTrace();
         }
         document.close();
+    }
+
+    public void appendPdfWithCsvTable(Document document, String tableName, List<List<String>> rowsData, Config tableConfig) throws DocumentException {
+        int cols = tableConfig.getInt("cols");
+        Config properties = tableConfig.getConfig("properties");
+        float defaultTableWidth = 800f;
+        float defaultCellWidth = 29;
+
+        PdfPTable table = new PdfPTable(cols);
+        table.setTotalWidth(defaultTableWidth);
+        table.setLockedWidth(true);
+        table.setPaddingTop(1f);
+        table.setWidths(getColumnWidths(cols, defaultTableWidth, defaultCellWidth));
+
+        for (int x = 0; x < rowsData.size(); x++) {
+            List<String> cellsData = rowsData.get(x);
+
+            for (int y = 0; y < cellsData.size(); y++) {
+                String text = cellsData.get(y);
+                int colspan=0;
+                if(x==0){           //second 0 is from config
+                    int currentIdx = y;
+                    colspan += getCntOfConseqCells(text, ++currentIdx, cellsData);
+                    y+=colspan;
+                }
+
+                table.addCell(cellFormatter(text, properties.getConfig("MidColCell"),colspan));
+            }
+        }
+//        int[] rowIdx = {0};
+//        rowsData.keySet().forEach(row->{
+//
+//            System.out.println(rowIdx[0]);
+//
+//            String rowType="";
+//            rowType = "".equals(rowType) && row.startsWith("Total ")?"TotalCell": rowType;
+//            rowType = "".equals(rowType) && row.startsWith(" ")?"2RowCell": rowType;
+//            rowType = "".equals(rowType)?"Cell": rowType;
+//
+//            table.addCell(cellFormatter(row, properties.getConfig("FirstCol"+rowType),0));
+//            String finalRowType = rowType;
+//            List<String> cellData = rowsData.get(row);
+//
+//            for (int i = 0; i < cellData.size(); i++) {
+//                String text = cellData.get(i);
+//                int colspan=0;
+//                if(rowIdx[0]==0){           //second 0 is from config
+//                    int currentIdx = i;
+//                    colspan += getCntOfConseqCells(text, ++currentIdx, cellData);
+//                    i+=colspan;
+//                }
+//                table.addCell(cellFormatter(text, properties.getConfig("MidCol"+finalRowType),colspan));
+//            }
+//            rowIdx[0]++;
+//        });
+
+        table.setSpacingAfter(10f);
+        if (tableConfig.hasPath("customProperties")){
+            applyCustomParams(table, tableConfig.getConfig("customProperties"));
+        }
+
+        document.add(table);
     }
 
     public void appendPdfWithBlock(Document document,String blockName, DataSet blockData, Config blockConfig) throws DocumentException {
@@ -111,6 +175,10 @@ public class HoconMapper {
         Set<Map.Entry<String, ConfigValue>> entries = properties.entrySet();
         table.getRows().forEach(row->{
             PdfPCell[] cells = row.getCells();
+
+            if(cells[0].getCompositeElements().size()==0){
+                return;
+            }
             Paragraph firstColText = (Paragraph) cells[0].getCompositeElements().get(0);
             entries.stream().forEach(x-> {
                 String value = (String) x.getValue().unwrapped();
@@ -169,13 +237,13 @@ public class HoconMapper {
 
         PdfPCell cell = new PdfPCell();
         Paragraph element;
-
-        if("Cell".equals(properties.getString("Type")) || "TotalCell".equals(properties.getString("Type"))){
-            Integer value = Integer.valueOf(text);
-            element = new Paragraph(text, value>=0 ? getAllFont(allFont) : getAllFont(negAllFont));
-        }else{
-            element = new Paragraph(text, getAllFont(allFont));
-        }
+        element = new Paragraph(text, getAllFont(allFont));
+//        if("Cell".equals(properties.getString("Type")) || "TotalCell".equals(properties.getString("Type"))){
+//            Integer value = Integer.valueOf(text);
+//            element = new Paragraph(text, value>=0 ? getAllFont(allFont) : getAllFont(negAllFont));
+//        }else{
+//            element = new Paragraph(text, getAllFont(allFont));
+//        }
 
         cell.setUseAscender(properties.getBoolean("UseAscender"));
         cell.setUseDescender(properties.getBoolean("UseDescender"));
