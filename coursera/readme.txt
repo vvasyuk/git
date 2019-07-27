@@ -1,5 +1,5 @@
 D:\work\installed\sbt\bin\sbt.bat
-submit vvasyuk@gmail.com 0xXzA3lNy9arnwtF
+submit vvasyuk@gmail.com UZz2bLRqdssCKJwb
 
 # def map[U]((f: T=>U): RDD[U]
  val wordsRdd = sc.parallelize(largeList)
@@ -118,7 +118,7 @@ spark:
  val peopleRDD = ... // Assume RDD[Person]
  val schemaString = "name age"
  val fields = schemaString.split(" ").map(fieldName=> StructField(fieldName, StringType,nullable=true))
- val schema StructType(fields)
+ val schema = StructType(fields)
  val rowRDD = peopleRDD.map(_.split(",")).map(attributes=> Row(attributes(0), attributes(1)))
  val peopleDF = spark.createDataFrame(rowRDD,schema)
 
