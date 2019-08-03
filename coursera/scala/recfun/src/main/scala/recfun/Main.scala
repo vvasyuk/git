@@ -38,16 +38,16 @@ object Main {
         case _::Nil => {
           val h = chars.head
           if (h.equals('(')) {
-            return false
+            false
           } else if (h.equals(')')){
             openBracketCnt -= 1
             if (openBracketCnt == 0) {
-              return true
+              true
             } else {
-              return false
+              false
             }
           } else {
-            return true
+            true
           }
         }
         case _=> {
