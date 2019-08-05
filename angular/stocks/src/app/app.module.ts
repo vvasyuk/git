@@ -15,9 +15,7 @@ import { ManageComponent } from './components/manage/manage.component';
     AppComponent,
     SummaryComponent,
     DashboardComponent,
-    ManageComponent,
-    FormsModule,
-    
+    ManageComponent
   ],
   imports: [
     BrowserModule,
