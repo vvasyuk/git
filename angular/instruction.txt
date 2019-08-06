@@ -8,3 +8,4 @@ ng generate service services/stocks
 ng generate component components/summary
 ng generate component components/dashboard
 ng generate component components/manage
+ng generate component components/image
