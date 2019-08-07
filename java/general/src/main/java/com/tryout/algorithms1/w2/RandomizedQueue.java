@@ -1,6 +1,7 @@
 package com.tryout.algorithms1.w2;
 
 public class RandomizedQueue<Item> implements Iterable<Item> {
+    //Implementation. Stack (without pop) or queue (without dequeue).
     // construct an empty randomized queue
     public RandomizedQueue() {}
 
