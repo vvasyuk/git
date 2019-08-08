@@ -3,16 +3,10 @@ package com.tryout.algorithms1.w2;
 import java.util.Iterator;
 
 public class Deque<Item> implements Iterable<Item> {
-//    Corner cases.  Throw the specified exception for the following corner cases:
-//
-//    Throw a java.lang.IllegalArgumentException if the client calls either addFirst() or addLast() with a null argument.
-//    Throw a java.util.NoSuchElementException if the client calls either removeFirst() or removeLast when the deque is empty.
-//    Throw a java.util.NoSuchElementException if the client calls the next() method in the iterator when there are no more items to return.
-//    Throw a java.lang.UnsupportedOperationException if the client calls the remove() method in the iterator.
 
-    Node first;
-    Node last;
-    int size;
+    private Node first;
+    private Node last;
+    private int size;
 
     // construct an empty deque
     public Deque() {
@@ -32,26 +26,43 @@ public class Deque<Item> implements Iterable<Item> {
 
     // add the item to the front
     public void addFirst(Item item) {
+        if (item == null) {
+            throw new java.lang.IllegalArgumentException();
+        }
         Node oldFirst = first;
         first = new Node();
         first.item = item;
-        first.next = oldFirst;
-        oldFirst.prev = first;
+        if (size > 0) {
+            first.next = oldFirst;
+            oldFirst.prev = first;
+        } else {
+            last = first;
+        }
         size++;
     }
 
     // add the item to the back
     public void addLast(Item item) {
+        if (item == null) {
+            throw new java.lang.IllegalArgumentException();
+        }
         Node newLast = new Node();
         newLast.item = item;
-        newLast.prev = last;
-        last.next = newLast;
+        if(size > 0) {
+            newLast.prev = last;
+            last.next = newLast;
+        }else{
+            first = newLast;
+        }
         last = newLast;
         size++;
     }
 
     // remove and return the item from the front
     public Item removeFirst() {
+        if (isEmpty()) {
+            throw new java.util.NoSuchElementException();
+        }
         Item tmp = first.item;
         first = first.next;
         size--;
@@ -60,6 +71,9 @@ public class Deque<Item> implements Iterable<Item> {
 
     // remove and return the item from the back
     public Item removeLast() {
+        if (isEmpty()) {
+            throw new java.util.NoSuchElementException();
+        }
         Item tmp = last.item;
         last = last.prev;
         size--;
@@ -72,14 +86,31 @@ public class Deque<Item> implements Iterable<Item> {
     // unit testing (required)
     public static void main(String[] args) {
         Deque<String> deq = new Deque<>();
-        System.out.println(deq.size);
+        System.out.println(deq.size());
         deq.addFirst("one");
         deq.addFirst("two");
+        deq.addFirst("three");
         System.out.println(deq.removeLast());
         System.out.println(deq.removeLast());
+        System.out.println(deq.removeLast());
+        deq.addFirst("three");
+        deq.addFirst("two");
+        deq.addFirst("one");
+        System.out.println(deq.removeFirst());
+        System.out.println(deq.removeFirst());
+        System.out.println(deq.removeFirst());
+
+        deq.addLast("three");
+        System.out.println(deq.removeFirst());
+
+        deq.addFirst("one");
+        deq.addFirst("two");
+        deq.addFirst("three");
+        deq.forEach(x-> System.out.println(x));
     }
 
     private class MyIterator implements Iterator<Item> {
+
         private Node current = first;
 
         @Override
@@ -89,9 +120,17 @@ public class Deque<Item> implements Iterable<Item> {
 
         @Override
         public Item next() {
+            if (current == null) {
+                throw new java.util.NoSuchElementException();
+            }
             Item tmp = current.item;
             current = current.next;
             return tmp;
+        }
+
+        @Override
+        public void remove() {
+            throw new java.lang.UnsupportedOperationException();
         }
     }
 
