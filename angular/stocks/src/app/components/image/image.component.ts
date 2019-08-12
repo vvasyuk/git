@@ -12,6 +12,7 @@ export class ImageComponent {
   //imgUrl: string = 'https://picsum.photos/200/300/?random';
   imageToShow: any;
   isImageLoading: boolean;
+  csvToShow: string[][];
 
 
   constructor(private imageService: ImageService) {}
@@ -39,5 +40,13 @@ export class ImageComponent {
          console.log(error);
        });
    }
+
+   getCsv() {
+    this.csvToShow = [
+          [ 'First', 'Second', 'Third', 'The last one' ],
+          [ 'Value 1', 'Value 2', 'Value 3', 'Value 4' ],
+          [ 'Bold value', 'Val 2', 'Val 3', 'Val 4' ]
+        ];
+  }
 
 }
