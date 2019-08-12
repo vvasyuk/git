@@ -9,3 +9,8 @@ ng generate component components/summary
 ng generate component components/dashboard
 ng generate component components/manage
 ng generate component components/image
+
+// npm install --save @types/node
+// npm install pdfmake --save
+// npm install pdfmake-unicode --save
+// npm install @types/pdfmake --save-dev
