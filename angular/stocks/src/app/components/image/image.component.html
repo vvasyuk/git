@@ -6,3 +6,15 @@
 <ng-template #noImageFound>
      <img src="fallbackImage.png" alt="Fallbackimage">
 </ng-template>
+
+<!-- <h2>csv: {{csvToShow}}</h2> -->
+
+<div><button type="button" (click)="getCsv()">Get CSV</button></div>
+
+<div *ngFor="let i of csvToShow">
+     <span *ngFor="let j of i">
+         {{j}}
+     </span>
+ </div>
+
+ <div><button type="button" (click)="getPdf()">Get PDF</button></div>
