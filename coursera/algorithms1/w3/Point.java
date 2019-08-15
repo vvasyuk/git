@@ -1,5 +1,7 @@
 import edu.princeton.cs.algs4.StdDraw;
 
+import java.util.Comparator;
+
 public class Point implements Comparable<Point> {
 
     private final int x;     // x-coordinate of this point
@@ -33,9 +35,17 @@ public class Point implements Comparable<Point> {
      * @return the slope between this point and the specified point
      */
     public double slopeTo(Point that) {
-        if ( y == that.y ) return 0;
-        if ( x == that.x ) return Double.POSITIVE_INFINITY;
-        if ( x == that.x && )
+        double res = 0;
+        if ( x == that.x && y == that.y) {
+            res = Double.NEGATIVE_INFINITY;
+        } else if ( y == that.y ) {
+            res = 0;
+        } else if ( x == that.x ) {
+            res = Double.POSITIVE_INFINITY;
+        } else {
+            res = ( that.y - y ) / ( that.x - x );
+        }
+        return res;
     }
 
     /**
@@ -62,10 +72,17 @@ public class Point implements Comparable<Point> {
      *
      * @return the Comparator that defines this ordering on points
      */
-//    public Comparator<Point> slopeOrder() {
-//        /* YOUR CODE HERE */
-//    }
+    public Comparator<Point> slopeOrder() {
+        return new MyComparator();
+    }
 
+    private class MyComparator implements Comparator<Point> {
+
+        @Override
+        public int compare(Point a, Point b) {
+            return Double.compare(slopeTo(a), slopeTo(b));
+        }
+    }
 
     /**
      * Returns a string representation of this point.
@@ -85,7 +102,14 @@ public class Point implements Comparable<Point> {
     public static void main(String[] args) {
         Point p1 = new Point(1,1);
         Point p2 = new Point(2,2);
-        System.out.println(p1.compareTo(p2));
+        assert(p1.compareTo(p2) == -1);
+        assert(p1.slopeTo(p2) == 1);
+        assert(new Point(1,1).slopeTo(new Point(1,1)) == Double.NEGATIVE_INFINITY);
+        assert(new Point(1,1).slopeTo(new Point(2,1)) == 0);
+        assert(new Point(1,1).slopeTo(new Point(1,3)) == Double.POSITIVE_INFINITY);
+
+        assert(new Point(1,1).slopeOrder().compare(new Point(2,2), new Point(3,3)) == 0);
+
 //        p1.draw();
 //        p2.draw();
 //        p1.drawTo(p2);
