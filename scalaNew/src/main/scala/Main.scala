@@ -23,8 +23,8 @@ object Main {
   def applySomeCfg(line: Int, lineCnt: Int, col: Int, colCnt: Int, cell: String, cTupleSet: mutable.Set[(String,String,String,String)]): String = {
     var acc = "{text:" + cell + "}"
     cTupleSet.foreach(t=>{
-      if ((ranger(t._1, lineCnt) contains line) && (ranger(t._2, colCnt) contains cell)) {
-        acc = acc.replaceAll("}", "," + t._3 + ":" + t._4)
+      if ((ranger(t._1, lineCnt) contains line) && (ranger(t._2, colCnt) contains col)) {
+        acc = acc.replaceAll("}", "," + t._3 + ":" + t._4 + "}")
       }
     })
     acc
