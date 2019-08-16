@@ -101,7 +101,7 @@ public class Point implements Comparable<Point> {
      */
     public static void main(String[] args) {
         Point p1 = new Point(1,1);
-        Point p2 = new Point(2,2);
+        Point p2 = new Point(100,100);
         assert(p1.compareTo(p2) == -1);
         assert(p1.slopeTo(p2) == 1);
         assert(new Point(1,1).slopeTo(new Point(1,1)) == Double.NEGATIVE_INFINITY);
