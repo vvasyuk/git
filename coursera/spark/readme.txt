@@ -1,5 +1,5 @@
 D:\work\installed\sbt\bin\sbt.bat
-submit vvasyuk@gmail.com Ff7HdpqDtgDjigzC
+submit vvasyuk@gmail.com codehere
 
 # def map[U]((f: T=>U): RDD[U]
  val wordsRdd = sc.parallelize(largeList)
