@@ -15,5 +15,7 @@ object IntSetTest {
     //val t5 = t3.incl(2)
     //println("old:" + t3 + " new:" + t5)
     println(t4)
+
+    println(t4.mostRetweeted)
   }
 }

@@ -1,5 +1,9 @@
 package coursera.w3
 
+import java.util.NoSuchElementException
+
+import sun.invoke.empty.Empty
+
 class NonEmpty (elem: Int, l: IntSet, r: IntSet) extends IntSet {
   def incl(x: Int): IntSet = {
     if (x<elem) new NonEmpty(elem, l incl x, r)
@@ -27,6 +31,11 @@ class NonEmpty (elem: Int, l: IntSet, r: IntSet) extends IntSet {
     val t1 = t.incl(elem)
     t1
   }
+  def mostRetweeted: Int = {
+    val lr = if (l.getClass.getName.equals("coursera.w3.Empty$")) 0 else l.mostRetweeted
+    val rr = if (r.getClass.getName.equals("coursera.w3.Empty$")) 0 else r.mostRetweeted
 
+    Math.max(Math.max(lr, rr),elem)
+  }
   override def toString = "{" + l  + elem + r + "}"
 }
