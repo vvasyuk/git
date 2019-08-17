@@ -36,14 +36,14 @@ public class Point implements Comparable<Point> {
      */
     public double slopeTo(Point that) {
         double res = 0;
-        if ( x == that.x && y == that.y) {
+        if (x == that.x && y == that.y) {
             res = Double.NEGATIVE_INFINITY;
-        } else if ( y == that.y ) {
+        } else if (y == that.y) {
             res = 0;
-        } else if ( x == that.x ) {
+        } else if (x == that.x) {
             res = Double.POSITIVE_INFINITY;
         } else {
-            res = ( that.y - y ) / ( that.x - x );
+            res = (that.y - y)/(that.x - x);
         }
         return res;
     }
@@ -61,8 +61,8 @@ public class Point implements Comparable<Point> {
      *         argument point
      */
     public int compareTo(Point that) {
-        if ( y == that.y && x == that.x) return 0;
-        if ( y < that.y || ( y == that.y && x < that.x)) return -1;
+        if (y == that.y && x == that.x) return 0;
+        if (y < that.y || (y == that.y && x < that.x)) return -1;
         return 1;
     }
 
@@ -100,19 +100,18 @@ public class Point implements Comparable<Point> {
      * Unit tests the Point data type.
      */
     public static void main(String[] args) {
-        Point p1 = new Point(1,1);
-        Point p2 = new Point(100,100);
-        assert(p1.compareTo(p2) == -1);
-        assert(p1.slopeTo(p2) == 1);
-        assert(new Point(1,1).slopeTo(new Point(1,1)) == Double.NEGATIVE_INFINITY);
-        assert(new Point(1,1).slopeTo(new Point(2,1)) == 0);
-        assert(new Point(1,1).slopeTo(new Point(1,3)) == Double.POSITIVE_INFINITY);
+        Point p1 = new Point(1, 1);
+        Point p2 = new Point(100, 100);
+        assert (p1.compareTo(p2) == -1);
+        assert (p1.slopeTo(p2) == 1);
+        assert (new Point(1, 1).slopeTo(new Point(1, 1)) == Double.NEGATIVE_INFINITY);
+        assert (new Point(1, 1).slopeTo(new Point(2, 1)) == 0);
+        assert (new Point(1, 1).slopeTo(new Point(1, 3)) == Double.POSITIVE_INFINITY);
+        assert (new Point(1, 1).slopeOrder().compare(new Point(2, 2), new Point(3, 3)) == 0);
 
-        assert(new Point(1,1).slopeOrder().compare(new Point(2,2), new Point(3,3)) == 0);
-
-//        p1.draw();
-//        p2.draw();
-//        p1.drawTo(p2);
+        //        p1.draw();
+        //        p2.draw();
+        //        p1.drawTo(p2);
 
     }
 }

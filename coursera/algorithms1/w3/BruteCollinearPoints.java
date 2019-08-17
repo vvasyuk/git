@@ -35,13 +35,4 @@ public class BruteCollinearPoints {
             }
         }
     }
-
-//    public static void main(String[] args) {
-//        Point[] points = new Point[4];
-//        points[0] = new Point(1, 1);
-//        points[1] = new Point(2, 2);
-//        points[2] = new Point(3, 3);
-//        points[3] = new Point(4, 4);
-//        new BruteCollinearPoints(points);
-//    }
 }

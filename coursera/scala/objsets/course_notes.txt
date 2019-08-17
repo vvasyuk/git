@@ -1,0 +1,41 @@
+abstract class IntSet {
+  def incl(x: Int): IntSet
+  def contains(x: Int): Boolean
+  def union(other: IntSet): IntSet
+}
+
+// binary trees
+// two types of trees: 1. a tree for empty set; 2. a tree consisting of int and two sub-trees
+
+object Empty extends IntSet {
+  def incl(x: Int): IntSet = new NonEmpty(x, Empty, Empty)
+  def contains(x: Int): Boolean = false
+  def union(other: IntSet): IntSet = other
+  override def toString = "."
+
+}
+
+class NonEmpty(elem: Int, l: IntSet, r: IntSet) extends IntSet {
+  def incl(x: Int): IntSet = {
+    if (x<elem) new NonEmpty(elem, l incl x, r)
+    if (x>elem) new NonEmpty(elem, l, r incl x)
+    else this
+  }
+
+  def contains(x: Int): Boolean = {
+    if (x<elem) l contains x
+    else if (x>elem) r contains x
+    else true
+  }
+
+  def union(other: IntSet): IntSet = {
+    (( l union r) union other) incl elem
+  }
+
+  override def toString = "{" + l  + elem + r + "}"
+}
+
+//test
+
+val t1 = new NonEmpty(3, Empty, Empty)
+val t2 = t1 incl 4		// IntSet = {.3{.4.}}
