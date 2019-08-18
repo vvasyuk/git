@@ -1,15 +1,23 @@
+import objsets.{Empty, Tweet, TweetSet}
+
 abstract class IntSet {
   def incl(x: Int): IntSet
   def contains(x: Int): Boolean
   def union(other: IntSet): IntSet
+  def filterAcc(p: Int => Boolean, acc: IntSet): IntSet
 }
 
 // binary trees
 // two types of trees: 1. a tree for empty set; 2. a tree consisting of int and two sub-trees
 class NonEmpty(elem: Int, l: IntSet, r: IntSet) extends IntSet {
+  def filterAcc(p: Int => Boolean, acc: IntSet): IntSet = {
+    if( p(elem)) l.filterAcc(p, r.filterAcc(p, acc.incl(elem)))
+    else l.filterAcc(p, r.filterAcc(p, acc))
+  }
+
   def incl(x: Int): IntSet = {
     if (x<elem) new NonEmpty(elem, l incl x, r)
-    if (x>elem) new NonEmpty(elem, l, r incl x)
+    else if (x>elem) new NonEmpty(elem, l, r incl x)
     else this
   }
 
@@ -27,6 +35,7 @@ class NonEmpty(elem: Int, l: IntSet, r: IntSet) extends IntSet {
 }
 
 object Empty extends IntSet {
+  def filterAcc(p: Int => Boolean, acc: IntSet): IntSet = acc
   def incl(x: Int): IntSet = new NonEmpty(x, Empty, Empty)
   def contains(x: Int): Boolean = false
   def union(other: IntSet): IntSet = other
@@ -39,4 +48,12 @@ val t1 = new NonEmpty(5,
 val t3 = new NonEmpty(3,
   new NonEmpty(1, Empty, Empty), Empty)
 
-t1 union t3
+val tFilt = t1 union t3
+
+val google = List(5, 7)
+tFilt.filterAcc( (x) => x%2==0, Empty)
+tFilt.filterAcc( (x) => {
+  println(google)
+  google.exists(e=> e==x)}, Empty)
+
+
