@@ -49,9 +49,26 @@ public class Board {
         return res[0];
     }
 
-//    // sum of Manhattan distances between tiles and goal
-//    public int manhattan()
-//
+    // sum of Manhattan distances between tiles and goal
+    public int manhattan() {
+        final int[] res = {0};
+        IntStream.range(0,board.length).forEach(row-> {
+            IntStream.range(0,board.length).forEach(col->{
+                int i = board[row][col];
+                int dx, dy;
+                if(i==0) {
+                    dx = dimensions-1;
+                    dy = dimensions-1;
+                } else {
+                    dx = (i-1)/dimensions;
+                    dy = (i-1)-dx*dimensions;
+                }
+                res[0] = res[0] + Math.abs(dx-row)+Math.abs(dy-col);
+            });
+        });
+        return res[0];
+    }
+
 //    // is this board the goal board?
 //    public boolean isGoal()
 //
@@ -74,7 +91,8 @@ public class Board {
         System.out.println(b.toString());
         System.out.println(b.hamming());
         assert(b.hamming() == 5);
-
+        assert(b.manhattan() == 8);
+        System.out.println(b.manhattan());
     }
 
 }
