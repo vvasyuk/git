@@ -5,6 +5,7 @@ import com.typesafe.config.{Config, ConfigFactory, ConfigValue}
 import scala.io.Source
 import scala.collection.JavaConverters._
 import scala.collection.mutable
+import scala.collection.mutable.ArrayBuffer
 
 class csvParser {
   def parse(x: Map.Entry[String, ConfigValue]): (String,String,String,String)= {
@@ -35,11 +36,12 @@ class csvParser {
     } yield (splitted.head, splitted.tail)
   }
 
-  def readData2(fileName:String): Vector[Array[String]] = {
+  def readData2(fileName:String): Vector[ArrayBuffer[String]] = {
     for {
       line <- Source.fromResource(fileName).getLines().toVector
       splitted = line.split(",").map(_.trim)
-    } yield (splitted)
+      buf = ArrayBuffer(splitted: _*)
+    } yield (buf)
   }
 
   def apply(): Unit ={
@@ -47,9 +49,23 @@ class csvParser {
     val d = readData2("t1.csv")
 
     val c = ConfigFactory.load().getConfig("pattern1")
-    val cTupleSet = c.entrySet().asScala.map( x=>{
+    val cTupleSet = c.getConfig("textFormat")
+      .entrySet().asScala.map( x=>{
       parse(x)
     })
+
+    print(d(0).size)
+
+    //data preparation
+
+    d.zipWithIndex.foreach{ case (line, lidx) =>
+      if (line(0).contains("blank") && line.size < d(0).size) {
+        Range(0, d(0).size-line.size + c.getIntList("colsToDelete").size()).foreach(x=>{
+          line+=""
+        })
+      }
+      c.getIntList("colsToDelete").forEach(x=>line.remove(x))
+    }
 
     val table = d.zipWithIndex.map{ case (line, lidx) =>
       line.zipWithIndex.map{ case (cell, cellIdx) =>
@@ -59,7 +75,7 @@ class csvParser {
 
     table.foreach(line=>{
       line.foreach(cell=>{
-        print(cell)
+        print(cell + ",")
       })
       println()
     })
