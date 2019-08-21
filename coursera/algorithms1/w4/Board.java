@@ -1,34 +1,68 @@
+import java.util.stream.IntStream;
+
 public class Board {
 
-    // create a board from an n-by-n array of tiles,
-    // where tiles[row][col] = tile at (row, col)
-    public Board(int[][] tiles)
-                                           
-    // string representation of this board
-    public String toString()
+    private int[][] board;
+    private int dimensions;
+    private int moves;
 
-    // board dimension n
-    public int dimension()
+    public Board (int[][] tiles) {
+        this(tiles, 0);
+    }
 
-    // number of tiles out of place
-    public int hamming()
+    public Board(int[][] tiles, int moves) {
+        this.moves = moves;
+        dimensions = tiles.length;
+        board = new int[dimensions][dimensions];
+        IntStream.range(0,tiles.length).forEach(row-> {
+            IntStream.range(0,tiles.length).forEach(col->{
+                board[row][col] = tiles[row][col];
+            });
+        });
+    }
 
-    // sum of Manhattan distances between tiles and goal
-    public int manhattan()
+    public String toString() {
+        StringBuffer res = new StringBuffer(board.length + "\n");
+        IntStream.range(0,board.length).forEach(row-> {
+            IntStream.range(0,board.length).forEach(col->{
+                res.append(board[row][col] + " ");
+            });
+            res.append("\n");
+        });
+        return res.toString();
+    }
 
-    // is this board the goal board?
-    public boolean isGoal()
+    public int dimension() {
+        return dimensions;
+    }
 
-    // does this board equal y?
-    public boolean equals(Object y)
-
-    // all neighboring boards
-    public Iterable<Board> neighbors()
-
-    // a board that is obtained by exchanging any pair of tiles
-    public Board twin()
+//    // number of tiles out of place
+//    public int hamming()
+//
+//    // sum of Manhattan distances between tiles and goal
+//    public int manhattan()
+//
+//    // is this board the goal board?
+//    public boolean isGoal()
+//
+//    // does this board equal y?
+//    public boolean equals(Object y)
+//
+//    // all neighboring boards
+//    public Iterable<Board> neighbors()
+//
+//    // a board that is obtained by exchanging any pair of tiles
+//    public Board twin()
 
     // unit testing (not graded)
-    public static void main(String[] args)
+    public static void main(String[] args) {
+        int[][] input = new int[3][3];
+        input[0] = new int[] {0, 1, 3};
+        input[1] = new int[] {4, 2, 5};
+        input[2] = new int[] {7, 8, 6};
+        Board b = new Board(input);
+        System.out.println(b.toString());
+
+    }
 
 }
