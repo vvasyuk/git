@@ -36,9 +36,19 @@ public class Board {
         return dimensions;
     }
 
-//    // number of tiles out of place
-//    public int hamming()
-//
+    // number of tiles out of place
+    public int hamming() {
+        final int[] res = {0};
+        IntStream.range(0,board.length).forEach(row-> {
+            IntStream.range(0,board.length).forEach(col->{
+                if(board[row][col]!=row*dimensions+col+1) {
+                    res[0]++;
+                }
+            });
+        });
+        return res[0];
+    }
+
 //    // sum of Manhattan distances between tiles and goal
 //    public int manhattan()
 //
@@ -62,6 +72,8 @@ public class Board {
         input[2] = new int[] {7, 8, 6};
         Board b = new Board(input);
         System.out.println(b.toString());
+        System.out.println(b.hamming());
+        assert(b.hamming() == 5);
 
     }
 
