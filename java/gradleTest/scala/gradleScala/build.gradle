@@ -1,0 +1,59 @@
+plugins {
+    id 'java'
+    id 'scala'
+    //id 'eclipse'
+}
+apply plugin: 'application'
+mainClassName='Main'
+
+group 'com.gradle'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    scalaCompiler
+}
+dependencies {
+//    scalaCompiler "org.scala-lang:scala-library:2.12.8"
+//    compile group: 'org.scala-lang', name: 'scala-library', version: '2.12.8'
+//    implementation 'org.scala-lang:scala-library:2.12.8'
+    compile 'org.scala-lang:scala-library:2.12.8'
+}
+//tasks.withType(ScalaCompile) {
+//    scalaClasspath = configurations.scalaCompiler
+//}
+
+jar {
+    manifest {
+        attributes(
+                //'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
+                'Class-Path': configurations.testRuntime.collect { project.uri(it) }.join(' '),
+                //'Class-Path': '.\\*;"d:\\work\\installed\\scala-2.12.8\\lib\\*.jar"',
+                'Main-Class': 'Main'
+        )
+    }
+}
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Jar File Example',
+                'Main-Class': 'Main'
+    }
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+//eclipse{
+//    classpath{
+//        file{
+//            whenMerged{ cp ->
+//                cp.entries.removeAll { (it instanceof Library) && it.moduleVersion?.group == 'org.scala-lang' && it.moduleVersion?.name == 'scala-library'}
+//            }
+//        }
+//    }
+//}

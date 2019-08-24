@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Class-Path: file:/C:/Users/Jopa/.gradle/caches/modules-2/files-2.1/org
+ .scala-lang/scala-library/2.12.8/36b234834d8f842cdde963c8591efae6cf41
+ 3e3f/scala-library-2.12.8.jar
+Main-Class: Main
+

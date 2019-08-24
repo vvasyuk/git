@@ -1,0 +1,11 @@
+products:
+   D:\work\tryout\java\gradleTest\scala\gradleScala\src\main\scala\Main.scala -> D:\work\tryout\java\gradleTest\scala\gradleScala\build\classes\scala\main\Main$.class
+   D:\work\tryout\java\gradleTest\scala\gradleScala\src\main\scala\Main.scala -> D:\work\tryout\java\gradleTest\scala\gradleScala\build\classes\scala\main\Main.class
+binary dependencies:
+   D:\work\tryout\java\gradleTest\scala\gradleScala\src\main\scala\Main.scala -> C:\Users\Jopa\.gradle\caches\modules-2\files-2.1\org.scala-lang\scala-library\2.12.8\36b234834d8f842cdde963c8591efae6cf413e3f\scala-library-2.12.8.jar
+   D:\work\tryout\java\gradleTest\scala\gradleScala\src\main\scala\Main.scala -> D:\work\installed\java\jre\lib\rt.jar
+source dependencies:
+external dependencies:
+class names:
+   D:\work\tryout\java\gradleTest\scala\gradleScala\src\main\scala\Main.scala -> Main
+   D:\work\tryout\java\gradleTest\scala\gradleScala\src\main\scala\Main.scala -> Main$
