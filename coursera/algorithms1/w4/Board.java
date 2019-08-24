@@ -1,3 +1,6 @@
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Board {
@@ -69,9 +72,23 @@ public class Board {
         return res[0];
     }
 
-//    // is this board the goal board?
-//    public boolean isGoal()
-//
+    // is this board the goal board?
+    public boolean isGoal() {
+        final boolean[] ret = {true};
+        LinkedList<Integer> queue = IntStream.range(1, dimensions*dimensions).boxed()
+                .collect(Collectors.toCollection(LinkedList::new));
+        queue.addLast(0);
+
+        IntStream.range(0, dimensions).forEach(x-> {
+            IntStream.range(0, dimensions).forEach(y->{
+                if (board[x][y] != queue.poll()) {
+                    ret[0] = false;
+                }
+            });
+        });
+        return ret[0];
+    }
+
 //    // does this board equal y?
 //    public boolean equals(Object y)
 //
@@ -88,11 +105,17 @@ public class Board {
         input[1] = new int[] {4, 2, 5};
         input[2] = new int[] {7, 8, 6};
         Board b = new Board(input);
-        System.out.println(b.toString());
-        System.out.println(b.hamming());
         assert(b.hamming() == 5);
         assert(b.manhattan() == 8);
-        System.out.println(b.manhattan());
+        assert(b.isGoal() != true);
+
+        int[][] goodInput = new int[3][3];
+        goodInput[0] = new int[] {1, 2, 3};
+        goodInput[1] = new int[] {4, 5, 6};
+        goodInput[2] = new int[] {7, 8, 0};
+        Board goodB = new Board(goodInput);
+        assert(goodB.isGoal() == true);
+
     }
 
 }
