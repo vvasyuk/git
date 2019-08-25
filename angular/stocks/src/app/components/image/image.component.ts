@@ -24,6 +24,7 @@ export class ImageComponent {
   imageToShow: any;
   isImageLoading: boolean;
   csvToShow: string[][];
+  text: string;
 
 
   constructor(private imageService: ImageService) {}
@@ -51,6 +52,15 @@ export class ImageComponent {
          console.log(error);
        });
    }
+
+   getTextFromService() {
+    this.imageService.getText().subscribe(data => {
+      this.text = data
+      console.log(data);
+    }, error => {
+      console.log(error);
+    });
+}
 
    getCsv() {
     this.csvToShow = [

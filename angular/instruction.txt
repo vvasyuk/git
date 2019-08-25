@@ -2,6 +2,7 @@ npm install -g @angular/cli
 under admin
 ng new stocks
 cd stocks
+cd D:\work\tryout\angular\stocks\node_modules\.bin
 ng serve
 http://localhost:4200/
 ng generate service services/stocks

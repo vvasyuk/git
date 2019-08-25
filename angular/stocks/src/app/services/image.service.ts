@@ -11,4 +11,8 @@ export class ImageService {
     return this.httpClient.get(imageUrl, { responseType: 'blob' });
   }
 
+  getText() {
+    return this.httpClient.get('https://mockbin.org/bin/8023d488-a89a-45db-aba6-502414a9c523', {responseType: 'text'});
+  }
+
 }
