@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ImageService } from '../../services/image.service';
 import * as pdfMake from 'pdfmake/build/pdfmake';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, forkJoin, Subject, Observer } from 'rxjs';
 
 // npm install --save @types/node
 // npm install pdfmake --save
@@ -21,6 +21,12 @@ pdfMakeX.vfs = pdfFontsX.pdfMake.vfs;
 export class ImageComponent {
 
 
+  constructor(private imageService: ImageService,
+    private http: HttpClient) {}
+
+
+
+
   imgUrl: string = 'http://localhost:8080/img';
   //imgUrl: string = 'https://picsum.photos/200/300/?random';
   imageToShow: any;
@@ -28,9 +34,9 @@ export class ImageComponent {
   csvToShow: string[][];
   text: string;
 
+  seq: string = "";
 
-  constructor(private imageService: ImageService,
-    private http: HttpClient) {}
+  seq2: string = "";
 
   createImageFromBlob(image: Blob) {
     let reader = new FileReader();
@@ -58,7 +64,7 @@ export class ImageComponent {
 
    getTextFromService() {
     this.imageService.getText().subscribe(data => {
-      this.text = data
+      this.text = data;
       console.log(data);
     }, error => {
       console.log(error);
@@ -105,51 +111,78 @@ export class ImageComponent {
           }
       }]
   };
-  console.info('1')
-  console.info('1')
-  console.info('1')
-  console.info('1')
-  console.info('1')
-  console.info('1')
+  console.info('1');
+  console.info('1');
+  console.info('1');
+  console.info('1');
+  console.info('1');
+  console.info('1');
   pdfMake.createPdf(docDefinition).download('pdfmake.pdf');
-  console.info('2')
+  console.info('2');
   }
-
-  seq: string = ""
   getSeq() {
     this.http.get('http://www.mocky.io/v2/5d62fb55330000d03e55a71b', {responseType: 'text'})
     .subscribe(a => {
       this.http.get('http://www.mocky.io/v2/5d6302a1330000403c55a729', {responseType: 'text'}).subscribe(b => {
-        this.seq = a+b
+        this.seq = a+b;
       });
     });
   }
-
-  seq2: string = ""
   getSeq2() {
-    var observable = Observable.create(function(observer) {
-      console.info('0,1')
-      const docDefinition = {
-        content: [{
-            table: {
-                headerRows: 1,
-                widths: ['*', 'auto', 100, '*'],
-                body: [
-                    ['First', 'Second', 'Third', 'Последняя'],
-                    ['Value 1', 'Value 2', 'Value 3', 'Value 4'],
-                    [{ text: 'Bold value', bold: true }, 'Val 2', 'Val 3', 'Чё']
-                ]
-            }
-        }]
-    };
-    pdfMake.createPdf(docDefinition).download('pdfmake.pdf');
-      console.info('0,2')
-      observer.next(0);
-      observer.complete();});
+    //working
+    // this.http.get('http://www.mocky.io/v2/5d62fb55330000d03e55a71b', {responseType: 'text'})
+    // .subscribe(a => {
+    //   var observable = Observable.create(function(observer) {
+    //     console.info('0,1')
+    //     const docDefinition = {
+    //       content: [{
+    //           table: {
+    //               headerRows: 1,
+    //               widths: ['*', 'auto', 100, '*'],
+    //               body: [
+    //                   ['First', 'Second', 'Third', 'Последняя'],
+    //                   [a, 'Value 2', 'Value 3', 'Value 4'],
+    //                   [{ text: 'Bold value', bold: true }, 'Val 2', 'Val 3', 'Чё']
+    //               ]
+    //           }
+    //       }]
+    //     };
+    //     pdfMake.createPdf(docDefinition).download('pdfmake.pdf');
+    //     console.info('0,2')
+    //     observer.next(0);
+    //     observer.complete();
+    //   });
+    //   observable.subscribe(() => this.seq2='xyi' + a)
+    //   });
 
-    console.info('1')
-    observable.subscribe(() => this.seq2='xyi')
+    //working2
+      const url1 = this.http.get('http://www.mocky.io/v2/5d62fb55330000d03e55a71b');
+      const url2 = this.http.get('http://www.mocky.io/v2/5d6302a1330000403c55a729');
+      var observable;
+      forkJoin([url1, url2]).subscribe(results => {
 
+        observable = Observable.create(function(observer) {
+        console.info('0,1');
+        const docDefinition = {
+          content: [{
+              table: {
+                  headerRows: 1,
+                  widths: ['*', 'auto', 100, '*'],
+                  body: [
+                      ['First', 'Second', 'Third', 'Последняя'],
+                      [results[0], results[1], 'Value 3', 'Value 4'],
+                      [{ text: 'Bold value', bold: true }, 'Val 2', 'Val 3', 'Чё']
+                  ]
+              }
+          }]
+        };
+        pdfMake.createPdf(docDefinition).download('pdfmake.pdf');
+        console.info('0,2');
+        observer.next(0);
+        observer.complete();
+        });
+        observable.subscribe(() => this.seq2='xyi');
+      });
     // let obs = new Observable<void>(observer => observer.complete());
     // obs.subscribe(() => this.seq2='xyi')
     // this.http.get('http://www.mocky.io/v2/5d62fb55330000d03e55a71b', {responseType: 'text'})
@@ -159,5 +192,193 @@ export class ImageComponent {
     //   });
     // });
   }
+
+  getSeq3() {
+  const url1 = this.http.get('http://www.mocky.io/v2/5d62fb55330000d03e55a71b');
+  const url2 = this.http.get('http://www.mocky.io/v2/5d6302a1330000403c55a729');
+  return Observable.create(function(observer) {
+    try{
+      forkJoin([url1, url2]).subscribe(results => {
+        const docDefinition = {
+        content: [{
+            table: {
+                headerRows: 1,
+                widths: ['*', 'auto', 100, '*'],
+                body: [
+                    ['First', 'Second', 'Third', 'Последняя'],
+                    [results[0], results[1], 'Value 3', 'Value 4'],
+                    [{ text: 'Bold value', bold: true }, 'Val 2', 'Val 3', 'Чё']
+                ]
+            }
+        }]
+      };
+      pdfMake.createPdf(docDefinition).download('pdfmake.pdf');
+      observer.next('true');
+      observer.complete();
+    });
+    } catch(e) {
+      observer.error(e);
+    }
+
+  });
+  }
+  getSeq3Demo(){
+    this.getSeq3().subscribe(
+      data => {console.log('getSeq3Demo');},
+      error => {console.log(error);}
+      );
+  }
+
+  getSeq4() {
+    const url1 = this.http.get('https://picsum.photos/id/1036/200/300', {responseType: 'blob'});
+    const url2 = this.http.get('https://picsum.photos/id/1036/200/300', {responseType: 'blob'});
+    return Observable.create(function(observer) {
+      try{
+        forkJoin([url1, url2]).subscribe(results => {
+          let reader = new FileReader();
+          reader.readAsDataURL( results[0] );
+          reader.onload = () => {
+            const docDefinition = {
+              content: [{image: reader.result, fit: [600,600], alignment: 'center'}]
+            };
+            pdfMake.createPdf(docDefinition).download('pdfmake.pdf');
+            observer.next('true');
+            observer.complete();
+          };
+      });
+      } catch(e) {
+        observer.error(e);
+      }
+
+    });
+    }
+    getSeq4Demo(){
+      this.getSeq4().subscribe(
+        data => {console.log('getSeq4');},
+        error => {console.log(error);}
+        );
+    }
+
+    // getSeq5() {
+    //   const url1 = this.http.get('https://picsum.photos/id/1036/200/300', {responseType: 'blob'});
+    //   const url2 = this.http.get('https://picsum.photos/id/1036/200/300', {responseType: 'blob'});
+    //   return Observable.create(function(observer) {
+    //     try{
+    //       forkJoin([url1, url2]).subscribe(results => {
+    //         let arr = [];
+    //         let idx = -1;
+    //         let reader = new FileReader();
+    //         reader.readAsDataURL( results[0] );
+    //         reader.onloadend = () => {
+    //           ++idx
+    //           console.log(idx);
+    //           if (true){
+    //             arr[idx] = reader.result;
+    //             const docDefinition = {
+    //               content: [{image: arr[0], fit: [600,600], alignment: 'center'},
+    //                         {image: arr[0], fit: [600,600], alignment: 'center'}]
+    //             }
+    //             pdfMake.createPdf(docDefinition).download('pdfmake.pdf');
+    //             observer.next('true');
+    //             observer.complete();
+    //           }
+    //         }
+    //     })
+    //     } catch(e) {
+    //       observer.error(e);
+    //     }
+
+    //   });
+    //   }
+    //working
+    // fileReaderObs(file: Blob)  {
+    //   let reader = new FileReader()
+    //   let fileReaderObs = Observable.create(function(observer) {
+    //     reader.onloadend = () => {
+    //       let r = reader.result;
+    //       observer.next(r)
+    //       observer.complete()
+    //     }
+    //   })
+    //   reader.readAsDataURL(file)
+    //   return fileReaderObs
+    // };
+
+    fileReaderObs(file: Blob)  {
+      return () => {
+        let reader = new FileReader()
+        let fileReaderObs = Observable.create(function(observer) {
+          reader.onloadend = () => {
+            let r = reader.result;
+            observer.next(r)
+            observer.complete()
+          }
+        })
+        reader.readAsDataURL(file)
+        return fileReaderObs
+    }
+    };
+
+    getSeq5() {
+      const url1 = this.http.get('https://picsum.photos/id/1036/200/300', {responseType: 'blob'});
+      const url2 = this.http.get('https://picsum.photos/id/1036/200/300', {responseType: 'blob'});
+      return Observable.create(function(observer) {
+        try{
+          forkJoin([url1, url2]).subscribe(results => {
+            function readerObs(b: Blob) {
+              let reader = new FileReader()
+              let fileReaderObs = Observable.create(function(observer) {
+                reader.onloadend = () => {
+                  let r = reader.result;
+                  observer.next(r)
+                  observer.complete()
+                }
+              })
+              reader.readAsDataURL(b)
+              return fileReaderObs
+            }
+            forkJoin([readerObs(results[0]), readerObs(results[1])]).subscribe(fRes => {
+                const docDefinition = {
+                  content: [{image: fRes[0], fit: [600,600], alignment: 'center'},
+                            {image: fRes[1], fit: [600,600], alignment: 'center'}]
+                }
+                pdfMake.createPdf(docDefinition).download('pdfmake.pdf');
+                observer.next('true');
+                observer.complete();
+            });
+          });
+        } catch(e) {
+          observer.error(e);
+        }
+      });
+      }
+      getSeq5Demo(){
+        this.getSeq5().subscribe(
+          data => {console.log('getSeq5');},
+          error => {console.log(error);}
+          );
+      }
+
+      asd(){
+        let deck = {
+          suits: ["hearts", "spades", "clubs", "diamonds"],
+          cards: Array(52),
+          createCardPicker: function() {
+              //return function() {
+              return () => {
+                  let pickedCard = Math.floor(Math.random() * 52);
+                  let pickedSuit = Math.floor(pickedCard / 13);
+
+                  return {suit: this.suits[pickedSuit], card: pickedCard % 13};
+              }
+          }
+      }
+
+      let cardPicker = deck.createCardPicker();
+      let pickedCard = cardPicker();
+
+      alert("card: " + pickedCard.card + " of " + pickedCard.suit);
+      }
+
 
 }
