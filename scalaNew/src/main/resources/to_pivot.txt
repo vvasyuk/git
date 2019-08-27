@@ -1,0 +1,28 @@
+COLUMN	COLUMN_ORD	SECTION_ORD	INSDESECTION_ORD	REP_1	REP_2	VALUE
+col1	1	1	1	grp1	grp1_sub1	1
+col1	1	1	1	grp1	grp1_sub2	6
+col1	1	1	2	grp2	grp2_sub1	11
+col1	1	1	2	grp2	grp2_sub2	16
+col1	1	1	2	grp2	grp2_sub3	21
+col1	1	2	1	blank1	 	 
+col1	1	3	1	grp3	 	26
+col1	1	4	1	blank2	 	 
+col1	1	5	1	grp4	 	31
+col2	2	1	1	grp1	grp1_sub1	2
+col2	2	1	1	grp1	grp1_sub2	7
+col2	2	1	2	grp2	grp2_sub1	12
+col2	2	1	2	grp2	grp2_sub2	17
+col2	2	1	2	grp2	grp2_sub3	22
+col2	2	2	1	blank1	 	 
+col2	2	3	1	grp3	 	27
+col2	2	4	1	blank2	 	 
+col2	2	5	1	grp4	 	32
+col3	3	1	1	grp1	grp1_sub1	3
+col3	3	1	1	grp1	grp1_sub2	8
+col3	3	1	2	grp2	grp2_sub1	13
+col3	3	1	2	grp2	grp2_sub2	18
+col3	3	1	2	grp2	grp2_sub3	23
+col3	3	2	1	blank1	 	 
+col3	3	3	1	grp3	 	28
+col3	3	4	1	blank2	 	 
+col3	3	5	1	grp4	 	33
