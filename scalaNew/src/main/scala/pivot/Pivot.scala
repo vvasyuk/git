@@ -1,5 +1,6 @@
 package pivot
 
+import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.io.Source
 import org.apache.spark.sql.SparkSession
@@ -17,7 +18,6 @@ object Pivot {
     val r = customUnpivot(getStructure(d))
     val r1 = flatTree(r).toString
     println(r1)
-
   }
 
   def flatTree(in: TreeMap[K, TreeMap[Int, String]])={
@@ -67,8 +67,6 @@ object Pivot {
       ("Orange",2000,"USA"),("Orange",2000,"USA"),("Banana",400,"China"),
       ("Carrots",1200,"China"),("Beans",1500,"China"),("Orange",4000,"China"),
       ("Banana",2000,"Canada"),("Carrots",2000,"Canada"),("Beans",2000,"Mexico"))
-
-
 
     import spark.sqlContext.implicits._
     val df = data.toDF("Product","Amount","Country")
