@@ -89,9 +89,38 @@ public class Board {
         return ret[0];
     }
 
-//    // does this board equal y?
-//    public boolean equals(Object y)
-//
+    // does this board equal y?
+    public boolean equals(Object y) {
+        if (y == null) {
+            return false;
+        }
+
+        if (this == y) {
+            return true;
+        }
+
+        if (this.getClass() != y.getClass()) {
+            return false;
+        }
+
+        Board that = (Board) y;
+
+        if (this.dimension() != that.dimension()) {
+            return false;
+        }
+
+        final boolean[] res = {true};
+        IntStream.range(0,board.length).forEach(row-> {
+            IntStream.range(0,board.length).forEach(col->{
+                if( board[row][col] != that.board[row][col] ) {
+                    res[0] = false;
+                }
+            });
+        });
+
+        return res[0];
+    }
+
 //    // all neighboring boards
 //    public Iterable<Board> neighbors()
 //
