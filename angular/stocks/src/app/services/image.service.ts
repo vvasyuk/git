@@ -19,4 +19,8 @@ export class ImageService {
     return this.httpClient.get('http://localhost:4567/hello', {responseType: 'text'});
   }
 
+  getPDFData() {
+    return this.httpClient.get('http://localhost:4567/pdf', {responseType: 'text'});
+  }
+
 }

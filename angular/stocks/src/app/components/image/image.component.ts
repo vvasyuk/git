@@ -112,13 +112,24 @@ export class ImageComponent {
       }]
   };
   console.info('1');
-  console.info('1');
-  console.info('1');
-  console.info('1');
-  console.info('1');
-  console.info('1');
   pdfMake.createPdf(docDefinition).download('pdfmake.pdf');
   console.info('2');
+  }
+
+  getPdf2(){
+    this.imageService.getPDFData().subscribe(data => {
+        console.log(data);
+        //working
+        //const docDefinition = {content: ['First']}
+        //let docDefinition = {}
+        //docDefinition = JSON.stringify(data)
+        const docDefinition = JSON.parse(data);
+        console.info('1');
+        pdfMake.createPdf(docDefinition).download('pdfmake.pdf');
+        console.info('2');
+    }, error => {
+      console.log(error);
+    });
   }
   getSeq() {
     this.http.get('http://www.mocky.io/v2/5d62fb55330000d03e55a71b', {responseType: 'text'})
