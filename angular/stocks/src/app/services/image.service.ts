@@ -15,4 +15,8 @@ export class ImageService {
     return this.httpClient.get('https://mockbin.org/bin/8023d488-a89a-45db-aba6-502414a9c523', {responseType: 'text'});
   }
 
+  getTextLocal() {
+    return this.httpClient.get('http://localhost:4567/hello', {responseType: 'text'});
+  }
+
 }

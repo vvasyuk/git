@@ -380,5 +380,13 @@ export class ImageComponent {
       alert("card: " + pickedCard.card + " of " + pickedCard.suit);
       }
 
+      getTextFromRest() {
+        this.imageService.getTextLocal().subscribe(data => {
+          //this.text = data;
+          console.log(data);
+        }, error => {
+          console.log(error);
+        });
+    }
 
 }
