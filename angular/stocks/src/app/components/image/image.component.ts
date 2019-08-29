@@ -123,7 +123,20 @@ export class ImageComponent {
         //const docDefinition = {content: ['First']}
         //let docDefinition = {}
         //docDefinition = JSON.stringify(data)
-        const docDefinition = JSON.parse(data);
+        //const docDefinition = JSON.parse(data);
+        //const docDefinition = data
+        let docDefinition = {
+          content: []
+      }
+      docDefinition.content.push('First paragraph')
+      docDefinition.content.push('Second paragraph')
+      docDefinition.content.push({			table: {
+				body: [
+					['Column 1', 'Column 2', 'Column 3'],
+					['One value goes here', 'Another one here', 'OK?']
+				]
+      }})
+      docDefinition.content.push(eval(data))
         console.info('1');
         pdfMake.createPdf(docDefinition).download('pdfmake.pdf');
         console.info('2');
@@ -145,19 +158,19 @@ export class ImageComponent {
     // .subscribe(a => {
     //   var observable = Observable.create(function(observer) {
     //     console.info('0,1')
-    //     const docDefinition = {
-    //       content: [{
-    //           table: {
-    //               headerRows: 1,
-    //               widths: ['*', 'auto', 100, '*'],
-    //               body: [
-    //                   ['First', 'Second', 'Third', 'Последняя'],
-    //                   [a, 'Value 2', 'Value 3', 'Value 4'],
-    //                   [{ text: 'Bold value', bold: true }, 'Val 2', 'Val 3', 'Чё']
-    //               ]
-    //           }
-    //       }]
-    //     };
+        // const docDefinition = {
+        //   content: [{
+        //       table: {
+        //           headerRows: 1,
+        //           widths: ['*', 'auto', 100, '*'],
+        //           body: [
+        //               ['First', 'Second', 'Third', 'Последняя'],
+        //               ['a', 'Value 2', 'Value 3', 'Value 4'],
+        //               [{ text: 'Bold value', bold: true }, 'Val 2', 'Val 3', 'Чё']
+        //           ]
+        //       }
+        //   }]
+        // };
     //     pdfMake.createPdf(docDefinition).download('pdfmake.pdf');
     //     console.info('0,2')
     //     observer.next(0);
