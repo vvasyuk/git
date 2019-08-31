@@ -1,5 +1,5 @@
 import java.util.LinkedList;
-import java.util.Queue;
+import java.util.Stack;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -15,13 +15,18 @@ public class Board {
 
     public Board(int[][] tiles, int moves) {
         this.moves = moves;
-        dimensions = tiles.length;
-        board = new int[dimensions][dimensions];
+        this.dimensions = tiles.length;
+        this.board = copy(tiles);
+    }
+
+    private int[][] copy(int[][] tiles) {
+        int[][] copy = new int[dimensions][dimensions];
         IntStream.range(0,tiles.length).forEach(row-> {
             IntStream.range(0,tiles.length).forEach(col->{
-                board[row][col] = tiles[row][col];
+                copy[row][col] = tiles[row][col];
             });
         });
+        return copy;
     }
 
     public String toString() {
@@ -121,11 +126,56 @@ public class Board {
         return res[0];
     }
 
-//    // all neighboring boards
-//    public Iterable<Board> neighbors()
-//
-//    // a board that is obtained by exchanging any pair of tiles
-//    public Board twin()
+    // all neighboring boards
+    public Iterable<Board> neighbors() {
+        Stack<Board> s = new Stack<>();
+        final int[] zeroRow = { -1 };
+        final int[] zeroCol = { -1 };
+
+        IntStream.range(0,board.length).forEach(row-> {
+            IntStream.range(0,board.length).forEach(col->{
+                if(board[row][col]== 0) {
+                    zeroRow[0] = row;
+                    zeroCol[0] = col;
+                }
+            });
+        });
+        int r = zeroRow[0];
+        int c = zeroCol[0];
+
+        //up
+        if (r > 0) {
+            s.push(new Board(swap(r,c,r-1,c),this.moves+1));
+        }
+        //down
+        if (r < dimensions-1) {
+            s.push(new Board(swap(r,c,r+1,c),this.moves+1));
+        }
+        //left
+        if (c > 0) {
+            s.push(new Board(swap(r,c,r,c-1),this.moves+1));
+        }
+        //right
+        if (c < dimensions-1) {
+            s.push(new Board(swap(r,c,r,c+1),this.moves+1));
+        }
+        return s;
+    }
+
+    // a board that is obtained by exchanging any pair of tiles
+    public Board twin(){
+        if (board[0][0] != 0 && board[0][1] != 0) {
+            return new Board(swap(0,0,0,1));
+        }
+            return new Board(swap(1,0,1,1));
+    }
+
+    private int[][] swap(int i, int i1, int j, int j1) {
+        int[][] copied = copy(this.board);
+        copied[i][i1] = this.board[j][j1];
+        copied[j][j1] = this.board[i][i1];
+        return copied;
+    }
 
     // unit testing (not graded)
     public static void main(String[] args) {
@@ -144,6 +194,17 @@ public class Board {
         goodInput[2] = new int[] {7, 8, 0};
         Board goodB = new Board(goodInput);
         assert(goodB.isGoal() == true);
+
+        //System.out.println(b.twin().toString());
+
+        int[][] input2 = new int[3][3];
+        input[0] = new int[] {2, 1, 3};
+        input[1] = new int[] {4, 0, 5};
+        input[2] = new int[] {7, 8, 6};
+        Board b2 = new Board(input);
+        Iterable<Board> n = b2.neighbors();
+        n.forEach(x-> System.out.println(x.toString()));
+
 
     }
 
