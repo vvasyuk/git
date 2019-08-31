@@ -108,14 +108,31 @@ export class ImageComponent {
                   ['Value 1', 'Value 2', 'Value 3', 'Value 4'],
                   [{ text: 'Bold value', bold: true }, 'Val 2', 'Val 3', 'Чё']
               ]
+          },
+          layout: {
+            hLineWidth: function (i, node) {
+              return (i === 0 || i === node.table.body.length) ? 2 : 0.1;
+            }
           }
-      }]
+      },
+
+    ]
   };
   var x = JSON.stringify(docDefinition)
   console.info(x);
-  console.info('1');
+  console.info(docDefinition);
   pdfMake.createPdf(docDefinition).download('pdfmake.pdf');
   console.info('2');
+  }
+
+  getF1(){
+    return(function (i, node) {
+      return (i === 0 || i === node.table.body.length) ? 2 : 0.1;
+    })
+  }
+
+  getF2(){
+    return "function (i, node) {return (i === 0 || i === node.table.body.length) ? 2 : 0.1;}"
   }
 
   getGreeting() {
