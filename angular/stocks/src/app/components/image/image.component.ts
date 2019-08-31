@@ -33,6 +33,7 @@ export class ImageComponent {
   isImageLoading: boolean;
   csvToShow: string[][];
   text: string;
+  test: string = "this.getGreeting()"
 
   seq: string = "";
 
@@ -102,18 +103,29 @@ export class ImageComponent {
           table: {
               headerRows: 1,
               widths: ['*', 'auto', 100, '*'],
-              // body: [
-              //     ['First', 'Second', 'Third', 'Последняя'],
-              //     ['Value 1', 'Value 2', 'Value 3', 'Value 4'],
-              //     [{ text: 'Bold value', bold: true }, 'Val 2', 'Val 3', 'Чё']
-              // ]
-              body: this.csvToShow
+              body: [
+                  [this.getGreeting(), 'Second', 'Third', 'Последняя'],
+                  ['Value 1', 'Value 2', 'Value 3', 'Value 4'],
+                  [{ text: 'Bold value', bold: true }, 'Val 2', 'Val 3', 'Чё']
+              ]
           }
       }]
   };
+  var x = JSON.stringify(docDefinition)
+  console.info(x);
   console.info('1');
   pdfMake.createPdf(docDefinition).download('pdfmake.pdf');
   console.info('2');
+  }
+
+  getGreeting() {
+    return "howdy";
+  }
+
+  evalString(){
+    console.log(this.test)
+    console.log(eval(this.test))
+    console.log(eval("asdfasdf"))
   }
 
   getPdf2(){
@@ -123,20 +135,50 @@ export class ImageComponent {
         //const docDefinition = {content: ['First']}
         //let docDefinition = {}
         //docDefinition = JSON.stringify(data)
+
         //const docDefinition = JSON.parse(data);
-        //const docDefinition = data
-        let docDefinition = {
-          content: []
-      }
-      docDefinition.content.push('First paragraph')
-      docDefinition.content.push('Second paragraph')
-      docDefinition.content.push({			table: {
-				body: [
-					['Column 1', 'Column 2', 'Column 3'],
-					['One value goes here', 'Another one here', 'OK?']
-				]
-      }})
-      docDefinition.content.push(eval(data))
+
+        const docDefinition = JSON.parse(data, function (key, value) {
+          if (key == "xyi") {
+            return new Date();
+          } else {
+            return value;
+          }
+        }
+        );
+        // console.info(docDefinition);
+        // console.info(docDefinition.content.constructor.name);
+
+        // docDefinition.content.forEach( (element) => {
+        //   console.info(element.constructor.name)
+        //   console.info(element.label)
+        // });
+
+        // Object.keys(docDefinition).forEach(e => {
+        //   console.log(`key=${e}  value=${docDefinition[e]}`)
+        // });
+
+        // Object.entries(docDefinition).forEach(([key, value]) => {
+        //   console.log(`${key} ${value}`);
+        // });
+
+        const iterate = (obj) => {
+          Object.keys(obj).forEach(key => {
+
+          //console.log(`key: ${key}, value: ${obj[key]}`)
+          if (`${obj[key]}`.startsWith("this.")){
+            console.log(`${obj[key]}`)
+            obj[key] = eval(obj[key])
+          }
+
+          if (typeof obj[key] === 'object') {
+                  iterate(obj[key])
+              }
+          })
+        }
+
+        iterate(docDefinition)
+
         console.info('1');
         pdfMake.createPdf(docDefinition).download('pdfmake.pdf');
         console.info('2');
@@ -158,19 +200,19 @@ export class ImageComponent {
     // .subscribe(a => {
     //   var observable = Observable.create(function(observer) {
     //     console.info('0,1')
-        // const docDefinition = {
-        //   content: [{
-        //       table: {
-        //           headerRows: 1,
-        //           widths: ['*', 'auto', 100, '*'],
-        //           body: [
-        //               ['First', 'Second', 'Third', 'Последняя'],
-        //               ['a', 'Value 2', 'Value 3', 'Value 4'],
-        //               [{ text: 'Bold value', bold: true }, 'Val 2', 'Val 3', 'Чё']
-        //           ]
-        //       }
-        //   }]
-        // };
+    //     const docDefinition = {
+    //       content: [{
+    //           table: {
+    //               headerRows: 1,
+    //               widths: ['*', 'auto', 100, '*'],
+    //               body: [
+    //                   ['First', 'Second', 'Third', 'Последняя'],
+    //                   [a, 'Value 2', 'Value 3', 'Value 4'],
+    //                   [{ text: 'Bold value', bold: true }, 'Val 2', 'Val 3', 'Чё']
+    //               ]
+    //           }
+    //       }]
+    //     };
     //     pdfMake.createPdf(docDefinition).download('pdfmake.pdf');
     //     console.info('0,2')
     //     observer.next(0);
@@ -412,5 +454,4 @@ export class ImageComponent {
           console.log(error);
         });
     }
-
 }

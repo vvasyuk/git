@@ -14,15 +14,8 @@ object Api {
 
     get("/pdf", (req, res) => {
       res.header("Access-Control-Allow-Origin", "*")
-      Thread.sleep(5000)
-      //"{\"content\": [\"First\"]}"
-      //"{\"content\": [{\"table\": {\"body\": [[\"First\", \"Second\"],[\"First\", \"Second\"]]}}]}"
-
-      //"{\"content\":[{\"table\": {\"body\": [[\"First\", \"Second\"],[\"First\", \"Second\"]]}}]}"
-      //val parsed = JSON.parseRaw("{\n      content: [{\n          table: {\n              headerRows: 1,\n              widths: ['*', 'auto', 100, '*'],\n              body: [\n                  ['First', 'Second', 'Third', 'Последняя'],\n                  ['Value 1', 'Value 2', 'Value 3', 'Value 4'],\n                  [{ text: 'Bold value', bold: true }, 'Val 2', 'Val 3', 'Чё']\n              ]\n          }\n      }]\n  }").get.toString()
-
-      //"{\"content\":[{\"table\": {\"body\": [[\"First\", \"Second\"],[\"First\", \"Second\"]]}}]}"
-      "{              table: {\n                  headerRows: 1,\n                  widths: ['*', 'auto', 100, '*'],\n                  body: [\n                      ['First', 'Second', 'Third', 'Последняя'],\n                      ['a', 'Value 2', 'Value 3', 'Value 4'],\n                      [{ text: 'Bold value', bold: true }, 'Val 2', 'Val 3', 'Чё']\n                  ]\n              }}"
+      //Thread.sleep(5000)
+      "{\"content\":[\n{\"text\":\"Bold value\",\"bold\":true},\n{\"table\":{\"headerRows\":1,\"widths\":[\"*\",\"auto\",100,\"*\"],\n\"body\":[[{\"text\":\"this.getGreeting()\"},\"Second\",\"Third\",\"Последняя\"],[\"Value 1\",\"Value 2\",\"Value 3\",\"Value 4\"],[{\"text\":\"Bold value\",\"bold\":true},\"Val 2\",\"Val 3\",\"Чё\"]]}}\n,{\"table\":{\"headerRows\":1,\"widths\":[\"*\",\"auto\",100,\"*\"],\n\"body\":[[{\"text\":\"this.getGreeting()\"},\"Second\",\"Third\",\"Последняя\"],[\"Value 1\",\"Value 2\",\"Value 3\",\"Value 4\"],[{\"text\":\"Bold value\",\"bold\":true},\"Val 2\",\"Val 3\",\"Чё\"]]}}]}"
     })
   }
 }
