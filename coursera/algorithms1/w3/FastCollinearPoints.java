@@ -33,6 +33,11 @@ public class FastCollinearPoints {
             while (x < N) {
 
                 LinkedList<Point> candidates = new LinkedList<>();
+				//take first slope and
+				// 1. add it to candidates
+				// 2. increase index
+				// 3. check if next one is same and add if true
+				// 4. if false check the number of candidates and add them to max line segments 
                 final double SLOPE_REF = p.slopeTo(pointsBySlope[x]);
                 do {
                     candidates.add(pointsBySlope[x++]);

@@ -13,7 +13,7 @@ public class Board {
         this(tiles, 0);
     }
 
-    public Board(int[][] tiles, int moves) {
+    private Board(int[][] tiles, int moves) {
         this.moves = moves;
         this.dimensions = tiles.length;
         this.board = copy(tiles);
