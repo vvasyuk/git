@@ -186,6 +186,11 @@ export class ImageComponent {
           if (`${obj[key]}`.startsWith("this.")){
             console.log(`${obj[key]}`)
             obj[key] = eval(obj[key])
+            //IE 11
+            //eval('obj[key] = ("' + obj[key] + '")')
+            //or
+            //obj[key] = this[`${obj[key]}`.replace("this.","")]()
+
           }
 
           if (typeof obj[key] === 'object') {

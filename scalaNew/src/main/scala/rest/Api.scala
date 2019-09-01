@@ -27,7 +27,7 @@ object Api {
 //        ,
 //        "layout": {"hLineWidth": "this.getF1()"}
 //      }]}
-      "{\"content\":[\n{\"text\":\"Bold value\",\"bold\":true},\n{\"table\":{\"headerRows\":1,\"widths\":[\"*\",\"auto\",100,\"*\"],\n\"body\":[[{\"text\":\"this.getGreeting()\"},\"Second\",\"Third\",\"Последняя\"],[\"Value 1\",\"Value 2\",\"Value 3\",\"Value 4\"],[{\"text\":\"Bold value\",\"bold\":true},\"Val 2\",\"Val 3\",\"Чё\"]]}\n,\n\"layout\": {\"hLineWidth\": \"this.getF1()\"}\n}\n,{\"table\":{\"headerRows\":1,\"widths\":[\"*\",\"auto\",100,\"*\"],\n\"body\":[[{\"text\":\"this.getGreeting()\"},\"Second\",\"Third\",\"Последняя\"],[\"Value 1\",\"Value 2\",\"Value 3\",\"Value 4\"],[{\"text\":\"Bold value\",\"bold\":true},\"Val 2\",\"Val 3\",\"Чё\"]]}\n,\n\"layout\": {\"hLineWidth\": \"this.getF1()\"}\n}]}"
+      "{\"content\":[\n{\"text\":\"this.getGreeting()\",\"bold\":true},\n{\"table\":{\"headerRows\":1,\"widths\":[\"*\",\"auto\",100,\"*\"],\n\"body\":[[{\"text\":\"this.getGreeting()\"},\"Second\",\"Third\",\"Последняя\"],[\"Value 1\",\"Value 2\",\"Value 3\",\"Value 4\"],[{\"text\":\"Bold value\",\"bold\":true},\"Val 2\",\"Val 3\",\"Чё\"]]}\n,\n\"layout\": {\"hLineWidth\": \"this.getF1()\"}\n}\n,{\"table\":{\"headerRows\":1,\"widths\":[\"*\",\"auto\",100,\"*\"],\n\"body\":[[{\"text\":\"this.getGreeting()\"},\"Second\",\"Third\",\"Последняя\"],[\"Value 1\",\"Value 2\",\"Value 3\",\"Value 4\"],[{\"text\":\"Bold value\",\"bold\":true},\"Val 2\",\"Val 3\",\"Чё\"]]}\n,\n\"layout\": {\"hLineWidth\": \"this.getF1()\"}\n}]}"
     })
   }
 }
