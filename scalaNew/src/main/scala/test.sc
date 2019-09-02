@@ -29,3 +29,10 @@ r match {
   case Three(col1,col2,col3) => print(3)
   case Four(col1,col2,col3,col4) => print(4)
 }
+
+val s = "xyia"
+
+s match {
+  case "xyi" => print("xyi")
+  case _ => print("none")
+}
