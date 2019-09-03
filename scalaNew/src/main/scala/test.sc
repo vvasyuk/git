@@ -1,3 +1,27 @@
+import scala.collection.immutable.TreeMap
+import scala.collection.mutable
+import scala.collection.mutable.ArrayBuffer
+
+val t1 = TreeMap[Int,String]((1,"one"))
+val t2 = TreeMap[Int,String]((2,"two"))
+
+val t3 = t1++t2
+
+
+
+//val l1 = List[Array[Int]](Array(1,2,3))
+//
+//val map = Map((1, 1), (2, "two"), (3, "three"))
+//
+//l1.foldLeft(String){ (acc,v)=>
+//  val k = v match {
+//    case Array(_, _, _)=>(v(0),v(1),v(2))
+//    case Array(_, _)=>(v(0),v(1))
+//  }
+//  println(k)
+//  null
+//}
+
 //import scala.collection.mutable.ArrayBuffer
 //
 //val ab1 = ArrayBuffer(1,2,3)
