@@ -9,34 +9,7 @@ import scala.collection.immutable.{SortedMap, TreeMap, TreeSet}
 
 object Pmatch {
   def main(args: Array[String]): Unit = {
-    //    val map = Map((1, 1), (2, "two"), (3, "three"))
-    val q: TreeMap[_ >: (Int, Int, String) with (Int, String), String] = TreeMap(((2,2,"12"), "q"))
-    val q1: TreeMap[_ >: (Int, Int, String) with (Int, String), String] = TreeMap(((1,2,"12"), "q"),((0,2,"12"), "q"))
-    //val q1: TreeSet[_ >: (Int, Int, String) with (Int, String), String] = TreeSet(((1,2,"12"), "q"))
-
-    val q3 = q++q1
-    //val q4 = TreeMap(q3.toArray:_*)(Ordering.Tuple3[Int , Int, String])
-
-
-
-    val l1 = List[Array[Int]](Array(1,2,3),Array(4,5,6),Array(7,8,9))
-
-    val ar = Array(1,2,3)
-
-    val accum = ar match {
-      case Array(a, b, c) => TreeMap(((3, 2, 1.toString), "xyi"))(Ordering.Tuple3[Int , Int, String])
-      case Array(a, b) => TreeMap(((ar(0), ar(1).toString), "xyi"))(Ordering.Tuple2[Int, String])
-    }
-
-    val accum2 = ar match {
-      case Array(a, b, c) => TreeMap(((1, 2, 1.toString), "xyi"))(Ordering.Tuple3[Int , Int, String])
-      case Array(a, b) => TreeMap(((ar(0), ar(1).toString), "xyi"))(Ordering.Tuple2[Int, String])
-    }
-
-    val x = accum ++ accum2
-    //val q:TreeMap[_ >: (Int, Int, String) with (Int, String) <: Product with Serializable, String]
-    //((1, 23, 3), "asdf")
-
+    val l1 = List[Array[Int]](Array(1,2,3),Array(0,5,6),Array(0,8,9))
     var tList = for {
       i <- l1
       ac = i match {
@@ -44,7 +17,66 @@ object Pmatch {
         case Array(a, b) => (((a, b.toString), "xyi"))
       }
     } yield ac
-    val tList2 = tList.sortBy(Ordering.Tuple3[Int , Int, String])
+    val casted = tList.asInstanceOf[List[Tuple2[Tuple3[Int,Int,String],String]]]
+    casted.foreach(println(_))
+    val sorted = casted.sorted
+    //List(A(), B()).sorted(KeyOrdering)
+    println("xxx")
+    sorted.foreach(print(_))
+
+//    val s = "abc"
+//    val pm = s match {
+//      case "a" => (1,2)
+//      case "abc" => (1,2,3)
+//    }
+
+
+
+
+    //    val map = Map((1, 1), (2, "two"), (3, "three"))
+//    val q: TreeMap[_ >: (Int, Int, String) with (Int, String), String] = TreeMap(((2,2,"12"), "q"))
+//    val q1: TreeMap[_ >: (Int, Int, String) with (Int, String), String] = TreeMap(((1,2,"12"), "q"),((0,2,"12"), "q"))
+    //val q1: TreeSet[_ >: (Int, Int, String) with (Int, String), String] = TreeSet(((1,2,"12"), "q"))
+
+//    val q3 = q++q1
+    //val q4 = TreeMap(q3.toArray:_*)(Ordering.Tuple3[Int , Int, String])
+
+
+
+
+//
+//    val ar = Array(1,2,3)
+//
+//    val accum = ar match {
+//      case Array(a, b, c) => TreeMap(((3, 2, 1.toString), "xyi"))(Ordering.Tuple3[Int , Int, String])
+//      case Array(a, b) => TreeMap(((ar(0), ar(1).toString), "xyi"))(Ordering.Tuple2[Int, String])
+//    }
+//
+//    val accum2 = ar match {
+//      case Array(a, b, c) => TreeMap(((1, 2, 1.toString), "xyi"))(Ordering.Tuple3[Int , Int, String])
+//      case Array(a, b) => TreeMap(((ar(0), ar(1).toString), "xyi"))(Ordering.Tuple2[Int, String])
+//    }
+
+    //val x = accum ++ accum2
+    //val q:TreeMap[_ >: (Int, Int, String) with (Int, String) <: Product with Serializable, String]
+    //((1, 23, 3), "asdf")
+
+
+//    val p = tList(0)
+//    println(p._1.productArity)
+//    println(p._1.productElement(0))
+//    println(p._1.productPrefix)
+//    println(p._1)
+//    Class.forName("scala."+p._1.productPrefix)
+//    Tuple3
+//    val clazz = Class.forName("scala."+p._1.productPrefix)
+//    val t0 = p._1
+//    val t = p._1.asInstanceOf[Tuple3[Int,Int,Int]]
+//    val t1 = p._1.asInstanceOf[p._1.type ]
+//    print(p._1.getClass)
+//    print(p._1)
+
+
 //    var print = for{
 //      i <- l1
 //      ac = i match {
