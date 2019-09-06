@@ -44,7 +44,7 @@ object Pmatch {
         case Array(a, b) => (((a, b.toString), "xyi"))
       }
     } yield ac
-    val tList2 = tList.sortBy(Ordering.Tuple3[Int , Int, String])
+    //val tList2 = tList.sortBy(Ordering.Tuple3[Int , Int, String])
 //    var print = for{
 //      i <- l1
 //      ac = i match {
