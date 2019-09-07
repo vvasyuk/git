@@ -31,8 +31,8 @@ object FutureTest {
     }
 
     // 3 - this is blocking (blocking is bad)
-    val result = Await.result(f, 1 second)
-    println(result)
+//    val result = Await.result(f, 1 second)
+//    println(result)
     Thread.sleep(1000)
   }
   def futureCallback(): Unit ={
@@ -73,9 +73,9 @@ object FutureTest {
     } yield (r1 + r2 + r3)
 
     println("after for")
-    result onSuccess {
-      case result => println(s"total = $result")
-    }
+//    result onSuccess {
+//      case result => println(s"total = $result")
+//    }
   }
 
   def listFutures(): Unit ={
