@@ -3,8 +3,8 @@ package pivot
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.io.Source
-import org.apache.spark.sql.SparkSession
-import org.apache.spark.sql.functions._
+//import org.apache.spark.sql.SparkSession
+//import org.apache.spark.sql.functions._
 
 import scala.collection.immutable.TreeMap
 
@@ -57,21 +57,21 @@ object Pivot {
     } yield (splitted)
   }
 
-  def sparkPivot(): Unit ={
-    val spark: SparkSession = SparkSession.builder()
-      .master("local[1]")
-      .appName("SparkByExamples.com")
-      .getOrCreate()
-
-    val data = Seq(("Banana",1000,"USA"), ("Carrots",1500,"USA"), ("Beans",1600,"USA"),
-      ("Orange",2000,"USA"),("Orange",2000,"USA"),("Banana",400,"China"),
-      ("Carrots",1200,"China"),("Beans",1500,"China"),("Orange",4000,"China"),
-      ("Banana",2000,"Canada"),("Carrots",2000,"Canada"),("Beans",2000,"Mexico"))
-
-    import spark.sqlContext.implicits._
-    val df = data.toDF("Product","Amount","Country")
-    df.show()
-  }
+//  def sparkPivot(): Unit ={
+//    val spark: SparkSession = SparkSession.builder()
+//      .master("local[1]")
+//      .appName("SparkByExamples.com")
+//      .getOrCreate()
+//
+//    val data = Seq(("Banana",1000,"USA"), ("Carrots",1500,"USA"), ("Beans",1600,"USA"),
+//      ("Orange",2000,"USA"),("Orange",2000,"USA"),("Banana",400,"China"),
+//      ("Carrots",1200,"China"),("Beans",1500,"China"),("Orange",4000,"China"),
+//      ("Banana",2000,"Canada"),("Carrots",2000,"Canada"),("Beans",2000,"Mexico"))
+//
+//    import spark.sqlContext.implicits._
+//    val df = data.toDF("Product","Amount","Country")
+//    df.show()
+//  }
 }
 
 case class Structured(col: String,colOrd: String,sectionOrd: String,insSectionOrd: String,rep1: String,rep2: String,value: String)

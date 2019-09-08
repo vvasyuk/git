@@ -2,7 +2,7 @@ package coursera.w3
 
 import java.util.NoSuchElementException
 
-import sun.invoke.empty.Empty
+//import sun.invoke.empty.Empty
 
 class NonEmpty (elem: Int, l: IntSet, r: IntSet) extends IntSet {
   def incl(x: Int): IntSet = {

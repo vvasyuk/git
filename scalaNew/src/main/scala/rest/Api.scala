@@ -1,6 +1,8 @@
 package rest
 
+//import scalaj.http.{Http, HttpOptions, HttpResponse}
 import spark.Spark._
+
 import scala.util.parsing.json._
 
 object Api {
@@ -10,6 +12,19 @@ object Api {
   }
 
   def initRoutes(): Unit ={
+
+//    get("/22", (req, res) => {
+//      res.header("Access-Control-Allow-Origin", "*")
+//      //val response: HttpResponse[String] = Http("https://mockbin.org/bin/8023d488-a89a-45db-aba6-502414a9c523").option(HttpOptions.connTimeout(10000)).option(HttpOptions.readTimeout(50000)).asString
+//      val response: HttpResponse[String] = Http("http://localhost:4567/23").option(HttpOptions.connTimeout(10000)).option(HttpOptions.readTimeout(50000)).asString
+//      response.body
+//    })
+
+    get("/23", (req, res) => {
+      res.header("Access-Control-Allow-Origin", "*")
+      "23"
+    })
+
     get("/hello", (req, res) => {
       res.header("Access-Control-Allow-Origin", "*")
       Thread.sleep(5000)

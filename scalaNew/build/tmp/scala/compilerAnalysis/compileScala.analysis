@@ -1,0 +1,915 @@
+format version: 5
+output mode:
+1 items
+0 -> single
+output directories:
+1 items
+output dir -> D:\work\tryout\scalaNew\build\classes\scala\main
+compile options:
+2 items
+0 -> -deprecation
+1 -> -unchecked
+javac options:
+9 items
+0 -> -source
+1 -> 1.8
+2 -> -target
+3 -> 1.8
+4 -> -d
+5 -> D:\work\tryout\scalaNew\build\classes\scala\main
+6 -> -g
+7 -> -proc:none
+8 -> -XDuseUnsharedTable=true
+compiler version:
+1 items
+0 -> 2.12.8
+compile order:
+1 items
+0 -> Mixed
+name hashing:
+1 items
+0 -> true
+products:
+34 items
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\Empty.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\coursera\w3\Empty$.class
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\Empty.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\coursera\w3\Empty.class
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSet.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\coursera\w3\IntSet.class
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSetTest.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\coursera\w3\IntSetTest$.class
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSetTest.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\coursera\w3\IntSetTest.class
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\coursera\w3\NonEmpty.class
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\package.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\coursera\w3\package$.class
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\package.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\coursera\w3\package.class
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\coursera\w4\MainList$.class
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\coursera\w4\MainList.class
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\future\FutureTest$.class
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\future\FutureTest.class
+D:\work\tryout\scalaNew\src\main\scala\Main.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\Main$.class
+D:\work\tryout\scalaNew\src\main\scala\Main.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\Main.class
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\collections\ListExample$.class
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\collections\ListExample.class
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\Caches$$anon$3.class
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\Caches$.class
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\Caches.class
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\Hello$$anon$1.class
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\Hello$$anon$2.class
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\Hello$.class
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\Hello.class
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\Keeper$.class
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\Keeper.class
+D:\work\tryout\scalaNew\src\main\scala\old\SimpleClass.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\SimpleClass.class
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\pivot\Pivot$.class
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\pivot\Pivot.class
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\pivot\Structured$.class
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\pivot\Structured.class
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\pmatch\Pmatch$.class
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\pmatch\Pmatch.class
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\rest\Api$.class
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\rest\Api.class
+binary dependencies:
+28 items
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\Empty.scala -> C:\Users\Jopa\.gradle\caches\modules-2\files-2.1\org.scala-lang\scala-library\2.12.8\36b234834d8f842cdde963c8591efae6cf413e3f\scala-library-2.12.8.jar
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\Empty.scala -> D:\work\installed\java\jre\lib\rt.jar
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSet.scala -> C:\Users\Jopa\.gradle\caches\modules-2\files-2.1\org.scala-lang\scala-library\2.12.8\36b234834d8f842cdde963c8591efae6cf413e3f\scala-library-2.12.8.jar
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSet.scala -> D:\work\installed\java\jre\lib\rt.jar
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSetTest.scala -> C:\Users\Jopa\.gradle\caches\modules-2\files-2.1\org.scala-lang\scala-library\2.12.8\36b234834d8f842cdde963c8591efae6cf413e3f\scala-library-2.12.8.jar
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSetTest.scala -> D:\work\installed\java\jre\lib\rt.jar
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> C:\Users\Jopa\.gradle\caches\modules-2\files-2.1\org.scala-lang\scala-library\2.12.8\36b234834d8f842cdde963c8591efae6cf413e3f\scala-library-2.12.8.jar
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> D:\work\installed\java\jre\lib\rt.jar
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\package.scala -> D:\work\installed\java\jre\lib\rt.jar
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> C:\Users\Jopa\.gradle\caches\modules-2\files-2.1\org.scala-lang\scala-library\2.12.8\36b234834d8f842cdde963c8591efae6cf413e3f\scala-library-2.12.8.jar
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> D:\work\installed\java\jre\lib\rt.jar
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> C:\Users\Jopa\.gradle\caches\modules-2\files-2.1\org.scala-lang\scala-library\2.12.8\36b234834d8f842cdde963c8591efae6cf413e3f\scala-library-2.12.8.jar
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> D:\work\installed\java\jre\lib\rt.jar
+D:\work\tryout\scalaNew\src\main\scala\Main.scala -> C:\Users\Jopa\.gradle\caches\modules-2\files-2.1\org.scala-lang\scala-library\2.12.8\36b234834d8f842cdde963c8591efae6cf413e3f\scala-library-2.12.8.jar
+D:\work\tryout\scalaNew\src\main\scala\Main.scala -> D:\work\installed\java\jre\lib\rt.jar
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> C:\Users\Jopa\.gradle\caches\modules-2\files-2.1\org.scala-lang\scala-library\2.12.8\36b234834d8f842cdde963c8591efae6cf413e3f\scala-library-2.12.8.jar
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> D:\work\installed\java\jre\lib\rt.jar
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> C:\Users\Jopa\.gradle\caches\modules-2\files-2.1\org.scala-lang\scala-library\2.12.8\36b234834d8f842cdde963c8591efae6cf413e3f\scala-library-2.12.8.jar
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> D:\work\installed\java\jre\lib\rt.jar
+D:\work\tryout\scalaNew\src\main\scala\old\SimpleClass.scala -> C:\Users\Jopa\.gradle\caches\modules-2\files-2.1\org.scala-lang\scala-library\2.12.8\36b234834d8f842cdde963c8591efae6cf413e3f\scala-library-2.12.8.jar
+D:\work\tryout\scalaNew\src\main\scala\old\SimpleClass.scala -> D:\work\installed\java\jre\lib\rt.jar
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> C:\Users\Jopa\.gradle\caches\modules-2\files-2.1\org.scala-lang\scala-library\2.12.8\36b234834d8f842cdde963c8591efae6cf413e3f\scala-library-2.12.8.jar
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> D:\work\installed\java\jre\lib\rt.jar
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> C:\Users\Jopa\.gradle\caches\modules-2\files-2.1\org.scala-lang\scala-library\2.12.8\36b234834d8f842cdde963c8591efae6cf413e3f\scala-library-2.12.8.jar
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> D:\work\installed\java\jre\lib\rt.jar
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> C:\Users\Jopa\.gradle\caches\modules-2\files-2.1\com.sparkjava\spark-core\2.9.1\e8c71582a38acd1f588e2f3c5a5530b43d45b3e8\spark-core-2.9.1.jar
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> C:\Users\Jopa\.gradle\caches\modules-2\files-2.1\org.scala-lang\scala-library\2.12.8\36b234834d8f842cdde963c8591efae6cf413e3f\scala-library-2.12.8.jar
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> D:\work\installed\java\jre\lib\rt.jar
+direct source dependencies:
+0 items
+direct external dependencies:
+0 items
+public inherited source dependencies:
+0 items
+public inherited external dependencies:
+0 items
+member reference internal dependencies:
+6 items
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\Empty.scala -> D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSet.scala
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\Empty.scala -> D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSetTest.scala -> D:\work\tryout\scalaNew\src\main\scala\coursera\w3\Empty.scala
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSetTest.scala -> D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSet.scala
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSetTest.scala -> D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSet.scala
+member reference external dependencies:
+0 items
+inheritance internal dependencies:
+2 items
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\Empty.scala -> D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSet.scala
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSet.scala
+inheritance external dependencies:
+0 items
+class names:
+34 items
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\Empty.scala -> coursera.w3.Empty
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\Empty.scala -> coursera.w3.Empty$
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSet.scala -> coursera.w3.IntSet
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSetTest.scala -> coursera.w3.IntSetTest
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSetTest.scala -> coursera.w3.IntSetTest$
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> coursera.w3.NonEmpty
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\package.scala -> coursera.w3.package
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\package.scala -> coursera.w3.package$
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> coursera.w4.MainList
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> coursera.w4.MainList$
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> future.FutureTest
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> future.FutureTest$
+D:\work\tryout\scalaNew\src\main\scala\Main.scala -> Main
+D:\work\tryout\scalaNew\src\main\scala\Main.scala -> Main$
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> collections.ListExample
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> collections.ListExample$
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> Caches
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> Caches$
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> Caches$$anon$3
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> Hello
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> Hello$
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> Hello$$anon$1
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> Hello$$anon$2
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> Keeper
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> Keeper$
+D:\work\tryout\scalaNew\src\main\scala\old\SimpleClass.scala -> SimpleClass
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> pivot.Pivot
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> pivot.Pivot$
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> pivot.Structured
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> pivot.Structured$
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> pmatch.Pmatch
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> pmatch.Pmatch$
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> rest.Api
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> rest.Api$
+used names:
+616 items
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\Empty.scala -> <init>
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\Empty.scala -> Boolean
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\Empty.scala -> Empty
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\Empty.scala -> Int
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\Empty.scala -> IntSet
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\Empty.scala -> NoSuchElementException
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\Empty.scala -> NonEmpty
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\Empty.scala -> coursera
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\Empty.scala -> java
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\Empty.scala -> other
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\Empty.scala -> scala
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\Empty.scala -> util
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\Empty.scala -> w3
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\Empty.scala -> x
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSet.scala -> <init>
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSet.scala -> AnyRef
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSet.scala -> Boolean
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSet.scala -> Int
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSet.scala -> IntSet
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSet.scala -> NoSuchElementException
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSet.scala -> Object
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSet.scala -> coursera
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSet.scala -> java
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSet.scala -> scala
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSet.scala -> util
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSet.scala -> w3
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSetTest.scala -> <init>
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSetTest.scala -> Any
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSetTest.scala -> AnyRef
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSetTest.scala -> Array
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSetTest.scala -> Empty
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSetTest.scala -> Int
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSetTest.scala -> IntSet
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSetTest.scala -> IntSetTest
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSetTest.scala -> NonEmpty
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSetTest.scala -> Object
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSetTest.scala -> Predef
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSetTest.scala -> String
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSetTest.scala -> Unit
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSetTest.scala -> coursera
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSetTest.scala -> mostRetweeted
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSetTest.scala -> println
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSetTest.scala -> scala
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSetTest.scala -> t1
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSetTest.scala -> t3
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSetTest.scala -> t4
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSetTest.scala -> union
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSetTest.scala -> w3
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> +
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> <
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> <init>
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> >
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> Any
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> Boolean
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> Class
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> Int
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> IntSet
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> Math
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> NoSuchElementException
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> NonEmpty
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> Nothing
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> String
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> T
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> contains
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> coursera
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> elem
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> equals
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> getClass
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> getName
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> incl
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> java
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> l
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> lang
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> lr
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> max
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> mostRetweeted
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> other
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> r
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> rr
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> scala
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> t
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> t1
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> union
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> util
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> w3
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> x
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\package.scala -> <init>
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\package.scala -> AnyRef
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\package.scala -> Object
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\package.scala -> coursera
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\package.scala -> package
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\package.scala -> scala
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\package.scala -> w3
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> !=
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> &&
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> ::
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> <=
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> <init>
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> <repeated>
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> ==
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> A
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> Any
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> AnyRef
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> Array
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> B
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> Boolean
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> Int
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> List
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> MainList
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> MatchError
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> Nil
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> Nothing
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> Object
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> Predef
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> Some
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> String
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> T0
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> Unit
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> apply
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> asInstanceOf
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> collection
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> coursera
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> get
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> head
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> immutable
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> insert
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> isEmpty
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> isInstanceOf
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> isort
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> l1
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> lengthCompare
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> package
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> println
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> scala
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> unapplySeq
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> unary_!
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> w4
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> x
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> xs
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> y
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> ys
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> +
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> <byname>
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> <init>
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> <repeated>
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> A
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> Any
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> AnyRef
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> Array
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> Await
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> Awaitable
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> B
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> Boolean
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> CanBuildFrom
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> Coll
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> Duration
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> ExecutionContext
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> Failure
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> Function1
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> Future
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> FutureTest
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> Implicits
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> Inf
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> Infinite
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> Int
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> List
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> Long
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> MatchError
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> Nothing
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> Object
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> Predef
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> S
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> String
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> StringContext
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> Success
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> System
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> T
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> T0
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> T1
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> T2
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> That
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> Thread
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> Throwable
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> Try
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> Tuple2
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> U
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> Unit
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> _1
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> _2
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> apply
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> asInstanceOf
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> canBuildFrom
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> collection
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> concurrent
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> currentTimeMillis
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> duration
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> e
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> exception
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> f
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> flatMap
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> foreach
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> future
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> futureMap
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> global
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> i
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> immutable
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> isInstanceOf
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> java
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> l
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> lang
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> listFutures
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> map
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> onComplete
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> package
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> printStackTrace
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> println
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> r1
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> r2
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> r3
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> result
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> result1
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> result2
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> result3
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> returnFuture
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> s
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> scala
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> sleep
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> util
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> value
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> x
+D:\work\tryout\scalaNew\src\main\scala\Main.scala -> <init>
+D:\work\tryout\scalaNew\src\main\scala\Main.scala -> Any
+D:\work\tryout\scalaNew\src\main\scala\Main.scala -> AnyRef
+D:\work\tryout\scalaNew\src\main\scala\Main.scala -> Array
+D:\work\tryout\scalaNew\src\main\scala\Main.scala -> Main
+D:\work\tryout\scalaNew\src\main\scala\Main.scala -> Object
+D:\work\tryout\scalaNew\src\main\scala\Main.scala -> Predef
+D:\work\tryout\scalaNew\src\main\scala\Main.scala -> String
+D:\work\tryout\scalaNew\src\main\scala\Main.scala -> Unit
+D:\work\tryout\scalaNew\src\main\scala\Main.scala -> println
+D:\work\tryout\scalaNew\src\main\scala\Main.scala -> scala
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> *
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> +
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> -
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> ::
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> <init>
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> <repeated>
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> A
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> Any
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> AnyRef
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> Array
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> B
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> Boolean
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> CanBuildFrom
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> Coll
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> Function1
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> Int
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> List
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> ListExample
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> MatchError
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> Nothing
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> Object
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> Predef
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> String
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> That
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> U
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> Unit
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> apply
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> canBuildFrom
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> collection
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> collections
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> foreach
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> head
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> immutable
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> isInstanceOf
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> l
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> map
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> mixed
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> print
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> println
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> scala
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> tail
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> x
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> y
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> $anon
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> +
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> +=
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> ->
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> <init>
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> <refinement>
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> <repeated>
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> ==
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> A
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> A1
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> Any
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> AnyRef
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> Array
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> ArrowAssoc
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> B
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> B1
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> Boolean
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> Caches
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> Either
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> Exception
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> Function1
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> Hello
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> Inclusive
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> Int
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> Keeper
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> Long
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> Map
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> MatchError
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> Nothing
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> Object
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> Predef
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> Range
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> RichInt
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> Right
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> RightProjection
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> String
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> T0
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> Thread
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> Tuple2
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> U
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> Unit
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> apply
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> asInstanceOf
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> b
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> c
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> caches
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> collection
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> contains
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> e
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> flatMap
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> foreach
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> func
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> get
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> getCaches
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> getMessage
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> huetes
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> initCache
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> intWrapper
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> isInstanceOf
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> java
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> key
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> lang
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> m
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> map
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> mutable
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> package
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> println
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> right
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> scala
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> sleep
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> start
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> states
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> tCache
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> thread1
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> thread2
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> to
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> update
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> value
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> ||
+D:\work\tryout\scalaNew\src\main\scala\old\SimpleClass.scala -> <init>
+D:\work\tryout\scalaNew\src\main\scala\old\SimpleClass.scala -> AnyRef
+D:\work\tryout\scalaNew\src\main\scala\old\SimpleClass.scala -> Int
+D:\work\tryout\scalaNew\src\main\scala\old\SimpleClass.scala -> Object
+D:\work\tryout\scalaNew\src\main\scala\old\SimpleClass.scala -> Predef
+D:\work\tryout\scalaNew\src\main\scala\old\SimpleClass.scala -> SimpleClass
+D:\work\tryout\scalaNew\src\main\scala\old\SimpleClass.scala -> String
+D:\work\tryout\scalaNew\src\main\scala\old\SimpleClass.scala -> myInt
+D:\work\tryout\scalaNew\src\main\scala\old\SimpleClass.scala -> myString
+D:\work\tryout\scalaNew\src\main\scala\old\SimpleClass.scala -> scala
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> &&
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> +
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> ++
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> ++=
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> <byname>
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> <init>
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> <repeated>
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> ==
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> A
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> AbstractFunction7
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> Any
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> AnyRef
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> Array
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> ArrayBuffer
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> ArrayOps
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> B
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> B1
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> Boolean
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> BufferedSource
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> CanBuildFrom
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> Char
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> Class
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> ClassLoader
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> ClassTag
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> Codec
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> Coll
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> Function1
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> Function2
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> GenTraversableOnce
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> IndexOutOfBoundsException
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> Int
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> Iterator
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> K
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> MatchError
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> None
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> Nothing
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> Object
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> Option
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> Ordering
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> Pivot
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> Predef
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> Product
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> ScalaRunTime
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> Serializable
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> Some
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> Source
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> String
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> StringBuilder
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> StringOps
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> Structured
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> T
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> T0
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> T1
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> T2
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> T3
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> T4
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> T5
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> T6
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> T7
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> That
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> TraversableOnce
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> TreeMap
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> Tuple2
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> Tuple4
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> Tuple7
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> U
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> Unit
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> Vector
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> _$4
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> _$7
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> _1
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> _2
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> _3
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> _4
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> _hashCode
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> _root_
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> _toString
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> acc
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> apply
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> asInstanceOf
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> augmentString
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> canBuildFrom
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> col
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> colOrd
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> collection
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> cols
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> customUnpivot
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> d
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> drop
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> eq
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> fallbackSystemCodec
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> fileName
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> flatTree
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> foldLeft
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> foreach
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> fromResource
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> get
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> getLines
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> getOrElse
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> getStructure
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> immutable
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> in
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> insSectionOrd
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> io
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> isInstanceOf
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> k
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> line
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> map
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> materializeClassTag
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> math
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> mutable
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> ne
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> newCols
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> newTree
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> ofRef
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> package
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> pivot
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> println
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> r
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> r1
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> readData2
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> refArrayOps
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> reflect
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> rep1
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> rep2
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> res
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> runtime
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> scala
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> sectionOrd
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> split
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> splitted
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> tmp
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> toInt
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> toString
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> toVector
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> trim
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> typedProductIterator
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> unchecked
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> v
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> value
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> ||
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> !=
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> &&
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> <init>
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> <refinement>
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> <repeated>
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> ==
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> A
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> Any
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> AnyRef
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> Array
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> B
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> Boolean
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> CanBuildFrom
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> Coll
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> Function1
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> IndexedSeq
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> Int
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> List
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> MatchError
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> Nothing
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> Object
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> Option
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> Ordering
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> Pmatch
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> Predef
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> Product
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> Serializable
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> SortedMap
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> String
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> T
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> T0
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> T1
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> T2
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> T3
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> That
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> TreeMap
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> TreeSet
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> Tuple2
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> Tuple3
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> U
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> Unit
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> _2
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> a
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> ac
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> apply
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> asInstanceOf
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> b
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> c
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> canBuildFrom
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> casted
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> collection
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> foreach
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> get
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> i
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> immutable
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> io
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> isEmpty
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> java
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> l1
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> lengthCompare
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> map
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> math
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> ne
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> package
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> pmatch
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> print
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> println
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> scala
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> sorted
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> tList
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> toString
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> unapplySeq
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> unary_!
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> unchecked
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> <init>
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> Any
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> AnyRef
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> Api
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> Array
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> Long
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> Object
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> Predef
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> Response
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> Route
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> Spark
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> String
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> Thread
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> Unit
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> get
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> header
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> initRoutes
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> java
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> json
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> lang
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> parsing
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> println
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> res
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> rest
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> scala
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> sleep
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> spark
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> util
+product stamps:
+34 items
+D:\work\tryout\scalaNew\build\classes\scala\main\Caches$$anon$3.class -> lastModified(1567970705377)
+D:\work\tryout\scalaNew\build\classes\scala\main\Caches$.class -> lastModified(1567970705371)
+D:\work\tryout\scalaNew\build\classes\scala\main\Caches.class -> lastModified(1567970705370)
+D:\work\tryout\scalaNew\build\classes\scala\main\collections\ListExample$.class -> lastModified(1567970705387)
+D:\work\tryout\scalaNew\build\classes\scala\main\collections\ListExample.class -> lastModified(1567970705388)
+D:\work\tryout\scalaNew\build\classes\scala\main\coursera\w3\Empty$.class -> lastModified(1567970705266)
+D:\work\tryout\scalaNew\build\classes\scala\main\coursera\w3\Empty.class -> lastModified(1567970705266)
+D:\work\tryout\scalaNew\build\classes\scala\main\coursera\w3\IntSet.class -> lastModified(1567970705268)
+D:\work\tryout\scalaNew\build\classes\scala\main\coursera\w3\IntSetTest$.class -> lastModified(1567970705276)
+D:\work\tryout\scalaNew\build\classes\scala\main\coursera\w3\IntSetTest.class -> lastModified(1567970705277)
+D:\work\tryout\scalaNew\build\classes\scala\main\coursera\w3\NonEmpty.class -> lastModified(1567970705289)
+D:\work\tryout\scalaNew\build\classes\scala\main\coursera\w3\package$.class -> lastModified(1567970705291)
+D:\work\tryout\scalaNew\build\classes\scala\main\coursera\w3\package.class -> lastModified(1567970705292)
+D:\work\tryout\scalaNew\build\classes\scala\main\coursera\w4\MainList$.class -> lastModified(1567970705309)
+D:\work\tryout\scalaNew\build\classes\scala\main\coursera\w4\MainList.class -> lastModified(1567970705310)
+D:\work\tryout\scalaNew\build\classes\scala\main\future\FutureTest$.class -> lastModified(1567970705347)
+D:\work\tryout\scalaNew\build\classes\scala\main\future\FutureTest.class -> lastModified(1567970705348)
+D:\work\tryout\scalaNew\build\classes\scala\main\Hello$$anon$1.class -> lastModified(1567970705374)
+D:\work\tryout\scalaNew\build\classes\scala\main\Hello$$anon$2.class -> lastModified(1567970705376)
+D:\work\tryout\scalaNew\build\classes\scala\main\Hello$.class -> lastModified(1567970705368)
+D:\work\tryout\scalaNew\build\classes\scala\main\Hello.class -> lastModified(1567970705369)
+D:\work\tryout\scalaNew\build\classes\scala\main\Keeper$.class -> lastModified(1567970705373)
+D:\work\tryout\scalaNew\build\classes\scala\main\Keeper.class -> lastModified(1567970705373)
+D:\work\tryout\scalaNew\build\classes\scala\main\Main$.class -> lastModified(1567970705257)
+D:\work\tryout\scalaNew\build\classes\scala\main\Main.class -> lastModified(1567970705259)
+D:\work\tryout\scalaNew\build\classes\scala\main\pivot\Pivot$.class -> lastModified(1567970705417)
+D:\work\tryout\scalaNew\build\classes\scala\main\pivot\Pivot.class -> lastModified(1567970705417)
+D:\work\tryout\scalaNew\build\classes\scala\main\pivot\Structured$.class -> lastModified(1567970705422)
+D:\work\tryout\scalaNew\build\classes\scala\main\pivot\Structured.class -> lastModified(1567970705420)
+D:\work\tryout\scalaNew\build\classes\scala\main\pmatch\Pmatch$.class -> lastModified(1567970705429)
+D:\work\tryout\scalaNew\build\classes\scala\main\pmatch\Pmatch.class -> lastModified(1567970705430)
+D:\work\tryout\scalaNew\build\classes\scala\main\rest\Api$.class -> lastModified(1567970965823)
+D:\work\tryout\scalaNew\build\classes\scala\main\rest\Api.class -> lastModified(1567970965824)
+D:\work\tryout\scalaNew\build\classes\scala\main\SimpleClass.class -> lastModified(1567970705380)
+source stamps:
+16 items
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\Empty.scala -> hash(2d0b91e0ab74ffac2449237602593a3294aa90de)
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSet.scala -> hash(0e24913a9be4a990937a3b4234a466c1229b51f6)
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSetTest.scala -> hash(717e872b72b2168417841c4185fce845ce9a3bc6)
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> hash(96f1e108c58ca2603d85672ae52a83592b5a7bb5)
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\package.scala -> hash(b7e5fc9de081b643ec0d09232d541730e91a746e)
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> hash(505e80532030b9e0dbeb6b5f032cc2268051ad35)
+D:\work\tryout\scalaNew\src\main\scala\csv\csvParser.scala -> hash(ab05052bfc5be1f19740eff63350e1abb90ca16b)
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> hash(94c4978db4d8e0246c63407618112c5dafee13b4)
+D:\work\tryout\scalaNew\src\main\scala\Main.scala -> hash(558af32040428335977553d99ec690cf6e6c6dd9)
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> hash(77e36af8dbda67b283fb70bcc896e2d658e9d62e)
+D:\work\tryout\scalaNew\src\main\scala\old\CsvReader.java -> hash(61f8ca9b6925b879cf6feb3864ca9114e895abed)
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> hash(af7308fb4a6437ecd08eab1bd2e4decc1a53f1a8)
+D:\work\tryout\scalaNew\src\main\scala\old\SimpleClass.scala -> hash(df4022471cc8bb2e351218a62b6f8bfa20d50c4a)
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> hash(ef8d2ba4f9bc8060c19f25693271ba4b35e738d2)
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> hash(6d5cdb75ec25eca2f678daa9cb0694dd8dac759a)
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> hash(e7f0ebcf6aea1af3a4c2af1d057753dfa90c2ee1)
+binary stamps:
+3 items
+C:\Users\Jopa\.gradle\caches\modules-2\files-2.1\com.sparkjava\spark-core\2.9.1\e8c71582a38acd1f588e2f3c5a5530b43d45b3e8\spark-core-2.9.1.jar -> lastModified(1567096251854)
+C:\Users\Jopa\.gradle\caches\modules-2\files-2.1\org.scala-lang\scala-library\2.12.8\36b234834d8f842cdde963c8591efae6cf413e3f\scala-library-2.12.8.jar -> lastModified(1566646455151)
+D:\work\installed\java\jre\lib\rt.jar -> lastModified(1472672689498)
+class names:
+3 items
+C:\Users\Jopa\.gradle\caches\modules-2\files-2.1\com.sparkjava\spark-core\2.9.1\e8c71582a38acd1f588e2f3c5a5530b43d45b3e8\spark-core-2.9.1.jar -> spark.Response
+C:\Users\Jopa\.gradle\caches\modules-2\files-2.1\org.scala-lang\scala-library\2.12.8\36b234834d8f842cdde963c8591efae6cf413e3f\scala-library-2.12.8.jar -> scala.Array
+D:\work\installed\java\jre\lib\rt.jar -> java.lang.Object
+internal apis:
+16 items
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\Empty.scala -> 
+rO0ABXNyABB4c2J0aS5hcGkuU291cmNlSjH5SdlLSkQCAAdJAAdhcGlIYXNoWgAIaGFzTWFjcm9aABBoYXNQYWNrYWdlT2JqZWN0TAAYX2ludGVybmFsT25seV9uYW1lSGFzaGVzdAAkTHhzYnRpL2FwaS9faW50ZXJuYWxPbmx5X05hbWVIYXNoZXM7TAADYXBpdAAVTHhzYnRpL2FwaS9Tb3VyY2VBUEk7TAALY29tcGlsYXRpb250ABdMeHNidGkvYXBpL0NvbXBpbGF0aW9uO1sABGhhc2h0AAJbQnhwVkNSzgAAc3IAInhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoZXNU2r6Z+tTsTAIAAlsAD2ltcGxpY2l0TWVtYmVyc3QAI1tMeHNidGkvYXBpL19pbnRlcm5hbE9ubHlfTmFtZUhhc2g7WwAOcmVndWxhck1lbWJlcnNxAH4AB3hwdXIAI1tMeHNidGkuYXBpLl9pbnRlcm5hbE9ubHlfTmFtZUhhc2g7SVqAtt2Wi/QCAAB4cAAAAAB1cQB+AAkAAAAYc3IAIHhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoWw71InY4V88CAAJJAARoYXNoTAAEbmFtZXQAEkxqYXZhL2xhbmcvU3RyaW5nO3hwEQE5D3QABm5vdGlmeXNxAH4ADN7nq8x0AAR3YWl0c3EAfgAMQ1wckHQADSRhc0luc3RhbmNlT2ZzcQB+AAxkFZ5KdAAFdW5pb25zcQB+AAz38kordAAGZXF1YWxzc3EAfgAMJNqaKXQADGFzSW5zdGFuY2VPZnNxAH4ADFEA8MN0AARpbmNsc3EAfgAMFwJETXQADHN5bmNocm9uaXplZHNxAH4ADCjyS010AA0kaXNJbnN0YW5jZU9mc3EAfgAMKqIkhnQADW1vc3RSZXR3ZWV0ZWRzcQB+AAxXFxqVdAAJbm90aWZ5QWxsc3EAfgAM3YPtrnQADGlzSW5zdGFuY2VPZnNxAH4ADDGufAF0AAVFbXB0eXNxAH4ADEGM2nt0AAI9PXNxAH4ADEyH5vp0AAVjbG9uZXNxAH4ADLr6tJt0AAh0b1N0cmluZ3NxAH4ADMmOWvB0AAIhPXNxAH4ADAT4EP10AAhnZXRDbGFzc3NxAH4ADB1TrBJ0AAhjb250YWluc3NxAH4ADPwSPWN0AAJuZXNxAH4ADKnjA+d0AAJlcXNxAH4ADOnMgLJ0AAIjI3NxAH4ADB6AC7l0AAhmaW5hbGl6ZXNxAH4ADBju++d0AAhoYXNoQ29kZXNyABN4c2J0aS5hcGkuU291cmNlQVBJuV6n+SkjOKQCAAJbAAtkZWZpbml0aW9uc3QAF1tMeHNidGkvYXBpL0RlZmluaXRpb247WwAIcGFja2FnZXN0ABRbTHhzYnRpL2FwaS9QYWNrYWdlO3hwdXIAF1tMeHNidGkuYXBpLkRlZmluaXRpb247iMlc57TjXg4CAAB4cAAAAAFzcgATeHNidGkuYXBpLkNsYXNzTGlrZYM0HKHfsJdsAgAETAAOZGVmaW5pdGlvblR5cGV0ABpMeHNidGkvYXBpL0RlZmluaXRpb25UeXBlO1sAEHNhdmVkQW5ub3RhdGlvbnN0ABNbTGphdmEvbGFuZy9TdHJpbmc7TAAIc2VsZlR5cGV0ABBMeHNidGkvYXBpL0xhenk7TAAJc3RydWN0dXJlcQB+AEd4cgAheHNidGkuYXBpLlBhcmFtZXRlcml6ZWREZWZpbml0aW9u+RFusdVQPOICAAFbAA50eXBlUGFyYW1ldGVyc3QAGltMeHNidGkvYXBpL1R5cGVQYXJhbWV0ZXI7eHIAFHhzYnRpLmFwaS5EZWZpbml0aW9uhyob6HFC40YCAARMAAZhY2Nlc3N0ABJMeHNidGkvYXBpL0FjY2VzcztbAAthbm5vdGF0aW9uc3QAF1tMeHNidGkvYXBpL0Fubm90YXRpb247TAAJbW9kaWZpZXJzdAAVTHhzYnRpL2FwaS9Nb2RpZmllcnM7TAAEbmFtZXEAfgANeHBzcgAQeHNidGkuYXBpLlB1YmxpY7pYPa5sLWBCAgAAeHIAEHhzYnRpLmFwaS5BY2Nlc3PdYpr4HWMxSAIAAHhwdXIAF1tMeHNidGkuYXBpLkFubm90YXRpb24765frGRD2jUgCAAB4cAAAAABzcgATeHNidGkuYXBpLk1vZGlmaWVyc5fnYdwTJnuzAgABQgAFZmxhZ3N4cAB0ABFjb3Vyc2VyYS53My5FbXB0eXVyABpbTHhzYnRpLmFwaS5UeXBlUGFyYW1ldGVyO9ltJg8onfK2AgAAeHAAAAAAfnIAGHhzYnRpLmFwaS5EZWZpbml0aW9uVHlwZQAAAAAAAAAAEgAAeHIADmphdmEubGFuZy5FbnVtAAAAAAAAAAASAAB4cHQABk1vZHVsZXVyABNbTGphdmEubGFuZy5TdHJpbmc7rdJW5+kde0cCAAB4cAAAAAF0AAxzY2FsYS5uYXRpdmVzcgAheHNidGkuYXBpLkFic3RyYWN0TGF6eSRTdHJpY3RMYXp5DWYcaykWKrgCAAFMAAV2YWx1ZXQAEkxqYXZhL2xhbmcvT2JqZWN0O3hwc3IAE3hzYnRpLmFwaS5FbXB0eVR5cGW8/Z5GSTuJJAIAAHhyABR4c2J0aS5hcGkuU2ltcGxlVHlwZXJ4YoghI79AAgAAeHIADnhzYnRpLmFwaS5UeXBlP2rZIRZJqsoCAAB4cHNxAH4AYHNyABN4c2J0aS5hcGkuU3RydWN0dXJlqar5gJNv2AACAANMAAhkZWNsYXJlZHEAfgBHTAAJaW5oZXJpdGVkcQB+AEdMAAdwYXJlbnRzcQB+AEd4cQB+AGVzcQB+AGB1cQB+AEIAAAAAc3EAfgBgdXEAfgBCAAAAAHNxAH4AYHVyABFbTHhzYnRpLmFwaS5UeXBlO3T/pVp7+elBAgAAeHAAAAADc3IAFHhzYnRpLmFwaS5Qcm9qZWN0aW9u89KNVOlFpC0CAAJMAAJpZHEAfgANTAAGcHJlZml4dAAWTHhzYnRpL2FwaS9TaW1wbGVUeXBlO3hxAH4AZHQABkludFNldHNyABN4c2J0aS5hcGkuU2luZ2xldG9u/Kdf+M9W5EYCAAFMAARwYXRodAAQTHhzYnRpL2FwaS9QYXRoO3hxAH4AZHNyAA54c2J0aS5hcGkuUGF0aJs9XAjOpSeEAgABWwAKY29tcG9uZW50c3QAGltMeHNidGkvYXBpL1BhdGhDb21wb25lbnQ7eHB1cgAaW0x4c2J0aS5hcGkuUGF0aENvbXBvbmVudDtD2gl0LWcWdAIAAHhwAAAAA3NyAAx4c2J0aS5hcGkuSWSYMmyLN1PEQAIAAUwAAmlkcQB+AA14cgAXeHNidGkuYXBpLlBhdGhDb21wb25lbnRfmiJbLoafvAIAAHhwdAAIY291cnNlcmFzcQB+AH10AAJ3M3NyAA54c2J0aS5hcGkuVGhpc9sJ7abMWkBcAgAAeHEAfgB+c3EAfgBxdAAGT2JqZWN0c3EAfgB1c3EAfgB4dXEAfgB7AAAAA3NxAH4AfXQABGphdmFzcQB+AH10AARsYW5ncQB+AIRzcQB+AHF0AANBbnlzcQB+AHVzcQB+AHh1cQB+AHsAAAACc3EAfgB9dAAFc2NhbGFxAH4AhHVyABRbTHhzYnRpLmFwaS5QYWNrYWdlO1sTGTdwpyehAgAAeHAAAAACc3IAEXhzYnRpLmFwaS5QYWNrYWdlflmP9q7OOVgCAAFMAARuYW1lcQB+AA14cHQAC2NvdXJzZXJhLnczc3EAfgCXdAAIY291cnNlcmFzcgAVeHNidGkuYXBpLkNvbXBpbGF0aW9u7frgw2rooEICAAJKAAlzdGFydFRpbWVbAAdvdXRwdXRzdAAaW0x4c2J0aS9hcGkvT3V0cHV0U2V0dGluZzt4cAAAAW0SVjBTdXIAGltMeHNidGkuYXBpLk91dHB1dFNldHRpbmc7f2rC86eHpUICAAB4cAAAAAFzcgAXeHNidGkuYXBpLk91dHB1dFNldHRpbmd62ZpHdPsdewIAAkwAD291dHB1dERpcmVjdG9yeXEAfgANTAAPc291cmNlRGlyZWN0b3J5cQB+AA14cHQAMEQ6XHdvcmtcdHJ5b3V0XHNjYWxhTmV3XGJ1aWxkXGNsYXNzZXNcc2NhbGFcbWFpbnQAAS91cgACW0Ks8xf4BghU4AIAAHhwAAAAFC0LkeCrdP+sJEkjdgJZOjKUqpDe
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSet.scala -> 
+rO0ABXNyABB4c2J0aS5hcGkuU291cmNlSjH5SdlLSkQCAAdJAAdhcGlIYXNoWgAIaGFzTWFjcm9aABBoYXNQYWNrYWdlT2JqZWN0TAAYX2ludGVybmFsT25seV9uYW1lSGFzaGVzdAAkTHhzYnRpL2FwaS9faW50ZXJuYWxPbmx5X05hbWVIYXNoZXM7TAADYXBpdAAVTHhzYnRpL2FwaS9Tb3VyY2VBUEk7TAALY29tcGlsYXRpb250ABdMeHNidGkvYXBpL0NvbXBpbGF0aW9uO1sABGhhc2h0AAJbQnhwN/sdXwAAc3IAInhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoZXNU2r6Z+tTsTAIAAlsAD2ltcGxpY2l0TWVtYmVyc3QAI1tMeHNidGkvYXBpL19pbnRlcm5hbE9ubHlfTmFtZUhhc2g7WwAOcmVndWxhck1lbWJlcnNxAH4AB3hwdXIAI1tMeHNidGkuYXBpLl9pbnRlcm5hbE9ubHlfTmFtZUhhc2g7SVqAtt2Wi/QCAAB4cAAAAAB1cQB+AAkAAAAZc3IAIHhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoWw71InY4V88CAAJJAARoYXNoTAAEbmFtZXQAEkxqYXZhL2xhbmcvU3RyaW5nO3hwzqV9znQABm5vdGlmeXNxAH4ADGgF4o10AAR3YWl0c3EAfgAM8BggHHQADSRhc0luc3RhbmNlT2ZzcQB+AAyzWOKudAAFdW5pb25zcQB+AAyJZ3LidAAGZXF1YWxzc3EAfgAMlwGoX3QADGFzSW5zdGFuY2VPZnNxAH4ADMY1sxN0AARpbmNsc3EAfgAMU2z3wHQADHN5bmNocm9uaXplZHNxAH4ADGAhDOl0AA0kaXNJbnN0YW5jZU9mc3EAfgAMA5ooFHQADW1vc3RSZXR3ZWV0ZWRzcQB+AAw+ayPfdAAJbm90aWZ5QWxsc3EAfgAMIRciMXQADGlzSW5zdGFuY2VPZnNxAH4ADO6UxFV0AAY8aW5pdD5zcQB+AAxDnpAsdAACPT1zcQB+AAxA6M+ZdAAFY2xvbmVzcQB+AAwF9ZMtdAAIdG9TdHJpbmdzcQB+AAzukj64dAACIT1zcQB+AAwsZZnMdAAIZ2V0Q2xhc3NzcQB+AAyzDK4rdAAIY29udGFpbnNzcQB+AAxjxwb1dAACbmVzcQB+AAzEvoXldAACZXFzcQB+AAzmqm3JdAAGSW50U2V0c3EAfgAME8iZs3QAAiMjc3EAfgAMaXMwL3QACGZpbmFsaXplc3EAfgAMb2VB5HQACGhhc2hDb2Rlc3IAE3hzYnRpLmFwaS5Tb3VyY2VBUEm5Xqf5KSM4pAIAAlsAC2RlZmluaXRpb25zdAAXW0x4c2J0aS9hcGkvRGVmaW5pdGlvbjtbAAhwYWNrYWdlc3QAFFtMeHNidGkvYXBpL1BhY2thZ2U7eHB1cgAXW0x4c2J0aS5hcGkuRGVmaW5pdGlvbjuIyVzntONeDgIAAHhwAAAAAXNyABN4c2J0aS5hcGkuQ2xhc3NMaWtlgzQcod+wl2wCAARMAA5kZWZpbml0aW9uVHlwZXQAGkx4c2J0aS9hcGkvRGVmaW5pdGlvblR5cGU7WwAQc2F2ZWRBbm5vdGF0aW9uc3QAE1tMamF2YS9sYW5nL1N0cmluZztMAAhzZWxmVHlwZXQAEEx4c2J0aS9hcGkvTGF6eTtMAAlzdHJ1Y3R1cmVxAH4ASXhyACF4c2J0aS5hcGkuUGFyYW1ldGVyaXplZERlZmluaXRpb275EW6x1VA84gIAAVsADnR5cGVQYXJhbWV0ZXJzdAAaW0x4c2J0aS9hcGkvVHlwZVBhcmFtZXRlcjt4cgAUeHNidGkuYXBpLkRlZmluaXRpb26HKhvocULjRgIABEwABmFjY2Vzc3QAEkx4c2J0aS9hcGkvQWNjZXNzO1sAC2Fubm90YXRpb25zdAAXW0x4c2J0aS9hcGkvQW5ub3RhdGlvbjtMAAltb2RpZmllcnN0ABVMeHNidGkvYXBpL01vZGlmaWVycztMAARuYW1lcQB+AA14cHNyABB4c2J0aS5hcGkuUHVibGljulg9rmwtYEICAAB4cgAQeHNidGkuYXBpLkFjY2Vzc91imvgdYzFIAgAAeHB1cgAXW0x4c2J0aS5hcGkuQW5ub3RhdGlvbjvrl+sZEPaNSAIAAHhwAAAAAHNyABN4c2J0aS5hcGkuTW9kaWZpZXJzl+dh3BMme7MCAAFCAAVmbGFnc3hwAXQAEmNvdXJzZXJhLnczLkludFNldHVyABpbTHhzYnRpLmFwaS5UeXBlUGFyYW1ldGVyO9ltJg8onfK2AgAAeHAAAAAAfnIAGHhzYnRpLmFwaS5EZWZpbml0aW9uVHlwZQAAAAAAAAAAEgAAeHIADmphdmEubGFuZy5FbnVtAAAAAAAAAAASAAB4cHQACENsYXNzRGVmdXIAE1tMamF2YS5sYW5nLlN0cmluZzut0lbn6R17RwIAAHhwAAAAAXQADHNjYWxhLm5hdGl2ZXNyACF4c2J0aS5hcGkuQWJzdHJhY3RMYXp5JFN0cmljdExhenkNZhxrKRYquAIAAUwABXZhbHVldAASTGphdmEvbGFuZy9PYmplY3Q7eHBzcgATeHNidGkuYXBpLkVtcHR5VHlwZbz9nkZJO4kkAgAAeHIAFHhzYnRpLmFwaS5TaW1wbGVUeXBlcnhiiCEjv0ACAAB4cgAOeHNidGkuYXBpLlR5cGU/atkhFkmqygIAAHhwc3EAfgBic3IAE3hzYnRpLmFwaS5TdHJ1Y3R1cmWpqvmAk2/YAAIAA0wACGRlY2xhcmVkcQB+AElMAAlpbmhlcml0ZWRxAH4ASUwAB3BhcmVudHNxAH4ASXhxAH4AZ3NxAH4AYnVxAH4ARAAAAABzcQB+AGJ1cQB+AEQAAAAAc3EAfgBidXIAEVtMeHNidGkuYXBpLlR5cGU7dP+lWnv56UECAAB4cAAAAAJzcgAUeHNidGkuYXBpLlByb2plY3Rpb27z0o1U6UWkLQIAAkwAAmlkcQB+AA1MAAZwcmVmaXh0ABZMeHNidGkvYXBpL1NpbXBsZVR5cGU7eHEAfgBmdAAGT2JqZWN0c3IAE3hzYnRpLmFwaS5TaW5nbGV0b278p1/4z1bkRgIAAUwABHBhdGh0ABBMeHNidGkvYXBpL1BhdGg7eHEAfgBmc3IADnhzYnRpLmFwaS5QYXRomz1cCM6lJ4QCAAFbAApjb21wb25lbnRzdAAaW0x4c2J0aS9hcGkvUGF0aENvbXBvbmVudDt4cHVyABpbTHhzYnRpLmFwaS5QYXRoQ29tcG9uZW50O0PaCXQtZxZ0AgAAeHAAAAADc3IADHhzYnRpLmFwaS5JZJgybIs3U8RAAgABTAACaWRxAH4ADXhyABd4c2J0aS5hcGkuUGF0aENvbXBvbmVudF+aIlsuhp+8AgAAeHB0AARqYXZhc3EAfgB/dAAEbGFuZ3NyAA54c2J0aS5hcGkuVGhpc9sJ7abMWkBcAgAAeHEAfgCAc3EAfgBzdAADQW55c3EAfgB3c3EAfgB6dXEAfgB9AAAAAnNxAH4Af3QABXNjYWxhcQB+AIZ1cgAUW0x4c2J0aS5hcGkuUGFja2FnZTtbExk3cKcnoQIAAHhwAAAAAnNyABF4c2J0aS5hcGkuUGFja2FnZX5Zj/auzjlYAgABTAAEbmFtZXEAfgANeHB0AAtjb3Vyc2VyYS53M3NxAH4AkHQACGNvdXJzZXJhc3IAFXhzYnRpLmFwaS5Db21waWxhdGlvbu364MNq6KBCAgACSgAJc3RhcnRUaW1lWwAHb3V0cHV0c3QAGltMeHNidGkvYXBpL091dHB1dFNldHRpbmc7eHAAAAFtElYwU3VyABpbTHhzYnRpLmFwaS5PdXRwdXRTZXR0aW5nO39qwvOnh6VCAgAAeHAAAAABc3IAF3hzYnRpLmFwaS5PdXRwdXRTZXR0aW5netmaR3T7HXsCAAJMAA9vdXRwdXREaXJlY3RvcnlxAH4ADUwAD3NvdXJjZURpcmVjdG9yeXEAfgANeHB0ADBEOlx3b3JrXHRyeW91dFxzY2FsYU5ld1xidWlsZFxjbGFzc2VzXHNjYWxhXG1haW50AAEvdXIAAltCrPMX+AYIVOACAAB4cAAAABQOJJE6m+SpkJN6O0I0pGbBIptR9g==
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSetTest.scala -> 
+rO0ABXNyABB4c2J0aS5hcGkuU291cmNlSjH5SdlLSkQCAAdJAAdhcGlIYXNoWgAIaGFzTWFjcm9aABBoYXNQYWNrYWdlT2JqZWN0TAAYX2ludGVybmFsT25seV9uYW1lSGFzaGVzdAAkTHhzYnRpL2FwaS9faW50ZXJuYWxPbmx5X05hbWVIYXNoZXM7TAADYXBpdAAVTHhzYnRpL2FwaS9Tb3VyY2VBUEk7TAALY29tcGlsYXRpb250ABdMeHNidGkvYXBpL0NvbXBpbGF0aW9uO1sABGhhc2h0AAJbQnhw7Spk4wAAc3IAInhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoZXNU2r6Z+tTsTAIAAlsAD2ltcGxpY2l0TWVtYmVyc3QAI1tMeHNidGkvYXBpL19pbnRlcm5hbE9ubHlfTmFtZUhhc2g7WwAOcmVndWxhck1lbWJlcnNxAH4AB3hwdXIAI1tMeHNidGkuYXBpLl9pbnRlcm5hbE9ubHlfTmFtZUhhc2g7SVqAtt2Wi/QCAAB4cAAAAAB1cQB+AAkAAAAVc3IAIHhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoWw71InY4V88CAAJJAARoYXNoTAAEbmFtZXQAEkxqYXZhL2xhbmcvU3RyaW5nO3hwHj+xBnQABm5vdGlmeXNxAH4ADEjTV3l0AAR3YWl0c3EAfgAMBJBSmXQADSRhc0luc3RhbmNlT2ZzcQB+AAwrvwLldAAGZXF1YWxzc3EAfgAMR/n/4HQADGFzSW5zdGFuY2VPZnNxAH4ADAlkn7F0AAxzeW5jaHJvbml6ZWRzcQB+AAz23krcdAANJGlzSW5zdGFuY2VPZnNxAH4ADHFySmV0AARtYWluc3EAfgAMR+a51HQACkludFNldFRlc3RzcQB+AAzoWNlYdAAJbm90aWZ5QWxsc3EAfgAMLslp6XQADGlzSW5zdGFuY2VPZnNxAH4ADAGWwAN0AAI9PXNxAH4ADOWtoC50AAVjbG9uZXNxAH4ADLJM75F0AAh0b1N0cmluZ3NxAH4ADJPxeQZ0AAIhPXNxAH4ADGRr1XF0AAhnZXRDbGFzc3NxAH4ADIctXp50AAJuZXNxAH4ADNCajMp0AAJlcXNxAH4ADN9VB0B0AAIjI3NxAH4ADMo49190AAhmaW5hbGl6ZXNxAH4ADFSs0aF0AAhoYXNoQ29kZXNyABN4c2J0aS5hcGkuU291cmNlQVBJuV6n+SkjOKQCAAJbAAtkZWZpbml0aW9uc3QAF1tMeHNidGkvYXBpL0RlZmluaXRpb247WwAIcGFja2FnZXN0ABRbTHhzYnRpL2FwaS9QYWNrYWdlO3hwdXIAF1tMeHNidGkuYXBpLkRlZmluaXRpb247iMlc57TjXg4CAAB4cAAAAAFzcgATeHNidGkuYXBpLkNsYXNzTGlrZYM0HKHfsJdsAgAETAAOZGVmaW5pdGlvblR5cGV0ABpMeHNidGkvYXBpL0RlZmluaXRpb25UeXBlO1sAEHNhdmVkQW5ub3RhdGlvbnN0ABNbTGphdmEvbGFuZy9TdHJpbmc7TAAIc2VsZlR5cGV0ABBMeHNidGkvYXBpL0xhenk7TAAJc3RydWN0dXJlcQB+AEF4cgAheHNidGkuYXBpLlBhcmFtZXRlcml6ZWREZWZpbml0aW9u+RFusdVQPOICAAFbAA50eXBlUGFyYW1ldGVyc3QAGltMeHNidGkvYXBpL1R5cGVQYXJhbWV0ZXI7eHIAFHhzYnRpLmFwaS5EZWZpbml0aW9uhyob6HFC40YCAARMAAZhY2Nlc3N0ABJMeHNidGkvYXBpL0FjY2VzcztbAAthbm5vdGF0aW9uc3QAF1tMeHNidGkvYXBpL0Fubm90YXRpb247TAAJbW9kaWZpZXJzdAAVTHhzYnRpL2FwaS9Nb2RpZmllcnM7TAAEbmFtZXEAfgANeHBzcgAQeHNidGkuYXBpLlB1YmxpY7pYPa5sLWBCAgAAeHIAEHhzYnRpLmFwaS5BY2Nlc3PdYpr4HWMxSAIAAHhwdXIAF1tMeHNidGkuYXBpLkFubm90YXRpb24765frGRD2jUgCAAB4cAAAAABzcgATeHNidGkuYXBpLk1vZGlmaWVyc5fnYdwTJnuzAgABQgAFZmxhZ3N4cAB0ABZjb3Vyc2VyYS53My5JbnRTZXRUZXN0dXIAGltMeHNidGkuYXBpLlR5cGVQYXJhbWV0ZXI72W0mDyid8rYCAAB4cAAAAAB+cgAYeHNidGkuYXBpLkRlZmluaXRpb25UeXBlAAAAAAAAAAASAAB4cgAOamF2YS5sYW5nLkVudW0AAAAAAAAAABIAAHhwdAAGTW9kdWxldXIAE1tMamF2YS5sYW5nLlN0cmluZzut0lbn6R17RwIAAHhwAAAAAXQADHNjYWxhLm5hdGl2ZXNyACF4c2J0aS5hcGkuQWJzdHJhY3RMYXp5JFN0cmljdExhenkNZhxrKRYquAIAAUwABXZhbHVldAASTGphdmEvbGFuZy9PYmplY3Q7eHBzcgATeHNidGkuYXBpLkVtcHR5VHlwZbz9nkZJO4kkAgAAeHIAFHhzYnRpLmFwaS5TaW1wbGVUeXBlcnhiiCEjv0ACAAB4cgAOeHNidGkuYXBpLlR5cGU/atkhFkmqygIAAHhwc3EAfgBac3IAE3hzYnRpLmFwaS5TdHJ1Y3R1cmWpqvmAk2/YAAIAA0wACGRlY2xhcmVkcQB+AEFMAAlpbmhlcml0ZWRxAH4AQUwAB3BhcmVudHNxAH4AQXhxAH4AX3NxAH4AWnVxAH4APAAAAAFzcgANeHNidGkuYXBpLkRlZlK+n+J8tDZpAgACTAAKcmV0dXJuVHlwZXQAEEx4c2J0aS9hcGkvVHlwZTtbAA92YWx1ZVBhcmFtZXRlcnN0ABpbTHhzYnRpL2FwaS9QYXJhbWV0ZXJMaXN0O3hxAH4AQnEAfgBLdXEAfgBMAAAAAHNxAH4ATgBxAH4AHXVxAH4AUQAAAABzcgAUeHNidGkuYXBpLlByb2plY3Rpb27z0o1U6UWkLQIAAkwAAmlkcQB+AA1MAAZwcmVmaXh0ABZMeHNidGkvYXBpL1NpbXBsZVR5cGU7eHEAfgBedAAEVW5pdHNyABN4c2J0aS5hcGkuU2luZ2xldG9u/Kdf+M9W5EYCAAFMAARwYXRodAAQTHhzYnRpL2FwaS9QYXRoO3hxAH4AXnNyAA54c2J0aS5hcGkuUGF0aJs9XAjOpSeEAgABWwAKY29tcG9uZW50c3QAGltMeHNidGkvYXBpL1BhdGhDb21wb25lbnQ7eHB1cgAaW0x4c2J0aS5hcGkuUGF0aENvbXBvbmVudDtD2gl0LWcWdAIAAHhwAAAAAnNyAAx4c2J0aS5hcGkuSWSYMmyLN1PEQAIAAUwAAmlkcQB+AA14cgAXeHNidGkuYXBpLlBhdGhDb21wb25lbnRfmiJbLoafvAIAAHhwdAAFc2NhbGFzcgAOeHNidGkuYXBpLlRoaXPbCe2mzFpAXAIAAHhxAH4AenVyABpbTHhzYnRpLmFwaS5QYXJhbWV0ZXJMaXN0O/XTOh3ys3DuAgAAeHAAAAABc3IAF3hzYnRpLmFwaS5QYXJhbWV0ZXJMaXN01sW8HGRJdOMCAAJaAAppc0ltcGxpY2l0WwAKcGFyYW1ldGVyc3QAHFtMeHNidGkvYXBpL01ldGhvZFBhcmFtZXRlcjt4cAB1cgAcW0x4c2J0aS5hcGkuTWV0aG9kUGFyYW1ldGVyO8+4xV2l3bVtAgAAeHAAAAABc3IAGXhzYnRpLmFwaS5NZXRob2RQYXJhbWV0ZXIfRa4X00mw6gIABFoACmhhc0RlZmF1bHRMAAhtb2RpZmllcnQAHUx4c2J0aS9hcGkvUGFyYW1ldGVyTW9kaWZpZXI7TAAEbmFtZXEAfgANTAADdHBlcQB+AGd4cAB+cgAbeHNidGkuYXBpLlBhcmFtZXRlck1vZGlmaWVyAAAAAAAAAAASAAB4cQB+AFR0AAVQbGFpbnQABGFyZ3NzcgAXeHNidGkuYXBpLlBhcmFtZXRlcml6ZWQWbO5pA8m7fwIAAkwACGJhc2VUeXBlcQB+AG5bAA10eXBlQXJndW1lbnRzdAARW0x4c2J0aS9hcGkvVHlwZTt4cQB+AF5zcQB+AG10AAVBcnJheXEAfgBzdXIAEVtMeHNidGkuYXBpLlR5cGU7dP+lWnv56UECAAB4cAAAAAFzcQB+AG10AAZTdHJpbmdzcQB+AHFzcQB+AHR1cQB+AHcAAAADc3EAfgB5dAAEamF2YXNxAH4AeXQABGxhbmdxAH4AfnNxAH4AWnVxAH4APAAAAABzcQB+AFp1cQB+AJIAAAACc3EAfgBtdAAGT2JqZWN0cQB+AJZzcQB+AG10AANBbnlxAH4Ac3VyABRbTHhzYnRpLmFwaS5QYWNrYWdlO1sTGTdwpyehAgAAeHAAAAACc3IAEXhzYnRpLmFwaS5QYWNrYWdlflmP9q7OOVgCAAFMAARuYW1lcQB+AA14cHQAC2NvdXJzZXJhLnczc3EAfgCndAAIY291cnNlcmFzcgAVeHNidGkuYXBpLkNvbXBpbGF0aW9u7frgw2rooEICAAJKAAlzdGFydFRpbWVbAAdvdXRwdXRzdAAaW0x4c2J0aS9hcGkvT3V0cHV0U2V0dGluZzt4cAAAAW0SVjBTdXIAGltMeHNidGkuYXBpLk91dHB1dFNldHRpbmc7f2rC86eHpUICAAB4cAAAAAFzcgAXeHNidGkuYXBpLk91dHB1dFNldHRpbmd62ZpHdPsdewIAAkwAD291dHB1dERpcmVjdG9yeXEAfgANTAAPc291cmNlRGlyZWN0b3J5cQB+AA14cHQAMEQ6XHdvcmtcdHJ5b3V0XHNjYWxhTmV3XGJ1aWxkXGNsYXNzZXNcc2NhbGFcbWFpbnQAAS91cgACW0Ks8xf4BghU4AIAAHhwAAAAFHF+hytyshaEF4QcQYX86EXOmjvG
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> 
+rO0ABXNyABB4c2J0aS5hcGkuU291cmNlSjH5SdlLSkQCAAdJAAdhcGlIYXNoWgAIaGFzTWFjcm9aABBoYXNQYWNrYWdlT2JqZWN0TAAYX2ludGVybmFsT25seV9uYW1lSGFzaGVzdAAkTHhzYnRpL2FwaS9faW50ZXJuYWxPbmx5X05hbWVIYXNoZXM7TAADYXBpdAAVTHhzYnRpL2FwaS9Tb3VyY2VBUEk7TAALY29tcGlsYXRpb250ABdMeHNidGkvYXBpL0NvbXBpbGF0aW9uO1sABGhhc2h0AAJbQnhw0PTZZwAAc3IAInhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoZXNU2r6Z+tTsTAIAAlsAD2ltcGxpY2l0TWVtYmVyc3QAI1tMeHNidGkvYXBpL19pbnRlcm5hbE9ubHlfTmFtZUhhc2g7WwAOcmVndWxhck1lbWJlcnNxAH4AB3hwdXIAI1tMeHNidGkuYXBpLl9pbnRlcm5hbE9ubHlfTmFtZUhhc2g7SVqAtt2Wi/QCAAB4cAAAAAB1cQB+AAkAAAAZc3IAIHhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoWw71InY4V88CAAJJAARoYXNoTAAEbmFtZXQAEkxqYXZhL2xhbmcvU3RyaW5nO3hwGQuo1nQABm5vdGlmeXNxAH4ADHtnPYZ0AAR3YWl0c3EAfgAMeV9dbHQADSRhc0luc3RhbmNlT2ZzcQB+AAxrHgp5dAAFdW5pb25zcQB+AAzOugIudAAGZXF1YWxzc3EAfgAMkgruzXQADGFzSW5zdGFuY2VPZnNxAH4ADI3uw0p0AARpbmNsc3EAfgAMvyYLaHQADHN5bmNocm9uaXplZHNxAH4ADGcSxsx0AA0kaXNJbnN0YW5jZU9mc3EAfgAMY0q/cXQADW1vc3RSZXR3ZWV0ZWRzcQB+AAxFf1Y2dAAJbm90aWZ5QWxsc3EAfgAM2WpzeHQADGlzSW5zdGFuY2VPZnNxAH4ADGXjBiZ0AAY8aW5pdD5zcQB+AAwuToSNdAACPT1zcQB+AAziLQE0dAAFY2xvbmVzcQB+AAzfRu79dAAIdG9TdHJpbmdzcQB+AAyL6Z9rdAACIT1zcQB+AAwCXxymdAAIZ2V0Q2xhc3NzcQB+AAyZJvsEdAAIY29udGFpbnNzcQB+AAyZUSMOdAACbmVzcQB+AAytNtwEdAACZXFzcQB+AAyQFwRtdAAITm9uRW1wdHlzcQB+AAzmEisIdAACIyNzcQB+AAzBOoYqdAAIZmluYWxpemVzcQB+AAxaM78MdAAIaGFzaENvZGVzcgATeHNidGkuYXBpLlNvdXJjZUFQSblep/kpIzikAgACWwALZGVmaW5pdGlvbnN0ABdbTHhzYnRpL2FwaS9EZWZpbml0aW9uO1sACHBhY2thZ2VzdAAUW0x4c2J0aS9hcGkvUGFja2FnZTt4cHVyABdbTHhzYnRpLmFwaS5EZWZpbml0aW9uO4jJXOe0414OAgAAeHAAAAABc3IAE3hzYnRpLmFwaS5DbGFzc0xpa2WDNByh37CXbAIABEwADmRlZmluaXRpb25UeXBldAAaTHhzYnRpL2FwaS9EZWZpbml0aW9uVHlwZTtbABBzYXZlZEFubm90YXRpb25zdAATW0xqYXZhL2xhbmcvU3RyaW5nO0wACHNlbGZUeXBldAAQTHhzYnRpL2FwaS9MYXp5O0wACXN0cnVjdHVyZXEAfgBJeHIAIXhzYnRpLmFwaS5QYXJhbWV0ZXJpemVkRGVmaW5pdGlvbvkRbrHVUDziAgABWwAOdHlwZVBhcmFtZXRlcnN0ABpbTHhzYnRpL2FwaS9UeXBlUGFyYW1ldGVyO3hyABR4c2J0aS5hcGkuRGVmaW5pdGlvbocqG+hxQuNGAgAETAAGYWNjZXNzdAASTHhzYnRpL2FwaS9BY2Nlc3M7WwALYW5ub3RhdGlvbnN0ABdbTHhzYnRpL2FwaS9Bbm5vdGF0aW9uO0wACW1vZGlmaWVyc3QAFUx4c2J0aS9hcGkvTW9kaWZpZXJzO0wABG5hbWVxAH4ADXhwc3IAEHhzYnRpLmFwaS5QdWJsaWO6WD2ubC1gQgIAAHhyABB4c2J0aS5hcGkuQWNjZXNz3WKa+B1jMUgCAAB4cHVyABdbTHhzYnRpLmFwaS5Bbm5vdGF0aW9uO+uX6xkQ9o1IAgAAeHAAAAAAc3IAE3hzYnRpLmFwaS5Nb2RpZmllcnOX52HcEyZ7swIAAUIABWZsYWdzeHAAdAAUY291cnNlcmEudzMuTm9uRW1wdHl1cgAaW0x4c2J0aS5hcGkuVHlwZVBhcmFtZXRlcjvZbSYPKJ3ytgIAAHhwAAAAAH5yABh4c2J0aS5hcGkuRGVmaW5pdGlvblR5cGUAAAAAAAAAABIAAHhyAA5qYXZhLmxhbmcuRW51bQAAAAAAAAAAEgAAeHB0AAhDbGFzc0RlZnVyABNbTGphdmEubGFuZy5TdHJpbmc7rdJW5+kde0cCAAB4cAAAAAF0AAxzY2FsYS5uYXRpdmVzcgAheHNidGkuYXBpLkFic3RyYWN0TGF6eSRTdHJpY3RMYXp5DWYcaykWKrgCAAFMAAV2YWx1ZXQAEkxqYXZhL2xhbmcvT2JqZWN0O3hwc3IAE3hzYnRpLmFwaS5FbXB0eVR5cGW8/Z5GSTuJJAIAAHhyABR4c2J0aS5hcGkuU2ltcGxlVHlwZXJ4YoghI79AAgAAeHIADnhzYnRpLmFwaS5UeXBlP2rZIRZJqsoCAAB4cHNxAH4AYnNyABN4c2J0aS5hcGkuU3RydWN0dXJlqar5gJNv2AACAANMAAhkZWNsYXJlZHEAfgBJTAAJaW5oZXJpdGVkcQB+AElMAAdwYXJlbnRzcQB+AEl4cQB+AGdzcQB+AGJ1cQB+AEQAAAAAc3EAfgBidXEAfgBEAAAAAHNxAH4AYnVyABFbTHhzYnRpLmFwaS5UeXBlO3T/pVp7+elBAgAAeHAAAAADc3IAFHhzYnRpLmFwaS5Qcm9qZWN0aW9u89KNVOlFpC0CAAJMAAJpZHEAfgANTAAGcHJlZml4dAAWTHhzYnRpL2FwaS9TaW1wbGVUeXBlO3hxAH4AZnQABkludFNldHNyABN4c2J0aS5hcGkuU2luZ2xldG9u/Kdf+M9W5EYCAAFMAARwYXRodAAQTHhzYnRpL2FwaS9QYXRoO3hxAH4AZnNyAA54c2J0aS5hcGkuUGF0aJs9XAjOpSeEAgABWwAKY29tcG9uZW50c3QAGltMeHNidGkvYXBpL1BhdGhDb21wb25lbnQ7eHB1cgAaW0x4c2J0aS5hcGkuUGF0aENvbXBvbmVudDtD2gl0LWcWdAIAAHhwAAAAA3NyAAx4c2J0aS5hcGkuSWSYMmyLN1PEQAIAAUwAAmlkcQB+AA14cgAXeHNidGkuYXBpLlBhdGhDb21wb25lbnRfmiJbLoafvAIAAHhwdAAIY291cnNlcmFzcQB+AH90AAJ3M3NyAA54c2J0aS5hcGkuVGhpc9sJ7abMWkBcAgAAeHEAfgCAc3EAfgBzdAAGT2JqZWN0c3EAfgB3c3EAfgB6dXEAfgB9AAAAA3NxAH4Af3QABGphdmFzcQB+AH90AARsYW5ncQB+AIZzcQB+AHN0AANBbnlzcQB+AHdzcQB+AHp1cQB+AH0AAAACc3EAfgB/dAAFc2NhbGFxAH4AhnVyABRbTHhzYnRpLmFwaS5QYWNrYWdlO1sTGTdwpyehAgAAeHAAAAACc3IAEXhzYnRpLmFwaS5QYWNrYWdlflmP9q7OOVgCAAFMAARuYW1lcQB+AA14cHQAC2NvdXJzZXJhLnczc3EAfgCZdAAIY291cnNlcmFzcgAVeHNidGkuYXBpLkNvbXBpbGF0aW9u7frgw2rooEICAAJKAAlzdGFydFRpbWVbAAdvdXRwdXRzdAAaW0x4c2J0aS9hcGkvT3V0cHV0U2V0dGluZzt4cAAAAW0SVjBTdXIAGltMeHNidGkuYXBpLk91dHB1dFNldHRpbmc7f2rC86eHpUICAAB4cAAAAAFzcgAXeHNidGkuYXBpLk91dHB1dFNldHRpbmd62ZpHdPsdewIAAkwAD291dHB1dERpcmVjdG9yeXEAfgANTAAPc291cmNlRGlyZWN0b3J5cQB+AA14cHQAMEQ6XHdvcmtcdHJ5b3V0XHNjYWxhTmV3XGJ1aWxkXGNsYXNzZXNcc2NhbGFcbWFpbnQAAS91cgACW0Ks8xf4BghU4AIAAHhwAAAAFJbx4QjFjKJgPYVnKuUqg1krWnu1
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\package.scala -> 
+rO0ABXNyABB4c2J0aS5hcGkuU291cmNlSjH5SdlLSkQCAAdJAAdhcGlIYXNoWgAIaGFzTWFjcm9aABBoYXNQYWNrYWdlT2JqZWN0TAAYX2ludGVybmFsT25seV9uYW1lSGFzaGVzdAAkTHhzYnRpL2FwaS9faW50ZXJuYWxPbmx5X05hbWVIYXNoZXM7TAADYXBpdAAVTHhzYnRpL2FwaS9Tb3VyY2VBUEk7TAALY29tcGlsYXRpb250ABdMeHNidGkvYXBpL0NvbXBpbGF0aW9uO1sABGhhc2h0AAJbQnhwYu6eZgABc3IAInhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoZXNU2r6Z+tTsTAIAAlsAD2ltcGxpY2l0TWVtYmVyc3QAI1tMeHNidGkvYXBpL19pbnRlcm5hbE9ubHlfTmFtZUhhc2g7WwAOcmVndWxhck1lbWJlcnNxAH4AB3hwdXIAI1tMeHNidGkuYXBpLl9pbnRlcm5hbE9ubHlfTmFtZUhhc2g7SVqAtt2Wi/QCAAB4cAAAAAB1cQB+AAkAAAAUc3IAIHhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoWw71InY4V88CAAJJAARoYXNoTAAEbmFtZXQAEkxqYXZhL2xhbmcvU3RyaW5nO3hwXVw1z3QABm5vdGlmeXNxAH4ADMyvVAB0AAdwYWNrYWdlc3EAfgAMgqlNhnQABHdhaXRzcQB+AAzS63vfdAANJGFzSW5zdGFuY2VPZnNxAH4ADCybBp50AAZlcXVhbHNzcQB+AAzlz3YkdAAMYXNJbnN0YW5jZU9mc3EAfgAMrtzuLHQADHN5bmNocm9uaXplZHNxAH4ADDdtHqZ0AA0kaXNJbnN0YW5jZU9mc3EAfgAMmjYmR3QACW5vdGlmeUFsbHNxAH4ADMdqqtZ0AAxpc0luc3RhbmNlT2ZzcQB+AAzCqt2/dAACPT1zcQB+AAyFqlhgdAAFY2xvbmVzcQB+AAzM1GsAdAAIdG9TdHJpbmdzcQB+AAyTdQY9dAACIT1zcQB+AAwL5V/HdAAIZ2V0Q2xhc3NzcQB+AAxaM5IrdAACbmVzcQB+AAwekN6kdAACZXFzcQB+AAzRwADjdAACIyNzcQB+AAw8VIZJdAAIZmluYWxpemVzcQB+AAx1269VdAAIaGFzaENvZGVzcgATeHNidGkuYXBpLlNvdXJjZUFQSblep/kpIzikAgACWwALZGVmaW5pdGlvbnN0ABdbTHhzYnRpL2FwaS9EZWZpbml0aW9uO1sACHBhY2thZ2VzdAAUW0x4c2J0aS9hcGkvUGFja2FnZTt4cHVyABdbTHhzYnRpLmFwaS5EZWZpbml0aW9uO4jJXOe0414OAgAAeHAAAAABc3IAE3hzYnRpLmFwaS5DbGFzc0xpa2WDNByh37CXbAIABEwADmRlZmluaXRpb25UeXBldAAaTHhzYnRpL2FwaS9EZWZpbml0aW9uVHlwZTtbABBzYXZlZEFubm90YXRpb25zdAATW0xqYXZhL2xhbmcvU3RyaW5nO0wACHNlbGZUeXBldAAQTHhzYnRpL2FwaS9MYXp5O0wACXN0cnVjdHVyZXEAfgA/eHIAIXhzYnRpLmFwaS5QYXJhbWV0ZXJpemVkRGVmaW5pdGlvbvkRbrHVUDziAgABWwAOdHlwZVBhcmFtZXRlcnN0ABpbTHhzYnRpL2FwaS9UeXBlUGFyYW1ldGVyO3hyABR4c2J0aS5hcGkuRGVmaW5pdGlvbocqG+hxQuNGAgAETAAGYWNjZXNzdAASTHhzYnRpL2FwaS9BY2Nlc3M7WwALYW5ub3RhdGlvbnN0ABdbTHhzYnRpL2FwaS9Bbm5vdGF0aW9uO0wACW1vZGlmaWVyc3QAFUx4c2J0aS9hcGkvTW9kaWZpZXJzO0wABG5hbWVxAH4ADXhwc3IAEHhzYnRpLmFwaS5QdWJsaWO6WD2ubC1gQgIAAHhyABB4c2J0aS5hcGkuQWNjZXNz3WKa+B1jMUgCAAB4cHVyABdbTHhzYnRpLmFwaS5Bbm5vdGF0aW9uO+uX6xkQ9o1IAgAAeHAAAAAAc3IAE3hzYnRpLmFwaS5Nb2RpZmllcnOX52HcEyZ7swIAAUIABWZsYWdzeHAAdAATY291cnNlcmEudzMucGFja2FnZXVyABpbTHhzYnRpLmFwaS5UeXBlUGFyYW1ldGVyO9ltJg8onfK2AgAAeHAAAAAAfnIAGHhzYnRpLmFwaS5EZWZpbml0aW9uVHlwZQAAAAAAAAAAEgAAeHIADmphdmEubGFuZy5FbnVtAAAAAAAAAAASAAB4cHQABk1vZHVsZXVyABNbTGphdmEubGFuZy5TdHJpbmc7rdJW5+kde0cCAAB4cAAAAAF0AAxzY2FsYS5uYXRpdmVzcgAheHNidGkuYXBpLkFic3RyYWN0TGF6eSRTdHJpY3RMYXp5DWYcaykWKrgCAAFMAAV2YWx1ZXQAEkxqYXZhL2xhbmcvT2JqZWN0O3hwc3IAE3hzYnRpLmFwaS5FbXB0eVR5cGW8/Z5GSTuJJAIAAHhyABR4c2J0aS5hcGkuU2ltcGxlVHlwZXJ4YoghI79AAgAAeHIADnhzYnRpLmFwaS5UeXBlP2rZIRZJqsoCAAB4cHNxAH4AWHNyABN4c2J0aS5hcGkuU3RydWN0dXJlqar5gJNv2AACAANMAAhkZWNsYXJlZHEAfgA/TAAJaW5oZXJpdGVkcQB+AD9MAAdwYXJlbnRzcQB+AD94cQB+AF1zcQB+AFh1cQB+ADoAAAAAc3EAfgBYdXEAfgA6AAAAAHNxAH4AWHVyABFbTHhzYnRpLmFwaS5UeXBlO3T/pVp7+elBAgAAeHAAAAACc3IAFHhzYnRpLmFwaS5Qcm9qZWN0aW9u89KNVOlFpC0CAAJMAAJpZHEAfgANTAAGcHJlZml4dAAWTHhzYnRpL2FwaS9TaW1wbGVUeXBlO3hxAH4AXHQABk9iamVjdHNyABN4c2J0aS5hcGkuU2luZ2xldG9u/Kdf+M9W5EYCAAFMAARwYXRodAAQTHhzYnRpL2FwaS9QYXRoO3hxAH4AXHNyAA54c2J0aS5hcGkuUGF0aJs9XAjOpSeEAgABWwAKY29tcG9uZW50c3QAGltMeHNidGkvYXBpL1BhdGhDb21wb25lbnQ7eHB1cgAaW0x4c2J0aS5hcGkuUGF0aENvbXBvbmVudDtD2gl0LWcWdAIAAHhwAAAAA3NyAAx4c2J0aS5hcGkuSWSYMmyLN1PEQAIAAUwAAmlkcQB+AA14cgAXeHNidGkuYXBpLlBhdGhDb21wb25lbnRfmiJbLoafvAIAAHhwdAAEamF2YXNxAH4AdXQABGxhbmdzcgAOeHNidGkuYXBpLlRoaXPbCe2mzFpAXAIAAHhxAH4AdnNxAH4AaXQAA0FueXNxAH4AbXNxAH4AcHVxAH4AcwAAAAJzcQB+AHV0AAVzY2FsYXEAfgB8dXIAFFtMeHNidGkuYXBpLlBhY2thZ2U7WxMZN3CnJ6ECAAB4cAAAAAJzcgAReHNidGkuYXBpLlBhY2thZ2V+WY/2rs45WAIAAUwABG5hbWVxAH4ADXhwdAALY291cnNlcmEudzNzcQB+AIZ0AAhjb3Vyc2VyYXNyABV4c2J0aS5hcGkuQ29tcGlsYXRpb27t+uDDauigQgIAAkoACXN0YXJ0VGltZVsAB291dHB1dHN0ABpbTHhzYnRpL2FwaS9PdXRwdXRTZXR0aW5nO3hwAAABbRJWMFN1cgAaW0x4c2J0aS5hcGkuT3V0cHV0U2V0dGluZzt/asLzp4elQgIAAHhwAAAAAXNyABd4c2J0aS5hcGkuT3V0cHV0U2V0dGluZ3rZmkd0+x17AgACTAAPb3V0cHV0RGlyZWN0b3J5cQB+AA1MAA9zb3VyY2VEaXJlY3RvcnlxAH4ADXhwdAAwRDpcd29ya1x0cnlvdXRcc2NhbGFOZXdcYnVpbGRcY2xhc3Nlc1xzY2FsYVxtYWludAABL3VyAAJbQqzzF/gGCFTgAgAAeHAAAAAUt+X8neCBtkPsDQkjLVQXMOkadG4=
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> 
+rO0ABXNyABB4c2J0aS5hcGkuU291cmNlSjH5SdlLSkQCAAdJAAdhcGlIYXNoWgAIaGFzTWFjcm9aABBoYXNQYWNrYWdlT2JqZWN0TAAYX2ludGVybmFsT25seV9uYW1lSGFzaGVzdAAkTHhzYnRpL2FwaS9faW50ZXJuYWxPbmx5X05hbWVIYXNoZXM7TAADYXBpdAAVTHhzYnRpL2FwaS9Tb3VyY2VBUEk7TAALY29tcGlsYXRpb250ABdMeHNidGkvYXBpL0NvbXBpbGF0aW9uO1sABGhhc2h0AAJbQnhwRJaQ1QAAc3IAInhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoZXNU2r6Z+tTsTAIAAlsAD2ltcGxpY2l0TWVtYmVyc3QAI1tMeHNidGkvYXBpL19pbnRlcm5hbE9ubHlfTmFtZUhhc2g7WwAOcmVndWxhck1lbWJlcnNxAH4AB3hwdXIAI1tMeHNidGkuYXBpLl9pbnRlcm5hbE9ubHlfTmFtZUhhc2g7SVqAtt2Wi/QCAAB4cAAAAAB1cQB+AAkAAAAXc3IAIHhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoWw71InY4V88CAAJJAARoYXNoTAAEbmFtZXQAEkxqYXZhL2xhbmcvU3RyaW5nO3hwq1ucPXQABm5vdGlmeXNxAH4ADL/xtZB0AAR3YWl0c3EAfgAMbwwV6HQADSRhc0luc3RhbmNlT2ZzcQB+AAzXJzn/dAAITWFpbkxpc3RzcQB+AAx6v+3LdAAGaW5zZXJ0c3EAfgAMUrlai3QABmVxdWFsc3NxAH4ADKLBcOl0AAVpc29ydHNxAH4ADGJsV2x0AAxhc0luc3RhbmNlT2ZzcQB+AAxL5ZwPdAAMc3luY2hyb25pemVkc3EAfgAMtNj2Y3QADSRpc0luc3RhbmNlT2ZzcQB+AAxLlXtwdAAEbWFpbnNxAH4ADGrMR4x0AAlub3RpZnlBbGxzcQB+AAxYdrzfdAAMaXNJbnN0YW5jZU9mc3EAfgAMrYP7zXQAAj09c3EAfgAMGjo8hHQABWNsb25lc3EAfgAMYrduLHQACHRvU3RyaW5nc3EAfgAMyXpqfnQAAiE9c3EAfgAME0VqaHQACGdldENsYXNzc3EAfgAMcweaEXQAAm5lc3EAfgAMXkWZ/nQAAmVxc3EAfgAM09F59XQAAiMjc3EAfgAMDwWmNXQACGZpbmFsaXplc3EAfgAM3dHEkHQACGhhc2hDb2Rlc3IAE3hzYnRpLmFwaS5Tb3VyY2VBUEm5Xqf5KSM4pAIAAlsAC2RlZmluaXRpb25zdAAXW0x4c2J0aS9hcGkvRGVmaW5pdGlvbjtbAAhwYWNrYWdlc3QAFFtMeHNidGkvYXBpL1BhY2thZ2U7eHB1cgAXW0x4c2J0aS5hcGkuRGVmaW5pdGlvbjuIyVzntONeDgIAAHhwAAAAAXNyABN4c2J0aS5hcGkuQ2xhc3NMaWtlgzQcod+wl2wCAARMAA5kZWZpbml0aW9uVHlwZXQAGkx4c2J0aS9hcGkvRGVmaW5pdGlvblR5cGU7WwAQc2F2ZWRBbm5vdGF0aW9uc3QAE1tMamF2YS9sYW5nL1N0cmluZztMAAhzZWxmVHlwZXQAEEx4c2J0aS9hcGkvTGF6eTtMAAlzdHJ1Y3R1cmVxAH4ARXhyACF4c2J0aS5hcGkuUGFyYW1ldGVyaXplZERlZmluaXRpb275EW6x1VA84gIAAVsADnR5cGVQYXJhbWV0ZXJzdAAaW0x4c2J0aS9hcGkvVHlwZVBhcmFtZXRlcjt4cgAUeHNidGkuYXBpLkRlZmluaXRpb26HKhvocULjRgIABEwABmFjY2Vzc3QAEkx4c2J0aS9hcGkvQWNjZXNzO1sAC2Fubm90YXRpb25zdAAXW0x4c2J0aS9hcGkvQW5ub3RhdGlvbjtMAAltb2RpZmllcnN0ABVMeHNidGkvYXBpL01vZGlmaWVycztMAARuYW1lcQB+AA14cHNyABB4c2J0aS5hcGkuUHVibGljulg9rmwtYEICAAB4cgAQeHNidGkuYXBpLkFjY2Vzc91imvgdYzFIAgAAeHB1cgAXW0x4c2J0aS5hcGkuQW5ub3RhdGlvbjvrl+sZEPaNSAIAAHhwAAAAAHNyABN4c2J0aS5hcGkuTW9kaWZpZXJzl+dh3BMme7MCAAFCAAVmbGFnc3hwAHQAFGNvdXJzZXJhLnc0Lk1haW5MaXN0dXIAGltMeHNidGkuYXBpLlR5cGVQYXJhbWV0ZXI72W0mDyid8rYCAAB4cAAAAAB+cgAYeHNidGkuYXBpLkRlZmluaXRpb25UeXBlAAAAAAAAAAASAAB4cgAOamF2YS5sYW5nLkVudW0AAAAAAAAAABIAAHhwdAAGTW9kdWxldXIAE1tMamF2YS5sYW5nLlN0cmluZzut0lbn6R17RwIAAHhwAAAAAXQADHNjYWxhLm5hdGl2ZXNyACF4c2J0aS5hcGkuQWJzdHJhY3RMYXp5JFN0cmljdExhenkNZhxrKRYquAIAAUwABXZhbHVldAASTGphdmEvbGFuZy9PYmplY3Q7eHBzcgATeHNidGkuYXBpLkVtcHR5VHlwZbz9nkZJO4kkAgAAeHIAFHhzYnRpLmFwaS5TaW1wbGVUeXBlcnhiiCEjv0ACAAB4cgAOeHNidGkuYXBpLlR5cGU/atkhFkmqygIAAHhwc3EAfgBec3IAE3hzYnRpLmFwaS5TdHJ1Y3R1cmWpqvmAk2/YAAIAA0wACGRlY2xhcmVkcQB+AEVMAAlpbmhlcml0ZWRxAH4ARUwAB3BhcmVudHNxAH4ARXhxAH4AY3NxAH4AXnVxAH4AQAAAAAFzcgANeHNidGkuYXBpLkRlZlK+n+J8tDZpAgACTAAKcmV0dXJuVHlwZXQAEEx4c2J0aS9hcGkvVHlwZTtbAA92YWx1ZVBhcmFtZXRlcnN0ABpbTHhzYnRpL2FwaS9QYXJhbWV0ZXJMaXN0O3hxAH4ARnEAfgBPdXEAfgBQAAAAAHNxAH4AUgBxAH4AI3VxAH4AVQAAAABzcgAUeHNidGkuYXBpLlByb2plY3Rpb27z0o1U6UWkLQIAAkwAAmlkcQB+AA1MAAZwcmVmaXh0ABZMeHNidGkvYXBpL1NpbXBsZVR5cGU7eHEAfgBidAAEVW5pdHNyABN4c2J0aS5hcGkuU2luZ2xldG9u/Kdf+M9W5EYCAAFMAARwYXRodAAQTHhzYnRpL2FwaS9QYXRoO3hxAH4AYnNyAA54c2J0aS5hcGkuUGF0aJs9XAjOpSeEAgABWwAKY29tcG9uZW50c3QAGltMeHNidGkvYXBpL1BhdGhDb21wb25lbnQ7eHB1cgAaW0x4c2J0aS5hcGkuUGF0aENvbXBvbmVudDtD2gl0LWcWdAIAAHhwAAAAAnNyAAx4c2J0aS5hcGkuSWSYMmyLN1PEQAIAAUwAAmlkcQB+AA14cgAXeHNidGkuYXBpLlBhdGhDb21wb25lbnRfmiJbLoafvAIAAHhwdAAFc2NhbGFzcgAOeHNidGkuYXBpLlRoaXPbCe2mzFpAXAIAAHhxAH4AfnVyABpbTHhzYnRpLmFwaS5QYXJhbWV0ZXJMaXN0O/XTOh3ys3DuAgAAeHAAAAABc3IAF3hzYnRpLmFwaS5QYXJhbWV0ZXJMaXN01sW8HGRJdOMCAAJaAAppc0ltcGxpY2l0WwAKcGFyYW1ldGVyc3QAHFtMeHNidGkvYXBpL01ldGhvZFBhcmFtZXRlcjt4cAB1cgAcW0x4c2J0aS5hcGkuTWV0aG9kUGFyYW1ldGVyO8+4xV2l3bVtAgAAeHAAAAABc3IAGXhzYnRpLmFwaS5NZXRob2RQYXJhbWV0ZXIfRa4X00mw6gIABFoACmhhc0RlZmF1bHRMAAhtb2RpZmllcnQAHUx4c2J0aS9hcGkvUGFyYW1ldGVyTW9kaWZpZXI7TAAEbmFtZXEAfgANTAADdHBlcQB+AGt4cAB+cgAbeHNidGkuYXBpLlBhcmFtZXRlck1vZGlmaWVyAAAAAAAAAAASAAB4cQB+AFh0AAVQbGFpbnQABGFyZ3NzcgAXeHNidGkuYXBpLlBhcmFtZXRlcml6ZWQWbO5pA8m7fwIAAkwACGJhc2VUeXBlcQB+AHJbAA10eXBlQXJndW1lbnRzdAARW0x4c2J0aS9hcGkvVHlwZTt4cQB+AGJzcQB+AHF0AAVBcnJheXEAfgB3dXIAEVtMeHNidGkuYXBpLlR5cGU7dP+lWnv56UECAAB4cAAAAAFzcQB+AHF0AAZTdHJpbmdzcQB+AHVzcQB+AHh1cQB+AHsAAAADc3EAfgB9dAAEamF2YXNxAH4AfXQABGxhbmdxAH4AgnNxAH4AXnVxAH4AQAAAAABzcQB+AF51cQB+AJYAAAACc3EAfgBxdAAGT2JqZWN0cQB+AJpzcQB+AHF0AANBbnlxAH4Ad3VyABRbTHhzYnRpLmFwaS5QYWNrYWdlO1sTGTdwpyehAgAAeHAAAAACc3IAEXhzYnRpLmFwaS5QYWNrYWdlflmP9q7OOVgCAAFMAARuYW1lcQB+AA14cHQAC2NvdXJzZXJhLnc0c3EAfgCrdAAIY291cnNlcmFzcgAVeHNidGkuYXBpLkNvbXBpbGF0aW9u7frgw2rooEICAAJKAAlzdGFydFRpbWVbAAdvdXRwdXRzdAAaW0x4c2J0aS9hcGkvT3V0cHV0U2V0dGluZzt4cAAAAW0SVjBTdXIAGltMeHNidGkuYXBpLk91dHB1dFNldHRpbmc7f2rC86eHpUICAAB4cAAAAAFzcgAXeHNidGkuYXBpLk91dHB1dFNldHRpbmd62ZpHdPsdewIAAkwAD291dHB1dERpcmVjdG9yeXEAfgANTAAPc291cmNlRGlyZWN0b3J5cQB+AA14cHQAMEQ6XHdvcmtcdHJ5b3V0XHNjYWxhTmV3XGJ1aWxkXGNsYXNzZXNcc2NhbGFcbWFpbnQAAS91cgACW0Ks8xf4BghU4AIAAHhwAAAAFFBegFMgMLng2+trXwMswiaAUa01
+D:\work\tryout\scalaNew\src\main\scala\csv\csvParser.scala -> 
+rO0ABXNyABB4c2J0aS5hcGkuU291cmNlSjH5SdlLSkQCAAdJAAdhcGlIYXNoWgAIaGFzTWFjcm9aABBoYXNQYWNrYWdlT2JqZWN0TAAYX2ludGVybmFsT25seV9uYW1lSGFzaGVzdAAkTHhzYnRpL2FwaS9faW50ZXJuYWxPbmx5X05hbWVIYXNoZXM7TAADYXBpdAAVTHhzYnRpL2FwaS9Tb3VyY2VBUEk7TAALY29tcGlsYXRpb250ABdMeHNidGkvYXBpL0NvbXBpbGF0aW9uO1sABGhhc2h0AAJbQnhwuCFR6gAAc3IAInhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoZXNU2r6Z+tTsTAIAAlsAD2ltcGxpY2l0TWVtYmVyc3QAI1tMeHNidGkvYXBpL19pbnRlcm5hbE9ubHlfTmFtZUhhc2g7WwAOcmVndWxhck1lbWJlcnNxAH4AB3hwdXIAI1tMeHNidGkuYXBpLl9pbnRlcm5hbE9ubHlfTmFtZUhhc2g7SVqAtt2Wi/QCAAB4cAAAAAB1cQB+AAkAAAAAc3IAE3hzYnRpLmFwaS5Tb3VyY2VBUEm5Xqf5KSM4pAIAAlsAC2RlZmluaXRpb25zdAAXW0x4c2J0aS9hcGkvRGVmaW5pdGlvbjtbAAhwYWNrYWdlc3QAFFtMeHNidGkvYXBpL1BhY2thZ2U7eHB1cgAXW0x4c2J0aS5hcGkuRGVmaW5pdGlvbjuIyVzntONeDgIAAHhwAAAAAHVyABRbTHhzYnRpLmFwaS5QYWNrYWdlO1sTGTdwpyehAgAAeHAAAAAAc3IAFXhzYnRpLmFwaS5Db21waWxhdGlvbu364MNq6KBCAgACSgAJc3RhcnRUaW1lWwAHb3V0cHV0c3QAGltMeHNidGkvYXBpL091dHB1dFNldHRpbmc7eHAAAAFtElYwU3VyABpbTHhzYnRpLmFwaS5PdXRwdXRTZXR0aW5nO39qwvOnh6VCAgAAeHAAAAABc3IAF3hzYnRpLmFwaS5PdXRwdXRTZXR0aW5netmaR3T7HXsCAAJMAA9vdXRwdXREaXJlY3Rvcnl0ABJMamF2YS9sYW5nL1N0cmluZztMAA9zb3VyY2VEaXJlY3RvcnlxAH4AGnhwdAAwRDpcd29ya1x0cnlvdXRcc2NhbGFOZXdcYnVpbGRcY2xhc3Nlc1xzY2FsYVxtYWludAABL3VyAAJbQqzzF/gGCFTgAgAAeHAAAAAUqwUFK/xb4fGXQO/2M1Dhq7kMoWs=
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> 
+rO0ABXNyABB4c2J0aS5hcGkuU291cmNlSjH5SdlLSkQCAAdJAAdhcGlIYXNoWgAIaGFzTWFjcm9aABBoYXNQYWNrYWdlT2JqZWN0TAAYX2ludGVybmFsT25seV9uYW1lSGFzaGVzdAAkTHhzYnRpL2FwaS9faW50ZXJuYWxPbmx5X05hbWVIYXNoZXM7TAADYXBpdAAVTHhzYnRpL2FwaS9Tb3VyY2VBUEk7TAALY29tcGlsYXRpb250ABdMeHNidGkvYXBpL0NvbXBpbGF0aW9uO1sABGhhc2h0AAJbQnhwTxiFGQAAc3IAInhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoZXNU2r6Z+tTsTAIAAlsAD2ltcGxpY2l0TWVtYmVyc3QAI1tMeHNidGkvYXBpL19pbnRlcm5hbE9ubHlfTmFtZUhhc2g7WwAOcmVndWxhck1lbWJlcnNxAH4AB3hwdXIAI1tMeHNidGkuYXBpLl9pbnRlcm5hbE9ubHlfTmFtZUhhc2g7SVqAtt2Wi/QCAAB4cAAAAAB1cQB+AAkAAAAac3IAIHhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoWw71InY4V88CAAJJAARoYXNoTAAEbmFtZXQAEkxqYXZhL2xhbmcvU3RyaW5nO3hwN5ptQnQADmZ1dHVyZUNhbGxiYWNrc3EAfgAM54SuC3QABm5vdGlmeXNxAH4ADBcAsN90AAtsaXN0RnV0dXJlc3NxAH4ADHAnikp0AAxzaW1wbGVGdXR1cmVzcQB+AAxq/LbTdAAEd2FpdHNxAH4ADA3L97x0AA0kYXNJbnN0YW5jZU9mc3EAfgAMvcVyk3QABmVxdWFsc3NxAH4ADBLp01V0AApGdXR1cmVUZXN0c3EAfgAMnAGhFnQADGFzSW5zdGFuY2VPZnNxAH4ADHhN7XV0AAxzeW5jaHJvbml6ZWRzcQB+AAzVls4IdAANJGlzSW5zdGFuY2VPZnNxAH4ADN98/I10AA9tdWx0aXBsZUZ1dHVyZXNzcQB+AAyz5jRgdAAEbWFpbnNxAH4ADLfiZwB0AAlub3RpZnlBbGxzcQB+AAyNJW5tdAAMaXNJbnN0YW5jZU9mc3EAfgAM4DVuYHQAAj09c3EAfgAMsJZH4XQABWNsb25lc3EAfgAMCvcRr3QACHRvU3RyaW5nc3EAfgAMrIE+1HQAAiE9c3EAfgAM1ZwAE3QACGdldENsYXNzc3EAfgAM1tXk3nQAAm5lc3EAfgAM6r+bmnQADHJldHVybkZ1dHVyZXNxAH4ADE2Wt9J0AAJlcXNxAH4ADLSa7P50AAIjI3NxAH4ADA++hLt0AAhmaW5hbGl6ZXNxAH4ADEw5C0d0AAhoYXNoQ29kZXNyABN4c2J0aS5hcGkuU291cmNlQVBJuV6n+SkjOKQCAAJbAAtkZWZpbml0aW9uc3QAF1tMeHNidGkvYXBpL0RlZmluaXRpb247WwAIcGFja2FnZXN0ABRbTHhzYnRpL2FwaS9QYWNrYWdlO3hwdXIAF1tMeHNidGkuYXBpLkRlZmluaXRpb247iMlc57TjXg4CAAB4cAAAAAFzcgATeHNidGkuYXBpLkNsYXNzTGlrZYM0HKHfsJdsAgAETAAOZGVmaW5pdGlvblR5cGV0ABpMeHNidGkvYXBpL0RlZmluaXRpb25UeXBlO1sAEHNhdmVkQW5ub3RhdGlvbnN0ABNbTGphdmEvbGFuZy9TdHJpbmc7TAAIc2VsZlR5cGV0ABBMeHNidGkvYXBpL0xhenk7TAAJc3RydWN0dXJlcQB+AEt4cgAheHNidGkuYXBpLlBhcmFtZXRlcml6ZWREZWZpbml0aW9u+RFusdVQPOICAAFbAA50eXBlUGFyYW1ldGVyc3QAGltMeHNidGkvYXBpL1R5cGVQYXJhbWV0ZXI7eHIAFHhzYnRpLmFwaS5EZWZpbml0aW9uhyob6HFC40YCAARMAAZhY2Nlc3N0ABJMeHNidGkvYXBpL0FjY2VzcztbAAthbm5vdGF0aW9uc3QAF1tMeHNidGkvYXBpL0Fubm90YXRpb247TAAJbW9kaWZpZXJzdAAVTHhzYnRpL2FwaS9Nb2RpZmllcnM7TAAEbmFtZXEAfgANeHBzcgAQeHNidGkuYXBpLlB1YmxpY7pYPa5sLWBCAgAAeHIAEHhzYnRpLmFwaS5BY2Nlc3PdYpr4HWMxSAIAAHhwdXIAF1tMeHNidGkuYXBpLkFubm90YXRpb24765frGRD2jUgCAAB4cAAAAABzcgATeHNidGkuYXBpLk1vZGlmaWVyc5fnYdwTJnuzAgABQgAFZmxhZ3N4cAB0ABFmdXR1cmUuRnV0dXJlVGVzdHVyABpbTHhzYnRpLmFwaS5UeXBlUGFyYW1ldGVyO9ltJg8onfK2AgAAeHAAAAAAfnIAGHhzYnRpLmFwaS5EZWZpbml0aW9uVHlwZQAAAAAAAAAAEgAAeHIADmphdmEubGFuZy5FbnVtAAAAAAAAAAASAAB4cHQABk1vZHVsZXVyABNbTGphdmEubGFuZy5TdHJpbmc7rdJW5+kde0cCAAB4cAAAAAF0AAxzY2FsYS5uYXRpdmVzcgAheHNidGkuYXBpLkFic3RyYWN0TGF6eSRTdHJpY3RMYXp5DWYcaykWKrgCAAFMAAV2YWx1ZXQAEkxqYXZhL2xhbmcvT2JqZWN0O3hwc3IAE3hzYnRpLmFwaS5FbXB0eVR5cGW8/Z5GSTuJJAIAAHhyABR4c2J0aS5hcGkuU2ltcGxlVHlwZXJ4YoghI79AAgAAeHIADnhzYnRpLmFwaS5UeXBlP2rZIRZJqsoCAAB4cHNxAH4AZHNyABN4c2J0aS5hcGkuU3RydWN0dXJlqar5gJNv2AACAANMAAhkZWNsYXJlZHEAfgBLTAAJaW5oZXJpdGVkcQB+AEtMAAdwYXJlbnRzcQB+AEt4cQB+AGlzcQB+AGR1cQB+AEYAAAABc3IADXhzYnRpLmFwaS5EZWZSvp/ifLQ2aQIAAkwACnJldHVyblR5cGV0ABBMeHNidGkvYXBpL1R5cGU7WwAPdmFsdWVQYXJhbWV0ZXJzdAAaW0x4c2J0aS9hcGkvUGFyYW1ldGVyTGlzdDt4cQB+AExxAH4AVXVxAH4AVgAAAABzcQB+AFgAcQB+ACd1cQB+AFsAAAAAc3IAFHhzYnRpLmFwaS5Qcm9qZWN0aW9u89KNVOlFpC0CAAJMAAJpZHEAfgANTAAGcHJlZml4dAAWTHhzYnRpL2FwaS9TaW1wbGVUeXBlO3hxAH4AaHQABFVuaXRzcgATeHNidGkuYXBpLlNpbmdsZXRvbvynX/jPVuRGAgABTAAEcGF0aHQAEEx4c2J0aS9hcGkvUGF0aDt4cQB+AGhzcgAOeHNidGkuYXBpLlBhdGibPVwIzqUnhAIAAVsACmNvbXBvbmVudHN0ABpbTHhzYnRpL2FwaS9QYXRoQ29tcG9uZW50O3hwdXIAGltMeHNidGkuYXBpLlBhdGhDb21wb25lbnQ7Q9oJdC1nFnQCAAB4cAAAAAJzcgAMeHNidGkuYXBpLklkmDJsizdTxEACAAFMAAJpZHEAfgANeHIAF3hzYnRpLmFwaS5QYXRoQ29tcG9uZW50X5oiWy6Gn7wCAAB4cHQABXNjYWxhc3IADnhzYnRpLmFwaS5UaGlz2wntpsxaQFwCAAB4cQB+AIR1cgAaW0x4c2J0aS5hcGkuUGFyYW1ldGVyTGlzdDv10zod8rNw7gIAAHhwAAAAAXNyABd4c2J0aS5hcGkuUGFyYW1ldGVyTGlzdNbFvBxkSXTjAgACWgAKaXNJbXBsaWNpdFsACnBhcmFtZXRlcnN0ABxbTHhzYnRpL2FwaS9NZXRob2RQYXJhbWV0ZXI7eHAAdXIAHFtMeHNidGkuYXBpLk1ldGhvZFBhcmFtZXRlcjvPuMVdpd21bQIAAHhwAAAAAXNyABl4c2J0aS5hcGkuTWV0aG9kUGFyYW1ldGVyH0WuF9NJsOoCAARaAApoYXNEZWZhdWx0TAAIbW9kaWZpZXJ0AB1MeHNidGkvYXBpL1BhcmFtZXRlck1vZGlmaWVyO0wABG5hbWVxAH4ADUwAA3RwZXEAfgBxeHAAfnIAG3hzYnRpLmFwaS5QYXJhbWV0ZXJNb2RpZmllcgAAAAAAAAAAEgAAeHEAfgBedAAFUGxhaW50AARhcmdzc3IAF3hzYnRpLmFwaS5QYXJhbWV0ZXJpemVkFmzuaQPJu38CAAJMAAhiYXNlVHlwZXEAfgB4WwANdHlwZUFyZ3VtZW50c3QAEVtMeHNidGkvYXBpL1R5cGU7eHEAfgBoc3EAfgB3dAAFQXJyYXlxAH4AfXVyABFbTHhzYnRpLmFwaS5UeXBlO3T/pVp7+elBAgAAeHAAAAABc3EAfgB3dAAGU3RyaW5nc3EAfgB7c3EAfgB+dXEAfgCBAAAAA3NxAH4Ag3QABGphdmFzcQB+AIN0AARsYW5ncQB+AIhzcQB+AGR1cQB+AEYAAAAAc3EAfgBkdXEAfgCcAAAAAnNxAH4Ad3QABk9iamVjdHEAfgCgc3EAfgB3dAADQW55cQB+AH11cgAUW0x4c2J0aS5hcGkuUGFja2FnZTtbExk3cKcnoQIAAHhwAAAAAXNyABF4c2J0aS5hcGkuUGFja2FnZX5Zj/auzjlYAgABTAAEbmFtZXEAfgANeHB0AAZmdXR1cmVzcgAVeHNidGkuYXBpLkNvbXBpbGF0aW9u7frgw2rooEICAAJKAAlzdGFydFRpbWVbAAdvdXRwdXRzdAAaW0x4c2J0aS9hcGkvT3V0cHV0U2V0dGluZzt4cAAAAW0SVjBTdXIAGltMeHNidGkuYXBpLk91dHB1dFNldHRpbmc7f2rC86eHpUICAAB4cAAAAAFzcgAXeHNidGkuYXBpLk91dHB1dFNldHRpbmd62ZpHdPsdewIAAkwAD291dHB1dERpcmVjdG9yeXEAfgANTAAPc291cmNlRGlyZWN0b3J5cQB+AA14cHQAMEQ6XHdvcmtcdHJ5b3V0XHNjYWxhTmV3XGJ1aWxkXGNsYXNzZXNcc2NhbGFcbWFpbnQAAS91cgACW0Ks8xf4BghU4AIAAHhwAAAAFJTEl4202OAkbGNAdhgRLF2v7hO0
+D:\work\tryout\scalaNew\src\main\scala\Main.scala -> 
+rO0ABXNyABB4c2J0aS5hcGkuU291cmNlSjH5SdlLSkQCAAdJAAdhcGlIYXNoWgAIaGFzTWFjcm9aABBoYXNQYWNrYWdlT2JqZWN0TAAYX2ludGVybmFsT25seV9uYW1lSGFzaGVzdAAkTHhzYnRpL2FwaS9faW50ZXJuYWxPbmx5X05hbWVIYXNoZXM7TAADYXBpdAAVTHhzYnRpL2FwaS9Tb3VyY2VBUEk7TAALY29tcGlsYXRpb250ABdMeHNidGkvYXBpL0NvbXBpbGF0aW9uO1sABGhhc2h0AAJbQnhws2mubgAAc3IAInhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoZXNU2r6Z+tTsTAIAAlsAD2ltcGxpY2l0TWVtYmVyc3QAI1tMeHNidGkvYXBpL19pbnRlcm5hbE9ubHlfTmFtZUhhc2g7WwAOcmVndWxhck1lbWJlcnNxAH4AB3hwdXIAI1tMeHNidGkuYXBpLl9pbnRlcm5hbE9ubHlfTmFtZUhhc2g7SVqAtt2Wi/QCAAB4cAAAAAB1cQB+AAkAAAAVc3IAIHhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoWw71InY4V88CAAJJAARoYXNoTAAEbmFtZXQAEkxqYXZhL2xhbmcvU3RyaW5nO3hw+U9Sy3QABm5vdGlmeXNxAH4ADGKErN90AAR3YWl0c3EAfgAMYEojJnQADSRhc0luc3RhbmNlT2ZzcQB+AAyiAuv3dAAGZXF1YWxzc3EAfgAMi3ctCHQADGFzSW5zdGFuY2VPZnNxAH4ADEgm0ih0AAxzeW5jaHJvbml6ZWRzcQB+AAwS+s2ndAANJGlzSW5zdGFuY2VPZnNxAH4ADCByHox0AARtYWluc3EAfgAMKbFqGXQACW5vdGlmeUFsbHNxAH4ADKiHcll0AAxpc0luc3RhbmNlT2ZzcQB+AAxFQDFhdAACPT1zcQB+AAwIMbipdAAFY2xvbmVzcQB+AAyapFTpdAAETWFpbnNxAH4ADCnaold0AAh0b1N0cmluZ3NxAH4ADCjdrE10AAIhPXNxAH4ADN+OaC50AAhnZXRDbGFzc3NxAH4ADNNLRrB0AAJuZXNxAH4ADP/Rprx0AAJlcXNxAH4ADHWHvIJ0AAIjI3NxAH4ADAzrfp90AAhmaW5hbGl6ZXNxAH4ADMtqIPZ0AAhoYXNoQ29kZXNyABN4c2J0aS5hcGkuU291cmNlQVBJuV6n+SkjOKQCAAJbAAtkZWZpbml0aW9uc3QAF1tMeHNidGkvYXBpL0RlZmluaXRpb247WwAIcGFja2FnZXN0ABRbTHhzYnRpL2FwaS9QYWNrYWdlO3hwdXIAF1tMeHNidGkuYXBpLkRlZmluaXRpb247iMlc57TjXg4CAAB4cAAAAAFzcgATeHNidGkuYXBpLkNsYXNzTGlrZYM0HKHfsJdsAgAETAAOZGVmaW5pdGlvblR5cGV0ABpMeHNidGkvYXBpL0RlZmluaXRpb25UeXBlO1sAEHNhdmVkQW5ub3RhdGlvbnN0ABNbTGphdmEvbGFuZy9TdHJpbmc7TAAIc2VsZlR5cGV0ABBMeHNidGkvYXBpL0xhenk7TAAJc3RydWN0dXJlcQB+AEF4cgAheHNidGkuYXBpLlBhcmFtZXRlcml6ZWREZWZpbml0aW9u+RFusdVQPOICAAFbAA50eXBlUGFyYW1ldGVyc3QAGltMeHNidGkvYXBpL1R5cGVQYXJhbWV0ZXI7eHIAFHhzYnRpLmFwaS5EZWZpbml0aW9uhyob6HFC40YCAARMAAZhY2Nlc3N0ABJMeHNidGkvYXBpL0FjY2VzcztbAAthbm5vdGF0aW9uc3QAF1tMeHNidGkvYXBpL0Fubm90YXRpb247TAAJbW9kaWZpZXJzdAAVTHhzYnRpL2FwaS9Nb2RpZmllcnM7TAAEbmFtZXEAfgANeHBzcgAQeHNidGkuYXBpLlB1YmxpY7pYPa5sLWBCAgAAeHIAEHhzYnRpLmFwaS5BY2Nlc3PdYpr4HWMxSAIAAHhwdXIAF1tMeHNidGkuYXBpLkFubm90YXRpb24765frGRD2jUgCAAB4cAAAAABzcgATeHNidGkuYXBpLk1vZGlmaWVyc5fnYdwTJnuzAgABQgAFZmxhZ3N4cABxAH4AJ3VyABpbTHhzYnRpLmFwaS5UeXBlUGFyYW1ldGVyO9ltJg8onfK2AgAAeHAAAAAAfnIAGHhzYnRpLmFwaS5EZWZpbml0aW9uVHlwZQAAAAAAAAAAEgAAeHIADmphdmEubGFuZy5FbnVtAAAAAAAAAAASAAB4cHQABk1vZHVsZXVyABNbTGphdmEubGFuZy5TdHJpbmc7rdJW5+kde0cCAAB4cAAAAAF0AAxzY2FsYS5uYXRpdmVzcgAheHNidGkuYXBpLkFic3RyYWN0TGF6eSRTdHJpY3RMYXp5DWYcaykWKrgCAAFMAAV2YWx1ZXQAEkxqYXZhL2xhbmcvT2JqZWN0O3hwc3IAE3hzYnRpLmFwaS5FbXB0eVR5cGW8/Z5GSTuJJAIAAHhyABR4c2J0aS5hcGkuU2ltcGxlVHlwZXJ4YoghI79AAgAAeHIADnhzYnRpLmFwaS5UeXBlP2rZIRZJqsoCAAB4cHNxAH4AWXNyABN4c2J0aS5hcGkuU3RydWN0dXJlqar5gJNv2AACAANMAAhkZWNsYXJlZHEAfgBBTAAJaW5oZXJpdGVkcQB+AEFMAAdwYXJlbnRzcQB+AEF4cQB+AF5zcQB+AFl1cQB+ADwAAAABc3IADXhzYnRpLmFwaS5EZWZSvp/ifLQ2aQIAAkwACnJldHVyblR5cGV0ABBMeHNidGkvYXBpL1R5cGU7WwAPdmFsdWVQYXJhbWV0ZXJzdAAaW0x4c2J0aS9hcGkvUGFyYW1ldGVyTGlzdDt4cQB+AEJxAH4AS3VxAH4ATAAAAABzcQB+AE4AcQB+AB11cQB+AFAAAAAAc3IAFHhzYnRpLmFwaS5Qcm9qZWN0aW9u89KNVOlFpC0CAAJMAAJpZHEAfgANTAAGcHJlZml4dAAWTHhzYnRpL2FwaS9TaW1wbGVUeXBlO3hxAH4AXXQABFVuaXRzcgATeHNidGkuYXBpLlNpbmdsZXRvbvynX/jPVuRGAgABTAAEcGF0aHQAEEx4c2J0aS9hcGkvUGF0aDt4cQB+AF1zcgAOeHNidGkuYXBpLlBhdGibPVwIzqUnhAIAAVsACmNvbXBvbmVudHN0ABpbTHhzYnRpL2FwaS9QYXRoQ29tcG9uZW50O3hwdXIAGltMeHNidGkuYXBpLlBhdGhDb21wb25lbnQ7Q9oJdC1nFnQCAAB4cAAAAAJzcgAMeHNidGkuYXBpLklkmDJsizdTxEACAAFMAAJpZHEAfgANeHIAF3hzYnRpLmFwaS5QYXRoQ29tcG9uZW50X5oiWy6Gn7wCAAB4cHQABXNjYWxhc3IADnhzYnRpLmFwaS5UaGlz2wntpsxaQFwCAAB4cQB+AHl1cgAaW0x4c2J0aS5hcGkuUGFyYW1ldGVyTGlzdDv10zod8rNw7gIAAHhwAAAAAXNyABd4c2J0aS5hcGkuUGFyYW1ldGVyTGlzdNbFvBxkSXTjAgACWgAKaXNJbXBsaWNpdFsACnBhcmFtZXRlcnN0ABxbTHhzYnRpL2FwaS9NZXRob2RQYXJhbWV0ZXI7eHAAdXIAHFtMeHNidGkuYXBpLk1ldGhvZFBhcmFtZXRlcjvPuMVdpd21bQIAAHhwAAAAAXNyABl4c2J0aS5hcGkuTWV0aG9kUGFyYW1ldGVyH0WuF9NJsOoCAARaAApoYXNEZWZhdWx0TAAIbW9kaWZpZXJ0AB1MeHNidGkvYXBpL1BhcmFtZXRlck1vZGlmaWVyO0wABG5hbWVxAH4ADUwAA3RwZXEAfgBmeHAAfnIAG3hzYnRpLmFwaS5QYXJhbWV0ZXJNb2RpZmllcgAAAAAAAAAAEgAAeHEAfgBTdAAFUGxhaW50AARhcmdzc3IAF3hzYnRpLmFwaS5QYXJhbWV0ZXJpemVkFmzuaQPJu38CAAJMAAhiYXNlVHlwZXEAfgBtWwANdHlwZUFyZ3VtZW50c3QAEVtMeHNidGkvYXBpL1R5cGU7eHEAfgBdc3EAfgBsdAAFQXJyYXlxAH4AcnVyABFbTHhzYnRpLmFwaS5UeXBlO3T/pVp7+elBAgAAeHAAAAABc3EAfgBsdAAGU3RyaW5nc3EAfgBwc3EAfgBzdXEAfgB2AAAAA3NxAH4AeHQABGphdmFzcQB+AHh0AARsYW5ncQB+AH1zcQB+AFl1cQB+ADwAAAAAc3EAfgBZdXEAfgCRAAAAAnNxAH4AbHQABk9iamVjdHEAfgCVc3EAfgBsdAADQW55cQB+AHJ1cgAUW0x4c2J0aS5hcGkuUGFja2FnZTtbExk3cKcnoQIAAHhwAAAAAHNyABV4c2J0aS5hcGkuQ29tcGlsYXRpb27t+uDDauigQgIAAkoACXN0YXJ0VGltZVsAB291dHB1dHN0ABpbTHhzYnRpL2FwaS9PdXRwdXRTZXR0aW5nO3hwAAABbRJWMFN1cgAaW0x4c2J0aS5hcGkuT3V0cHV0U2V0dGluZzt/asLzp4elQgIAAHhwAAAAAXNyABd4c2J0aS5hcGkuT3V0cHV0U2V0dGluZ3rZmkd0+x17AgACTAAPb3V0cHV0RGlyZWN0b3J5cQB+AA1MAA9zb3VyY2VEaXJlY3RvcnlxAH4ADXhwdAAwRDpcd29ya1x0cnlvdXRcc2NhbGFOZXdcYnVpbGRcY2xhc3Nlc1xzY2FsYVxtYWludAABL3VyAAJbQqzzF/gGCFTgAgAAeHAAAAAUVYrzIEBCgzWXdVPZnsaQz25sbdk=
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> 
+rO0ABXNyABB4c2J0aS5hcGkuU291cmNlSjH5SdlLSkQCAAdJAAdhcGlIYXNoWgAIaGFzTWFjcm9aABBoYXNQYWNrYWdlT2JqZWN0TAAYX2ludGVybmFsT25seV9uYW1lSGFzaGVzdAAkTHhzYnRpL2FwaS9faW50ZXJuYWxPbmx5X05hbWVIYXNoZXM7TAADYXBpdAAVTHhzYnRpL2FwaS9Tb3VyY2VBUEk7TAALY29tcGlsYXRpb250ABdMeHNidGkvYXBpL0NvbXBpbGF0aW9uO1sABGhhc2h0AAJbQnhwxqFyRwAAc3IAInhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoZXNU2r6Z+tTsTAIAAlsAD2ltcGxpY2l0TWVtYmVyc3QAI1tMeHNidGkvYXBpL19pbnRlcm5hbE9ubHlfTmFtZUhhc2g7WwAOcmVndWxhck1lbWJlcnNxAH4AB3hwdXIAI1tMeHNidGkuYXBpLl9pbnRlcm5hbE9ubHlfTmFtZUhhc2g7SVqAtt2Wi/QCAAB4cAAAAAB1cQB+AAkAAAAVc3IAIHhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoWw71InY4V88CAAJJAARoYXNoTAAEbmFtZXQAEkxqYXZhL2xhbmcvU3RyaW5nO3hwtOUgIXQABm5vdGlmeXNxAH4ADGmMv4x0AAR3YWl0c3EAfgAMS23MonQADSRhc0luc3RhbmNlT2ZzcQB+AAyNRI0UdAAGZXF1YWxzc3EAfgAM91LfsXQADGFzSW5zdGFuY2VPZnNxAH4ADAB0NzB0AAxzeW5jaHJvbml6ZWRzcQB+AAyHWBYjdAANJGlzSW5zdGFuY2VPZnNxAH4ADM0wJP50AAtMaXN0RXhhbXBsZXNxAH4ADKZFoSR0AARtYWluc3EAfgAMgJfoY3QACW5vdGlmeUFsbHNxAH4ADDO8qOd0AAxpc0luc3RhbmNlT2ZzcQB+AAxLd6KDdAACPT1zcQB+AAy+jAJRdAAFY2xvbmVzcQB+AAz+7sHodAAIdG9TdHJpbmdzcQB+AAwBIWHWdAACIT1zcQB+AAxbQ2P8dAAIZ2V0Q2xhc3NzcQB+AAzk1lSrdAACbmVzcQB+AAy8n9fQdAACZXFzcQB+AAy+4ruZdAACIyNzcQB+AAw1DdrwdAAIZmluYWxpemVzcQB+AAxohVcRdAAIaGFzaENvZGVzcgATeHNidGkuYXBpLlNvdXJjZUFQSblep/kpIzikAgACWwALZGVmaW5pdGlvbnN0ABdbTHhzYnRpL2FwaS9EZWZpbml0aW9uO1sACHBhY2thZ2VzdAAUW0x4c2J0aS9hcGkvUGFja2FnZTt4cHVyABdbTHhzYnRpLmFwaS5EZWZpbml0aW9uO4jJXOe0414OAgAAeHAAAAABc3IAE3hzYnRpLmFwaS5DbGFzc0xpa2WDNByh37CXbAIABEwADmRlZmluaXRpb25UeXBldAAaTHhzYnRpL2FwaS9EZWZpbml0aW9uVHlwZTtbABBzYXZlZEFubm90YXRpb25zdAATW0xqYXZhL2xhbmcvU3RyaW5nO0wACHNlbGZUeXBldAAQTHhzYnRpL2FwaS9MYXp5O0wACXN0cnVjdHVyZXEAfgBBeHIAIXhzYnRpLmFwaS5QYXJhbWV0ZXJpemVkRGVmaW5pdGlvbvkRbrHVUDziAgABWwAOdHlwZVBhcmFtZXRlcnN0ABpbTHhzYnRpL2FwaS9UeXBlUGFyYW1ldGVyO3hyABR4c2J0aS5hcGkuRGVmaW5pdGlvbocqG+hxQuNGAgAETAAGYWNjZXNzdAASTHhzYnRpL2FwaS9BY2Nlc3M7WwALYW5ub3RhdGlvbnN0ABdbTHhzYnRpL2FwaS9Bbm5vdGF0aW9uO0wACW1vZGlmaWVyc3QAFUx4c2J0aS9hcGkvTW9kaWZpZXJzO0wABG5hbWVxAH4ADXhwc3IAEHhzYnRpLmFwaS5QdWJsaWO6WD2ubC1gQgIAAHhyABB4c2J0aS5hcGkuQWNjZXNz3WKa+B1jMUgCAAB4cHVyABdbTHhzYnRpLmFwaS5Bbm5vdGF0aW9uO+uX6xkQ9o1IAgAAeHAAAAAAc3IAE3hzYnRpLmFwaS5Nb2RpZmllcnOX52HcEyZ7swIAAUIABWZsYWdzeHAAdAAXY29sbGVjdGlvbnMuTGlzdEV4YW1wbGV1cgAaW0x4c2J0aS5hcGkuVHlwZVBhcmFtZXRlcjvZbSYPKJ3ytgIAAHhwAAAAAH5yABh4c2J0aS5hcGkuRGVmaW5pdGlvblR5cGUAAAAAAAAAABIAAHhyAA5qYXZhLmxhbmcuRW51bQAAAAAAAAAAEgAAeHB0AAZNb2R1bGV1cgATW0xqYXZhLmxhbmcuU3RyaW5nO63SVufpHXtHAgAAeHAAAAABdAAMc2NhbGEubmF0aXZlc3IAIXhzYnRpLmFwaS5BYnN0cmFjdExhenkkU3RyaWN0TGF6eQ1mHGspFiq4AgABTAAFdmFsdWV0ABJMamF2YS9sYW5nL09iamVjdDt4cHNyABN4c2J0aS5hcGkuRW1wdHlUeXBlvP2eRkk7iSQCAAB4cgAUeHNidGkuYXBpLlNpbXBsZVR5cGVyeGKIISO/QAIAAHhyAA54c2J0aS5hcGkuVHlwZT9q2SEWSarKAgAAeHBzcQB+AFpzcgATeHNidGkuYXBpLlN0cnVjdHVyZamq+YCTb9gAAgADTAAIZGVjbGFyZWRxAH4AQUwACWluaGVyaXRlZHEAfgBBTAAHcGFyZW50c3EAfgBBeHEAfgBfc3EAfgBadXEAfgA8AAAAAXNyAA14c2J0aS5hcGkuRGVmUr6f4ny0NmkCAAJMAApyZXR1cm5UeXBldAAQTHhzYnRpL2FwaS9UeXBlO1sAD3ZhbHVlUGFyYW1ldGVyc3QAGltMeHNidGkvYXBpL1BhcmFtZXRlckxpc3Q7eHEAfgBCcQB+AEt1cQB+AEwAAAAAc3EAfgBOAHEAfgAfdXEAfgBRAAAAAHNyABR4c2J0aS5hcGkuUHJvamVjdGlvbvPSjVTpRaQtAgACTAACaWRxAH4ADUwABnByZWZpeHQAFkx4c2J0aS9hcGkvU2ltcGxlVHlwZTt4cQB+AF50AARVbml0c3IAE3hzYnRpLmFwaS5TaW5nbGV0b278p1/4z1bkRgIAAUwABHBhdGh0ABBMeHNidGkvYXBpL1BhdGg7eHEAfgBec3IADnhzYnRpLmFwaS5QYXRomz1cCM6lJ4QCAAFbAApjb21wb25lbnRzdAAaW0x4c2J0aS9hcGkvUGF0aENvbXBvbmVudDt4cHVyABpbTHhzYnRpLmFwaS5QYXRoQ29tcG9uZW50O0PaCXQtZxZ0AgAAeHAAAAACc3IADHhzYnRpLmFwaS5JZJgybIs3U8RAAgABTAACaWRxAH4ADXhyABd4c2J0aS5hcGkuUGF0aENvbXBvbmVudF+aIlsuhp+8AgAAeHB0AAVzY2FsYXNyAA54c2J0aS5hcGkuVGhpc9sJ7abMWkBcAgAAeHEAfgB6dXIAGltMeHNidGkuYXBpLlBhcmFtZXRlckxpc3Q79dM6HfKzcO4CAAB4cAAAAAFzcgAXeHNidGkuYXBpLlBhcmFtZXRlckxpc3TWxbwcZEl04wIAAloACmlzSW1wbGljaXRbAApwYXJhbWV0ZXJzdAAcW0x4c2J0aS9hcGkvTWV0aG9kUGFyYW1ldGVyO3hwAHVyABxbTHhzYnRpLmFwaS5NZXRob2RQYXJhbWV0ZXI7z7jFXaXdtW0CAAB4cAAAAAFzcgAZeHNidGkuYXBpLk1ldGhvZFBhcmFtZXRlch9FrhfTSbDqAgAEWgAKaGFzRGVmYXVsdEwACG1vZGlmaWVydAAdTHhzYnRpL2FwaS9QYXJhbWV0ZXJNb2RpZmllcjtMAARuYW1lcQB+AA1MAAN0cGVxAH4AZ3hwAH5yABt4c2J0aS5hcGkuUGFyYW1ldGVyTW9kaWZpZXIAAAAAAAAAABIAAHhxAH4AVHQABVBsYWludAAEYXJnc3NyABd4c2J0aS5hcGkuUGFyYW1ldGVyaXplZBZs7mkDybt/AgACTAAIYmFzZVR5cGVxAH4AblsADXR5cGVBcmd1bWVudHN0ABFbTHhzYnRpL2FwaS9UeXBlO3hxAH4AXnNxAH4AbXQABUFycmF5cQB+AHN1cgARW0x4c2J0aS5hcGkuVHlwZTt0/6Vae/npQQIAAHhwAAAAAXNxAH4AbXQABlN0cmluZ3NxAH4AcXNxAH4AdHVxAH4AdwAAAANzcQB+AHl0AARqYXZhc3EAfgB5dAAEbGFuZ3EAfgB+c3EAfgBadXEAfgA8AAAAAHNxAH4AWnVxAH4AkgAAAAJzcQB+AG10AAZPYmplY3RxAH4AlnNxAH4AbXQAA0FueXEAfgBzdXIAFFtMeHNidGkuYXBpLlBhY2thZ2U7WxMZN3CnJ6ECAAB4cAAAAAFzcgAReHNidGkuYXBpLlBhY2thZ2V+WY/2rs45WAIAAUwABG5hbWVxAH4ADXhwdAALY29sbGVjdGlvbnNzcgAVeHNidGkuYXBpLkNvbXBpbGF0aW9u7frgw2rooEICAAJKAAlzdGFydFRpbWVbAAdvdXRwdXRzdAAaW0x4c2J0aS9hcGkvT3V0cHV0U2V0dGluZzt4cAAAAW0SVjBTdXIAGltMeHNidGkuYXBpLk91dHB1dFNldHRpbmc7f2rC86eHpUICAAB4cAAAAAFzcgAXeHNidGkuYXBpLk91dHB1dFNldHRpbmd62ZpHdPsdewIAAkwAD291dHB1dERpcmVjdG9yeXEAfgANTAAPc291cmNlRGlyZWN0b3J5cQB+AA14cHQAMEQ6XHdvcmtcdHJ5b3V0XHNjYWxhTmV3XGJ1aWxkXGNsYXNzZXNcc2NhbGFcbWFpbnQAAS91cgACW0Ks8xf4BghU4AIAAHhwAAAAFHfjavjb2meyg/twvMiW4tZY6dYu
+D:\work\tryout\scalaNew\src\main\scala\old\CsvReader.java -> 
+rO0ABXNyABB4c2J0aS5hcGkuU291cmNlSjH5SdlLSkQCAAdJAAdhcGlIYXNoWgAIaGFzTWFjcm9aABBoYXNQYWNrYWdlT2JqZWN0TAAYX2ludGVybmFsT25seV9uYW1lSGFzaGVzdAAkTHhzYnRpL2FwaS9faW50ZXJuYWxPbmx5X05hbWVIYXNoZXM7TAADYXBpdAAVTHhzYnRpL2FwaS9Tb3VyY2VBUEk7TAALY29tcGlsYXRpb250ABdMeHNidGkvYXBpL0NvbXBpbGF0aW9uO1sABGhhc2h0AAJbQnhwuCFR6gAAc3IAInhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoZXNU2r6Z+tTsTAIAAlsAD2ltcGxpY2l0TWVtYmVyc3QAI1tMeHNidGkvYXBpL19pbnRlcm5hbE9ubHlfTmFtZUhhc2g7WwAOcmVndWxhck1lbWJlcnNxAH4AB3hwdXIAI1tMeHNidGkuYXBpLl9pbnRlcm5hbE9ubHlfTmFtZUhhc2g7SVqAtt2Wi/QCAAB4cAAAAAB1cQB+AAkAAAAAc3IAE3hzYnRpLmFwaS5Tb3VyY2VBUEm5Xqf5KSM4pAIAAlsAC2RlZmluaXRpb25zdAAXW0x4c2J0aS9hcGkvRGVmaW5pdGlvbjtbAAhwYWNrYWdlc3QAFFtMeHNidGkvYXBpL1BhY2thZ2U7eHB1cgAXW0x4c2J0aS5hcGkuRGVmaW5pdGlvbjuIyVzntONeDgIAAHhwAAAAAHVyABRbTHhzYnRpLmFwaS5QYWNrYWdlO1sTGTdwpyehAgAAeHAAAAAAc3IAFXhzYnRpLmFwaS5Db21waWxhdGlvbu364MNq6KBCAgACSgAJc3RhcnRUaW1lWwAHb3V0cHV0c3QAGltMeHNidGkvYXBpL091dHB1dFNldHRpbmc7eHAAAAFtElYwU3VyABpbTHhzYnRpLmFwaS5PdXRwdXRTZXR0aW5nO39qwvOnh6VCAgAAeHAAAAABc3IAF3hzYnRpLmFwaS5PdXRwdXRTZXR0aW5netmaR3T7HXsCAAJMAA9vdXRwdXREaXJlY3Rvcnl0ABJMamF2YS9sYW5nL1N0cmluZztMAA9zb3VyY2VEaXJlY3RvcnlxAH4AGnhwdAAwRDpcd29ya1x0cnlvdXRcc2NhbGFOZXdcYnVpbGRcY2xhc3Nlc1xzY2FsYVxtYWludAABL3VyAAJbQqzzF/gGCFTgAgAAeHAAAAAUYfjKm2kluHnPb+s4ZMqRFOiVq+0=
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> 
+rO0ABXNyABB4c2J0aS5hcGkuU291cmNlSjH5SdlLSkQCAAdJAAdhcGlIYXNoWgAIaGFzTWFjcm9aABBoYXNQYWNrYWdlT2JqZWN0TAAYX2ludGVybmFsT25seV9uYW1lSGFzaGVzdAAkTHhzYnRpL2FwaS9faW50ZXJuYWxPbmx5X05hbWVIYXNoZXM7TAADYXBpdAAVTHhzYnRpL2FwaS9Tb3VyY2VBUEk7TAALY29tcGlsYXRpb250ABdMeHNidGkvYXBpL0NvbXBpbGF0aW9uO1sABGhhc2h0AAJbQnhwFqBI0wAAc3IAInhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoZXNU2r6Z+tTsTAIAAlsAD2ltcGxpY2l0TWVtYmVyc3QAI1tMeHNidGkvYXBpL19pbnRlcm5hbE9ubHlfTmFtZUhhc2g7WwAOcmVndWxhck1lbWJlcnNxAH4AB3hwdXIAI1tMeHNidGkuYXBpLl9pbnRlcm5hbE9ubHlfTmFtZUhhc2g7SVqAtt2Wi/QCAAB4cAAAAAB1cQB+AAkAAAAcc3IAIHhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoWw71InY4V88CAAJJAARoYXNoTAAEbmFtZXQAEkxqYXZhL2xhbmcvU3RyaW5nO3hwSVfW0XQABm5vdGlmeXNxAH4ADJreC3h0AAlnZXRDYWNoZXNzcQB+AAziwfORdAAEd2FpdHNxAH4ADKiNblF0AA0kYXNJbnN0YW5jZU9mc3EAfgAMJI3DwXQAA21hcHNxAH4ADCv5wll0AAZlcXVhbHNzcQB+AAyvfeAJdAAMYXNJbnN0YW5jZU9mc3EAfgAMEIHSGnQADHN5bmNocm9uaXplZHNxAH4ADAQAIAp0AA0kaXNJbnN0YW5jZU9mc3EAfgAMGXMAkHQABktlZXBlcnNxAH4ADLraSfJ0AARtYWluc3EAfgAMMbEvz3QACW5vdGlmeUFsbHNxAH4ADCAWmO10AAxpc0luc3RhbmNlT2ZzcQB+AAwOyyEvdAAGdENhY2hlc3EAfgAMr+lBanQABkNhY2hlc3NxAH4ADLmIaI50ABFrZWVwZXJXaXRoVGhyZWFkc3NxAH4ADNMnP4l0AAI9PXNxAH4ADFQKDxx0AAVjbG9uZXNxAH4ADDjuEjd0AAVIZWxsb3NxAH4ADICch+J0AAlpbml0Q2FjaGVzcQB+AAyK7peudAAIdG9TdHJpbmdzcQB+AAwUCPhbdAACIT1zcQB+AAzO9FvPdAAIZ2V0Q2xhc3NzcQB+AAyEecTFdAACbmVzcQB+AAxYht8PdAACZXFzcQB+AAw4J2yAdAACIyNzcQB+AAxufKRddAAIZmluYWxpemVzcQB+AAwkJ8o5dAAIaGFzaENvZGVzcgATeHNidGkuYXBpLlNvdXJjZUFQSblep/kpIzikAgACWwALZGVmaW5pdGlvbnN0ABdbTHhzYnRpL2FwaS9EZWZpbml0aW9uO1sACHBhY2thZ2VzdAAUW0x4c2J0aS9hcGkvUGFja2FnZTt4cHVyABdbTHhzYnRpLmFwaS5EZWZpbml0aW9uO4jJXOe0414OAgAAeHAAAAAEc3IAE3hzYnRpLmFwaS5DbGFzc0xpa2WDNByh37CXbAIABEwADmRlZmluaXRpb25UeXBldAAaTHhzYnRpL2FwaS9EZWZpbml0aW9uVHlwZTtbABBzYXZlZEFubm90YXRpb25zdAATW0xqYXZhL2xhbmcvU3RyaW5nO0wACHNlbGZUeXBldAAQTHhzYnRpL2FwaS9MYXp5O0wACXN0cnVjdHVyZXEAfgBPeHIAIXhzYnRpLmFwaS5QYXJhbWV0ZXJpemVkRGVmaW5pdGlvbvkRbrHVUDziAgABWwAOdHlwZVBhcmFtZXRlcnN0ABpbTHhzYnRpL2FwaS9UeXBlUGFyYW1ldGVyO3hyABR4c2J0aS5hcGkuRGVmaW5pdGlvbocqG+hxQuNGAgAETAAGYWNjZXNzdAASTHhzYnRpL2FwaS9BY2Nlc3M7WwALYW5ub3RhdGlvbnN0ABdbTHhzYnRpL2FwaS9Bbm5vdGF0aW9uO0wACW1vZGlmaWVyc3QAFUx4c2J0aS9hcGkvTW9kaWZpZXJzO0wABG5hbWVxAH4ADXhwc3IAEHhzYnRpLmFwaS5QdWJsaWO6WD2ubC1gQgIAAHhyABB4c2J0aS5hcGkuQWNjZXNz3WKa+B1jMUgCAAB4cHVyABdbTHhzYnRpLmFwaS5Bbm5vdGF0aW9uO+uX6xkQ9o1IAgAAeHAAAAAAc3IAE3hzYnRpLmFwaS5Nb2RpZmllcnOX52HcEyZ7swIAAUIABWZsYWdzeHAAcQB+ADN1cgAaW0x4c2J0aS5hcGkuVHlwZVBhcmFtZXRlcjvZbSYPKJ3ytgIAAHhwAAAAAH5yABh4c2J0aS5hcGkuRGVmaW5pdGlvblR5cGUAAAAAAAAAABIAAHhyAA5qYXZhLmxhbmcuRW51bQAAAAAAAAAAEgAAeHB0AAZNb2R1bGV1cgATW0xqYXZhLmxhbmcuU3RyaW5nO63SVufpHXtHAgAAeHAAAAABdAAMc2NhbGEubmF0aXZlc3IAIXhzYnRpLmFwaS5BYnN0cmFjdExhenkkU3RyaWN0TGF6eQ1mHGspFiq4AgABTAAFdmFsdWV0ABJMamF2YS9sYW5nL09iamVjdDt4cHNyABN4c2J0aS5hcGkuRW1wdHlUeXBlvP2eRkk7iSQCAAB4cgAUeHNidGkuYXBpLlNpbXBsZVR5cGVyeGKIISO/QAIAAHhyAA54c2J0aS5hcGkuVHlwZT9q2SEWSarKAgAAeHBzcQB+AGdzcgATeHNidGkuYXBpLlN0cnVjdHVyZamq+YCTb9gAAgADTAAIZGVjbGFyZWRxAH4AT0wACWluaGVyaXRlZHEAfgBPTAAHcGFyZW50c3EAfgBPeHEAfgBsc3EAfgBndXEAfgBKAAAAAXNyAA14c2J0aS5hcGkuRGVmUr6f4ny0NmkCAAJMAApyZXR1cm5UeXBldAAQTHhzYnRpL2FwaS9UeXBlO1sAD3ZhbHVlUGFyYW1ldGVyc3QAGltMeHNidGkvYXBpL1BhcmFtZXRlckxpc3Q7eHEAfgBQcQB+AFl1cQB+AFoAAAAAc3EAfgBcAHEAfgAjdXEAfgBeAAAAAHNyABR4c2J0aS5hcGkuUHJvamVjdGlvbvPSjVTpRaQtAgACTAACaWRxAH4ADUwABnByZWZpeHQAFkx4c2J0aS9hcGkvU2ltcGxlVHlwZTt4cQB+AGt0AARVbml0c3IAE3hzYnRpLmFwaS5TaW5nbGV0b278p1/4z1bkRgIAAUwABHBhdGh0ABBMeHNidGkvYXBpL1BhdGg7eHEAfgBrc3IADnhzYnRpLmFwaS5QYXRomz1cCM6lJ4QCAAFbAApjb21wb25lbnRzdAAaW0x4c2J0aS9hcGkvUGF0aENvbXBvbmVudDt4cHVyABpbTHhzYnRpLmFwaS5QYXRoQ29tcG9uZW50O0PaCXQtZxZ0AgAAeHAAAAACc3IADHhzYnRpLmFwaS5JZJgybIs3U8RAAgABTAACaWRxAH4ADXhyABd4c2J0aS5hcGkuUGF0aENvbXBvbmVudF+aIlsuhp+8AgAAeHB0AAVzY2FsYXNyAA54c2J0aS5hcGkuVGhpc9sJ7abMWkBcAgAAeHEAfgCHdXIAGltMeHNidGkuYXBpLlBhcmFtZXRlckxpc3Q79dM6HfKzcO4CAAB4cAAAAAFzcgAXeHNidGkuYXBpLlBhcmFtZXRlckxpc3TWxbwcZEl04wIAAloACmlzSW1wbGljaXRbAApwYXJhbWV0ZXJzdAAcW0x4c2J0aS9hcGkvTWV0aG9kUGFyYW1ldGVyO3hwAHVyABxbTHhzYnRpLmFwaS5NZXRob2RQYXJhbWV0ZXI7z7jFXaXdtW0CAAB4cAAAAAFzcgAZeHNidGkuYXBpLk1ldGhvZFBhcmFtZXRlch9FrhfTSbDqAgAEWgAKaGFzRGVmYXVsdEwACG1vZGlmaWVydAAdTHhzYnRpL2FwaS9QYXJhbWV0ZXJNb2RpZmllcjtMAARuYW1lcQB+AA1MAAN0cGVxAH4AdHhwAH5yABt4c2J0aS5hcGkuUGFyYW1ldGVyTW9kaWZpZXIAAAAAAAAAABIAAHhxAH4AYXQABVBsYWludAAEYXJnc3NyABd4c2J0aS5hcGkuUGFyYW1ldGVyaXplZBZs7mkDybt/AgACTAAIYmFzZVR5cGVxAH4Ae1sADXR5cGVBcmd1bWVudHN0ABFbTHhzYnRpL2FwaS9UeXBlO3hxAH4Aa3NxAH4AenQABUFycmF5cQB+AIB1cgARW0x4c2J0aS5hcGkuVHlwZTt0/6Vae/npQQIAAHhwAAAAAXNxAH4AenQABlN0cmluZ3NxAH4AfnNxAH4AgXVxAH4AhAAAAANzcQB+AIZ0AARqYXZhc3EAfgCGdAAEbGFuZ3EAfgCLc3EAfgBndXEAfgBKAAAAAHNxAH4AZ3VxAH4AnwAAAAJzcQB+AHp0AAZPYmplY3RxAH4Ao3NxAH4AenQAA0FueXEAfgCAc3EAfgBMcQB+AFl1cQB+AFoAAAAAc3EAfgBcAXEAfgArdXEAfgBeAAAAAH5xAH4AYHQABVRyYWl0dXEAfgBkAAAAAXQADHNjYWxhLm5hdGl2ZXNxAH4AZ3EAfgBtc3EAfgBnc3EAfgBvc3EAfgBndXEAfgBKAAAAAHNxAH4AZ3VxAH4ASgAAAABzcQB+AGd1cQB+AJ8AAAACc3EAfgB6cQB+AK9zcQB+AH5zcQB+AIF1cQB+AIQAAAADc3EAfgCGcQB+AKdzcQB+AIZxAH4AqXEAfgCLc3EAfgB6cQB+ALFzcQB+AH5zcQB+AIF1cQB+AIQAAAACc3EAfgCGcQB+AIlxAH4Ai3NxAH4ATHEAfgBZdXEAfgBaAAAAAHNxAH4AXAB0AAZDYWNoZXN1cQB+AF4AAAAAcQB+AGJ1cQB+AGQAAAABdAAMc2NhbGEubmF0aXZlc3EAfgBncQB+AG1zcQB+AGdzcQB+AG9zcQB+AGd1cQB+AEoAAAAAc3EAfgBndXEAfgBKAAAAAHNxAH4AZ3VxAH4AnwAAAANzcQB+AHp0AAZDYWNoZXNzcQB+AH5zcQB+AIF1cQB+AIQAAAABcQB+AItzcQB+AHpxAH4Ar3NxAH4AfnNxAH4AgXVxAH4AhAAAAANzcQB+AIZxAH4Ap3NxAH4AhnEAfgCpcQB+AItzcQB+AHpxAH4AsXNxAH4AfnNxAH4AgXVxAH4AhAAAAAJzcQB+AIZxAH4AiXEAfgCLc3EAfgBMcQB+AFl1cQB+AFoAAAAAc3EAfgBcAHEAfgAhdXEAfgBeAAAAAHEAfgBidXEAfgBkAAAAAXQADHNjYWxhLm5hdGl2ZXNxAH4AZ3EAfgBtc3EAfgBnc3EAfgBvc3EAfgBndXEAfgBKAAAAAHNxAH4AZ3VxAH4ASgAAAABzcQB+AGd1cQB+AJ8AAAACc3EAfgB6cQB+AK9zcQB+AH5zcQB+AIF1cQB+AIQAAAADc3EAfgCGcQB+AKdzcQB+AIZxAH4AqXEAfgCLc3EAfgB6cQB+ALFzcQB+AH5zcQB+AIF1cQB+AIQAAAACc3EAfgCGcQB+AIlxAH4Ai3VyABRbTHhzYnRpLmFwaS5QYWNrYWdlO1sTGTdwpyehAgAAeHAAAAAAc3IAFXhzYnRpLmFwaS5Db21waWxhdGlvbu364MNq6KBCAgACSgAJc3RhcnRUaW1lWwAHb3V0cHV0c3QAGltMeHNidGkvYXBpL091dHB1dFNldHRpbmc7eHAAAAFtElYwU3VyABpbTHhzYnRpLmFwaS5PdXRwdXRTZXR0aW5nO39qwvOnh6VCAgAAeHAAAAABc3IAF3hzYnRpLmFwaS5PdXRwdXRTZXR0aW5netmaR3T7HXsCAAJMAA9vdXRwdXREaXJlY3RvcnlxAH4ADUwAD3NvdXJjZURpcmVjdG9yeXEAfgANeHB0ADBEOlx3b3JrXHRyeW91dFxzY2FsYU5ld1xidWlsZFxjbGFzc2VzXHNjYWxhXG1haW50AAEvdXIAAltCrPMX+AYIVOACAAB4cAAAABSvcwj7SmQ37NCOqxvS5N7MGlPxqA==
+D:\work\tryout\scalaNew\src\main\scala\old\SimpleClass.scala -> 
+rO0ABXNyABB4c2J0aS5hcGkuU291cmNlSjH5SdlLSkQCAAdJAAdhcGlIYXNoWgAIaGFzTWFjcm9aABBoYXNQYWNrYWdlT2JqZWN0TAAYX2ludGVybmFsT25seV9uYW1lSGFzaGVzdAAkTHhzYnRpL2FwaS9faW50ZXJuYWxPbmx5X05hbWVIYXNoZXM7TAADYXBpdAAVTHhzYnRpL2FwaS9Tb3VyY2VBUEk7TAALY29tcGlsYXRpb250ABdMeHNidGkvYXBpL0NvbXBpbGF0aW9uO1sABGhhc2h0AAJbQnhwP8vrJQAAc3IAInhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoZXNU2r6Z+tTsTAIAAlsAD2ltcGxpY2l0TWVtYmVyc3QAI1tMeHNidGkvYXBpL19pbnRlcm5hbE9ubHlfTmFtZUhhc2g7WwAOcmVndWxhck1lbWJlcnNxAH4AB3hwdXIAI1tMeHNidGkuYXBpLl9pbnRlcm5hbE9ubHlfTmFtZUhhc2g7SVqAtt2Wi/QCAAB4cAAAAAB1cQB+AAkAAAAXc3IAIHhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoWw71InY4V88CAAJJAARoYXNoTAAEbmFtZXQAEkxqYXZhL2xhbmcvU3RyaW5nO3hw0M7grnQABm5vdGlmeXNxAH4ADL0PRhx0AAR3YWl0c3EAfgAMZ7InvXQADSRhc0luc3RhbmNlT2ZzcQB+AAx66upWdAAGZXF1YWxzc3EAfgAMSpB8+XQADGFzSW5zdGFuY2VPZnNxAH4ADCFq5dt0AAxzeW5jaHJvbml6ZWRzcQB+AAz88CcWdAAFbXlJbnRzcQB+AAzDZPU3dAANJGlzSW5zdGFuY2VPZnNxAH4ADEd13/p0AAlub3RpZnlBbGxzcQB+AAwricpbdAAMaXNJbnN0YW5jZU9mc3EAfgAMiNAMO3QABjxpbml0PnNxAH4ADAQP1bh0AAhteVN0cmluZ3NxAH4ADE9b1xd0AAI9PXNxAH4ADH9zwll0AAVjbG9uZXNxAH4ADGdkQpx0AAh0b1N0cmluZ3NxAH4ADJ38Ebp0AAIhPXNxAH4ADJb7Z290AAhnZXRDbGFzc3NxAH4ADC4PF+Z0AAtTaW1wbGVDbGFzc3NxAH4ADE20A6B0AAJuZXNxAH4ADOCRctB0AAJlcXNxAH4ADI0OyyN0AAIjI3NxAH4ADKo8/Mh0AAhmaW5hbGl6ZXNxAH4ADHoJ8zR0AAhoYXNoQ29kZXNyABN4c2J0aS5hcGkuU291cmNlQVBJuV6n+SkjOKQCAAJbAAtkZWZpbml0aW9uc3QAF1tMeHNidGkvYXBpL0RlZmluaXRpb247WwAIcGFja2FnZXN0ABRbTHhzYnRpL2FwaS9QYWNrYWdlO3hwdXIAF1tMeHNidGkuYXBpLkRlZmluaXRpb247iMlc57TjXg4CAAB4cAAAAAFzcgATeHNidGkuYXBpLkNsYXNzTGlrZYM0HKHfsJdsAgAETAAOZGVmaW5pdGlvblR5cGV0ABpMeHNidGkvYXBpL0RlZmluaXRpb25UeXBlO1sAEHNhdmVkQW5ub3RhdGlvbnN0ABNbTGphdmEvbGFuZy9TdHJpbmc7TAAIc2VsZlR5cGV0ABBMeHNidGkvYXBpL0xhenk7TAAJc3RydWN0dXJlcQB+AEV4cgAheHNidGkuYXBpLlBhcmFtZXRlcml6ZWREZWZpbml0aW9u+RFusdVQPOICAAFbAA50eXBlUGFyYW1ldGVyc3QAGltMeHNidGkvYXBpL1R5cGVQYXJhbWV0ZXI7eHIAFHhzYnRpLmFwaS5EZWZpbml0aW9uhyob6HFC40YCAARMAAZhY2Nlc3N0ABJMeHNidGkvYXBpL0FjY2VzcztbAAthbm5vdGF0aW9uc3QAF1tMeHNidGkvYXBpL0Fubm90YXRpb247TAAJbW9kaWZpZXJzdAAVTHhzYnRpL2FwaS9Nb2RpZmllcnM7TAAEbmFtZXEAfgANeHBzcgAQeHNidGkuYXBpLlB1YmxpY7pYPa5sLWBCAgAAeHIAEHhzYnRpLmFwaS5BY2Nlc3PdYpr4HWMxSAIAAHhwdXIAF1tMeHNidGkuYXBpLkFubm90YXRpb24765frGRD2jUgCAAB4cAAAAABzcgATeHNidGkuYXBpLk1vZGlmaWVyc5fnYdwTJnuzAgABQgAFZmxhZ3N4cABxAH4AMXVyABpbTHhzYnRpLmFwaS5UeXBlUGFyYW1ldGVyO9ltJg8onfK2AgAAeHAAAAAAfnIAGHhzYnRpLmFwaS5EZWZpbml0aW9uVHlwZQAAAAAAAAAAEgAAeHIADmphdmEubGFuZy5FbnVtAAAAAAAAAAASAAB4cHQACENsYXNzRGVmdXIAE1tMamF2YS5sYW5nLlN0cmluZzut0lbn6R17RwIAAHhwAAAAAXQADHNjYWxhLm5hdGl2ZXNyACF4c2J0aS5hcGkuQWJzdHJhY3RMYXp5JFN0cmljdExhenkNZhxrKRYquAIAAUwABXZhbHVldAASTGphdmEvbGFuZy9PYmplY3Q7eHBzcgATeHNidGkuYXBpLkVtcHR5VHlwZbz9nkZJO4kkAgAAeHIAFHhzYnRpLmFwaS5TaW1wbGVUeXBlcnhiiCEjv0ACAAB4cgAOeHNidGkuYXBpLlR5cGU/atkhFkmqygIAAHhwc3EAfgBdc3IAE3hzYnRpLmFwaS5TdHJ1Y3R1cmWpqvmAk2/YAAIAA0wACGRlY2xhcmVkcQB+AEVMAAlpbmhlcml0ZWRxAH4ARUwAB3BhcmVudHNxAH4ARXhxAH4AYnNxAH4AXXVxAH4AQAAAAABzcQB+AF11cQB+AEAAAAAAc3EAfgBddXIAEVtMeHNidGkuYXBpLlR5cGU7dP+lWnv56UECAAB4cAAAAAJzcgAUeHNidGkuYXBpLlByb2plY3Rpb27z0o1U6UWkLQIAAkwAAmlkcQB+AA1MAAZwcmVmaXh0ABZMeHNidGkvYXBpL1NpbXBsZVR5cGU7eHEAfgBhdAAGT2JqZWN0c3IAE3hzYnRpLmFwaS5TaW5nbGV0b278p1/4z1bkRgIAAUwABHBhdGh0ABBMeHNidGkvYXBpL1BhdGg7eHEAfgBhc3IADnhzYnRpLmFwaS5QYXRomz1cCM6lJ4QCAAFbAApjb21wb25lbnRzdAAaW0x4c2J0aS9hcGkvUGF0aENvbXBvbmVudDt4cHVyABpbTHhzYnRpLmFwaS5QYXRoQ29tcG9uZW50O0PaCXQtZxZ0AgAAeHAAAAADc3IADHhzYnRpLmFwaS5JZJgybIs3U8RAAgABTAACaWRxAH4ADXhyABd4c2J0aS5hcGkuUGF0aENvbXBvbmVudF+aIlsuhp+8AgAAeHB0AARqYXZhc3EAfgB6dAAEbGFuZ3NyAA54c2J0aS5hcGkuVGhpc9sJ7abMWkBcAgAAeHEAfgB7c3EAfgBudAADQW55c3EAfgByc3EAfgB1dXEAfgB4AAAAAnNxAH4AenQABXNjYWxhcQB+AIF1cgAUW0x4c2J0aS5hcGkuUGFja2FnZTtbExk3cKcnoQIAAHhwAAAAAHNyABV4c2J0aS5hcGkuQ29tcGlsYXRpb27t+uDDauigQgIAAkoACXN0YXJ0VGltZVsAB291dHB1dHN0ABpbTHhzYnRpL2FwaS9PdXRwdXRTZXR0aW5nO3hwAAABbRJWMFN1cgAaW0x4c2J0aS5hcGkuT3V0cHV0U2V0dGluZzt/asLzp4elQgIAAHhwAAAAAXNyABd4c2J0aS5hcGkuT3V0cHV0U2V0dGluZ3rZmkd0+x17AgACTAAPb3V0cHV0RGlyZWN0b3J5cQB+AA1MAA9zb3VyY2VEaXJlY3RvcnlxAH4ADXhwdAAwRDpcd29ya1x0cnlvdXRcc2NhbGFOZXdcYnVpbGRcY2xhc3Nlc1xzY2FsYVxtYWludAABL3VyAAJbQqzzF/gGCFTgAgAAeHAAAAAU30AiRxzIuy41EhimK2+L+iDVDEo=
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> 
+rO0ABXNyABB4c2J0aS5hcGkuU291cmNlSjH5SdlLSkQCAAdJAAdhcGlIYXNoWgAIaGFzTWFjcm9aABBoYXNQYWNrYWdlT2JqZWN0TAAYX2ludGVybmFsT25seV9uYW1lSGFzaGVzdAAkTHhzYnRpL2FwaS9faW50ZXJuYWxPbmx5X05hbWVIYXNoZXM7TAADYXBpdAAVTHhzYnRpL2FwaS9Tb3VyY2VBUEk7TAALY29tcGlsYXRpb250ABdMeHNidGkvYXBpL0NvbXBpbGF0aW9uO1sABGhhc2h0AAJbQnhwfVPM3wAAc3IAInhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoZXNU2r6Z+tTsTAIAAlsAD2ltcGxpY2l0TWVtYmVyc3QAI1tMeHNidGkvYXBpL19pbnRlcm5hbE9ubHlfTmFtZUhhc2g7WwAOcmVndWxhck1lbWJlcnNxAH4AB3hwdXIAI1tMeHNidGkuYXBpLl9pbnRlcm5hbE9ubHlfTmFtZUhhc2g7SVqAtt2Wi/QCAAB4cAAAAAB1cQB+AAkAAAAxc3IAIHhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoWw71InY4V88CAAJJAARoYXNoTAAEbmFtZXQAEkxqYXZhL2xhbmcvU3RyaW5nO3hwBanFYXQABm5vdGlmeXNxAH4ADLgAVrN0AARyZXAyc3EAfgAMB/ZdLnQABHdhaXRzcQB+AAwZGFT2dAAOY29weSRkZWZhdWx0JDJzcQB+AAwT5PF/dAANJGFzSW5zdGFuY2VPZnNxAH4ADOZsCsV0AA5jb3B5JGRlZmF1bHQkNXNxAH4ADEU/AL50AAxwcm9kdWN0QXJpdHlzcQB+AAwGDBXHdAAGZXF1YWxzc3EAfgAMdmIR9nQADGFzSW5zdGFuY2VPZnNxAH4ADE8zW+10AAxzeW5jaHJvbml6ZWRzcQB+AAyj3UaHdAANJGlzSW5zdGFuY2VPZnNxAH4ADOlbDyF0AAhjYW5FcXVhbHNxAH4ADOnrjb90AARyZXAxc3EAfgAMtBrAXXQADmNvcHkkZGVmYXVsdCQ0c3EAfgAMRa7izHQABG1haW5zcQB+AAyLjgjJdAANcHJvZHVjdFByZWZpeHNxAH4ADEzjwFZ0AAlub3RpZnlBbGxzcQB+AAxC3lxNdAANaW5zU2VjdGlvbk9yZHNxAH4ADAgvUdR0AAxpc0luc3RhbmNlT2ZzcQB+AAwLS3+kdAAFUGl2b3RzcQB+AAwtwvdLdAAGPGluaXQ+c3EAfgAMJG8UJ3QACnNlY3Rpb25PcmRzcQB+AAyjlg16dAAMZ2V0U3RydWN0dXJlc3EAfgAMkzcEBXQAClN0cnVjdHVyZWRzcQB+AAxJuBVudAAIZmxhdFRyZWVzcQB+AAypNUxkdAACPT1zcQB+AAwRUTsGdAANY3VzdG9tVW5waXZvdHNxAH4ADIHvDN50AANjb2xzcQB+AAzStWUndAAFY2xvbmVzcQB+AAzJvnGgdAAOY29weSRkZWZhdWx0JDdzcQB+AAxCO2TbdAAGJGluaXQkc3EAfgAM+/k/ZHQADmNvcHkkZGVmYXVsdCQzc3EAfgAMfgU4TnQABGNvcHlzcQB+AAwfTU5DdAAGY29sT3Jkc3EAfgAMBU2wuXQACHRvU3RyaW5nc3EAfgAM117H6XQAAiE9c3EAfgAMixITN3QACGdldENsYXNzc3EAfgAMC1UZ/HQADmNvcHkkZGVmYXVsdCQxc3EAfgAM8p+eQXQAAUtzcQB+AAw2YtGjdAAOY29weSRkZWZhdWx0JDZzcQB+AAwfqUM6dAACbmVzcQB+AAxI9NxXdAAFdmFsdWVzcQB+AAys26/PdAACZXFzcQB+AAzwoI63dAAPcHJvZHVjdEl0ZXJhdG9yc3EAfgAMXAktFXQAAiMjc3EAfgAM2cnR7XQACGZpbmFsaXplc3EAfgAMIEczmHQADnByb2R1Y3RFbGVtZW50c3EAfgAMWpaZZXQACGhhc2hDb2Rlc3EAfgAMk/EHL3QACXJlYWREYXRhMnNyABN4c2J0aS5hcGkuU291cmNlQVBJuV6n+SkjOKQCAAJbAAtkZWZpbml0aW9uc3QAF1tMeHNidGkvYXBpL0RlZmluaXRpb247WwAIcGFja2FnZXN0ABRbTHhzYnRpL2FwaS9QYWNrYWdlO3hwdXIAF1tMeHNidGkuYXBpLkRlZmluaXRpb247iMlc57TjXg4CAAB4cAAAAAJzcgATeHNidGkuYXBpLkNsYXNzTGlrZYM0HKHfsJdsAgAETAAOZGVmaW5pdGlvblR5cGV0ABpMeHNidGkvYXBpL0RlZmluaXRpb25UeXBlO1sAEHNhdmVkQW5ub3RhdGlvbnN0ABNbTGphdmEvbGFuZy9TdHJpbmc7TAAIc2VsZlR5cGV0ABBMeHNidGkvYXBpL0xhenk7TAAJc3RydWN0dXJlcQB+AHl4cgAheHNidGkuYXBpLlBhcmFtZXRlcml6ZWREZWZpbml0aW9u+RFusdVQPOICAAFbAA50eXBlUGFyYW1ldGVyc3QAGltMeHNidGkvYXBpL1R5cGVQYXJhbWV0ZXI7eHIAFHhzYnRpLmFwaS5EZWZpbml0aW9uhyob6HFC40YCAARMAAZhY2Nlc3N0ABJMeHNidGkvYXBpL0FjY2VzcztbAAthbm5vdGF0aW9uc3QAF1tMeHNidGkvYXBpL0Fubm90YXRpb247TAAJbW9kaWZpZXJzdAAVTHhzYnRpL2FwaS9Nb2RpZmllcnM7TAAEbmFtZXEAfgANeHBzcgAQeHNidGkuYXBpLlB1YmxpY7pYPa5sLWBCAgAAeHIAEHhzYnRpLmFwaS5BY2Nlc3PdYpr4HWMxSAIAAHhwdXIAF1tMeHNidGkuYXBpLkFubm90YXRpb24765frGRD2jUgCAAB4cAAAAABzcgATeHNidGkuYXBpLk1vZGlmaWVyc5fnYdwTJnuzAgABQgAFZmxhZ3N4cAB0AAtwaXZvdC5QaXZvdHVyABpbTHhzYnRpLmFwaS5UeXBlUGFyYW1ldGVyO9ltJg8onfK2AgAAeHAAAAAAfnIAGHhzYnRpLmFwaS5EZWZpbml0aW9uVHlwZQAAAAAAAAAAEgAAeHIADmphdmEubGFuZy5FbnVtAAAAAAAAAAASAAB4cHQABk1vZHVsZXVyABNbTGphdmEubGFuZy5TdHJpbmc7rdJW5+kde0cCAAB4cAAAAAF0AAxzY2FsYS5uYXRpdmVzcgAheHNidGkuYXBpLkFic3RyYWN0TGF6eSRTdHJpY3RMYXp5DWYcaykWKrgCAAFMAAV2YWx1ZXQAEkxqYXZhL2xhbmcvT2JqZWN0O3hwc3IAE3hzYnRpLmFwaS5FbXB0eVR5cGW8/Z5GSTuJJAIAAHhyABR4c2J0aS5hcGkuU2ltcGxlVHlwZXJ4YoghI79AAgAAeHIADnhzYnRpLmFwaS5UeXBlP2rZIRZJqsoCAAB4cHNxAH4AknNyABN4c2J0aS5hcGkuU3RydWN0dXJlqar5gJNv2AACAANMAAhkZWNsYXJlZHEAfgB5TAAJaW5oZXJpdGVkcQB+AHlMAAdwYXJlbnRzcQB+AHl4cQB+AJdzcQB+AJJ1cQB+AHQAAAABc3IADXhzYnRpLmFwaS5EZWZSvp/ifLQ2aQIAAkwACnJldHVyblR5cGV0ABBMeHNidGkvYXBpL1R5cGU7WwAPdmFsdWVQYXJhbWV0ZXJzdAAaW0x4c2J0aS9hcGkvUGFyYW1ldGVyTGlzdDt4cQB+AHpxAH4Ag3VxAH4AhAAAAABzcQB+AIYAcQB+ACt1cQB+AIkAAAAAc3IAFHhzYnRpLmFwaS5Qcm9qZWN0aW9u89KNVOlFpC0CAAJMAAJpZHEAfgANTAAGcHJlZml4dAAWTHhzYnRpL2FwaS9TaW1wbGVUeXBlO3hxAH4AlnQABFVuaXRzcgATeHNidGkuYXBpLlNpbmdsZXRvbvynX/jPVuRGAgABTAAEcGF0aHQAEEx4c2J0aS9hcGkvUGF0aDt4cQB+AJZzcgAOeHNidGkuYXBpLlBhdGibPVwIzqUnhAIAAVsACmNvbXBvbmVudHN0ABpbTHhzYnRpL2FwaS9QYXRoQ29tcG9uZW50O3hwdXIAGltMeHNidGkuYXBpLlBhdGhDb21wb25lbnQ7Q9oJdC1nFnQCAAB4cAAAAAJzcgAMeHNidGkuYXBpLklkmDJsizdTxEACAAFMAAJpZHEAfgANeHIAF3hzYnRpLmFwaS5QYXRoQ29tcG9uZW50X5oiWy6Gn7wCAAB4cHQABXNjYWxhc3IADnhzYnRpLmFwaS5UaGlz2wntpsxaQFwCAAB4cQB+ALJ1cgAaW0x4c2J0aS5hcGkuUGFyYW1ldGVyTGlzdDv10zod8rNw7gIAAHhwAAAAAXNyABd4c2J0aS5hcGkuUGFyYW1ldGVyTGlzdNbFvBxkSXTjAgACWgAKaXNJbXBsaWNpdFsACnBhcmFtZXRlcnN0ABxbTHhzYnRpL2FwaS9NZXRob2RQYXJhbWV0ZXI7eHAAdXIAHFtMeHNidGkuYXBpLk1ldGhvZFBhcmFtZXRlcjvPuMVdpd21bQIAAHhwAAAAAXNyABl4c2J0aS5hcGkuTWV0aG9kUGFyYW1ldGVyH0WuF9NJsOoCAARaAApoYXNEZWZhdWx0TAAIbW9kaWZpZXJ0AB1MeHNidGkvYXBpL1BhcmFtZXRlck1vZGlmaWVyO0wABG5hbWVxAH4ADUwAA3RwZXEAfgCfeHAAfnIAG3hzYnRpLmFwaS5QYXJhbWV0ZXJNb2RpZmllcgAAAAAAAAAAEgAAeHEAfgCMdAAFUGxhaW50AARhcmdzc3IAF3hzYnRpLmFwaS5QYXJhbWV0ZXJpemVkFmzuaQPJu38CAAJMAAhiYXNlVHlwZXEAfgCmWwANdHlwZUFyZ3VtZW50c3QAEVtMeHNidGkvYXBpL1R5cGU7eHEAfgCWc3EAfgCldAAFQXJyYXlxAH4Aq3VyABFbTHhzYnRpLmFwaS5UeXBlO3T/pVp7+elBAgAAeHAAAAABc3EAfgCldAAGU3RyaW5nc3EAfgCpc3EAfgCsdXEAfgCvAAAAA3NxAH4AsXQABGphdmFzcQB+ALF0AARsYW5ncQB+ALZzcQB+AJJ1cQB+AHQAAAAAc3EAfgCSdXEAfgDKAAAAAnNxAH4ApXQABk9iamVjdHEAfgDOc3EAfgCldAADQW55cQB+AKtzcQB+AHZxAH4Ag3VxAH4AhAAAAABzcQB+AIYAdAAQcGl2b3QuU3RydWN0dXJlZHVxAH4AiQAAAAB+cQB+AIt0AAhDbGFzc0RlZnVxAH4AjwAAAAF0AAxzY2FsYS5uYXRpdmVzcQB+AJJxAH4AmHNxAH4AknNxAH4AmnNxAH4AknVxAH4AdAAAAABzcQB+AJJ1cQB+AHQAAAAAc3EAfgCSdXEAfgDKAAAABnNxAH4ApXQADFNlcmlhbGl6YWJsZXNxAH4AqXNxAH4ArHVxAH4ArwAAAAJzcQB+ALFxAH4AtHEAfgC2c3EAfgClcQB+APBzcQB+AKlzcQB+AKx1cQB+AK8AAAADc3EAfgCxcQB+ANJzcQB+ALF0AAJpb3EAfgC2c3EAfgCldAAHUHJvZHVjdHEAfgDxc3EAfgCldAAGRXF1YWxzcQB+APFzcQB+AKVxAH4A2nNxAH4AqXNxAH4ArHVxAH4ArwAAAANzcQB+ALFxAH4A0nNxAH4AsXEAfgDUcQB+ALZzcQB+AKVxAH4A3HEAfgDxdXIAFFtMeHNidGkuYXBpLlBhY2thZ2U7WxMZN3CnJ6ECAAB4cAAAAAFzcgAReHNidGkuYXBpLlBhY2thZ2V+WY/2rs45WAIAAUwABG5hbWVxAH4ADXhwdAAFcGl2b3RzcgAVeHNidGkuYXBpLkNvbXBpbGF0aW9u7frgw2rooEICAAJKAAlzdGFydFRpbWVbAAdvdXRwdXRzdAAaW0x4c2J0aS9hcGkvT3V0cHV0U2V0dGluZzt4cAAAAW0SVjBTdXIAGltMeHNidGkuYXBpLk91dHB1dFNldHRpbmc7f2rC86eHpUICAAB4cAAAAAFzcgAXeHNidGkuYXBpLk91dHB1dFNldHRpbmd62ZpHdPsdewIAAkwAD291dHB1dERpcmVjdG9yeXEAfgANTAAPc291cmNlRGlyZWN0b3J5cQB+AA14cHQAMEQ6XHdvcmtcdHJ5b3V0XHNjYWxhTmV3XGJ1aWxkXGNsYXNzZXNcc2NhbGFcbWFpbnQAAS91cgACW0Ks8xf4BghU4AIAAHhwAAAAFO+NK6T5vIBgwZ8laTJxuks15zjS
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> 
+rO0ABXNyABB4c2J0aS5hcGkuU291cmNlSjH5SdlLSkQCAAdJAAdhcGlIYXNoWgAIaGFzTWFjcm9aABBoYXNQYWNrYWdlT2JqZWN0TAAYX2ludGVybmFsT25seV9uYW1lSGFzaGVzdAAkTHhzYnRpL2FwaS9faW50ZXJuYWxPbmx5X05hbWVIYXNoZXM7TAADYXBpdAAVTHhzYnRpL2FwaS9Tb3VyY2VBUEk7TAALY29tcGlsYXRpb250ABdMeHNidGkvYXBpL0NvbXBpbGF0aW9uO1sABGhhc2h0AAJbQnhw82UkkQAAc3IAInhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoZXNU2r6Z+tTsTAIAAlsAD2ltcGxpY2l0TWVtYmVyc3QAI1tMeHNidGkvYXBpL19pbnRlcm5hbE9ubHlfTmFtZUhhc2g7WwAOcmVndWxhck1lbWJlcnNxAH4AB3hwdXIAI1tMeHNidGkuYXBpLl9pbnRlcm5hbE9ubHlfTmFtZUhhc2g7SVqAtt2Wi/QCAAB4cAAAAAB1cQB+AAkAAAAVc3IAIHhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoWw71InY4V88CAAJJAARoYXNoTAAEbmFtZXQAEkxqYXZhL2xhbmcvU3RyaW5nO3hwExwR6nQABm5vdGlmeXNxAH4ADAxSDkJ0AAR3YWl0c3EAfgAMWomyUnQADSRhc0luc3RhbmNlT2ZzcQB+AAzRlNmqdAAGZXF1YWxzc3EAfgAMxG+G+XQADGFzSW5zdGFuY2VPZnNxAH4ADEm5Oml0AAxzeW5jaHJvbml6ZWRzcQB+AAx+OzchdAANJGlzSW5zdGFuY2VPZnNxAH4ADDddu9V0AARtYWluc3EAfgAM3owgS3QACW5vdGlmeUFsbHNxAH4ADBezJpl0AAxpc0luc3RhbmNlT2ZzcQB+AAxOVWKBdAACPT1zcQB+AAy7zGF1dAAFY2xvbmVzcQB+AAwqTmERdAAIdG9TdHJpbmdzcQB+AAxjzXYfdAACIT1zcQB+AAy/+D/mdAAIZ2V0Q2xhc3NzcQB+AAz9A7bMdAACbmVzcQB+AAyEsBjsdAACZXFzcQB+AAzfo+2edAAGUG1hdGNoc3EAfgAMhDEe/HQAAiMjc3EAfgAMsXqzMnQACGZpbmFsaXplc3EAfgAMKSLyZ3QACGhhc2hDb2Rlc3IAE3hzYnRpLmFwaS5Tb3VyY2VBUEm5Xqf5KSM4pAIAAlsAC2RlZmluaXRpb25zdAAXW0x4c2J0aS9hcGkvRGVmaW5pdGlvbjtbAAhwYWNrYWdlc3QAFFtMeHNidGkvYXBpL1BhY2thZ2U7eHB1cgAXW0x4c2J0aS5hcGkuRGVmaW5pdGlvbjuIyVzntONeDgIAAHhwAAAAAXNyABN4c2J0aS5hcGkuQ2xhc3NMaWtlgzQcod+wl2wCAARMAA5kZWZpbml0aW9uVHlwZXQAGkx4c2J0aS9hcGkvRGVmaW5pdGlvblR5cGU7WwAQc2F2ZWRBbm5vdGF0aW9uc3QAE1tMamF2YS9sYW5nL1N0cmluZztMAAhzZWxmVHlwZXQAEEx4c2J0aS9hcGkvTGF6eTtMAAlzdHJ1Y3R1cmVxAH4AQXhyACF4c2J0aS5hcGkuUGFyYW1ldGVyaXplZERlZmluaXRpb275EW6x1VA84gIAAVsADnR5cGVQYXJhbWV0ZXJzdAAaW0x4c2J0aS9hcGkvVHlwZVBhcmFtZXRlcjt4cgAUeHNidGkuYXBpLkRlZmluaXRpb26HKhvocULjRgIABEwABmFjY2Vzc3QAEkx4c2J0aS9hcGkvQWNjZXNzO1sAC2Fubm90YXRpb25zdAAXW0x4c2J0aS9hcGkvQW5ub3RhdGlvbjtMAAltb2RpZmllcnN0ABVMeHNidGkvYXBpL01vZGlmaWVycztMAARuYW1lcQB+AA14cHNyABB4c2J0aS5hcGkuUHVibGljulg9rmwtYEICAAB4cgAQeHNidGkuYXBpLkFjY2Vzc91imvgdYzFIAgAAeHB1cgAXW0x4c2J0aS5hcGkuQW5ub3RhdGlvbjvrl+sZEPaNSAIAAHhwAAAAAHNyABN4c2J0aS5hcGkuTW9kaWZpZXJzl+dh3BMme7MCAAFCAAVmbGFnc3hwAHQADXBtYXRjaC5QbWF0Y2h1cgAaW0x4c2J0aS5hcGkuVHlwZVBhcmFtZXRlcjvZbSYPKJ3ytgIAAHhwAAAAAH5yABh4c2J0aS5hcGkuRGVmaW5pdGlvblR5cGUAAAAAAAAAABIAAHhyAA5qYXZhLmxhbmcuRW51bQAAAAAAAAAAEgAAeHB0AAZNb2R1bGV1cgATW0xqYXZhLmxhbmcuU3RyaW5nO63SVufpHXtHAgAAeHAAAAABdAAMc2NhbGEubmF0aXZlc3IAIXhzYnRpLmFwaS5BYnN0cmFjdExhenkkU3RyaWN0TGF6eQ1mHGspFiq4AgABTAAFdmFsdWV0ABJMamF2YS9sYW5nL09iamVjdDt4cHNyABN4c2J0aS5hcGkuRW1wdHlUeXBlvP2eRkk7iSQCAAB4cgAUeHNidGkuYXBpLlNpbXBsZVR5cGVyeGKIISO/QAIAAHhyAA54c2J0aS5hcGkuVHlwZT9q2SEWSarKAgAAeHBzcQB+AFpzcgATeHNidGkuYXBpLlN0cnVjdHVyZamq+YCTb9gAAgADTAAIZGVjbGFyZWRxAH4AQUwACWluaGVyaXRlZHEAfgBBTAAHcGFyZW50c3EAfgBBeHEAfgBfc3EAfgBadXEAfgA8AAAAAXNyAA14c2J0aS5hcGkuRGVmUr6f4ny0NmkCAAJMAApyZXR1cm5UeXBldAAQTHhzYnRpL2FwaS9UeXBlO1sAD3ZhbHVlUGFyYW1ldGVyc3QAGltMeHNidGkvYXBpL1BhcmFtZXRlckxpc3Q7eHEAfgBCcQB+AEt1cQB+AEwAAAAAc3EAfgBOAHEAfgAddXEAfgBRAAAAAHNyABR4c2J0aS5hcGkuUHJvamVjdGlvbvPSjVTpRaQtAgACTAACaWRxAH4ADUwABnByZWZpeHQAFkx4c2J0aS9hcGkvU2ltcGxlVHlwZTt4cQB+AF50AARVbml0c3IAE3hzYnRpLmFwaS5TaW5nbGV0b278p1/4z1bkRgIAAUwABHBhdGh0ABBMeHNidGkvYXBpL1BhdGg7eHEAfgBec3IADnhzYnRpLmFwaS5QYXRomz1cCM6lJ4QCAAFbAApjb21wb25lbnRzdAAaW0x4c2J0aS9hcGkvUGF0aENvbXBvbmVudDt4cHVyABpbTHhzYnRpLmFwaS5QYXRoQ29tcG9uZW50O0PaCXQtZxZ0AgAAeHAAAAACc3IADHhzYnRpLmFwaS5JZJgybIs3U8RAAgABTAACaWRxAH4ADXhyABd4c2J0aS5hcGkuUGF0aENvbXBvbmVudF+aIlsuhp+8AgAAeHB0AAVzY2FsYXNyAA54c2J0aS5hcGkuVGhpc9sJ7abMWkBcAgAAeHEAfgB6dXIAGltMeHNidGkuYXBpLlBhcmFtZXRlckxpc3Q79dM6HfKzcO4CAAB4cAAAAAFzcgAXeHNidGkuYXBpLlBhcmFtZXRlckxpc3TWxbwcZEl04wIAAloACmlzSW1wbGljaXRbAApwYXJhbWV0ZXJzdAAcW0x4c2J0aS9hcGkvTWV0aG9kUGFyYW1ldGVyO3hwAHVyABxbTHhzYnRpLmFwaS5NZXRob2RQYXJhbWV0ZXI7z7jFXaXdtW0CAAB4cAAAAAFzcgAZeHNidGkuYXBpLk1ldGhvZFBhcmFtZXRlch9FrhfTSbDqAgAEWgAKaGFzRGVmYXVsdEwACG1vZGlmaWVydAAdTHhzYnRpL2FwaS9QYXJhbWV0ZXJNb2RpZmllcjtMAARuYW1lcQB+AA1MAAN0cGVxAH4AZ3hwAH5yABt4c2J0aS5hcGkuUGFyYW1ldGVyTW9kaWZpZXIAAAAAAAAAABIAAHhxAH4AVHQABVBsYWludAAEYXJnc3NyABd4c2J0aS5hcGkuUGFyYW1ldGVyaXplZBZs7mkDybt/AgACTAAIYmFzZVR5cGVxAH4AblsADXR5cGVBcmd1bWVudHN0ABFbTHhzYnRpL2FwaS9UeXBlO3hxAH4AXnNxAH4AbXQABUFycmF5cQB+AHN1cgARW0x4c2J0aS5hcGkuVHlwZTt0/6Vae/npQQIAAHhwAAAAAXNxAH4AbXQABlN0cmluZ3NxAH4AcXNxAH4AdHVxAH4AdwAAAANzcQB+AHl0AARqYXZhc3EAfgB5dAAEbGFuZ3EAfgB+c3EAfgBadXEAfgA8AAAAAHNxAH4AWnVxAH4AkgAAAAJzcQB+AG10AAZPYmplY3RxAH4AlnNxAH4AbXQAA0FueXEAfgBzdXIAFFtMeHNidGkuYXBpLlBhY2thZ2U7WxMZN3CnJ6ECAAB4cAAAAAFzcgAReHNidGkuYXBpLlBhY2thZ2V+WY/2rs45WAIAAUwABG5hbWVxAH4ADXhwdAAGcG1hdGNoc3IAFXhzYnRpLmFwaS5Db21waWxhdGlvbu364MNq6KBCAgACSgAJc3RhcnRUaW1lWwAHb3V0cHV0c3QAGltMeHNidGkvYXBpL091dHB1dFNldHRpbmc7eHAAAAFtElYwU3VyABpbTHhzYnRpLmFwaS5PdXRwdXRTZXR0aW5nO39qwvOnh6VCAgAAeHAAAAABc3IAF3hzYnRpLmFwaS5PdXRwdXRTZXR0aW5netmaR3T7HXsCAAJMAA9vdXRwdXREaXJlY3RvcnlxAH4ADUwAD3NvdXJjZURpcmVjdG9yeXEAfgANeHB0ADBEOlx3b3JrXHRyeW91dFxzY2FsYU5ld1xidWlsZFxjbGFzc2VzXHNjYWxhXG1haW50AAEvdXIAAltCrPMX+AYIVOACAAB4cAAAABRtXNt17CXsovZ42qnLBpTdjax1mg==
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> 
+rO0ABXNyABB4c2J0aS5hcGkuU291cmNlSjH5SdlLSkQCAAdJAAdhcGlIYXNoWgAIaGFzTWFjcm9aABBoYXNQYWNrYWdlT2JqZWN0TAAYX2ludGVybmFsT25seV9uYW1lSGFzaGVzdAAkTHhzYnRpL2FwaS9faW50ZXJuYWxPbmx5X05hbWVIYXNoZXM7TAADYXBpdAAVTHhzYnRpL2FwaS9Tb3VyY2VBUEk7TAALY29tcGlsYXRpb250ABdMeHNidGkvYXBpL0NvbXBpbGF0aW9uO1sABGhhc2h0AAJbQnhwl6ZaBwAAc3IAInhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoZXNU2r6Z+tTsTAIAAlsAD2ltcGxpY2l0TWVtYmVyc3QAI1tMeHNidGkvYXBpL19pbnRlcm5hbE9ubHlfTmFtZUhhc2g7WwAOcmVndWxhck1lbWJlcnNxAH4AB3hwdXIAI1tMeHNidGkuYXBpLl9pbnRlcm5hbE9ubHlfTmFtZUhhc2g7SVqAtt2Wi/QCAAB4cAAAAAB1cQB+AAkAAAAWc3IAIHhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoWw71InY4V88CAAJJAARoYXNoTAAEbmFtZXQAEkxqYXZhL2xhbmcvU3RyaW5nO3hweqkj33QABm5vdGlmeXNxAH4ADO/jDcV0AAR3YWl0c3EAfgAM7xA883QADSRhc0luc3RhbmNlT2ZzcQB+AAyNXX0ZdAAGZXF1YWxzc3EAfgAM0PG0MnQADGFzSW5zdGFuY2VPZnNxAH4ADId0tgV0AAxzeW5jaHJvbml6ZWRzcQB+AAyimCcfdAANJGlzSW5zdGFuY2VPZnNxAH4ADCT7dgt0AARtYWluc3EAfgAMbNOHMnQACW5vdGlmeUFsbHNxAH4ADPHG/lh0AAxpc0luc3RhbmNlT2ZzcQB+AAy1gUmMdAACPT1zcQB+AAywRRdGdAAFY2xvbmVzcQB+AAxLOnPldAAIdG9TdHJpbmdzcQB+AAw58kL0dAACIT1zcQB+AAyhG/qRdAAIZ2V0Q2xhc3NzcQB+AAyOVk5XdAADQXBpc3EAfgAMPvFz0nQAAm5lc3EAfgAM9BPXDHQAAmVxc3EAfgAMpgc4o3QAAiMjc3EAfgAMJRV3mXQACGZpbmFsaXplc3EAfgAMdr29UXQACGhhc2hDb2Rlc3EAfgAMVOe0T3QACmluaXRSb3V0ZXNzcgATeHNidGkuYXBpLlNvdXJjZUFQSblep/kpIzikAgACWwALZGVmaW5pdGlvbnN0ABdbTHhzYnRpL2FwaS9EZWZpbml0aW9uO1sACHBhY2thZ2VzdAAUW0x4c2J0aS9hcGkvUGFja2FnZTt4cHVyABdbTHhzYnRpLmFwaS5EZWZpbml0aW9uO4jJXOe0414OAgAAeHAAAAABc3IAE3hzYnRpLmFwaS5DbGFzc0xpa2WDNByh37CXbAIABEwADmRlZmluaXRpb25UeXBldAAaTHhzYnRpL2FwaS9EZWZpbml0aW9uVHlwZTtbABBzYXZlZEFubm90YXRpb25zdAATW0xqYXZhL2xhbmcvU3RyaW5nO0wACHNlbGZUeXBldAAQTHhzYnRpL2FwaS9MYXp5O0wACXN0cnVjdHVyZXEAfgBDeHIAIXhzYnRpLmFwaS5QYXJhbWV0ZXJpemVkRGVmaW5pdGlvbvkRbrHVUDziAgABWwAOdHlwZVBhcmFtZXRlcnN0ABpbTHhzYnRpL2FwaS9UeXBlUGFyYW1ldGVyO3hyABR4c2J0aS5hcGkuRGVmaW5pdGlvbocqG+hxQuNGAgAETAAGYWNjZXNzdAASTHhzYnRpL2FwaS9BY2Nlc3M7WwALYW5ub3RhdGlvbnN0ABdbTHhzYnRpL2FwaS9Bbm5vdGF0aW9uO0wACW1vZGlmaWVyc3QAFUx4c2J0aS9hcGkvTW9kaWZpZXJzO0wABG5hbWVxAH4ADXhwc3IAEHhzYnRpLmFwaS5QdWJsaWO6WD2ubC1gQgIAAHhyABB4c2J0aS5hcGkuQWNjZXNz3WKa+B1jMUgCAAB4cHVyABdbTHhzYnRpLmFwaS5Bbm5vdGF0aW9uO+uX6xkQ9o1IAgAAeHAAAAAAc3IAE3hzYnRpLmFwaS5Nb2RpZmllcnOX52HcEyZ7swIAAUIABWZsYWdzeHAAdAAIcmVzdC5BcGl1cgAaW0x4c2J0aS5hcGkuVHlwZVBhcmFtZXRlcjvZbSYPKJ3ytgIAAHhwAAAAAH5yABh4c2J0aS5hcGkuRGVmaW5pdGlvblR5cGUAAAAAAAAAABIAAHhyAA5qYXZhLmxhbmcuRW51bQAAAAAAAAAAEgAAeHB0AAZNb2R1bGV1cgATW0xqYXZhLmxhbmcuU3RyaW5nO63SVufpHXtHAgAAeHAAAAABdAAMc2NhbGEubmF0aXZlc3IAIXhzYnRpLmFwaS5BYnN0cmFjdExhenkkU3RyaWN0TGF6eQ1mHGspFiq4AgABTAAFdmFsdWV0ABJMamF2YS9sYW5nL09iamVjdDt4cHNyABN4c2J0aS5hcGkuRW1wdHlUeXBlvP2eRkk7iSQCAAB4cgAUeHNidGkuYXBpLlNpbXBsZVR5cGVyeGKIISO/QAIAAHhyAA54c2J0aS5hcGkuVHlwZT9q2SEWSarKAgAAeHBzcQB+AFxzcgATeHNidGkuYXBpLlN0cnVjdHVyZamq+YCTb9gAAgADTAAIZGVjbGFyZWRxAH4AQ0wACWluaGVyaXRlZHEAfgBDTAAHcGFyZW50c3EAfgBDeHEAfgBhc3EAfgBcdXEAfgA+AAAAAXNyAA14c2J0aS5hcGkuRGVmUr6f4ny0NmkCAAJMAApyZXR1cm5UeXBldAAQTHhzYnRpL2FwaS9UeXBlO1sAD3ZhbHVlUGFyYW1ldGVyc3QAGltMeHNidGkvYXBpL1BhcmFtZXRlckxpc3Q7eHEAfgBEcQB+AE11cQB+AE4AAAAAc3EAfgBQAHEAfgAddXEAfgBTAAAAAHNyABR4c2J0aS5hcGkuUHJvamVjdGlvbvPSjVTpRaQtAgACTAACaWRxAH4ADUwABnByZWZpeHQAFkx4c2J0aS9hcGkvU2ltcGxlVHlwZTt4cQB+AGB0AARVbml0c3IAE3hzYnRpLmFwaS5TaW5nbGV0b278p1/4z1bkRgIAAUwABHBhdGh0ABBMeHNidGkvYXBpL1BhdGg7eHEAfgBgc3IADnhzYnRpLmFwaS5QYXRomz1cCM6lJ4QCAAFbAApjb21wb25lbnRzdAAaW0x4c2J0aS9hcGkvUGF0aENvbXBvbmVudDt4cHVyABpbTHhzYnRpLmFwaS5QYXRoQ29tcG9uZW50O0PaCXQtZxZ0AgAAeHAAAAACc3IADHhzYnRpLmFwaS5JZJgybIs3U8RAAgABTAACaWRxAH4ADXhyABd4c2J0aS5hcGkuUGF0aENvbXBvbmVudF+aIlsuhp+8AgAAeHB0AAVzY2FsYXNyAA54c2J0aS5hcGkuVGhpc9sJ7abMWkBcAgAAeHEAfgB8dXIAGltMeHNidGkuYXBpLlBhcmFtZXRlckxpc3Q79dM6HfKzcO4CAAB4cAAAAAFzcgAXeHNidGkuYXBpLlBhcmFtZXRlckxpc3TWxbwcZEl04wIAAloACmlzSW1wbGljaXRbAApwYXJhbWV0ZXJzdAAcW0x4c2J0aS9hcGkvTWV0aG9kUGFyYW1ldGVyO3hwAHVyABxbTHhzYnRpLmFwaS5NZXRob2RQYXJhbWV0ZXI7z7jFXaXdtW0CAAB4cAAAAAFzcgAZeHNidGkuYXBpLk1ldGhvZFBhcmFtZXRlch9FrhfTSbDqAgAEWgAKaGFzRGVmYXVsdEwACG1vZGlmaWVydAAdTHhzYnRpL2FwaS9QYXJhbWV0ZXJNb2RpZmllcjtMAARuYW1lcQB+AA1MAAN0cGVxAH4AaXhwAH5yABt4c2J0aS5hcGkuUGFyYW1ldGVyTW9kaWZpZXIAAAAAAAAAABIAAHhxAH4AVnQABVBsYWludAAEYXJnc3NyABd4c2J0aS5hcGkuUGFyYW1ldGVyaXplZBZs7mkDybt/AgACTAAIYmFzZVR5cGVxAH4AcFsADXR5cGVBcmd1bWVudHN0ABFbTHhzYnRpL2FwaS9UeXBlO3hxAH4AYHNxAH4Ab3QABUFycmF5cQB+AHV1cgARW0x4c2J0aS5hcGkuVHlwZTt0/6Vae/npQQIAAHhwAAAAAXNxAH4Ab3QABlN0cmluZ3NxAH4Ac3NxAH4AdnVxAH4AeQAAAANzcQB+AHt0AARqYXZhc3EAfgB7dAAEbGFuZ3EAfgCAc3EAfgBcdXEAfgA+AAAAAHNxAH4AXHVxAH4AlAAAAAJzcQB+AG90AAZPYmplY3RxAH4AmHNxAH4Ab3QAA0FueXEAfgB1dXIAFFtMeHNidGkuYXBpLlBhY2thZ2U7WxMZN3CnJ6ECAAB4cAAAAAFzcgAReHNidGkuYXBpLlBhY2thZ2V+WY/2rs45WAIAAUwABG5hbWVxAH4ADXhwdAAEcmVzdHNyABV4c2J0aS5hcGkuQ29tcGlsYXRpb27t+uDDauigQgIAAkoACXN0YXJ0VGltZVsAB291dHB1dHN0ABpbTHhzYnRpL2FwaS9PdXRwdXRTZXR0aW5nO3hwAAABbRJaMKV1cgAaW0x4c2J0aS5hcGkuT3V0cHV0U2V0dGluZzt/asLzp4elQgIAAHhwAAAAAXNyABd4c2J0aS5hcGkuT3V0cHV0U2V0dGluZ3rZmkd0+x17AgACTAAPb3V0cHV0RGlyZWN0b3J5cQB+AA1MAA9zb3VyY2VEaXJlY3RvcnlxAH4ADXhwdAAwRDpcd29ya1x0cnlvdXRcc2NhbGFOZXdcYnVpbGRcY2xhc3Nlc1xzY2FsYVxtYWludAABL3VyAAJbQqzzF/gGCFTgAgAAeHAAAAAU5/Drz2rqGvOkwq8dBXdT36kMLuE=
+external apis:
+0 items
+source infos:
+16 items
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\Empty.scala -> 
+AAAAAAAAAAA=
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSet.scala -> 
+AAAAAAAAAAA=
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSetTest.scala -> 
+AAAAAAAAAAA=
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\NonEmpty.scala -> 
+AAAAAAAAAAA=
+D:\work\tryout\scalaNew\src\main\scala\coursera\w3\package.scala -> 
+AAAAAAAAAAA=
+D:\work\tryout\scalaNew\src\main\scala\coursera\w4\MainList.scala -> 
+AAAAAAAAAAA=
+D:\work\tryout\scalaNew\src\main\scala\csv\csvParser.scala -> 
+AAAAAAAAAAA=
+D:\work\tryout\scalaNew\src\main\scala\future\FutureTest.scala -> 
+AAAAAAAAAAA=
+D:\work\tryout\scalaNew\src\main\scala\Main.scala -> 
+AAAAAAAAAAA=
+D:\work\tryout\scalaNew\src\main\scala\old\collections\ListExample.scala -> 
+AAAAAAAAAAA=
+D:\work\tryout\scalaNew\src\main\scala\old\CsvReader.java -> 
+AAAAAAAAAAA=
+D:\work\tryout\scalaNew\src\main\scala\old\Hello.scala -> 
+AAAAAQAAAQAAAAsADiAgICAgIG0gbWF0Y2h7AQAAAXsBAAAABgEABiAgICAgIAEANkQ6XHdvcmtcdHJ5b3V0XHNjYWxhTmV3XHNyY1xtYWluXHNjYWxhXG9sZFxIZWxsby5zY2FsYQEANkQ6XHdvcmtcdHJ5b3V0XHNjYWxhTmV3XHNyY1xtYWluXHNjYWxhXG9sZFxIZWxsby5zY2FsYQBKbWF0Y2ggbWF5IG5vdCBiZSBleGhhdXN0aXZlLgpJdCB3b3VsZCBmYWlsIG9uIHRoZSBmb2xsb3dpbmcgaW5wdXQ6IExlZnQoXykBAAAAAA==
+D:\work\tryout\scalaNew\src\main\scala\old\SimpleClass.scala -> 
+AAAAAAAAAAA=
+D:\work\tryout\scalaNew\src\main\scala\pivot\Pivot.scala -> 
+AAAAAAAAAAA=
+D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> 
+AAAAAAAAAAA=
+D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> 
+AAAAAAAAAAA=
+compilations:
+4 items
+0 -> rO0ABXNyABV4c2J0aS5hcGkuQ29tcGlsYXRpb27t+uDDauigQgIAAkoACXN0YXJ0VGltZVsAB291dHB1dHN0ABpbTHhzYnRpL2FwaS9PdXRwdXRTZXR0aW5nO3hwAAABbRJPdZ91cgAaW0x4c2J0aS5hcGkuT3V0cHV0U2V0dGluZzt/asLzp4elQgIAAHhwAAAAAXNyABd4c2J0aS5hcGkuT3V0cHV0U2V0dGluZ3rZmkd0+x17AgACTAAPb3V0cHV0RGlyZWN0b3J5dAASTGphdmEvbGFuZy9TdHJpbmc7TAAPc291cmNlRGlyZWN0b3J5cQB+AAZ4cHQAMEQ6XHdvcmtcdHJ5b3V0XHNjYWxhTmV3XGJ1aWxkXGNsYXNzZXNcc2NhbGFcbWFpbnQAAS8=
+1 -> rO0ABXNyABV4c2J0aS5hcGkuQ29tcGlsYXRpb27t+uDDauigQgIAAkoACXN0YXJ0VGltZVsAB291dHB1dHN0ABpbTHhzYnRpL2FwaS9PdXRwdXRTZXR0aW5nO3hwAAABbRJQdax1cgAaW0x4c2J0aS5hcGkuT3V0cHV0U2V0dGluZzt/asLzp4elQgIAAHhwAAAAAXNyABd4c2J0aS5hcGkuT3V0cHV0U2V0dGluZ3rZmkd0+x17AgACTAAPb3V0cHV0RGlyZWN0b3J5dAASTGphdmEvbGFuZy9TdHJpbmc7TAAPc291cmNlRGlyZWN0b3J5cQB+AAZ4cHQAMEQ6XHdvcmtcdHJ5b3V0XHNjYWxhTmV3XGJ1aWxkXGNsYXNzZXNcc2NhbGFcbWFpbnQAAS8=
+2 -> rO0ABXNyABV4c2J0aS5hcGkuQ29tcGlsYXRpb27t+uDDauigQgIAAkoACXN0YXJ0VGltZVsAB291dHB1dHN0ABpbTHhzYnRpL2FwaS9PdXRwdXRTZXR0aW5nO3hwAAABbRJWMFN1cgAaW0x4c2J0aS5hcGkuT3V0cHV0U2V0dGluZzt/asLzp4elQgIAAHhwAAAAAXNyABd4c2J0aS5hcGkuT3V0cHV0U2V0dGluZ3rZmkd0+x17AgACTAAPb3V0cHV0RGlyZWN0b3J5dAASTGphdmEvbGFuZy9TdHJpbmc7TAAPc291cmNlRGlyZWN0b3J5cQB+AAZ4cHQAMEQ6XHdvcmtcdHJ5b3V0XHNjYWxhTmV3XGJ1aWxkXGNsYXNzZXNcc2NhbGFcbWFpbnQAAS8=
+3 -> rO0ABXNyABV4c2J0aS5hcGkuQ29tcGlsYXRpb27t+uDDauigQgIAAkoACXN0YXJ0VGltZVsAB291dHB1dHN0ABpbTHhzYnRpL2FwaS9PdXRwdXRTZXR0aW5nO3hwAAABbRJaMKV1cgAaW0x4c2J0aS5hcGkuT3V0cHV0U2V0dGluZzt/asLzp4elQgIAAHhwAAAAAXNyABd4c2J0aS5hcGkuT3V0cHV0U2V0dGluZ3rZmkd0+x17AgACTAAPb3V0cHV0RGlyZWN0b3J5dAASTGphdmEvbGFuZy9TdHJpbmc7TAAPc291cmNlRGlyZWN0b3J5cQB+AAZ4cHQAMEQ6XHdvcmtcdHJ5b3V0XHNjYWxhTmV3XGJ1aWxkXGNsYXNzZXNcc2NhbGFcbWFpbnQAAS8=

@@ -10,13 +10,32 @@ sourceCompatibility = 1.8
 repositories {
     mavenCentral()
 }
+//configurations {
+//    scalaCompilerPlugin
+//}
+//compileScala {
+//    scalaCompileOptions.additionalParameters = ['-feature', '-language:postfixOps']
+//}
+//tasks.withType(ScalaCompile) {
+//    scalaCompileOptions.additionalParameters = ["-Xplugin:" + configurations.scalaCompilerPlugin.asPath]
+//}
+
+//tasks.withType(ScalaCompile) {
+//    scalaCompileOptions.additionalParameters = ["-feature", "-language:postfixOps"]
+//}
 
 dependencies {
-    compile group: 'org.apache.spark', name: 'spark-sql_2.12', version: '2.4.3'
-    compile group: 'com.sparkjava', name: 'spark-core', version: '2.9.1'
-    compile group: 'com.typesafe', name: 'config', version: '1.2.1'
-    compile group: 'org.scalaj', name: 'scalaj-http_2.13', version: '2.4.2'
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    testCompile group: 'org.scalatest', name: 'scalatest_2.12', version: '3.2.0-SNAP10'
-    testCompile group: 'org.mockito', name: 'mockito-all', version: '1.9.5'
+    //compile 'org.scala-lang:scala-library:2.12.8'
+    //compile group: 'org.scala-lang', name: 'scala-compiler', version: '2.13.0'
+    //compile group: 'org.apache.spark', name: 'spark-sql_2.12', version: '2.4.3'
+    //compile group: 'com.sparkjava', name: 'spark-core', version: '2.9.1'
+    //compile group: 'com.typesafe', name: 'config', version: '1.2.1'
+    //compile group: 'org.scalaj', name: 'scalaj-http_2.12', version: '2.4.1'
+    //compile group: 'org.scalaj', name: 'scalaj-http_2.12', version: '2.3.0'
+    //compile group: 'org.scalaj', name: 'scalaj-http_2.13', version: '2.4.2'
+    //compile group: 'io.specto', name: 'hoverfly-java', version: '0.12.2'
+    //testCompile group: 'com.github.tomakehurst', name: 'wiremock', version: '1.18'
+    //testCompile group: 'junit', name: 'junit', version: '4.12'
+    //testCompile group: 'org.scalatest', name: 'scalatest_2.13', version: '3.1.0-M1'
+    //testCompile group: 'org.mockito', name: 'mockito-all', version: '1.9.5'
 }
