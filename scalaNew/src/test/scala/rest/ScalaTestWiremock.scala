@@ -1,19 +1,8 @@
 package rest
 
 import com.github.tomakehurst.wiremock.WireMockServer
-import com.github.tomakehurst.wiremock.mapping.RequestListener
-import com.sun.xml.internal.ws.developer.Serialization
-import org.scalatest.FlatSpec
-import org.scalatest.BeforeAndAfterEach
-import java.util.concurrent.TimeUnit
-
-import scala.concurrent.Await
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration.Duration
-import org.scalatest.{BeforeAndAfterEach, FlatSpec, Matchers}
-import com.github.tomakehurst.wiremock.WireMockServer
-import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock._
+import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 import scalaj.http.Http
 
 
@@ -32,15 +21,17 @@ class ScalaTestWiremock extends FlatSpec with BeforeAndAfterEach {
 
   val response = "some answer"
   "Client" should "give reply" in {
-    val path = "/23"
+    stubFor(get(urlMatching("/22")).atPriority(10)
+      .willReturn(aResponse().proxiedFrom("http://localhost:8080/23")));
+
     stubFor(
-      get(urlEqualTo(path))
+      get(urlEqualTo("/23"))
         .willReturn(aResponse()
           .withHeader("Content-Type", "text/plain")
           .withBody("some response")
           .withStatus(200)))
 
-    val resp = Http("http://localhost:8080/23").asString
+    val resp = Http("http://localhost:8080/22").asString
     println(resp.body)
 
   }
