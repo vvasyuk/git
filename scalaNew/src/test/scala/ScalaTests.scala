@@ -3,7 +3,7 @@ import org.scalatest._
 
 class ScalaTests extends FlatSpec with Matchers {
   "An empty Set" should "have size 0" in {
-    "1" should be (2)
+    2 should be (2)
   }
 
   "eee" should "beee" in {
@@ -13,7 +13,7 @@ class ScalaTests extends FlatSpec with Matchers {
   "A Stack" should "pop values in last-in-first-out order" in {
     val stack = new Stack[Int]
     stack.push(1)
-    //stack.push(2)
+    stack.push(2)
     stack.pop() should be (2)
     stack.pop() should be (1)
   }
