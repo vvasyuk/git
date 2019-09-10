@@ -33,6 +33,8 @@ products:
    D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\pmatch\Pmatch.class
    D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\rest\Api$.class
    D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\rest\Api.class
+   D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\rest\RemoteService$.class
+   D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\rest\RemoteService.class
 binary dependencies:
    D:\work\tryout\scalaNew\src\main\scala\coursera\w3\Empty.scala -> C:\Users\Jopa\.gradle\caches\modules-2\files-2.1\org.scala-lang\scala-library\2.12.8\36b234834d8f842cdde963c8591efae6cf413e3f\scala-library-2.12.8.jar
    D:\work\tryout\scalaNew\src\main\scala\coursera\w3\Empty.scala -> D:\work\installed\java\jre\lib\rt.jar
@@ -61,6 +63,7 @@ binary dependencies:
    D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> D:\work\installed\java\jre\lib\rt.jar
    D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> C:\Users\Jopa\.gradle\caches\modules-2\files-2.1\com.sparkjava\spark-core\2.9.1\e8c71582a38acd1f588e2f3c5a5530b43d45b3e8\spark-core-2.9.1.jar
    D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> C:\Users\Jopa\.gradle\caches\modules-2\files-2.1\org.scala-lang\scala-library\2.12.8\36b234834d8f842cdde963c8591efae6cf413e3f\scala-library-2.12.8.jar
+   D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> C:\Users\Jopa\.gradle\caches\modules-2\files-2.1\org.scalaj\scalaj-http_2.12\2.3.0\76523a7b8462768e81d7b4b94dee596b4e418cc1\scalaj-http_2.12-2.3.0.jar
    D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> D:\work\installed\java\jre\lib\rt.jar
 source dependencies:
    D:\work\tryout\scalaNew\src\main\scala\coursera\w3\Empty.scala -> D:\work\tryout\scalaNew\src\main\scala\coursera\w3\IntSet.scala
@@ -105,3 +108,5 @@ class names:
    D:\work\tryout\scalaNew\src\main\scala\pmatch\Pmatch.scala -> pmatch.Pmatch$
    D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> rest.Api
    D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> rest.Api$
+   D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> rest.RemoteService
+   D:\work\tryout\scalaNew\src\main\scala\rest\Api.scala -> rest.RemoteService$
