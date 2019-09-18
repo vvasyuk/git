@@ -26,3 +26,11 @@ def factorialTail(n:Int):Int = {
 	def loop(acc:Int, n:Int) = if (n==0) acc else loop(acc*n, n-1)
 	loop(1,n)
 }
+
+###############
+# week 2
+###############
+- higher order function
+def sum(f:Int=>Int, a:Int, b:Int) = if (a>b) 0 else f(a)+sum(f,a+1,b)
+sum(cube,a,b)
+def cube(x:Int):Int = x*x*x
