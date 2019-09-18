@@ -31,6 +31,41 @@ def factorialTail(n:Int):Int = {
 # week 2
 ###############
 - higher order function
-def sum(f:Int=>Int, a:Int, b:Int) = if (a>b) 0 else f(a)+sum(f,a+1,b)
-sum(cube,a,b)
-def cube(x:Int):Int = x*x*x
+def sum(f:Int=>Int, a:Int, b:Int) = if (a>b) 0 else f(a)+sum(f,a+1,b)	
+sum((x:Int)=>x*x*x,a,b)		# sum of cubes between a and b
+
+def sum(f: Int => Int, a: Int, b: Int): Int = {
+  def loop(a: Int, acc: Int): Int = {
+    if (a>b) acc
+    else loop(a+1, f(a)+acc)
+  }
+  loop(a, 0)
+}
+
+- currying
+def sum(f: Int => Int): (a: Int, b: Int)=>Int = {
+  def sumF(a: Int, b: Int): Int = {
+    if (a>b) 0 else f(a)+sumF(a+1,b)
+  }
+  sumF
+}
+or
+def sum(f: Int => Int)(a: Int, b: Int):Int = if (a>b) 0 else f(a)+sum(f)(a+1,b)
+sum((x:Int)=>x*x*x) (a,b)
+
+def mapReduce(f:Int=>Int, combine:(Int,Int)=>Int,zero:Int)(a: Int, b: Int):Int=
+	if (a>b) zero else combine(f(a),mapReduce(f,combine,zero)(a+1,b))
+def product(f:Int=Int)(a:Int,b:Int):Int = mapReduce(f,(x,y)=>x*y,1)(a,b)
+
+- fixed points (x-fixed point if f(x)=x, example x=1+x/2 (x=2 fixed point))
+# sqrt of x = y*y so y = x/y # x is a fixed point of y = x/y 
+def isCloseEnough(x:Double, y:Double) = abs((x-y)/x)/x < 0.0001
+def fixedPoint(f:Double=>Double)(firstGuess:Double)={
+	def iterate(guess:Double):Double={
+		val next = f(guess)
+		if(isCloseEnough(guess,next)) next else iterate(next)
+	}
+	iterate(firstGuess)
+}
+def averageDamp(f:Double=>Double)(x:Double) = (x+f(x))/2
+def sqrt(x:Double) = fixedPoint(averageDamp(y=> x/y))(1)
