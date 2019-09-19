@@ -1,7 +1,7 @@
 package rest
 
-import org.mockito.MockitoSugar._
-import org.mockito.matchers
+import org.mockito.Mock._
+import org.mockito.scalatest.MockitoSugar
 import org.scalatest.FlatSpec
 import scalaj.http.Http
 
