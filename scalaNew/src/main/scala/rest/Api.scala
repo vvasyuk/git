@@ -16,6 +16,7 @@ object Api {
 
     get("/22", (req, res) => {
       res.header("Access-Control-Allow-Origin", "*")
+      print("inside 22")
       val response = rs.getFromRemote(rs.host)
       //val response: HttpResponse[String] = rs.getFromLocal()
       response

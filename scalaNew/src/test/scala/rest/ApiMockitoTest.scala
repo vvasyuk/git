@@ -1,19 +1,20 @@
 package rest
 
-import org.mockito.Mock._
-import org.mockito.scalatest.MockitoSugar
+import org.mockito.Mockito._
 import org.scalatest.FlatSpec
 import scalaj.http.Http
+import spark.Spark.awaitInitialization
 
 class ApiMockitoTest extends FlatSpec {
 
   "Mock 1" should "be ok" in {
-    val mockService = mock[RemoteService]
-    when(mockService.getFromRemote("https://mockbin.org")).thenReturn("mocked answer")
+    val mockService = mock(classOf[RemoteService])
+    when(mockService.getFromRemote(mockService.host)).thenReturn("mocked answer")
 
     Api.initRoutes(mockService)
+    awaitInitialization
 
     val res = Http("http://localhost:4567/22").asString
-    print(res)
+    print(res.body)
   }
 }
