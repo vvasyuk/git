@@ -9,6 +9,7 @@ scala/.idea/workspace.xml
 scala/.idea/workspace.xml
 target
 .idea/*.*
+.gradle/
 .idea/
 *.iml
 *.iws
