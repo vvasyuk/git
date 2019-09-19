@@ -34,4 +34,8 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile group: 'org.scalatest', name: 'scalatest_2.12', version: '3.2.0-SNAP9'
     testCompile group: 'org.scalamock', name: 'scalamock-scalatest-support_2.12', version: '3.6.0'
+    //implementation files('C:\\work\\install\\mockito-scala_2.12-1.1.0.jar')
+    compile group: 'org.mockito', name: 'mockito-scala_2.12', version: '1.1.0'
+    //testCompile group: 'org.mockito', name: 'mockito-scala_2.12', version: '1.4.0'
+
 }
