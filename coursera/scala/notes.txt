@@ -69,3 +69,87 @@ def fixedPoint(f:Double=>Double)(firstGuess:Double)={
 }
 def averageDamp(f:Double=>Double)(x:Double) = (x+f(x))/2
 def sqrt(x:Double) = fixedPoint(averageDamp(y=> x/y))(1)
+
+
+###############
+# week 3
+###############
+
+- tree
+abstract class IntSet{																#incl 3
+	def incl(x:Int): IntSet													        ########################################
+	def contains(x:Int): Boolean                                                    #					+--+               #
+	def union(other: IntSet): IntSet}                                               #					|7 |               #
+                                                                                    #		   +--------+--+----+          #
+object Empty extends IntSet{                                                        #	       |                |          #
+	def contains(x:Int): Boolean = false                                            #		   |          +--+  |          #
+	def incl(x:Int): IntSet = new NonEmpty(x, new Empty, new Empty)                 #		   |          |7 |  |          #
+	def union(other: IntSet): IntSet = other                                        #		   |          +--+  |          #
+}                                                                                   #		+--+     +--+    +--+          #
+                                                                                    #		|5 |     |5 |    |12|          #
+class NonEmpty(elem: Int, left: IntSet, right: IntSet) extends IntSet{              #		+--+     +--+    +--+          #
+	def contains(x:Int): Boolean = {                                                #	+--+        e    e  e    e         #
+		if (x<elem) left contains x                                                 #	|3 |                               #
+		else if (x>elem) right contains x                                           #	+--+                               #
+		else true}                                                                  #	e    e                             #
+	def incl(x:Int): IntSet = {                                                     ########################################
+		if (x<elem) new NonEmpty(elem, left incl x, right)                  
+		if (x>elem) new NonEmpty(elem, left, right incl x)                  
+		else this                                                           
+		}
+	def union(other: IntSet): IntSet = ((left union right) union other) incl elem
+}
+
+- scala classes hierarchy
+
+#########################################################################################################
+#+---+                                                                                                  #
+#|any|                                                                                                  #
+#+---+                                                                                                  #
+#|    +------+                                                                                  +------+#
+#+----+anyVal+-+--------+--------+--------+--------+--------+--------+--------+--------+<-------+Nothng|#
+#|    +------+ |        |        |        |        |        |        |        |        |        +------+#
+#|             +------+ +------+ +------+ +------+ +------+ +------+ +------+ +------+ +------+         #
+#|             |Double| |Float | |Long  | |Int   | |Short | |Byte  | |Char  | |Bolean| |Unit  |         #
+#|             +------+ +------+ +------+ +------+ +------+ +------+ +------+ +------+ +------+         #
+#|                                                                                                      #
+#|                                                                                                      #
+#|    +------+                                     +------+                                             #
+#+----+anyRef+-+--------+--------+--------+<-------+Null  |                                             #
+#     +------+ |        |        |        |        +------+                                             #
+#              +------+ +------+ +------+ +------+                                                      #
+#              |Itrble+<+Seq   +<+List  | |Option|                                                      #
+#              +------+ +------+ +------+ +------+                                                      #
+#########################################################################################################
+
+- polymorphism
+
+#List(1,2,3)
+#################
+# +-+           #
+# +-+           #
+#1   +-+        #
+#    +-+        #
+#   2   +-+     #
+#       +-+     #
+#      3   Nil  #
+#################
+
+#Cons-List
+
+trait List[T] {
+	def isEmpty: Boolean
+	def head: T
+	def tail: List[T]
+}
+
+class Cons[T](val head: T, val tail: List[T]) extends List[T]{
+	def isEmpty: = false}
+	
+class Nil[T] extends IntList[T] {
+	def isEmpty: = true
+	def head: Nothing = throw new Exception
+	def tail: Nothing = throw new Exception}
+
+- take nth elem
+	def nth(n:Int, xs:List[T]):T = if (n==0) xs.head else nth(n-1, xs.tail)
