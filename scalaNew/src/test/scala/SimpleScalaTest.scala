@@ -6,7 +6,7 @@ import org.junit.Before
 
 import scala.collection.mutable.ListBuffer
 
-class SimpleTest {
+class SimpleScalaTest {
   var sb: StringBuilder = _
   var lb: ListBuffer[String] = _
 

@@ -6,7 +6,7 @@ import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 import scalaj.http.Http
 
 
-class ScalaTestWiremock extends FlatSpec with BeforeAndAfterEach {
+class WiremockTest extends FlatSpec with BeforeAndAfterEach {
   private val port = 8080
   private val hostname = "localhost"
   // Run wiremock server on local machine with specified port.

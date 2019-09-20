@@ -1,7 +1,5 @@
-package rest
-
-import org.scalatest.FlatSpec
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.FlatSpec
 
 
 class ScalaTestMock extends FlatSpec with MockFactory {

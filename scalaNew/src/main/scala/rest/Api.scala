@@ -16,8 +16,7 @@ object Api {
 
     get("/22", (req, res) => {
       res.header("Access-Control-Allow-Origin", "*")
-      print("inside 22")
-      val response = rs.getFromRemote(rs.host)
+      val response = rs.getFromRemote(Conf.host)
       //val response: HttpResponse[String] = rs.getFromLocal()
       response
     })
@@ -56,7 +55,6 @@ object Api {
 trait RemoteService{
   def getFromLocal: String
   def getFromRemote(urlPrefix: String): String
-  def host: String
 }
 
 object RemoteService extends RemoteService{
@@ -65,12 +63,14 @@ object RemoteService extends RemoteService{
     res.body
   }
 
-  def host = "https://mockbin.org"
-
   def getFromRemote(urlPrefix: String) ={
     Http(urlPrefix+"/bin/8023d488-a89a-45db-aba6-502414a9c523").option(HttpOptions.connTimeout(10000)).option(HttpOptions.readTimeout(50000)).asString.body
     //Http("https://mockbin.org/bin/8023d488-a89a-45db-aba6-502414a9c523").option(HttpOptions.connTimeout(10000)).option(HttpOptions.readTimeout(50000)).asString
   }
+}
+
+object Conf{
+  val host = "https://mockbin.org"
 }
 
 
