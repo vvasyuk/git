@@ -185,11 +185,67 @@ f.apply(7)
 	mix bounds - s can be any type interval between NonEmpty and IntSeT
 	[s >: NonEmpty <: IntSet]
 	
+Arrays in Java are covariant:
+	NonEmpty[] <: IntSeT										#################################
+problem:														#+----+  +--+     +--+   +----+ #
+	NonEmpty[] a = new NonEmpty[](new NonEmpty(1,Empty,Empty))	#|a[N]|  |N | +-> |N |   |b[E]| #
+	IntSeT[] b = a                                              #+------>---+     +--+<-------+ #
+	b[0] = Empty                                                # a=N                    a=E    #
+	NonEmpty s = a[0]                                           #################################
+fix:
+	so java stores a type of array during runtime and will throw ArrayStoreException
+Arrays in Scala arrays are not covariant:
+	val a: Array[NonEmpty] = Array(new NonEmpty(1, Empty, Empty))
+	val b: Array[IntSeT] = a		# type error during compilation
+	
+	
+- variance
+	C[A] <: C[B]	covariant		class C[+A]
+	C[A] >: C[B]	contravariant	class C[-A]
+
+question: what is the relation:
+	type A = IntSet => NonEmpty		(you can do same here)
+	type B = NonEmpty => IntSet		(you can pass NonEmpty and get IntSet)
+answer: A < B
+...
 
 
+- pattern matching (for decomposition)
+	trait Expr{...}
+	case class Numbber(n: Int) extends Expr
+	case class Sum(e1: Expr, e2: Expr) extends Expr
+case class adds companion object
+	object Number{
+		def apply(n:Int) = new Numbber(n)}
+pattern matching:
+	def eval (e: Expr): Int = e match{
+		case Number(n) => n
+		case Sum(e1,e2) => eval(e1) + eval(e2)
+	}
 
 
+- lists
+	List(1,2,3,4)
+all lists are constructed Nil and :: (pronounced cons)
+	x::xs					gives a new list with first elem x followed by elements of xs
+	1::(2::(3::(4::Nil)))
+	or
+	1::2::3::4::Nil			operators ending with : are method caals of right operand
+	is equivalent to:
+	Nil.::4.::3.::2.::1.::
+list patterns:
+	1::2::xs		starts with 1 and 2
+	x::Nil			one element
+	List(x)			one element
+	List()			empty
+	Nil				empty
+	List(2::xs)		contains another list as onlu element and inner list starts with 2
+sort list(insertion sort):
+	def isort(xs: List[Int]) = xs match {	# def insert(x:Int, xs: List[Int]): List[Int] = xs match {
+		case List() => List()               # 	case List() => List(x)
+		case y::ys => insert(y, isort(ys))  # 	case y::ys => if(x<=y) x::xs else y::insert(x,ys)
+	}                                       # }	
 
 
-
-
+	
+	
