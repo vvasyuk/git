@@ -140,16 +140,18 @@ class NonEmpty(elem: Int, left: IntSet, right: IntSet) extends IntSet{          
 trait List[T] {
 	def isEmpty: Boolean
 	def head: T
-	def tail: List[T]
-}
-
+	def tail: List[T]}
 class Cons[T](val head: T, val tail: List[T]) extends List[T]{
-	def isEmpty: = false}
-	
+	def isEmpty: = false}	
 class Nil[T] extends IntList[T] {
 	def isEmpty: = true
 	def head: Nothing = throw new Exception
 	def tail: Nothing = throw new Exception}
+object List{
+	//List(1,2) = List.apply(1,2)
+	def apply[T](x1:T,x2:T): List[T] = new Cons(x1, new Cons(x2,new Nil)) 
+}
+	
 
 - take nth elem
 	def nth(n:Int, xs:List[T]):T = if (n==0) xs.head else nth(n-1, xs.tail)
@@ -167,8 +169,22 @@ abstract class Nat{					# object Zero extends Nat{																# object Succ(
 	def +(that:Nat): Nat}           #                                                                                       # 
 	
 
+- functions as objects
+val f = (x:Int) => x*x*x
+f(7)
+would be 
+val f = new Function[Int,Int]{ def apply(x:Int) = x*x }
+f.apply(7)
 
 
+- subtyping and generics (which are prinicpals of polymorphism)
+	upper bounds - s can be only subtype of IntSet
+	def assertAllPos (s <: IntSeT): IntSet
+	lower bounds - s can be only supertype of IntSet
+	def assertAllPos (s >: IntSeT): IntSet
+	mix bounds - s can be any type interval between NonEmpty and IntSeT
+	[s >: NonEmpty <: IntSet]
+	
 
 
 
