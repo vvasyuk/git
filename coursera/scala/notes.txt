@@ -247,5 +247,112 @@ sort list(insertion sort):
 	}                                       # }	
 
 
+###############
+# week5
+###############	
+
+- more functions on list
+	xs.last				last element
+	xs.init				all except for last element
+	xs.take				list of first n elements
+	xs.drop				rest of list after taking n
+	xs ++ ys 			concats - cxs will be in the start
+	xs updated (n,x)	returns new list updating n element
+
+	def last[T](xs: List[T]):T = xs match{	# def init[T](xs: List[T]):List[T] = xs match{
+		case List() => throw new Error("")  # 	case List() => throw new Error("")
+		case List(x) => x                   # 	case List(x) => List()
+		case y::ys => last(ys)}             # 	case y::ys => y::init(ys)}
+											#########################
+	def concat[T](xs: List[T], ys: List[T]):List[T] =xs match{		#def reverse[T](xs: List[T]):List[T] = xs match{
+		case List() => ys                                           #	case List() => xs
+		case z::zs => z::concat(zs, ys)}                            #	case y::ys => reverse(ys) ++ List(y)}
 	
+	def removeAt[T](n: Int, xs: List[T]) = (xs take n) ::: (xs drop n+1)
+
+
+- tuples
+	non-Parametrized														# Parametrized
+	def msort(xs: List[Int]): List[Int] = {									# def msort[T](xs: List[T])(lt:(T,T) => Boolean): List[T] = {
+		val n = xs.length/2                                                 # 	val n = xs.length/2
+		if(n==0) xs                                                         # 	if(n==0) xs
+		else{                                                               # 	else{
+			def merge (xs: List[Int], ys: List[Int]) = (xs, ys) match{      # 		def merge (xs: List[T], ys: List[T]) = (xs, ys) match{
+				case (Nil, ys) => ys                                        # 			case (Nil, ys) => ys
+				case (xs, Nil) => xs                                        # 			case (xs, Nil) => xs
+				case (x :: xs1, y::ys1) => if (x<y) x::merge(xs1,ys)        # 			case (x :: xs1, y::ys1) => if (lt(x,y)) x::merge(xs1,ys)
+				else y::merge(xs, ys1)                                      # 			else y::merge(xs, ys1)
+			}                                                               # 		}
+			val (fst, snd) = xs.splitAt(n)                                  # 		val (fst, snd) = xs.splitAt(n)
+			merge(msort(fst), msort(snd))}}                                 # 		merge(msort(fst)(lt), msort(snd)(lt))}}
+																			#  msort(nums)(x,y)=>x<y)
+
+- implicit parameters
+
+	import scala.math.Ordering                                              # using implicit
+	def msort[T](xs: List[T])(ord: Ordering[T]): List[T] = {                # def msort[T](xs: List[T])(implicit ord: Ordering[T]): List[T] = {                
+		val n = xs.length/2                                                 # 	val n = xs.length/2                                                 
+		if(n==0) xs                                                         # 	if(n==0) xs                                                         
+		else{                                                               # 	else{                                                               
+			def merge (xs: List[T], ys: List[T]) = (xs, ys) match{          # 		def merge (xs: List[T], ys: List[T]) = (xs, ys) match{          
+				case (Nil, ys) => ys                                        # 			case (Nil, ys) => ys                                        
+				case (xs, Nil) => xs                                        # 			case (xs, Nil) => xs                                        
+				case (x :: xs1, y::ys1) => if (ord.lt(x,y)) x::merge(xs1,ys)# 			case (x :: xs1, y::ys1) => if (ord.lt(x,y)) x::merge(xs1,ys)
+				else y::merge(xs, ys1)                                      # 			else y::merge(xs, ys1)                                      
+			}                                                               # 		}                                                               
+			val (fst, snd) = xs.splitAt(n)                                  # 		val (fst, snd) = xs.splitAt(n)                                  
+			merge(msort(fst)(ord), msort(snd)(ord))}}                       # 		merge(msort(fst), msort(snd))}}
+	msort(nums)(Ordering.Int)                                               # msort(nums)
+
+- higher order functions
+map,filter
+	abstract class List[T]{...                  # 
+	def map[U](f: T=>U):List[U] = this match{	# def filter(p: T=>Boolean): List[T] = this match{
+		case Nil => this                        # 	case Nil => this
+		case x::xs => f(x)::xs.map(f)}}         # 	case x::xs => if(p(x)) x :: xs.filter(p) else xs.filter(p)}
+	xs.map(x=>x*x)                              # xs.filter(x=>x>0)
 	
+	val xs = List(2,-4,5,7,1)
+	xs.span(x=>x>0)				# (List(2), List(-4,5,7,1))
+	
+task: pack consecutive duplocates into sublists
+	pack(List(a,a,a,b,c,c,a))	=>	List(List(a,a,a),List(b),List(c,c),List(a))
+solution
+	def pack[T](xs:List[T]): List[List[T]] = xs match{
+		case Nil => Nil
+		case xs :: xs1 => 
+			val(first,rest) = xs.span(y=> y==y)
+			first::pack(rest)}
+task: using pack produce lenght of lists like List((a,3),(b,1)...)
+solution:
+	def encode[T](xs:List[T]): List[(T,Int)] = xs match{
+		pack(xs) map (ys => (ys.head, ys.length))}
+
+
+- reduction
+can be implemented using usual recursive schema:
+	def sum(xs:List[Int]):Int = xs match{
+		case Nil => 0
+		case y::ys => y+sum(ys)}
+reduceLeft (can be applied to non empty lists)					###############	    #	foldLeft (can be applied to empty lists)						###############
+                                                                #     +--+    #     #   	def sum (xs:List[Int]) = (xs foldLeft 0)(_+_)               #     +--+    #
+	abstract class List[T]{                                     #     |op|    #     #   	                                                            #     |op|:U  #
+	def reduceLeft(op: (T,T)=>T):T = this match{                #     +--+    #     #   	abstract class List[T]{                                     #     +--+    #
+		case Nil => throw new Error("")                         # +--+    xn  #     #   	def foldLeft[U](z:U)(op: (U,T)=>U):U = this match{          # +--+    xn:T#
+		case x::xs => (xs foldLeft x)(op)}}                     # |op|        #     #   		case Nil => z                                           # |op|:U      #
+                                                                # +--+        #     #   		case x::xs => (xs foldLeft op(z,x))(op)}}               # +--+        #
+	def sum (xs:List[Int]) = (0::xs) reduceLeft ((x,y) => x+y)	#0    x1      #		#	                                                                #z:U  x1:T    #
+	                                                            ###############     #   	                                                            ###############
+
+																					#
+foldRight														############		#	to concat two lists only foldRight would work					##############
+	abstract class List[T]{                                     # +--+     #        #   	def concat[T](xs: List[T], ys: List[T]): List[T] =          # +--+       #
+	def foldRight[U](z:U)(op: (T,U)=>U):U = this match{         # |op|     #        #   		(xs foldRight ys)(_ :: _)                               # |::|       #
+		case Nil => z                                           # +--+     #        #   because you can call :: on Nil and not on any T                 # +--+       #
+		case x::xs => op(x, (xs foldRight z)(op))               #x1   +--+ #        #   		                                                        #x1   +--+   #
+                                                                #     |op| #        #                                                                   #     |::|   #
+                                                                #     +--+ #        #                                                                   #     +--+   #
+                                                                #    xn   z#        #                                                                   #    y1   Nil#
+                                                                ############        #                                                                   ##############
+
+asdfg
