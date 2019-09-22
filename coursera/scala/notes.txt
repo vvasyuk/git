@@ -522,6 +522,32 @@ polynomial
 	p1+p2		# merge coefficients that have the same exponents - Map (0->3.0, 1->2.0, 3->11, 5->6.2)
 	
 	
+- phone encoder
+	val mnemonics = Map(2->ABC, 3->DEF, 4->GHI, 5->JKL, 6->MNO, 7->PQRS, 8->TUV, 9XYZ)
+	7225247386 -> Scala is function
+	
+	objext x{
+	val in = Source.fromURL("...")
+	val words = in.getLines.toList filter (word => word forall (chr=>chr.isLetter))
+	
+	val mnem = Map(2->ABC, 3->DEF, 4->GHI, 5->JKL, 6->MNO, 7->PQRS, 8->TUV, 9XYZ)
+	
+	// invert mnem map to have Map(A->2, B->2)
+	val charCode: Map[Char,Char] = for ((digit,str) <-mnem; ltr <- str) yield ltr -> digit		# Map(E->3,X->9, ...)
+	// map a word to the digit string it can represent JAVA -> 5282
+	def wordCode(word:String):String = word.toUpperCase map charCode
+	// a map from digit strings to the words 5282 -> List(Java, Kata, Lava)
+	val wordsForNum: Map[String, Seq[String]] = words groupBy wordCode withDefault Seq()
+	// return all ways to encode a number as a list of words
+	def encode (number: String): Set[List[String]] = {
+		if(number.isEmpy) Set(List())
+		else
+			split <- 1 to number.length
+			word <- wordsForNum(number take split)
+			rest <- encode(number drop split)
+	} yield word :: rest	
+	}
+	
 	
 	
 	
