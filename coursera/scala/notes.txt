@@ -485,4 +485,48 @@ algorithm: place a queen on each row
 			case (r,c) => col != c && math.abs(col-c) != row -r
 		}
 	}
+
+- map
+	val capitalOfCountry = Map("US" -> "Washington", "Switzerland" -> "Bern")		#                                                   #
+	capitalOfCountry("andorra")			NoSuchElementException                      # trait Option[+A]                                  # def showCapital(country:String) = capitalOfCountry.get(country) match {
+	capitalOfCountry get "andorra"		None                                        # case class Some[+A](value: A) extends option[A]   # 	case Some(capital) => capital
+	capitalOfCountry get "US"			Some(Washington)                            # object none extends Option[Nothing]               # 	case None => "missing"}
+
+orderBy
+	val fruit = List (apple, pear, orange, pineapple)
+	fruit sortWith( _.length < _.length)				# List(pear, apple, orrange, pineapple)
+	fruit.sorted										# List(apple, orange, pear, pineapple)
+	
+groupBy
+	fruit groupBy (_,head)		# Map ( p -> List(pear,pineapple), a -> List(apple), o -> List(orange))
+	
+polynomial
+	can be seen as a map of exponents and coefficients
+	(x*x*x)-2x+5 can be expressed by map 
+	Map(0->5, 1->-2, 3->1)
+	
+	# (terms ++ other.terms) if terms does not have what is in other.terms - it is added, if terms contains what is in other.terms - it is overriden
+	class Poly(cal terms:Map[Int,Double]){											                                        # class Poly(val terms0: Map[Int,Double]){
+		def + (other:Poly) = new Poly(terms ++ (other.terms map adjust))				                                    # 	val terms = terms0 withDefault 0.0
+		def adjust(term: (Int,Double)):(Int,Double)={                                                                       # 	def + (other:Poly) = new Poly((other.terms foldLeft terms)(addTerm))
+			val (exp,coefd) = term                                                                                          # 	def addTerm(terms: Map[Int,Double], term: (Int,Double)): Map[Int,Double] = {
+			terms get exp match {                                                                                           # 		val (exp,coedd) = term
+			case Some(coeff1) => exp->(coeff+coeff1)                                                                        # 		terms + ( exp-> ( coeff + terms(exp)))
+			case None => exp -> coeff                                                                                       # }}	
+			}                                                                                                               #
+		}                                                                                                                   #
+		override def toString = (for ((exp.coeff) <- terms.toList.sorted.reverse) yield coeff+"x^"+exp) mkString " + "		#
+	}
+	val p1 = new Poly(Map(1->2.0, 3->4.0, 5->6.2))
+	val p2 = new Poly(Map(0->3.0, 3->7.0))
+	p1+p2		# merge coefficients that have the same exponents - Map (0->3.0, 1->2.0, 3->11, 5->6.2)
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
