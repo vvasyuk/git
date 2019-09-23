@@ -151,15 +151,15 @@
 	improvement2:
 	・Just after computing the root of p, set the id of each examined node to point to that root
 	・Make every other node in path point to its grandparent (thereby halving path length).
-	############################ 
-	# private int root(int i){ #
-	#  while (i != id[i]){     #
-	#  id[i] = id[id[i]];      #  <--  added code
-	#  i = id[i];              #
-	#  }                       #
-	#  return i;               #
-	# }                        #
-	############################
+	##############################	
+	# private int root(int i) {  #
+	#     while (i != id[i]) {   #
+	#         id[i] = id[id[i]]; #  <--  added code
+	#         i = id[i];         #
+	#     }                      #
+	#     return i;              #
+	# }                          #
+	##############################
 
 
 
