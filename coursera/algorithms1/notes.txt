@@ -162,20 +162,29 @@
 	##############################
 
 
-
-
-
-
-
-
-
-	  
-
-
-
 ###############
 # week2
 ###############	
+
+- stacks
+
+- resizing arrays
+
+- queues
+
+- generics
+
+- iterators
+
+- selection sort
+
+- insertion sort
+
+- shellsort
+
+- shuffling
+
+- convex hull
 
 ###############
 # week3
