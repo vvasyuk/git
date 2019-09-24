@@ -168,13 +168,60 @@
 
 - stacks
 	
-################################## 
-#  stack                         #
-#  +-+-+-+-+-+-+-+-+-+-+ <-+push #
-#  | | | | | | | | | | |         #
-#  +-+-+-+-+-+-+-+-+-+-+ +->pop  #
-##################################
+	################################## 
+	#  stack                         #
+	#  +-+-+-+-+-+-+-+-+-+-+ <-+push #
+	#  | | | | | | | | | | |         #
+	#  +-+-+-+-+-+-+-+-+-+-+ +->pop  #
+	##################################
+	
+	implementation
+	####################################### 
+	# public class LinkedStackOfStrings { #
+    # private Node first = null;          #
+    # private class Node {                #
+    #     String item;                    #
+    #     Node next;                      #
+    # }                                   #
+	#                                     #
+    # public boolean isEmpty() {          #
+    #     return first == null;           #
+    # }                                   #
+    # public void push(String item) {     #
+    #     Node oldfirst = first;          #
+    #     first = new Node();             #
+    #     first.item = item;              #
+    #     first.next = oldfirst;          #
+    # }                                   #
+    # public String pop() {               #
+    #     String item = first.item;       #
+    #     first = first.next;             #
+    #     return item;                    #
+    # }}	                              #
+	#######################################
+	
+	
+	public class FixedCapacityStackOfStrings {
+    private String[] s;
+    private int N = 0;
 
+    public FixedCapacityStackOfStrings(int capacity) {
+        s = new String[capacity];
+    }
+
+    public boolean isEmpty() {
+        return N == 0;
+    }
+
+    public void push(String item) {
+        s[N ++] = item;
+    }
+
+    public String pop() {
+        return s[-- N];
+	}}
+
+	
 - resizing arrays
 
 - queues
