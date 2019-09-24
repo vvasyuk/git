@@ -167,70 +167,147 @@
 ###############	
 
 - stacks
-	
-	################################## 
-	#  stack                         #
-	#  +-+-+-+-+-+-+-+-+-+-+ <-+push #
-	#  | | | | | | | | | | |         #
-	#  +-+-+-+-+-+-+-+-+-+-+ +->pop  #
-	##################################
-	
-	implementation
-	####################################### 
-	# public class LinkedStackOfStrings { #
-    # private Node first = null;          #
-    # private class Node {                #
-    #     String item;                    #
-    #     Node next;                      #
-    # }                                   #
-	#                                     #
-    # public boolean isEmpty() {          #
-    #     return first == null;           #
-    # }                                   #
-    # public void push(String item) {     #
-    #     Node oldfirst = first;          #
-    #     first = new Node();             #
-    #     first.item = item;              #
-    #     first.next = oldfirst;          #
-    # }                                   #
-    # public String pop() {               #
-    #     String item = first.item;       #
-    #     first = first.next;             #
-    #     return item;                    #
+	・Parsing in a compiler.							 ##################################																				
+	・Java virtual machine.                           #  stack                         # 
+	・Undo in a word processor.                       #  +-+-+-+-+-+-+-+-+-+-+ <-+push # 
+	・Back button in a Web browser.                   #  | | | | | | | | | | |         # 
+	・PostScript language for printers.               #  +-+-+-+-+-+-+-+-+-+-+ +->pop  # 
+	・Implementing function calls in a compiler.      ################################## 
+
+	implementation parametrized					array implementation
+	#######################################     ######################################################
+	# public class Stack<Item> {          #     # public class FixedCapacityStack<Item> {            #
+    # private Node first = null;          #     # private Item[] s;                                  #
+    # private class Node {                #     # private int N = 0;                                 #
+    #     Item item;                      #     #                                                    #
+    #     Node next;                      #     # public FixedCapacityStackOfStrings(int capacity) { #
+    # }                                   #     #     s = (Item[])new Object[capacity];              #
+	#                                     #     # }                                                  #
+    # public boolean isEmpty() {          #     #                                                    #
+    #     return first == null;           #     # public boolean isEmpty() {                         #
+    # }                                   #     #     return N == 0;                                 #
+    # public void push(String item) {     #     # }                                                  #
+    #     Node oldfirst = first;          #     #                                                    #
+    #     first = new Node();             #     # public void push(Item item) {                      #										+-------------------------+
+    #     first.item = item;              #     #     s[N ++] = item;                                #                                      | public String pop() {   |
+    #     first.next = oldfirst;          #     # }                                                  #                                      | 	String item = s[--N]; |
+    # }                                   #     #                                                    #										| 	s[N] = null;          |
+    # public Item pop() {                 #     # public Item pop() {                                #                                      | 	return item;          |
+    #     Item item = first.item;         #     #     return s[-- N];                                #  <-- holding a reference to object   | }                       |
+    #     first = first.next;             #     # }}                                                 #                                      +-------------------------+
+    #     return item;                    #     ######################################################
     # }}	                              #
 	#######################################
-	
-	
-	public class FixedCapacityStackOfStrings {
-    private String[] s;
-    private int N = 0;
 
-    public FixedCapacityStackOfStrings(int capacity) {
-        s = new String[capacity];
-    }
 
-    public boolean isEmpty() {
-        return N == 0;
-    }
-
-    public void push(String item) {
-        s[N ++] = item;
-    }
-
-    public String pop() {
-        return s[-- N];
-	}}
-
-	
 - resizing arrays
+	when array fills - crate a new one twice a size
+	###################################################																				Arithmetic expression evaluation
+	# public ResizingArrayStackOfStrings() {          #		   ##########################################################           ################################################################################# 	
+	#     s = new String[1];                          #        # public String pop() {                                  #           # public class Evaluate {                                                       #   Two-stack algorithm. [E. W. Dijkstra]
+	# }                                               #  <---  #     String item = s[--N];                              #           # 	public static void main(String[] args) {                                    #   ・Value: push onto the value stack.
+	# public void push(String item) {                 #        #     s[N] = null;                                       #           # 		Stack<String> ops = new Stack<String>();                                #   ・Operator: push onto the operator stack.
+	#     if(N == s.length) resize(2 * s.length);     #        #     if(N > 0 && N == s.length / 4) resize(s.length/2); #           # 		Stack<Double> vals = new Stack<Double>();                               #   ・Left parenthesis: ignore.
+	#     s[N++] = item;                              #        #     return item;                                       #           # 		while (!StdIn.isEmpty()) {                                              #   ・Right parenthesis: pop operator and two values;
+	# }                                               #        # }                                                      #           # 			String s = StdIn.readString();                                      #   push the result of applying that operator
+	# private void resize(int capacity) {             #        ##########################################################           # 			if (s.equals("(")) ;                                                #   to those values onto the operand stack.
+	#     String[] copy = new String[capacity];       #                                                                             # 			else if (s.equals("+")) ops.push(s);                                #
+	#     for (int i = 0; i < N; i++) copy[i] = s[i]; #                                                                             # 			else if (s.equals("*")) ops.push(s);                                #
+	#     s = copy;                                   #                                                                             # 			else if (s.equals(")")){                                            #
+	# }                                               #                                                                             # 				String op = ops.pop();                                          #
+	###################################################                                                                             # 				if (op.equals("+")) vals.push(vals.pop() + vals.pop());         #
+	                                                                                                                                # 				else if (op.equals("*")) vals.push(vals.pop() * vals.pop());    #
+	・linked list - uses extra time and space to deal with the links                                                                 # 			}                                                                   # 
+	・array - every operation takes constant amortized time.                                                                         # 			else vals.push(Double.parseDouble(s));                              # 
+	                                                                                                                                # 		}                                                                       #
+- queues                                                                                                                            # 	StdOut.println(vals.pop());                                                 #
+	############################################                                                                                    # }}                                                                            #
+	#          queue                           #                                                                                    #################################################################################
+	#          +-+-+-+-+-+-+-+-+-+-+           #
+	# enque+-> | | | | | | | | | | | +->deque  #
+	#          +-+-+-+-+-+-+-+-+-+-+           #
+	############################################
+	
+	linked list implementation								array implemeentation
+	#############################################			・Use array q[] to store items in queue.
+	# public class LinkedQueueOfStrings {       #           ・enqueue(): add new item at q[tail].
+	#     private Node first, last;             #           ・dequeue(): remove item from q[head].
+	#                                           #           ・Update head and tail modulo the capacity.
+	#     private class Node {                  #           ・Add resizing array.
+	#         ; /* same as in StackOfStrings */ #
+	#     }                                     #
+	#                                           #
+	#     public boolean isEmpty() {            #
+	#         return first == null;             #
+	#     }                                     #
+	#                                           #
+	#     public void enqueue(String item) {    #
+	#         Node oldlast = last;              #
+	#         last = new Node();                #
+	#         last.item = item;                 #
+	#         last.next = null;                 #
+	#         if(isEmpty()) first = last;       #
+	#         else oldlast.next = last;         #
+	#     }                                     #
+	#                                           #
+	#     public String dequeue() {             #
+	#         String item = first.item;         #
+	#         first = first.next;               #
+	#         if(isEmpty()) last = null;        #
+	#         return item;                      #
+	#     }                                     #
+	# }                                         #
+	#############################################
 
-- queues
 
-- generics
-
-- iterators
+- iterators																							implementation															array implementation
+	######################################															################################################################		########################################################################															
+	# public interface Iterable<Item > { #                                                          # import java.util.Iterator;                                   #        # import java.util.Iterator;                                           #
+	#     Iterator<Item> iterator();     #                                                          # public class Stack<Item > implements Iterable<Item > {       #        # public class Stack<Item > implements Iterable<Item > {               #
+    # }                                  #                                                          #     public Iterator<Item > iterator() {                      #        #     public Iterator<Item > iterator() {                              #
+    #                                    #	<-- allows for (String s : stack) StdOut.println(s);    #         return new ListIterator();                           #        #         return new ReverseArrayIterator();                           #
+    # public interface Iterator<Item > { #                                                          #     }                                                        #        #     }                                                                #
+    #     boolean hasNext();             #                                                          #     private class ListIterator implements Iterator<Item > {  #        #     private class ReverseArrayIterator implements Iterator<Item > {  #
+    #     Item next();                   #                                                          #         private Node current = first;                        #        #         private int i = N;                                           #
+    #     void remove();                 #                                                          #         public boolean hasNext() {                           #        #         public boolean hasNext() {                                   #
+    # }                                  #                                                          #             return current != null;                          #        #             return i > 0;                                            #
+    ######################################                                                          #         }                                                    #        #         }                                                            #
+                                                                                                    #         public void remove() {                               #        #         public void remove() {                                       #
+                                                                                                    #             ; /* not supported */                            #        #             ; /* not supported */                                    #
+                                                                                                    #         }                                                    #        #         }                                                            #
+                                                                                                    #         public Item next() {                                 #        #         public Item next() {                                         #
+                                                                                                    #             Item item = current.item;                        #        #             return s[--i];                                           #
+                                                                                                    #             current = current.next;                          #        #         }                                                            #
+                                                                                                    #             return item;                                     #        #     }                                                                #
+                                                                                                    #         }                                                    #        # }                                                                    #
+                                                                                                    #     }                                                        #        ########################################################################
+                                                                                                    # }                                                            #
+                                                                                                    ################################################################
 
 - selection sort
+	・In iteration i, find index min of smallest remaining entry.
+	・Swap a[i] and a[min].
+	################################################################################
+	# public class Selection {                                                     #
+	#     public static void sort(Comparable[] a) {                                #
+	#         int N = a.length;                                                    #
+	#         for(int i = 0; i < N; i++) {                                         #
+	#             int min = i;                                                     #
+	#             for (int j = i+1; j < N; j++) if (less(a[j], a[min])) min = j;   #
+	#             exch(a, i, min);                                                 #
+	#         }                                                                    #
+	#     }                                                                        #
+	#     private static boolean less(Comparable v, Comparable w) {                #
+	#         return v.compareTo(w) < 0;                                           #
+    #     }                                                                        #
+    #     private static void exch(Comparable[] a, int i, int j) {                 #
+    #         Comparable swap = a[i];                                              #
+    #         a[i] = a[j];                                                         #
+    #         a[j] = swap;                                                         #
+    #     }                                                                        #
+    # }                                                                            #
+    ################################################################################
+
 
 - insertion sort
 
@@ -242,11 +319,11 @@
 
 
 
+ 
 
-         queue
-         +-+-+-+-+-+-+-+-+-+-+
-enque+-> | | | | | | | | | | | +->deque
-         +-+-+-+-+-+-+-+-+-+-+
+
+
+
 
 
 
