@@ -1,3 +1,5 @@
+O(n^2) > O(n log n) > O(n) > O(log n) > O(n)
+
 ###############
 # week1
 ###############
@@ -384,28 +386,28 @@
 
 - convex hull
 	・The convex hull of a set of N points is the smallest perimeter fence enclosing the points.
-	############################		Fact. Farthest pair of points are extreme points on convex hull.
-	#       +X+----------+X    #		Fact. Can traverse the convex hull by making only counterclockwise turns.
-	#  +----+             ++   #		Fact. The vertices of convex hull appear in increasing order of polar angle with respect to point p with lowest y-coordinate.
-	#  X               X   +   #		solution
-	#  +   X        X      X   #		・Choose point p with smallest y-coordinate.
-	#  |              X    ++  #        ・Sort points by polar angle with p.
-	# ++       X   X     X  +  #        ・Consider points in order; discard unless it create a ccw turn.
-	# X   X           X     X  #																						#####################
-	# +          X          +  #		Given three points a, b, and c, is a → b→ c a counterclockwise turn?    		# c+-+         +-+c #
-    # |                     +  #		#############################################################################	#    +b       b|    #
-    # |      +-------------+X  #        # public static int ccw(Point2D a, Point2D b, Point2D c) {                  #	#     ++      +-+   #
-    # +----+X+                 #        #     double area2 = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x); #	#      +        +   #
-    ############################        #     if (area2 < 0)                                                        #	#      a        a   #
-										#         return -1;	// clockwise                                        #	#   yes       no    #
-										#		else if (area2 > 0)                                                 #	#####################
-										#         return + 1;	// counter-clockwise                                #					 
-										#		else                                                                #					 
-                                        #         return 0;		// collinear                                        #
-										# }                                                                         #
-										#############################################################################
-
-	#################################################### 
+	############################		Fact. Farthest pair of points are extreme points on convex hull.																##############################################################################################
+	#       +X+----------+X    #		Fact. Can traverse the convex hull by making only counterclockwise turns.                                                       # public class Point2D {                                                                     #
+	#  +----+             ++   #		Fact. The vertices of convex hull appear in increasing order of polar angle with respect to point p with lowest y-coordinate.   #     public final Comparator<Point2D> POLAR_ORDER = new PolarOrder();                       #
+	#  X               X   +   #		solution                                                                                                                        #     private final double x,y;                                                              #
+	#  +   X        X      X   #		・Choose point p with smallest y-coordinate.                                                                                     #     private static int ccw(Point2D a, Point2D b, Point2D c) { /* as in previous lecture */ # 
+	#  |              X    ++  #        ・Sort points by polar angle with p.                                                                                             #     }                                                                                      # 
+	# ++       X   X     X  +  #        ・Consider points in order; discard unless it create a ccw turn.                                                                 #     private class PolarOrder implements Comparator<Point2D> {                              # 
+	# X   X           X     X  #																						#####################                           #         public int compare(Point2D q1, Point2D q2) {                                       #
+	# +          X          +  #		Given three points a, b, and c, is a → b→ c a counterclockwise turn?    		# c+-+         +-+c #                           #             double dy1 = q1.y - y;                                                         #
+    # |                     +  #		#############################################################################	#    +b       b|    #                           #             double dy2 = q2.y - y;                                                         #
+    # |      +-------------+X  #        # public static int ccw(Point2D a, Point2D b, Point2D c) {                  #	#     ++      +-+   #                           #             if (dy1 == 0 && dy2 == 0) {                                                    #
+    # +----+X+                 #        #     double area2 = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x); #	#      +        +   #                           #                 ...                                                                        #
+    ############################        #     if (area2 < 0)                                                        #	#      a        a   #                           #         } else if (dy1 >= 0 && dy2 < 0)                                                    #
+										#         return -1;	// clockwise                                        #	#   yes       no    #                           #             return -1;                                                                     #
+										#		else if (area2 > 0)                                                 #	#####################                           #          else if (dy2 >= 0 && dy1 < 0)                                                     #
+										#         return + 1;	// counter-clockwise                                #					                                #             return + 1;                                                                    #
+										#		else                                                                #					                                #          else                                                                              #
+                                        #         return 0;		// collinear                                        #                                                   #             return -ccw(Point2D.this, q1, q2);                                             #
+										# }                                                                         #                                                   #                                                                                            #
+										#############################################################################                                                   #     }                                                                                      #
+                                                                                                                                                                        # }}                                                                                         #
+	####################################################                                                                                                                ##############################################################################################
     # Stack <2D> hull = new Stack<Point>()             #
     # Arrays.sort(p, Point2D.Y_ORDER)                  #  <-- p[0] is now point on lowest y coordinate
     # Arrays.sort(p, p[0].BY_POLAR_ORDER)              #  <-- sort by polar angle with respect to p[0]
@@ -426,6 +428,96 @@
 ###############
 # week3        
 ###############
+	
+- mergesort
+	・Divide array into two halves.
+	・Recursively sort each half.
+	・Merge two halves.
+	
+	merge																										implementation
+	#########################################################	##########################################		#########################################################
+	# private static void merge(Comparable[] a,             #   #                                        #      # public class Merge {                                  #
+	#							Comparable[] aux,           #   #       lo i    j hi             k       #      #     private static void merge(...) { /* as before */  #
+	#							int lo, int mid, int hi) {  #   #      +-----------+      +-----------+  #      #     }                                                 #
+	#     for (int k = lo; k <= hi; k ++)                   #   # aux[]|aglor|himst|   a[]|aghil|m    |  #      #                                                       #
+	#         aux[k] = a[k];                                #   #      +-----------+      +-----------+  #      #     private static void sort(Comparable[] a,          #
+	#                                                       #   #            mi                          #      #							   Comparable[] aux,        #
+	#     int i = lo,                                       #   ##########################################      #							   int lo, int hi) {        #
+	#     j = mid + 1;                                      #                                                   #         if (hi <= lo)                                 #
+	#     for (int k = lo; k <= hi; k ++) {                 #                                                   #             return;                                   #
+	#         if (i > mid)                                  #                                                   #                                                       #
+	#             a[k] = aux[j ++];                         #                                                   #         int mid = lo + (hi - lo) / 2;                 #
+	#          else if (j > hi)                             #                                                   #         sort(a, aux, lo, mid);                        #
+	#             a[k] = aux[i ++];                         #                                                   #         sort(a, aux, mid + 1, hi);                    #
+	#          else if (less(aux[j], aux[i]))               #                                                   #         merge(a, aux, lo, mid, hi);                   #
+	#             a[k] = aux[j ++];                         #                                                   #     }                                                 #
+	#          else                                         #                                                   #     public static void sort(Comparable[] a) {         #
+	#             a[k] = aux[i ++];                         #                                                   #         aux = new Comparable[a.length];               #
+	#                                                       #                                                   #         sort(a, aux, 0, a.length - 1);                #
+	#     }                                                 #                                                   #     }                                                 #
+	# }                                                     #                                                   # }                                                     #
+	#########################################################                                                   #########################################################
+	
+- mergesort bottom-up
+	#####################################################################################
+	# public class MergeBU {                                                            #
+	#     private static void merge(...) { /* as before */                              #
+	#     }                                                                             #
+	#     public static void sort(Comparable[] a) {                                     #
+	#         int N = a.length;                                                         #
+	#         Comparable[] aux = new Comparable[N];                                     #
+	#         for (int sz = 1; sz < N; sz = sz + sz)                                    #
+	#             for (int lo = 0; lo < N - sz; lo += sz + sz)                          #
+	#                 merge(a, aux, lo, lo + sz - 1, Math.min(lo + sz + sz - 1, N - 1));#
+	#     }                                                                             #
+	# }                                                                                 #
+	#####################################################################################
+	
+- comparators
+	・Create Comparator object.												#############################################################################
+	・Pass as second argument to Arrays.sort().                      		# public static void sort(Object[] a, Comparator comparator) {              # 	java 8 lambda
+	##########################################################      		#     int N = a.length;                                                     #	########################################################################
+	# String[] a;                                            #      		#     for (int i = 0; i < N; i ++)                                          #   # listDevs.sort((Developer o1, Developer o2)->o1.getAge()-o2.getAge());#
+	# Arrays.sort(a);                                        #      		#         for (int j = i; j > 0 && less(comparator, a[j], a[j - 1]); j --)  #   ########################################################################
+	# Arrays.sort(a, String.CASE_INSENSITIVE_ORDER);         #      		#             exch(a, j, j - 1);                                            #
+	# Arrays.sort(a, Collator.getInstance(new Locale("es")));#      		# }                                                                         #
+	##########################################################      		# private static boolean less(Comparator c, Object v, Object w) {           #
+																			#     return c.compare(v, w) < 0;                                           #
+	####################################################################	# }                                                                         #
+	# Collections.sort(listDevs, new Comparator<Developer>() {         #	# private static void exch(Object[] a, int i, int j) {                      #
+	#     @Override public int compare(Developer o1, Developer o2) {   #	#     Object swap = a[i];                                                   #
+	#         return o1.getAge() - o2.getAge();                        #	#     a[i] = a[j];                                                          #
+	#     }                                                            #	#     a[j] = swap;                                                          #
+	# });                                                              #	# }                                                                         #
+	####################################################################	#############################################################################
+	
+- quicksort
+	・Shuffle the array.														##############################################################################################
+	・Partition so that, for some j                                          #public class Quick {                                                                        # 
+	– entry a[j] is in place                                                #    private static int partition(Comparable[] a, int lo, int hi) { /* see previous slide */ #
+	– no larger entry to the left of j                                      #    }                                                                                       #
+	– no smaller entry to the right of j                                    #    public static void sort(Comparable[] a) {                                               #
+	・Sort each piece recursively.                                           #        StdRandom.shuffle(a);                                                               # 
+                                                                            #        sort(a, 0, a.length - 1);                                                           #
+	#################################################################       #    }                                                                                       #
+	#private static int partition(Comparable[] a, int lo, int hi) { #       #    private static void sort(Comparable[] a, int lo, int hi) {                              #
+	#    int i = lo,                                                #       #        if (hi <= lo)                                                                       #
+	#    j = hi + 1;                                                #       #            return;                                                                         #
+	#    while (true) {                                             #       #                                                                                            #
+	#        while (less(a[++ i], a[lo]))                           #       #        int j = partition(a, lo, hi);                                                       #
+	#            if (i == hi)                                       #       #        sort(a, lo, j - 1);                                                                 #
+	#                break;                                         #       #        sort(a, j + 1, hi);                                                                 #
+	#        while (less(a[lo], a[-- j]))                           #       #    }                                                                                       #
+	#            if (j == lo)                                       #       #}                                                                                           #
+	#                break;                                         #       ##############################################################################################
+	#        if (i >= j)                                            #
+	#            break;                                             #
+	#        exch(a, i, j);                                         #
+	#    }                                                          #
+	#    exch(a, lo, j);                                            #
+	#    return j;}                                                 #
+	#################################################################
+	
 	
 ###############
 # week4
