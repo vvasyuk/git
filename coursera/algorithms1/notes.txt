@@ -289,13 +289,13 @@ O(n^2) > O(n log n) > O(n) > O(log n) > O(n)
 - selection sort
 	・In iteration i, find index min of smallest remaining entry.
 	・Swap a[i] and a[min].
-	################################################################################
-	# public class Selection {                                                     #
-	#     public static void sort(Comparable[] a) {                                #
-	#         int N = a.length;                                                    #
-	#         for(int i = 0; i < N; i++) {                                         #
-	#             int min = i;                                                     #
-	#             for (int j = i+1; j < N; j++) if (less(a[j], a[min])) min = j;   #
+	################################################################################		############################################################
+	# public class Selection {                                                     #        # private static void exch(Comparable[] a, int i, int j) { #
+	#     public static void sort(Comparable[] a) {                                #        #     Comparable swap = a[i];                              #
+	#         int N = a.length;                                                    #        #     a[i] = a[j];                                         #
+	#         for(int i = 0; i < N; i++) {                                         #        #     a[j] = swap;                                         #
+	#             int min = i;                                                     #        # }                                                        #
+	#             for (int j = i+1; j < N; j++) if (less(a[j], a[min])) min = j;   #        ############################################################
 	#             exch(a, i, min);                                                 #
 	#         }                                                                    #
 	#     }                                                                        #
@@ -522,7 +522,202 @@ O(n^2) > O(n log n) > O(n) > O(log n) > O(n)
 ###############
 # week4
 ###############
+
+- priority queues
+	API`s:																		Priority queue: unordered array implementation
+	・Stack. Remove the item most recently added.								################################################################
+	・Queue. Remove the item least recently added.                               # public class UnorderedMaxPQ < Key extends Comparable<Key> > {# 
+	・Randomized queue. Remove a random item.                                    #     private Key[] pq; 	// pq[i] = ith element on pq       # 
+	・Priority queue. Remove the largest (or smallest) item.                     #     private int N; 		// number of elements on pq        # 
+                                                                                #     public UnorderedMaxPQ(int capacity) {                    #
+	Priority queue applications                                                 #         pq = (Key[])new Comparable[capacity];                #
+	・Event-driven simulation. 	[customers in a line, colliding particles]      #     }                                                        #
+	・Numerical computation. 	[reducing roundoff error]                       #     public boolean isEmpty() {                               #
+	・Data compression. 			[Huffman codes]                                 #         return N == 0;                                       #
+	・Graph searching. 			[Dijkstra's algorithm, Prim's algorithm]        #     }                                                        #
+	・Number theory. 			[sum of powers]                                 #     public void insert(Key x) {                              #
+	・Artificial intelligence. 	[A* search]                                     #         pq[N ++] = x;                                        #
+	・Statistics. 				[maintain largest M values in a sequence]       #     }                                                        #
+	・Operating systems. 		[load balancing, interrupt handling]            #     public Key delMax() {                                    #
+	・Discrete optimization. 	[bin packing, scheduling]                       #         int max = 0;                                         #
+	・Spam filtering. 			[Bayesian spam filter]                          #         for (int i = 1; i < N; i ++)                         #
+                                                                                #             if (less(max, i))                                #
+                                                                                #                 max = i;                                     #
+                                                                                #         exch(max, N - 1);                                    #
+                                                                                #         return pq[-- N];                                     #
+                                                                                #     }                                                        #
+                                                                                # }                                                            #
+                                                                                ################################################################
+- Binary Heaps
+	#########################				Promotion in a heap													Insertion in a heap																	############################################################# 					
+    #          +-+          #               Problem.  Child's key becomes larger key than its parent's key.     Add node at end, then swim it up                                                    # public class MaxPQ < Key extends Comparable<Key> > {      #
+    #          | |          #               Solution:                                                           ################################                                                    #     private Key[] pq;                                     #
+    #      +---+-+---+      #               Exchange key in child with key in parent.                           # public void insert(Key x) {  #                                                    #     private int N;                                        #
+    #    +-+         +-+    #               Repeat until heap order restored.                                   #     pq[++ N] = x;            #                                                    #     public MaxPQ(int capacity) {                          #
+    #    | |         | |    #               #########################################                           #     swim(N);                 #                                                    #         pq = (Key[])new Comparable[capacity + 1];         #
+    #    +-+         +-+    #               # private void swim(int k) {            #          -->              # }                            #                                                    #     }                                                     #
+    # +-+   +-+   +-+   +-+ #               #     while (k > 1 && less(k / 2, k)) { #                           ################################                                                    #     public boolean isEmpty() {                            #
+    # | |   | |   | |   | | #               #         exch(k, k / 2);               #                                                                                                               #         return N == 0;                                    #
+    # +-+   +-+   +-+   +-+ #               #         k = k / 2;                    #                                                                                                               #     }                                                     #
+    #########################               # }}                                    # 				Demotion in a heap                                                                              #     public void insert(Key key)                           #
+                                            #########################################               Problem. Parent's key becomes smaller than one (or both) of its children's.                     #     public Key delMax() { /* see previous code */         #                           
+	Array representation of a heap-ordered complete binary tree.                                    Solution:                                                                                       #     }                                                     #
+	####################################	・Largest key is a[1], which is root of binary tree.     ・Exchange key in parent with key in larger child.                                               #     private void swim(int k)                              #   
+    #  i 	 0 1 2 3 4 5 6 7 8 9 10 11 #	・Can use array indices to move through tree.            ・Repeat until heap order restored.                                                              #     private void sink(int k) { /* see previous code */    # 
+    # a[i] -   T S R P N O A E I H  G  #	・Parent of node at k is at k/2.                         ########################################	Delete the maximum in a heap 	                    #     }                                                     #                             
+    #          T                       #	・Children of node at k are at 2k and 2k+1.              # private void sink(int k) {           #    Exchange root with node at end, then sink it down.  #     private boolean less(int i, int j) {                  #                                                 
+    # 	         S|R                   #                                                            #     while (2 * k <= N) {             # -->##########################                          #         return pq[i].compareTo(pq[j]) < 0;                #                       
+    # 			     P|N O|A           #                                                            #         int j = 2 * k;               #    # public Key delMax() {  #                          #     }                                                     #                      
+    # 					     E|I  H|G  #                                                            #         if (j < N && less(j, j + 1)) #    #     Key max = pq[1];   #                          #     private void exch(int i, int j) {                     #                      
+    ####################################                                                            #             j ++;                    #    #     exch(1, N --);     #                          #         Key t = pq[i];                                    #
+                                                                                                    #                                      #    #     sink(1);           #                          #         pq[i] = pq[j];                                    #
+                                                                                                    #         if (!less(k, j))             #    #     pq[N + 1] = null;  #                          #         pq[j] = t;                                        #
+                                                                                                    #             break;                   #    #     return max;        #                          #     }                                                     #
+                                                                                                    #                                      #    # }                      #                          # }                                                         #
+                                                                                                    #         exch(k, j);                  #    ##########################                          #############################################################
+                                                                                                    #         k = j;                       # 
+                                                                                                    #     }                                #
+                                                                                                    # }                                    #
+                                                                                                    ########################################
+
+- heapsort
+	・Create max-heap with all N keys.
+	・Repeatedly remove the maximum key.
+	#####################################################################################
+    # public class Heap {                                                               #
+    #     public static void sort(Comparable[] a) {                                     #
+    #         int N = a.length;                                                         #
+    #         for (int k = N / 2; k >= 1; k --)                                         #
+    #             sink(a, k, N);                                                        #
+    #                                                                                   #
+    #         while (N > 1) {                                                           #
+    #             exch(a, 1, N);                                                        #
+    #             sink(a, 1, -- N);                                                     #
+    #         }                                                                         #
+    #     }                                                                             #
+    #     private static void sink(Comparable[] a, int k, int N) { /* as before */      #
+    #     }                                                                             #
+    #     private static boolean less(Comparable[] a, int i, int j) { /* as before */   #
+    #     }                                                                             #
+    #     private static void exch(Comparable[] a, int i, int j) { /* as before */      #
+    #     }                                                                             #
+    # }                                                                                 #
+    #####################################################################################
+
+- event-driven simulation																													##########################################################################													
+	Simulate the motion of N moving particles that behave according to the laws of elastic collision.                                       # public void simulate() {                                               #
+	Change state only when something happens.                                                                                               #     pq = new MinPQ<Event>();                                           #
+	・Between collisions, particles move in straight-line trajectories.                                                                      #     for (int i = 0; i < N; i ++)                                       # 
+	・Focus only on times when collisions occur.                                                                                             #         predict(particles[i]);                                         # 
+	・Maintain PQ of collision events, prioritized by time.                                                                                  #                                                                        # 
+	・Remove the min = get next collision.                                                                                                   #     pq.insert(new Event(0, null, null));                               # 
+	Collision prediction. Given position, velocity, and radius of a particle,when will it collide next with a wall or another particle?     #     while (!pq.isEmpty()) {                                            #
+	Collision resolution. If collision occurs, update colliding particle(s)according to laws of elastic collisions.                         #         Event event = pq.delMin();                                     #
+                                                                                                                                            #         if (!event.isValid())                                          #
+                                                                                                                                            #             continue;                                                  #
+                                                                                                                                            #                                                                        #
+                                                                                                                                            #         Particle a = event.a;                                          #
+                                                                                                                                            #         Particle b = event.b;                                          #
+                                                                                                                                            #                                                                        #
+                                                                                                                                            #         for (int i = 0; i < N; i ++)                                   #
+                                                                                                                                            #             particles[i].move(event.time - t);                         #
+                                                                                                                                            #                                                                        #
+                                                                                                                                            #         t = event.time;                                                #
+                                                                                                                                            #                                                                        #
+                                                                                                                                            #         if (a != null && b != null)                                    #
+                                                                                                                                            #             a.bounceOff(b);                                            #
+                                                                                                                                            #          else if (a != null && b == null)                              #
+                                                                                                                                            #             a.bounceOffVerticalWall()else if (a == null && b != null)  #
+                                                                                                                                            #                 b.bounceOffHorizontalWall();                           #
+                                                                                                                                            #                                                                        #
+                                                                                                                                            #          else if (a == null && b == null)                              #
+                                                                                                                                            #             redraw();                                                  #
+                                                                                                                                            #                                                                        #
+                                                                                                                                            #                                                                        #
+                                                                                                                                            #         predict(a);                                                    #
+                                                                                                                                            #         predict(b);                                                    #
+                                                                                                                                            #     }                                                                  #
+                                                                                                                                            # }                                                                      #
+                                                                                                                                            ##########################################################################
+
+- binary search trees
+	A BST is a reference to a root Node.
+	A Node is comprised of four fields:
+		・A Key and a Value.
+		・A reference to the left and right subtree
 	
+########################################## 
+# private class Node {                   #
+#     private Key key;                   #
+#     private Value val;                 #
+#     private Node left,                 #
+#     right;                             #
+#     public Node(Key key, Value val) {  #
+#         this.key = key;                #
+#         this.val = val;                #
+#     }                                  #
+# }                                      #
+##########################################
+
+################################################################## 
+# public class BST < Key extends Comparable<Key>,                #
+# Value > {                                                      #
+#     privateNode root;                                          #
+#     private class Node { /* see previous slide */              #
+#     }                                                          #
+#     public void put(Key key, Value val) { /* see next slides */#
+#     }                                                          #
+#     public Value get(Key key) { /* see next slides */          #
+#     }                                                          #
+#     public void delete(Key key) { /* see next slides */        #
+#     }                                                          #
+#     public Iterable<Key> iterator() { /* see next slides */    #
+#     }                                                          #
+# }                                                              #
+##################################################################
+
+############################################# 
+# public Value get(Key key) {               #
+#     Node x = root;                        #
+#     while (x != null) {                   #
+#         int cmp = key.compareTo(x.key);   #
+#         if (cmp < 0)                      #
+#             x = x.left;                   #
+#          else if (cmp > 0)                #
+#             x = x.right;                  #
+#          else if (cmp == 0)               #
+#             return x.val;                 #
+#                                           #
+#     }                                     #
+#     return null;                          #
+# }                                         #
+#############################################
+
+##################################################
+# public void put(Key key, Value val) {          #
+#     root = put(root, key, val);                #
+# }                                              #
+# private Node put(Node x, Key key, Value val) { #
+#     if (x == null)                             #
+#         return new Node(key, val);             #
+#                                                #
+#     int cmp = key.compareTo(x.key);            #
+#     if (cmp < 0)                               #
+#         x.left = put(x.left, key, val);        #
+#      else if (cmp > 0)                         #
+#         x.right = put(x.right, key, val);      #
+#      else if (cmp == 0)                        #
+#         x.val = val;                           #
+#                                                #
+#     return x;                                  #
+# }                                              #
+################################################## 	
+	
+	
+	
+- ordered operations in BST
+- deletion in BST
+
 ###############
 # week5
 ###############
