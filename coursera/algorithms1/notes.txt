@@ -706,7 +706,143 @@ O(n^2) > O(n log n) > O(n) > O(log n) > O(n)
 ###############
 # week5
 ###############
+
+- 2-3 search trees															insert l		
+	Allow 1 or 2 keys per node.                                             convert 3node to 4node			split 4node - move l to parent	split 4node - move l to parent - the only time when height changes
+	・2-node: one key, two children.         ###########################     ###########################     ###########################     ###########################  
+	・3-node: two keys, three children.      #          +---+          #     #          +---+          #     #          +---+          #     #           +-+           # 
+                                            #          |e|r|          #     #          |e|r|          #     #          |elr|          #     #           |l|           #
+                                            #          +---+          #     #          +---+          #     #          +---+          #     #           +-+           #
+                                            #         /  |  \         #     #         /  |  \         #     #         /|   |\         #     #          /   \          #
+                                            #        /   |   \        # --> #        /   |   \        # --> #        / |   | \        # --> #         +-+ +-+         #
+                                            #       /    |    \       #     #       /    |    \       #     #       /  |   |  \       #     #         |e| |r|         #
+                                            #  +---+   +---+   +---+  #     #  +---+   +-+-+   +---+  #     #  +---+  +++ +++  +---+  #     #         +-+ +-+         #
+                                            #  |a|c|   |h|p|   |s|x|  #     #  |a|c|   |hlp|   |s|x|  #     #  |a|c|  |h| |p|  |s|x|  #     #         /|   |\         #
+                                            #  +---+   +---+   +---+  #     #  +---+   +---+   +---+  #     #  +---+  +-+ +-+  +---+  #     #        / |   | \        #
+                                            # /  |  \ /  |  \ /  |  \ #     # /  |  \  || ||  /  |  \ #     # /  |  \ | | | | /  |  \ #     #       /  |   |  \       #
+                                            ###########################     ###########################     ###########################     #  +---+  +++ +++  +---+  #
+                                                                                                                                            #  |a|c|  |h| |p|  |s|x|  #
+                                                                                                                                            #  +---+  +-+ +-+  +---+  #
+                                                                                                                                            # /  |  \ | | | | /  |  \ #
+                                                                                                                                            ###########################
+
+
+- red-black BST
+	・Represent 2–3 tree as a BST.								search											representation
+	・Use "internal" left-leaning links as "glue" for 3–nodes.	##########################################      ##############################################
+	###############		#################                       # public Val get(Key key) {              #      # private static final boolean RED = true;   #
+    #    +---+    #     #        +-+    #                       #     Node x = root;                     #      # private static final boolean BLACK = false;#
+    #    |a|b|    #     #        |b|    #                       #     while (x != null) {                #      # private class Node {                       #
+    #    +---+    # ==> #   red  +-+    #                       #         int cmp = key.compareTo(x.key);#      #     Key key;                               #
+    #   /  |  \   #     #   link/   \   #                       #         if (cmp < 0)                   #      #     Value val;                             #
+    # <a  >a   >b #     #    +-+     >b #                       #             x = x.left;                #      #     Node left,                             #
+    #     <b      #     #    |a|        #                       #          else if (cmp > 0)             #      #     right;                                 #
+    ###############     #    +-+        #                       #             x = x.right;               #      #     boolean color; // color of parent link #
+                        #   /   \       #                       #          else if (cmp == 0)            #      # }                                          #
+                        # <a     >a     #                       #             return x.val;              #      # private boolean isRed(Node x) {            #
+                        #        <b     #                       #                                        #      #     if (x == null)                         #
+                        #################                       #     }                                  #      #         return false;                      #
+                                                                #     return null;                       #      #                                            #
+	A BST such that:                                            # }                                      #      #     return x.color == RED;                 #
+	・No node has two red links connected to it.                 ##########################################      # }                                          # 
+	・Every path from root to null link has the same number of black links.                                      ############################################## 
+	・Red links lean left.
+
+	Left rotation.																				Right rotation.
+	Orient a (temporarily) right-leaning red link to lean left.                                 Orient a left-leaning red link to (temporarily) lean right.
+	################### 	###################		####################################        ###################		###################		#####################################
+	#      +-+        #     #				  #     # private Node rotateLeft(Node h) {#        #				  #     #      +-+        #     # private Node rotateRight(Node h) {#
+	#      |e|h       #     #        +-+      #     #     assert isRed(h.right);       #        #        +-+      #     #      |e|x       #     #     assert isRed(h.left);         #
+	#      +-+        #     #        |s|x     #     #     Node x = h.right;            #        #        |s|h     #     #      +-+        #     #     Node x = h.left;              #
+	#     /   \red    # --> #        +-+      #     #     h.right = x.left;            #        #        +-+      #     #     /   \red    #     #     h.left = x.right;             #
+	#   <e     +-+    #     #    red/   \     #     #     x.left = h;                  #        #    red/   \     # --> #   <e     +-+    # --> #     x.right = h;                  #
+	#          |s|x   #     #    +-+     >s   #     #     x.color = h.color;           #        #    +-+     >s   #     #          |s|h   #     #     x.color = h.color;            #
+	#          +-+    #     #    |e|h         #     #     h.color = RED;               #        #    |e|x         #     #          +-+    #     #     h.color = RED;                #
+	#         /   \   #     #    +-+          #     #     return x;                    #        #    +-+          #     #         /   \   #     #     return x;                     #
+	#       <s     >s #     #   /   \         #     # }                                #        #   /   \         #     #       <s     >s #     # }                                 #
+	#       >e        #     # <e     <s       #     ####################################        # <e     <s       #     #       >e        #     #####################################
+	###################     #        >e       #                                                 #        >e       #     ###################
+	                        ###################                                                 ###################
 	
+	Color flip. Recolor to split a (temporary) 4-node.
+	#################     #################			##################################### 
+	#       |       #	  #       |red    #         # private void flipColors(Node h) { #
+	#      +++      #     #      +++      #         #     assert !isRed(h);             #
+	#      |e|      #     #      |e|      #         #     assert isRed(h.left);         #
+	#      +-+      # --> #      +-+      #         #     assert isRed(h.right);        #
+	#  red/   \red  #     #     /   \     #         #     h.color = RED;                #
+	#  +-+     +-+  #     #  +-+     +-+  #         #     h.left.color = BLACK;         #
+	#  |a|     |s|  #     #  |a|     |s|  #         #     h.right.color = BLACK;        #
+	#  +-+     +-+  #     #  +-+     +-+  #         # }                                 #
+	# /   \   /   \ #     # /   \   /   \ #         ##################################### 
+	#################     #################
+	
+	
+	Insert into a tree with exactly 1 node
+	Left add							Right		  attached new		
+													  with red link		totate left
+	#########	  #############			#########	  #############		############# 
+	#  +-+  #     #      +-+  #         #  +-+  #     #  +-+      #     #      +-+	#
+	#  |b|  # --> #      |b|  #         #  |a|  # --> #  |a|      # --> #      |b|  #
+	#  +-+  #     #      +-+  #         #  +-+  #     #  +-+      #     #      +-+  #
+	# /   \ #     #  red/   \ #         # /   \ #     # /   \red  #     #  red/   \ #
+	#########     #  +-+      #         #########     #      +-+  #     #  +-+      #
+                  #  |a|      #                       #      |b|  #     #  |a|      #
+                  #  +-+      #                       #      +-+  #     #  +-+      #
+                  # /   \     #                       #     /   \ #     # /   \     #
+                  #############                       #############     #############
+
+	Insert into a tree with 2 nodes
+	・Do standard BST insert; color new link red.
+	・If new red link is a right link, rotate left.
+	Insert C
+	
+	larger		 	  attach c with red	    fliped colors
+	#############	  #################		#################														##################################################
+	#      +-+  #     #      +-+      #     #      +-+      #                                                       # private Node put(Node h, Key key, Value val) { #
+	#      |b|  #     #      |b|      #     #      |b|      #                                                       #     if (h == null)                             #
+	#      +-+  #     #      +-+      #     #      +-+      #                                                       #         return new Node(key, val, RED);        #
+	#  red/   \ # --> #  red/   \red  # --> #     /   \     #                                                       #                                                #
+	#  +-+      #     #  +-+     +-+  #     #  +-+     +-+  #                                                       #     int cmp = key.compareTo(h.key);            #
+	#  |a|      #     #  |a|     |c|  #     #  |a|     |c|  #                                                       #     if (cmp < 0)                               #
+	#  +-+      #     #  +-+     +-+  #     #  +-+     +-+  #                                                       #         h.left = put(h.left, key, val);        #
+	# /   \     #     # /   \   /   \ #     # /   \   /   \ #                                                       #      else if (cmp > 0)                         #
+	#############     #################     #################                                                       #         h.right = put(h.right, key, val);      #
+	                                                                                                                #      else if (cmp == 0)                        #
+	smaller		 	  attach c with red	    rotated right          fliped colors                                    #         h.val = val;                           #
+	#############     #################	    #################	  #################                                 #                                                #
+	#      +-+  #     #          +-+  #     #      +-+      #     #      +-+      #                                 #     if (isRed(h.right) && !isRed(h.left))      #
+	#      |c|  #     #          |c|  #     #      |b|      #     #      |b|      #                                 #         h = rotateLeft(h);                     #
+	#      +-+  #     #          +-+  #     #      +-+      #     #      +-+      #                                 #                                                #
+	#  red/   \ # --> #      red/   \ # --> #  red/   \red  # --> #     /   \     #                                 #     if (isRed(h.left) && isRed(h.left.left))   #
+	#  +-+      #     #      +-+      #     #  +-+     +-+  #     #  +-+     +-+  #                                 #         h = rotateRight(h);                    #
+	#  |b|      #     #      |b|      #     #  |a|     |c|  #     #  |a|     |c|  #                                 #                                                #
+	#  +-+      #     #      +-+      #     #  +-+     +-+  #     #  +-+     +-+  #                                 #     if (isRed(h.left) && isRed(h.right))       #
+	# /   \     #     #  red/   \     #     # /   \   /   \ #     # /   \   /   \ #                                 #         flipColors(h);                         #
+	#############     #  +-+          #     #################     #################                                 #     return h;                                  #
+	                  #  |a|          #                                                                             # }                                              #
+	                  #  +-+          #                                                                             ##################################################
+	                  # /   \         #
+	                  #################
+	
+	between			  attach c with red    rotated left			 rotated right          fliped colors
+	#############     ##############       #################	 #################	  #################
+    #      +-+  #     #      +-+   #       #          +-+  #     #      +-+      #     #      +-+      #
+    #      |c|  #     #      |c|   #       #          |c|  #     #      |b|      #     #      |b|      #
+    #      +-+  #     #      +-+   #       #          +-+  #     #      +-+      #     #      +-+      #
+    #  red/   \ # --> #  red/   \  #   --> #      red/   \ # --> #  red/   \red  # --> #     /   \     #
+    #  +-+      #     #  +-+       #       #      +-+      #     #  +-+     +-+  #     #  +-+     +-+  #
+    #  |a|      #     #  |a|       #       #      |b|      #     #  |a|     |c|  #     #  |a|     |c|  #
+    #  +-+      #     #  +-+       #       #      +-+      #     #  +-+     +-+  #     #  +-+     +-+  #
+    # /   \     #     # /   \red   #       #  red/   \     #     # /   \   /   \ #     # /   \   /   \ #
+    #############     #      +-+   #       #  +-+          #     #################     #################
+                      #      |b|   #       #  |a|          #
+                      #      +-+   #       #  +-+          #
+                      #     /   \  #       # /   \         #
+                      ##############       #################
+
+- B-tree
+
 ###############
 # week6
 ###############
