@@ -842,7 +842,120 @@ O(n^2) > O(n log n) > O(n) > O(log n) > O(n)
                       ##############       #################
 
 - B-tree
+	Generalize 2-3 trees by allowing up to M - 1 key-link pairs per node.
+	・At least 2 key-link pairs at root.
+	・At least M / 2 key-link pairs in other nodes.																								
+	・External nodes contain client keys.																							
+	・Internal nodes contain copies of keys to guide search.                                                                         
+	B-tree (M=6)													search e														
+	#######################################################			#######################################################			
+	#                        +---------+                  #         #                        +---------+                  #         
+    #                        |*|k| | | |                  #         #                        |*|k| | | |                  #         
+    #                        +---------+                  #         #                        +---------+                  #         
+    #                        /   \                        #         #       e between * and k/   \                        #         
+    #             +---------+     +---------+             #         #             +---------+     +---------+             #         
+    #             |*|d|h| | |     |k|q|u| | |             #         #             |*|d|h| | |     |k|q|u| | |             #         
+    #             +---------+     +---------+             #         #             +---------+     +---------+             #         
+    #              | | |           | | |                  #         #              | | |           | | |                  #         
+    # +---------+  | | |           | | |      +---------+ #         # +---------+  | | |           | | |      +---------+ #         
+    # |*|b|c| | +--+ | |           +----------+k|m|n|o|p| #         # |*|b|c| | +--+ | |           +----------+k|m|n|o|p| #         
+    # +---------+    | |             | |      +---------+ #         # +---------+    | |             | |      +---------+ #         
+    #                | |             | |                  #         #     e>d && e<h | |             | |                  #         
+    # +---------+    | |             | |      +---------+ #         # +---------+    | |             | |      +---------+ #         
+    # |d|e|f| | +----+ |             +--------+q|r|t| | | #         # |d|e|f| | +----+ |             +--------+q|r|t| | | #         
+    # +---------+      |               |      +---------+ #         # +---------+      |               |      +---------+ #         
+    #                  |               |                  #         #                  |               |                  #         
+    # +---------+      |               |      +---------+ #         # +---------+      |               |      +---------+ #         
+    # |h|i|j| | +------+               +------+u|w|x|y| | #         # |h|i|j| | +------+               +------+u|w|x|y| | #         
+    # +---------+                             +---------+ #         # +---------+                             +---------+ #         
+    #######################################################         #######################################################         
+
+					・Search for new key.
+					・Insert at bottom. 
+	insert a        ・Split nodes with M key-link pairs on the way up the tree.
+	insert a									overflow									splitted but overflowed another one	
+	####################################### 	#######################################		#########################################		####################################################### 
+	#             +---------+             #     #             +---------+             #     #             +---------+               #       #                        +-----+-+-+                  # 
+	#             |*|h|k|q|u|             #     #             |*|h|k|q|u|             #     #     overflow|*|c|h|k|q|u+-----------+ #       #                        |*|k| | | |                  #
+	#             ++-+-+-+-++             #     #             ++-+-+-+-++             #     #             ++-+-+-+-++             | #       #                        +-----+-+-+                  #
+	#              | | | | |              #     #  overflow    | | | | |              #     #  splitted    | | | | |              | #       #                        /   \                        #
+	# +---------+  | | | | |  +---------+ # --> # +---------+  | | | | |  +---------+ # --> # +---------+  | | | | |  +---------+ | # -->   #             +-------+-+     +-------+-+             #
+	# |*|b|c|e|f+--+ | | +----+q|r|t| | | #     # |*|a|b|c|e|f-+ | | +----+q|r|t| | | #     # |*|a|b| | +--+ | | +----+k|m|n|o|p| | #       #             |*|c|h| | |     |k|q|u| | |             #
+	# +---------+    | |   |  +---------+ #     # +---------+    | |   |  +---------+ #     # +---------+    | |   |  +---------+ | #       #             ++-+-+--+-+     ++-+-+--+-+             #
+	#                | |   |              #     #                | |   |              #     #                | |   |              | #       #              | | |           | | |                  #
+	# +---------+    | |   |  +---------+ #     # +---------+    | |   |  +---------+ #     # +---------+    | |   |  +---------+ | #       # +---------+  | | |           | | |      +---------+ #
+	# |h|i|j| | +----+ |   +--+u|w|x| | | #     # |h|i|j| | +----+ |   +--+u|w|x| | | #     # |c|e|f| | +----+ |   +--+q|r|t| | | | #       # |*|a|b| | +--+ | |           +----------+k|m|n|o|p| #
+	# +---------+      |      +---------+ #     # +---------+      |      +---------+ #     # +---------+      |      +---------+ | #       # +---------+    | |             | |      +---------+ #
+	#                  |                  #     #                  |                  #     #                  |                  | #       #                | |             | |                  #
+	# +---------+      |                  #     # +---------+      |                  #     # +---------+      |      +---------+ | #       # +---------+    | |             | |      +---------+ #
+	# |k|m|n|o|p+------+                  #     # |k|m|n|o|p+------+                  #     # |h|i|j| | +------+      |u|w|x| | +-+ #       # |c|e|f| | +----+ |             +--------+q|r|t| | | #
+	# +---------+                         #     # +---------+                         #     # +---------+             +---------+   #       # +---------+      |               |      +---------+ #
+	#######################################     #######################################     #########################################       #                  |               |                  #
+	                                                                                                                                        # +---------+      |               |      +---------+ #
+	                                                                                                                                        # |h|i|j| | +------+               +------+u|w|x| | | #
+	                                                                                                                                        # +---------+                             +---------+ #
+                                                                                                                                            #######################################################
 
 ###############
 # week6
 ###############
+- separate chaining
+	Use an array of M < N linked lists. [H. P. Luhn, IBM 1953]		###########################################################		###################################################
+	・Hash: map key to integer i between 0 and M - 1.                # public class SeparateChainingHashST<Key, Value> {       #     # public void put(Key key, Value val) {           # 
+	・Insert: put at front of ith chain (if not already there).      #     private int M = 97; // number of chains             #     #     int i = hash(key);                          # 
+	・Search: need to search only ith chain.                         #     private Node[] st = new Node[M]; // array of chains #     #     for (Node x = st[i]; x != null; x = x.next) # 
+                                                                    #     private static class Node {                         #     #         if (key.equals(x.key)) {                #
+                                                                    #         private Object key;                             #     #             x.val = val;                        #
+                                                                    #         private Object val;                             #     #             return;                             #
+                                                                    #         private Node next;                              #     #         }                                       #
+                                                                    #         ...                                             #     #                                                 #
+                                                                    # }                                                       #     #     st[i] = new Node(key, val, st[i]);          #
+                                                                    # private int hash(Key key) {                             #     # }                                               #
+                                                                    #     return(key.hashCode() & 0x7fffffff) % M;            #     ###################################################
+                                                                    # }                                                       #
+                                                                    # public Value get(Key key) {                             #
+                                                                    #     int i = hash(key);                                  #
+                                                                    #     for (Node x = st[i]; x != null; x = x.next)         #
+                                                                    #         if (key.equals(x.key))                          #
+                                                                    #             return(Value)x.val;                         #
+                                                                    #                                                         #
+                                                                    #                                                         #
+                                                                    #     return null;                                        #
+                                                                    # }}                                                      #
+                                                                    ###########################################################
+																	
+- linear probing
+	When a new key collides, find next empty slot, and put it there.######################################################################
+	Hash. Map key to integer i between 0 and M-1.                   # public class LinearProbingHashST<Key, Value> {                     #
+	Insert. Put at table index i if free; if not try i+1, i+2, etc. #     private int M = 30001;                                         #
+                                                                    #     private Value[] vals = (Value[])new Object[M];                 #
+                                                                    #     private Key[] keys = (Key[])new Object[M];                     #
+                                                                    #     private int hash(Key key) { /* as before */                    #
+                                                                    #     }                                                              #
+                                                                    #     public void put(Key key, Value val) {                          #
+                                                                    #         int i;                                                     #
+                                                                    #         for (i = hash(key); keys[i] != null; i =( i + 1) % M)      #
+                                                                    #             if (keys[i].equals(key))                               #
+                                                                    #                 break;                                             #
+                                                                    #                                                                    #
+                                                                    #                                                                    #
+                                                                    #         keys[i] = key;                                             #
+                                                                    #         vals[i] = val;                                             #
+                                                                    #     }                                                              #
+                                                                    #     public Value get(Key key) {                                    #
+                                                                    #         for (int i = hash(key); keys[i] != null; i =( i + 1) % M)  #
+                                                                    #             if (key.equals(keys[i]))                               #
+                                                                    #                 return vals[i];                                    #
+                                                                    #                                                                    #
+                                                                    #                                                                    #
+                                                                    #         return null;                                               #
+                                                                    #     }                                                              #
+                                                                    # }                                                                  #
+                                                                    ######################################################################
+
+
+
+
+
+
+- hash table
