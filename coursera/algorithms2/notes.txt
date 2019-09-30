@@ -10,14 +10,40 @@
 	communication 	telephone, computer 	fiber optic cable
 
 - API
-	<img src='https://g.gravizo.com/svg?
- digraph G {
-   0 -> 1 -> 2;
-   1 ->3;
- }
-'/>
+	compute the degree of v									compute maximum degree									compute average degree									count self - loops                                 
+	####################################################    ####################################################    ####################################################    ####################################################
+	# public static int degree(Graph G, int v) {       #    # public static int maxDegree(Graph G) {           #    # public static double averageDegree(Graph G) {    #    # public static int numberOfSelfLoops(Graph G) {   #
+	#     int degree = 0;                              #    #     int max = 0;                                 #    #     return 2.0 * G.E() / G.V();                  #    #     int count = 0;                               #
+	#     for (int w : G.adj(v))                       #    #     for (int v = 0; v < G.V(); v ++)             #    # }                                                #    #     for (int v = 0; v < G.V(); v ++)             #
+	#         degree ++;                               #    #         if (degree(G, v) > max)                  #    ####################################################    #         for (int w : G.adj(v))                   #
+	#     return degree;                               #    #             max = degree(G, v);                  #                                                            #             if (v == w)                          #
+	# }                                                #    #     return max;                                  #                                                            #                 count ++;                        #
+	####################################################    # }                                                #                                                            #     return count / 2; // each edge counted twice #
+	                                                        ####################################################                                                            # }                                                #
+	                                                                                                                                                                        ####################################################
+	Adjacency-list graph representation
+	############################################	############################################# 		
+	# +--------------------------------------+ #    # public class Graph {                      #
+	# | 0| 1| 2| 3| 4| 5| 6| 7| 8| 9|10|11|12| #    #     private final int V;                  #
+	# +--------------------------------------+ #    #     private Bag<Integer> [] adj;          #
+	#   6  0  0  5  5  3  0  8  7 11  9  9 11  #    #     public Graph(int V) {                 #
+	#   2        4  6  4  4       10    12  6  #    #         this.V = V;                       #
+	#   7           3  0          12           #    #         adj = (Bag<Integer> [])new Bag[V];#
+	#   5                                      #    #         for (int v = 0; v < V; v ++)      #
+	############################################    #             adj[v] = new Bag<Integer>();  #
+	                                                #                                           #
+	                                                #     }                                     #
+	                                                #     public void addEdge(int v, int w) {   #
+	                                                #         adj[v].add(w);                    #
+	                                                #         adj[w].add(v);                    #
+	                                                #     }                                     #
+	                                                #     public Iterable<Integer> adj(int v) { #
+	                                                #         return adj[v];                    #
+	                                                #     }                                     #
+	                                                # }                                         #
+	                                                #############################################
 	
-	
+
 
 ###############
 # week2
