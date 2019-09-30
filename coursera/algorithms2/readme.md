@@ -1,18 +1,65 @@
+###############
+# week1
+###############
+- introduction
+	Graph. Set of vertices connected pairwise by edges.
+	Path. Sequence of vertices connected by edges.
+	Cycle. Path whose first and last vertices are the same.
+	
+	graph 			vertex 					edge
+	communication 	telephone, computer 	fiber optic cable
 
-<img src='https://g.gravizo.com/svg?
- digraph G {
-   main -> parse -> execute;
-   main -> init;
-   main -> cleanup;
-   execute -> make_string;
-   execute -> printf
-   init -> make_string;
-   main -> printf;
-   execute -> compare;
- }
-'/>
+- API
+	compute the degree of v									compute maximum degree									compute average degree									count self - loops                                 
+	####################################################    ####################################################    ####################################################    ####################################################
+	# public static int degree(Graph G, int v) {       #    # public static int maxDegree(Graph G) {           #    # public static double averageDegree(Graph G) {    #    # public static int numberOfSelfLoops(Graph G) {   #
+	#     int degree = 0;                              #    #     int max = 0;                                 #    #     return 2.0 * G.E() / G.V();                  #    #     int count = 0;                               #
+	#     for (int w : G.adj(v))                       #    #     for (int v = 0; v < G.V(); v ++)             #    # }                                                #    #     for (int v = 0; v < G.V(); v ++)             #
+	#         degree ++;                               #    #         if (degree(G, v) > max)                  #    ####################################################    #         for (int w : G.adj(v))                   #
+	#     return degree;                               #    #             max = degree(G, v);                  #                                                            #             if (v == w)                          #
+	# }                                                #    #     return max;                                  #                                                            #                 count ++;                        #
+	####################################################    # }                                                #                                                            #     return count / 2; // each edge counted twice #
+	                                                        ####################################################                                                            # }                                                #
+	                                                                                                                                                                        ####################################################
+	Adjacency-list graph representation
+	############################################	############################################# 		![Alt text](https://g.gravizo.com/svg?%20graph%20graphname%20{%20a%20--%20b%20--%20c;%20b%20--%20d;}%20)
+	# +--------------------------------------+ #    # public class Graph {                      #
+	# | 0| 1| 2| 3| 4| 5| 6| 7| 8| 9|10|11|12| #    #     private final int V;                  #
+	# +--------------------------------------+ #    #     private Bag<Integer> [] adj;          #
+	#   6  0  0  5  5  3  0  8  7 11  9  9 11  #    #     public Graph(int V) {                 #
+	#   2        4  6  4  4       10    12  6  #    #         this.V = V;                       #
+	#   7           3  0          12           #    #         adj = (Bag<Integer> [])new Bag[V];#
+	#   5                                      #    #         for (int v = 0; v < V; v ++)      #
+	############################################    #             adj[v] = new Bag<Integer>();  #
+	                                                #                                           #
+	                                                #     }                                     #
+	                                                #     public void addEdge(int v, int w) {   #
+	                                                #         adj[v].add(w);                    #
+	                                                #         adj[w].add(v);                    #
+	                                                #     }                                     #
+	                                                #     public Iterable<Integer> adj(int v) { #
+	                                                #         return adj[v];                    #
+	                                                #     }                                     #
+	                                                # }                                         #
+	                                                #############################################
+	
 
 
+###############
+# week2
+###############
 
-# here comes the rest
-nbv
+###############
+# week3
+###############
+
+###############
+# week4
+###############
+
+###############
+# week5
+###############
+###############
+# week6
+###############
