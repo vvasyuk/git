@@ -43,7 +43,33 @@
 	                                                # }                                         #
 	                                                #############################################
 	
+- depth-first search
+	
+	Algorithm.																																################################################
+	・Use recursion (ball of string).                                                                                                        # public class DepthFirstPaths {               # 
+	・Mark each visited vertex (and keep track of edge taken to visit it).                                                                   #     private boolean[] marked;                # 
+	・Return (retrace steps) when no unvisited options.                                                                                      #     private int[] edgeTo;                    # 
+	                                                                                                                                        #     private int s;                           #
+	graph							fin all vertices connected to s                                                                         #     public DepthFirstPaths(Graph G, int s) { #
+	##########################		v	marked[]	edgeTo[v]                                                                               # 		//init data structures                 #
+	# +--------------------+ #		0	T			-			step1 - mark with T (check 6 2 1 5)                                         #         dfs(G, s);                           #
+	# | 0| 1| 2| 3| 4| 5| 6| #		1	T			0			step7 - mark with T came from 0 (check 0)                                   #     }                                        #
+	# +--------------------+ #		2	T			0           step6 - mark with T came from 0 (check 0)                                   #     private void dfs(Graph G, int v) {       #
+	#   5  0  0  5  5  3  0  #		3	T			5           step5 - mark with T came from 5 (check 5 4)	both 5 4 already visited        #         marked[v] = true;                    #
+	#   1        4  6  4  4  #		4	T			6           step3 - mark with T came from 6 (check 5 6 3)                               #         for (int w : G.adj(v))               #
+	#   2           3  0     #		5	T			4           step4 - mark with T came from 4 (check 3 4 0)                               #             if (!marked[w]) {                #
+	#   6                    #		6	T			0           step2 - mark with T came from 0 (check 0 4)                                 #                 dfs(G, w);                   #
+	##########################		7	F			-                                                                                       #                 edgeTo[w] = v;               #
+	                                                                                                                                        #             }                                #
+	                                                                                                                                        #     }                                        #
+	                                                                                                                                        # }                                            #
+	                                                                                                                                        ################################################
 
+- breadth-first search
+	Repeat until queue is empty:
+	・Remove vertex v from queue.
+	・Add to queue all unmarked vertices adjacent to v and mark them.
+	
 
 ###############
 # week2
