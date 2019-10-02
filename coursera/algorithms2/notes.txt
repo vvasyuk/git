@@ -113,24 +113,28 @@
 
 		
 - graph challenges
-	Problem. Is a graph bipartite?
-	
-	##########################
-	#      +-+               #
-	#      |0|--\            #
-	#      +-+-\ ---\        #
-	#     / \   --\  ---\    #
+	P1 roblem. Is a graph bipartite?
+	bipartite - whose vertices can be divided into two disjoint and independent sets U and V such that every edge connects a vertex in U to one in V.
+	solution: dfs
+	##########################		2 Problem. Find cycle - use dfs (0 5 4 6 0)
+	#                        #		3 Problem. Bridges of Konigsberg (cycle use every edge once).Yes if all vertices have even degree
+	#      +-+               #		4 Find a (general) cycle that uses every edge exactly once.
+	#     u|0|--\            #		5 Find a cycle that visits every vertex exactly once. Hamiltonian cycle. hard one
+	#      +-+-\ ---\        #		6 Are two graphs identical except for vertex names? graph isomorphism is longstanding open problem. hard one
+	#     / \   --\  ---\    #		7 Lay out a graph in the plane without crossing edges? linear-time DFS-based planarity algorithm discovered by Tarjan in 1970s. hard one
 	#    |   +-+   +-+   +-+ #
-	#    /   |1|   |2|   |6| #
+	#    /  v|1|  v|2|  v|6| #
 	#   |    +-+   +-+   +-+ #
 	#   /      \   /  \  /   #
 	#  |        +-+   +-+    #
-	#  /        |3|   |4|    #
+	#  /       u|3|  u|4|    #
 	# |         +-+   +-+    #
 	# +-+           /---     #
-	# |5|     /-----         #
+	#v|5|     /-----         #
 	# +-+ ----               #
 	##########################	
+
+
 
 ###############
 # week2
