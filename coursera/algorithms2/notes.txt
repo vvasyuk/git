@@ -168,8 +168,56 @@
 	#############################################
 	
 - digraph search
+	Depth-first search in digraphs																										Depth-first search in digraphs summary
+	##############################################	Mark v as visited.																	DFS enables direct solution of simple digraph problems.
+    # public class DirectedDFS {                 #	Recursively visit all unmarked vertices w pointing from v.                          ・Reachability.
+    #     private boolean[] marked;              #                                                                                      ・Path finding.
+    #     public DirectedDFS(Digraph G, int s) { #	Applications:                                                                       ・Topological sort.
+    #         marked = new boolean[G.V()];       #	Reachability application: program control-flow analysis:                            ・Directed cycle detection.
+    #         dfs(G, s);                         #		Every program is a digraph.                                                     Basis for solving difficult digraph problems.
+    #     }                                      #  	・Vertex = basic block of instructions (straight-line program).                   ・2-satisfiability. 
+    #     private void dfs(Digraph G, int v) {   #  	・Edge = jump.                                                                    ・Directed Euler path. 
+    #         marked[v] = true;                  #                                                                                      ・Strongly-connected components.
+    #         for (int w : G.adj(v))             #	Reachability application: mark-sweep garbage collector
+    #             if (!marked[w])                #		Every data structure is a digraph.
+    #                 dfs(G, w);                 #      ・Vertex = object.
+    #     }                                      #      ・Edge = reference.
+    #     public boolean visited(int v) {        #		Roots. Objects known to be directly accessible by program (e.g., stack).
+    #         return marked[v];                  #		Reachable objects. Objects indirectly accessible by program
+    #     }                                      #
+	# }                                          #
+	##############################################
+
+	Breadth-first search in digraphs								BFS web crawler
+	Same method as for undirected graphs.							################################################## 
+	Put s onto a FIFO queue, and mark s as visited.                 # Queue<String> queue = new Queue<String>();     #	<-- queue of websites to crawl
+		Repeat until the queue is empty:                            # SET<String> marked = new SET<String>();        #  <-- set of marked websites
+ 		- remove the least recently added vertex v                  # String root = "http://www.princeton.edu";      #
+ 		- for each unmarked vertex pointing from v:                 # queue.enqueue(root);                           #	<-- start crawling from root website
+ 		add to queue and mark as visited.                           # marked.add(root);                              #
+		                                                            # while (!queue.isEmpty()) {                     #
+	Q. How to implement multi-source shortest paths algorithm?      #     String v = queue.dequeue();                #	<-- read in raw html from nextwebsite in queue
+	A. Use BFS, but initialize by enqueuing all source vertices.    #     StdOut.println(v);                         #
+	                                                                #     In in = new In(v);                         #
+	                                                                #     String input = in.readAll();               #
+	                                                                #     String regexp = "http://(\\w+\\.)*(\\w+)"; #	<-- use regular expression to find all URLs in website of form http://xxx.yyy.zzz
+	                                                                #     Pattern pattern = Pattern.compile(regexp); #
+	                                                                #     Matcher matcher = pattern.matcher(input);  #
+	                                                                #     while (matcher.find()) {                   #
+	                                                                #         String w = matcher.group();            #
+	                                                                #         if (!marked.contains(w)) {             #	<-- if unmarked, mark it and put on the queue
+	                                                                #             marked.add(w);                     #
+	                                                                #             queue.enqueue(w);                  #
+	                                                                #         }                                      #
+	                                                                #     }                                          #
+	                                                                # }                                              #
+	                                                                ##################################################
 	
 	
+	
+	
+	
+
 
 ###############
 # week2
