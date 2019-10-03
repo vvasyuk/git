@@ -134,7 +134,42 @@
 	# +-+ ----               #
 	##########################	
 
-
+- directed graphs
+	Digraph. Set of vertices connected pairwise by directed edges.
+	
+	#############################################	0->5			applications:																				############################################## 
+	#      +-+<-------------      ----<----     #	0->1			Road network					Vertex = intersection; 		edge = one-way street.          # public class Diraph {                      #
+	#      |0|<----\         \   /         \    #	0->5			Political blogosphere graph		Vertex = political blog; 	edge = link                     #     private final int V;                   #
+	#      +-+      +-+       +-+--->+-+    +-+ #	2->0			Overnight interbank loan graph	Vertex = bank; 				edge = overnight loan.          #     private final Bag<Integer> [] adj;     #	<-- adj lists
+	#     | | +-+   |2|       |6|    |8|    |7| #	2->3			Implication graph				Vertex = variable; 			edge = logical implication.     #     public Diraph(int V) {                 #
+	#     /  >|1|   +-+       +-+<---+-+    +-+ #	3->5			Combinational circuit			Vertex = logical gate; 		edge = wire.                    #         this.V = V;                        #  <-- create empty Diraph with V vertices
+	#    |    +-+  /> ^      /   \         /    #	3->2			WordNet graph					Vertex = synset; 			edge = hypernym relationship.   #         adj = (Bag<Integer> [])new Bag[V]; #
+	#    /       < /  |     /     \       /     #	4->3			web								web page					hyperlink                       #         for (int v = 0; v < V; v ++)       #
+	#   /     +-+ /   |    /       >    <-      #	5->4			scheduling						task						precedence constraint           #             adj[v] = new Bag<Integer>();   #
+	#  |    /-|3|/    |   /         +-+    +--+ #	11->4			financial						bank						transaction                     #                                            #
+	#  Y  /<  +-+   +-+  /          |9|--->|10| #	11->12			game							board position 				legal move                      #     }                                      #
+	# +-+-          |4|<-           +-+<-\ +--+ #	12->9			citation						journal article				citation                        #     public void addEdge(int v, int w) {    #	<-- add edge v-w
+	# |5|>--------->+-+              Y    \   ^ #					inheritance hierarchy			class						inherits from                   #         adj[v].add(w);                     #
+	# +-+                           +--+   +--| #					control flow					code block					jump                            #                                            #
+	#                               |11|---|12| #			                                                                                                    #     }                                      #
+	#                               +--+   +--+ #			                                                                                                    #     public Iterable<Integer> adj(int v) {  #	<-- iterator for vertices adj to v
+	#                                           #			                                                                                                    #         return adj[v];                     #
+	#############################################			                                                                                                    #     }                                      #
+                                                                                                                                                                # }                                          #
+- Adjacency-lists digraph representation                                                                                                                        ##############################################
+	#############################################
+	# +--------------------------------------+  #
+	# | 0| 1| 2| 3| 4| 5| 6| 7| 8| 9|10|11|12|  #
+	# +--------------------------------------+  #
+	#   5     0  5  3  4  9  6  6 11 12 12  9   #
+	#   1     3  2  2     4  8    10            #
+	#                     8                     #
+	#                     0                     #
+	#############################################
+	
+- digraph search
+	
+	
 
 ###############
 # week2
