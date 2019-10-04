@@ -270,7 +270,7 @@
 	Kernel DAG. Contract each strong component into a single vertex.
 	Idea.																phase1:
 	・Compute topological order (reverse postorder) in kernel DAG.		step1  visit0: 	check 6 2  	(mark 0)
-	・Run DFS, considering vertices in reverse topological order.         step2  visit6: 	check 8 7	(mark 6) 
+	・Run DFS, considering vertices in reverse topological order.        step2  visit6: 	check 8 7	(mark 6) 
 	#############################################			            step3  visit8: 	done		(mark 8)	reverse 8
 	#      +-+------->------      ---->----     #			            step4  visit6: 	check 7
 	#   /->|0|----\         \    /         \    #			            step5  visit7: 	done		(mark 7)	reverse 7 8
@@ -291,6 +291,7 @@
 	#############################################			            step19 visit4: 	done					reverse 4 5 3 11 9 12 10 6 7 8
 	                                                                    step20 visit2: 	done					reverse 2 4 5 3 11 9 12 10 6 7 8
 																		step21 visit0: 	done					reverse 0 2 4 5 3 11 9 12 10 6 7 8
+																		step22 visit1: 	done					reverse 1 0 2 4 5 3 11 9 12 10 6 7 8
 	
 	
 	
