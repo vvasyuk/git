@@ -213,6 +213,96 @@
 	                                                                # }                                              #
 	                                                                ##################################################
 	
+- topological sort
+	DAG. Directed acyclic graph.
+	Topological sort. Redraw DAG so all edges point upwards.
+	DAG											Topological sort. Redraw DAG so all edges point upwards			algorithm:								step1  visit0: check 1 2 5 	(mark 0)
+	##########################	0->5			###################################################				-run dfs                                step2  visit1: check 4 		(mark 1)
+	#      +-+--------\      #	0->1            #             /-------------------------->\       #				-return vertices in reverse postorder   step3  visit4: done			(mark 4)	postorder 4
+	#      |0|         \     #  3->5            #            /     /--------------->\      \      #                                                     step4  visit1: done						postorder 4 1
+	#    />+-+----\     \    #  5->2            #           /     //-------->\       \      \     #                                                     step5  visit2: done			(mark 2)	postorder 4 1 2
+	#    |  \>     >     >   #  6->0            # +-+    +-+    +-+    +-+    +-+     +-+    +-+  #                                                     step6  visit5: done			(mark 5)	postorder 4 1 2 5
+	#    |   +-+   +-+   +-+ #  1->4            # |3|--->|6|--->|0|--->|5|--->|2|     |1|--->|4|  #                                                     step7  visit0: done						postorder 4 1 2 5 0
+	#    /   |2|   |5|   |1| #  0->2            # +-+    +-+    +-+    +-+    +-+     +-+    +-+  #                                                     step8  visit3: check 6		(mark 3)
+	#   |    +-+  >+-+   +-+ #  3->6            # \\\\->/             /      /              /     #                                                     step9  visit6: done			(mark 6)	postorder 4 1 2 5 0 6
+	#   /     ^  /         | #  3->4            #  \\\-------------->/      /              /      #                                                     step10 visit3: done						postorder 4 1 2 5 0 6 3
+	#  |      +-+     +-+  / #  6->4            #   \\-------------------->/              /       #                                                     
+	#  /     /|3|---->|4|</  #  3->2            #    \---------------------------------->/        #                                                     
+	# |     / +-+     +-+    #                  #	                                              #                                                     
+	# +-+<-/         ^       #                  ###################################################                                                     
+	# |6|-----------/        #  
+	# +-+                    #  
+	##########################  
+	
+	Depth-first search order
+	################################################								applications:
+	# public class DepthFirstOrder {               #                                Directed cycle detection application: precedence scheduling
+	#     private boolean[] marked;                #                                Directed cycle detection application: cyclic inheritance (The Java compiler does cycle detection.)
+	#     private Stack<Integer> reversePost;      #                                Directed cycle detection application: spreadsheet recalculation (Microsoft Excel does cycle detection (and has a circular reference toolbar!))
+	#     public DepthFirstOrder(Digraph G) {      #
+	#         reversePost = new Stack<Integer>();  #
+	#         marked = new boolean[G.V()];         #
+	#         for (int v = 0; v < G.V(); v ++)     #
+	#             if (!marked[v])                  #
+	#                 dfs(G, v);                   #
+	#     }                                        #
+	#     private void dfs(Digraph G, int v) {     #
+	#         marked[v] = true;                    #
+	#         for (int w : G.adj(v))               #
+	#             if (!marked[w])                  #
+	#                 dfs(G, w);                   #
+	#         reversePost.push(v);                 #
+	#     }                                        #
+	#     public Iterable<Integer> reversePost() { #
+	#         return reversePost;                  #	<--returns all vertices in 
+	#     }                                        #	   “reverse DFS postorder”
+	# }                                            #
+	################################################
+	
+- strong components
+	Vertices v and w are strongly connected if there is both a directed path from v to w and a directed path from w to v.
+	・If v is strongly connected to w, then w is strongly connected to v.
+	・If v is strongly connected to w and w to x, then v is strongly connected to x.
+	A strong component is a maximal subset of strongly-connected vertices.
+	
+	Kosaraju-Sharir algorithm: intuition								Phase 1. Compute reverse postorder in GR.
+	Reverse graph. Strong components in G are same as in GR.			Phase 2. Run DFS in G, visiting unmarked vertices in reverse postorder of GR.
+	Kernel DAG. Contract each strong component into a single vertex.
+	Idea.																phase1:
+	・Compute topological order (reverse postorder) in kernel DAG.		step1  visit0: 	check 6 2  	(mark 0)
+	・Run DFS, considering vertices in reverse topological order.         step2  visit6: 	check 8 7	(mark 6) 
+	#############################################			            step3  visit8: 	done		(mark 8)	reverse 8
+	#      +-+------->------      ---->----     #			            step4  visit6: 	check 7
+	#   /->|0|----\         \    /         \    #			            step5  visit7: 	done		(mark 7)	reverse 7 8
+	#  |   +-+     >+-+      >+-+--->+-+    +-+ #			            step5,5visit6: 	done					reverse 6 7 8
+	#  |    | +-+   |2|       |6|    |8|    |7| #			            step6  visit2: 	check 4 3	(mark 2)
+	#  |     <|1|   +-+     />+-+<---+-+  />+-+ #			            step7  visit4:  check 11 6 5(mark 4)
+	#  |      +-+  /> |    /     ^       /      #			            step8  visit11: check 9		(mark 11)
+	#  |         <//  |   /       \     /       #			            step9  visit9:	check 12 7 6(mark 9)
+	#  |      +-+ /   |  /         \   /        #			            step10 visit12: check 10 11	(mark 12)
+	#  |   /->|3|/    Y /           +-+    +--+ #			            step11 visit10:	done	  	(mark 10)	reverse 10 6 7 8
+	#  |  /   +-+\->+-+/            |9|<---|10| #			            step12 visit12:	done					reverse 12 10 6 7 8
+	# +-+-          |4|             +-+\   +--+ #			            step13 visit9: 	done					reverse 9 12 10 6 7 8
+	# |5|<--------- +-+\             ^  \     ^ #			            step14 visit11:	done					reverse 11 9 12 10 6 7 8
+	# +-+               \           +--+ \>+--| #			            step15 visit4:	check 5
+	#                    \--------->|11|<--|12| #			            step16 visit5: 	check 3 0	(mark 5)
+	#                               +--+   +--+ #			            step17 visit3: 	done		(mark 3)	reverse 3 11 9 12 10 6 7 8
+	#                                           #			            step18 visit5: 	done					reverse 5 3 11 9 12 10 6 7 8
+	#############################################			            step19 visit4: 	done					reverse 4 5 3 11 9 12 10 6 7 8
+	                                                                    step20 visit2: 	done					reverse 2 4 5 3 11 9 12 10 6 7 8
+																		step21 visit0: 	done					reverse 0 2 4 5 3 11 9 12 10 6 7 8
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
