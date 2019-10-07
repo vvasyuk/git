@@ -28,7 +28,36 @@ use Graph::Easy;
 # $edge->set_attributes( {arrowstyle => 'none'} );
 # $graph->add_edge ('1', '2', $edge);
 
+# my $graph2 = Graph::Easy->new();
+# my ($first,$second,$edge) = $graph2->add_edge('1','2', '4'); $edge->set_attributes( {arrowstyle => 'none', style => 'bold'} );
+# my ($first,$second,$edge) = $graph2->add_edge('1','4', '6'); $edge->set_attributes( {arrowstyle => 'none'} );
+# my ($first,$second,$edge) = $graph2->add_edge('2','3', '24'); $edge->set_attributes( {arrowstyle => 'none'} );
+# my ($first,$second,$edge) = $graph2->add_edge('3','4', '23'); $edge->set_attributes( {arrowstyle => 'none'} );
+# my ($first,$second,$edge) = $graph2->add_edge('4','5', '5'); $edge->set_attributes( {arrowstyle => 'none'} );
+# my ($first,$second,$edge) = $graph2->add_edge('3','5', '18'); $edge->set_attributes( {arrowstyle => 'none'} );
+# my ($first,$second,$edge) = $graph2->add_edge('5','6', '11'); $edge->set_attributes( {arrowstyle => 'none'} );
+# my ($first,$second,$edge) = $graph2->add_edge('3','6', '9'); $edge->set_attributes( {arrowstyle => 'none'} );
+# my ($first,$second,$edge) = $graph2->add_edge('1','7', '16'); $edge->set_attributes( {arrowstyle => 'none'} );
+# my ($first,$second,$edge) = $graph2->add_edge('4','7', '8'); $edge->set_attributes( {arrowstyle => 'none'} );
+# my ($first,$second,$edge) = $graph2->add_edge('5','7', '10'); $edge->set_attributes( {arrowstyle => 'none'} );
+# my ($first,$second,$edge) = $graph2->add_edge('6','8', '7'); $edge->set_attributes( {arrowstyle => 'none'} );
+# my ($first,$second,$edge) = $graph2->add_edge('7','8', '14'); $edge->set_attributes( {arrowstyle => 'none'} );
+# print $graph2->as_ascii( );
+# #print $graph2->as_boxart();'
+
 my $graph2 = Graph::Easy->new();
-my ($first,$second,$edge) = $graph2->add_edge('1','2', 'label');
-$edge->set_attributes( {arrowstyle => 'none'} );
+my ($first,$second,$edge) = $graph2->add_edge('1','2', '4'); $edge->set_attributes( {arrowstyle => 'none', style => 'bold'} );
+my ($first,$second,$edge) = $graph2->add_edge('1','4', '6'); $edge->set_attributes( {arrowstyle => 'none', style => 'bold'} );
+my ($first,$second,$edge) = $graph2->add_edge('2','3', '24'); $edge->set_attributes( {arrowstyle => 'none'} );
+my ($first,$second,$edge) = $graph2->add_edge('3','4', '23'); $edge->set_attributes( {arrowstyle => 'none'} );
+my ($first,$second,$edge) = $graph2->add_edge('4','5', '5'); $edge->set_attributes( {arrowstyle => 'none', style => 'bold'} );
+my ($first,$second,$edge) = $graph2->add_edge('3','5', '18'); $edge->set_attributes( {arrowstyle => 'none'} );
+my ($first,$second,$edge) = $graph2->add_edge('5','6', '11'); $edge->set_attributes( {arrowstyle => 'none', style => 'bold'} );
+my ($first,$second,$edge) = $graph2->add_edge('3','6', '9'); $edge->set_attributes( {arrowstyle => 'none', style => 'bold'} );
+my ($first,$second,$edge) = $graph2->add_edge('1','7', '16'); $edge->set_attributes( {arrowstyle => 'none'} );
+my ($first,$second,$edge) = $graph2->add_edge('4','7', '8'); $edge->set_attributes( {arrowstyle => 'none', style => 'bold'} );
+my ($first,$second,$edge) = $graph2->add_edge('5','7', '10'); $edge->set_attributes( {arrowstyle => 'none'} );
+my ($first,$second,$edge) = $graph2->add_edge('6','8', '7'); $edge->set_attributes( {arrowstyle => 'none', style => 'bold'} );
+my ($first,$second,$edge) = $graph2->add_edge('7','8', '14'); $edge->set_attributes( {arrowstyle => 'none'} );
 print $graph2->as_ascii( );
+#print $graph2->as_boxart();
