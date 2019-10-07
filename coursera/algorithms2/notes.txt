@@ -333,6 +333,13 @@
 # week2
 ###############
 
+- MSTs
+
+- Greedy algorithms
+
+- Edge-Weighed Graph API
+
+
 ###############
 # week3
 ###############
