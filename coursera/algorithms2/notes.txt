@@ -445,14 +445,99 @@
 	# }                                                #
 	####################################################
 	
+- Kruskal's Algorithm
+	Consider edges in ascending order of weight.
+	・Add next edge to tree T unless doing so would create a cycle.						sorted wights												Kruskal's Algorithm
+	###############################################################################		0-7 0.16			step1  no cycle - add					#############################################################
+	#                                          0.29!(6)                           #		2-3 0.17            step2  no cycle - add                   # public class KruskalMST {                                 #
+	#                                  ┌·················┐                        #		1-7 0.19            step3  no cycle - add                   #     private Queue<Edge> mst = new Queue<Edge>();          #
+	#                                  :                 :                        #		0-2 0.26            step4  no cycle - add                   #     public KruskalMST(EdgeWeightedGraph G) {              #
+	#              ╔═══════╗0.32!(7) ╔═══════╗         ╔═══════╗                  #		5-7 0.28            step5  no cycle - add                   #         MinPQ<Edge> pq = new MinPQ<Edge>();               #  <-- build priority queue
+	#           ┌─ ║   5   ║ ······· ║   1   ║ ·┐      ║   3   ║ ···············┐ #		1-3 0.29            step6  cycle - no add                   #         for (Edge e : G.edges())                          #
+	#           │  ╚═══════╝         ╚═══════╝  :      ╚═══════╝                : #		1-5 0.32            step7  cycle - no add                   #             pq.insert(e);                                 #
+	#           │    │                 │        :        │                      : #		2-7 0.34            step8  cycle - no add                   #                                                           #
+	#           │    │0.28(4)          │0.19(3) :0.36!10 │ 0.17(2)              : #		4-5 0.35            step9  no cycle - add                   #         UF uf = new UF(G.V());                            #
+	#           │    │                 │        :        │                      : #		1-2 0.36            step10 cycle - no add                   #         while (!pq.isEmpty() && mst.size() < G.V() - 1) { #
+	#           │    │      ╔═══════╗  │        :      ╔═══════╗                : #		4-7 0.37            step11 cycle - no add                   #             Edge e = pq.delMin();                         #
+	#           │    └───── ║       ║ ─┘        └····· ║       ║                : #		0-4 0.38            step12 cycle - no add                   #             int v = e.either(),                           #  <-- greedily add edges to MST
+	#           │           ║       ║                  ║       ║                : #		6-2 0.40            step13 no cycle - add	MST is ready    #             w = e.other(v);                               #
+	#           │0.35(9)    ║       ║      0.34!(8)    ║       ║                : #		3-6 0.52                                                    #             if (!uf.connected(v, w)) {                    #  <-- edge v-w does not create a cycle
+	#           │           ║   7   ║ ················ ║   2   ║                : #		6-0 0.58                                                    #                 uf.union(v, w);                           #  <-- merge sets
+	#           │           ║       ║                  ║       ║                : #		6-4 0.93                                                    #                 mst.enqueue(e);                           #  <-- add edges to MST
+	#           │           ║       ║       0.26(4)    ║       ║                : #                                                                 #             }                                             #
+	#  ┌········┼·········· ║       ║  ┌────────────── ║       ║ ──────┐        : #                                                                 #         }                                                 #
+	#  :        │           ╚═══════╝  │               ╚═══════╝       │        : #                                                                 #     }                                                     #
+	#  :        │             │      ╔═══════╗  0.58                   │        : #                                                                 #     public Iterable<Edge> edges() {                       #
+	#  :0.37!11 │             └───── ║   0   ║ ···················┐    │0.40(13): #                                                                 #         return mst;                                       #
+	#  :        │            0.16(1) ╚═══════╝                    :    │        : #                                                                 #     }                                                     #
+	#  :      ╔═══╗  0.93              :                        ╔═══╗  │        : #                                                                 # }                                                         #
+	#  └····· ║ 4 ║ ···················┼······················· ║ 6 ║ ─┘        : #                                                                 #############################################################
+	#         ╚═══╝                    :                        ╚═══╝           : #
+	#           :   0.38!12            :                          :   0.52      : #
+	#           └······················┘                          └·············┘ #
+	#                                                                             #
+	###############################################################################	
 	
-	
-	
-	
-	
-	
-	
-	
+- Prim's Algorithm
+	・Start with vertex 0 and greedily grow tree T.
+	・Add to T the min weight edge with exactly one endpoint in T.
+	・Repeat until V - 1 edges.																						min-PQ		MST
+	###############################################################################		add edges of 0 to min PQ	0-7			0-7
+	#                                          0.29                               #     add edges of 7 to min PQ	1-7			0-7 1-7
+	#                                  ┌·················┐                        #     add edges of 1 to min PQ	0-2			0-7 1-7 0-2
+	#                                  :                 :                        #     add edges of 2 to min PQ	2-3			0-7 1-7 0-2 2-3
+	#              ╔═══════╗0.32     ╔═══════╗         ╔═══════╗                  #     add edges of 3 to min PQ	5-7			0-7 1-7 0-2 2-3 5-7
+	#           ┌─ ║   5   ║ ······· ║   1   ║ ·┐      ║   3   ║ ···············┐ #     add edges of 5 to min PQ	5-4			0-7 1-7 0-2 2-3 5-7 5-4
+	#           │  ╚═══════╝         ╚═══════╝  :      ╚═══════╝                : #     add edges of 4 to min PQ	6-2			0-7 1-7 0-2 2-3 5-7 5-4 6-2
+	#           │    │                 │        :        │                      : #     
+	#           │    │0.28(5)          │0.19(2) :0.36    │ 0.17(4)              : #     #############################################################
+	#           │    │                 │        :        │                      : #     # public class LazyPrimMST {                                #
+	#           │    │      ╔═══════╗  │        :      ╔═══════╗                : #     #     private boolean[] marked; 	// MST vertices         #
+	#           │    └───── ║       ║ ─┘        └····· ║       ║                : #     #     private Queue<Edge> mst; 		// MST edges            #
+	#           │           ║       ║                  ║       ║                : #     #     private MinPQ<Edge> pq; 		// PQ of edges          #
+	#           │0.35(6)    ║       ║      0.34        ║       ║                : #     #     public LazyPrimMST(WeightedGraph G) {                 #
+	#           │           ║   7   ║ ················ ║   2   ║                : #     #         pq = new MinPQ<Edge>();                           #
+	#           │           ║       ║                  ║       ║                : #     #         mst = new Queue<Edge>();                          #
+	#           │           ║       ║       0.26(3)    ║       ║                : #     #         marked = new boolean[G.V()];                      #
+	#  ┌········┼·········· ║       ║  ┌────────────── ║       ║ ──────┐        : #     #         visit(G, 0);                                      #  <-- assume G is connected
+	#  :        │           ╚═══════╝  │               ╚═══════╝       │        : #     #         while (!pq.isEmpty() && mst.size() < G.V() - 1) { #
+	#  :        │             │      ╔═══════╗  0.58                   │        : #     #             Edge e = pq.delMin();                         #  <-- repeatedly delete the min weight edge e = v–w from PQ
+	#  :0.37    │             └───── ║   0   ║ ···················┐    │0.40(7  : #     #             int v = e.either(),                           #
+	#  :        │            0.16(1) ╚═══════╝                    :    │        : #     #             w = e.other(v);                               #
+	#  :      ╔═══╗  0.93              :                        ╔═══╗  │        : #     #             if (marked[v] && marked[w]) continue;         #  <-- ignore if both endpoints in T
+	#  └····· ║ 4 ║ ···················┼······················· ║ 6 ║ ─┘        : #     #                                                           #
+	#         ╚═══╝                    :                        ╚═══╝           : #     #             mst.enqueue(e);                               #  <-- add edge e to tree
+	#           :   0.38               :                          :   0.52      : #     #             if (!marked[v]) visit(G, v);                  #  <-- add v or w to tree
+	#           └······················┘                          └·············┘ #     #             if (!marked[w]) visit(G, w);                  #
+	#                                                                             #     #         }                                                 #
+	###############################################################################     #     }                                                     #
+                                                                                        #     private void visit(WeightedGraph G, int v) {          #
+                                                                                        #         marked[v] = true;                                 #  <-- add v to T
+                                                                                        #         for (Edge e : G.adj(v))                           #
+                                                                                        #             if (!marked[e.other(v)])                      #
+                                                                                        #                 pq.insert(e);                             #  <-- for each edge e = v–w, add to PQ if w not already in T
+                                                                                        #     }                                                     #
+                                                                                        #     public Iterable<Edge> mst() {return mst;}             #
+                                                                                        # }                                                         #
+                                                                                        #############################################################
+
+- Prim's Algorithm (eager)
+	step1: MST 0-7					step2: MST 0-7 1-7			step3: MST 0-7 1-7 0-2
+	add vertices 7 2 4 6 to PQ      add vertices 1 5 to PQ      add vertices 3 to PQ
+	v 	edgeTo[] 	distTo[]        v 	edgeTo[] 	distTo[]    v 	edgeTo[] 	distTo[]
+	0 	- 			-               0 	- 			-           0 	- 			-
+	7 	0–7 		0.16            *1 	1–7 		0.19        2 	0–2 		0.26
+	2 	0–2 		0.26            2 	0–2 		0.26        5	5-7			0.28
+	4 	0–4 		0.38            *5	5-7			0.28        3	1-3			0.29
+	6 	6–0 		0.58            4 	0–4 		0.38        4 	0–4 		0.38
+                                    6 	6–0 		0.58        6 	6–0 		0.58 
+                                    not adding 7-4 7-2          not adding 3-6 3-2
+
+- context
+
+
+
+
 
 ###############
 # week3

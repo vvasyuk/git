@@ -126,24 +126,24 @@ use Graph::Easy;
 # print $graph->as_boxart();
 
 #greedy3
-# my $graph = Graph::Easy->new();
-# my ($first,$second,$edge) = $graph->add_edge('5','1','0.32'); $edge->set_attributes( {arrowstyle => 'none', style => 'dotted'} ); $first->set_attributes({ border=> 'double' });
-# my ($first,$second,$edge) = $graph->add_edge('5','7','0.28'); $edge->set_attributes( {arrowstyle => 'none'} ); $second->set_attributes({ origin=> '5', offset=> '1,2' }); $first->set_attributes({ border=> 'double' }); $second->set_attributes({ border=> 'double' });
-# my ($first,$second,$edge) = $graph->add_edge('5','4','0.35'); $edge->set_attributes( {arrowstyle => 'none', style => 'dotted'} ); $second->set_attributes({ origin=> '5', offset=> '-1,6' });
-# my ($first,$second,$edge) = $graph->add_edge('1','2','0.36'); $edge->set_attributes( {arrowstyle => 'none', style => 'dotted'} ); $second->set_attributes({ origin=> '3', offset=> '0,2' });
-# my ($first,$second,$edge) = $graph->add_edge('1','3','0.29'); $edge->set_attributes( {arrowstyle => 'none', style => 'dotted'} ); $second->set_attributes({ origin=> '1', offset=> '2,0' });
-# my ($first,$second,$edge) = $graph->add_edge('1','7','0.19'); $edge->set_attributes( {arrowstyle => 'none', style => 'dotted'} );
-# my ($first,$second,$edge) = $graph->add_edge('3','2','0.17'); $edge->set_attributes( {arrowstyle => 'none', style => 'dotted'} );
-# my ($first,$second,$edge) = $graph->add_edge('3','6','0.52'); $edge->set_attributes( {arrowstyle => 'none', style => 'dotted'} );
-# my ($first,$second,$edge) = $graph->add_edge('7','2','0.34'); $edge->set_attributes( {arrowstyle => 'none', style => 'dotted'} );
-# my ($first,$second,$edge) = $graph->add_edge('7','0','0.16'); $edge->set_attributes( {arrowstyle => 'none', style => 'dotted'} ); $second->set_attributes({ origin=> '7', offset=> '1,1' }); 
-# my ($first,$second,$edge) = $graph->add_edge('7','4','0.37'); $edge->set_attributes( {arrowstyle => 'none', style => 'dotted'} );
-# my ($first,$second,$edge) = $graph->add_edge('2','0','0.26'); $edge->set_attributes( {arrowstyle => 'none'} ); $first->set_attributes({ border=> 'double' }); $second->set_attributes({ border=> 'double' });
-# my ($first,$second,$edge) = $graph->add_edge('2','6','0.40'); $edge->set_attributes( {arrowstyle => 'none', style => 'dotted'} ); $second->set_attributes({ origin=> '3', offset=> '1,6' });
-# my ($first,$second,$edge) = $graph->add_edge('0','4','0.38'); $edge->set_attributes( {arrowstyle => 'none', style => 'dotted'} );
-# my ($first,$second,$edge) = $graph->add_edge('0','6','0.58'); $edge->set_attributes( {arrowstyle => 'none', style => 'dotted'} );
-# my ($first,$second,$edge) = $graph->add_edge('4','6','0.93'); $edge->set_attributes( {arrowstyle => 'none', style => 'dotted'} );
-# print $graph->as_boxart();
+my $graph = Graph::Easy->new();
+my ($first,$second,$edge) = $graph->add_edge('5','1','0.32'); $edge->set_attributes( {arrowstyle => 'none', style => 'dotted'} ); $first->set_attributes({ border=> 'double' });
+my ($first,$second,$edge) = $graph->add_edge('5','7','0.28'); $edge->set_attributes( {arrowstyle => 'none'} ); $second->set_attributes({ origin=> '5', offset=> '1,2' }); $first->set_attributes({ border=> 'double' }); $second->set_attributes({ border=> 'double' });
+my ($first,$second,$edge) = $graph->add_edge('5','4','0.35'); $edge->set_attributes( {arrowstyle => 'none', style => 'dotted'} ); $second->set_attributes({ origin=> '5', offset=> '-1,6' });
+my ($first,$second,$edge) = $graph->add_edge('1','2','0.36'); $edge->set_attributes( {arrowstyle => 'none', style => 'dotted'} ); $second->set_attributes({ origin=> '3', offset=> '0,2' });
+my ($first,$second,$edge) = $graph->add_edge('1','3','0.29'); $edge->set_attributes( {arrowstyle => 'none', style => 'dotted'} ); $second->set_attributes({ origin=> '1', offset=> '2,0' });
+my ($first,$second,$edge) = $graph->add_edge('1','7','0.19'); $edge->set_attributes( {arrowstyle => 'none', style => 'dotted'} );
+my ($first,$second,$edge) = $graph->add_edge('3','2','0.17'); $edge->set_attributes( {arrowstyle => 'none', style => 'dotted'} );
+my ($first,$second,$edge) = $graph->add_edge('3','6','0.52'); $edge->set_attributes( {arrowstyle => 'none', style => 'dotted'} );
+my ($first,$second,$edge) = $graph->add_edge('7','2','0.34'); $edge->set_attributes( {arrowstyle => 'none', style => 'dotted'} );
+my ($first,$second,$edge) = $graph->add_edge('7','0','0.16'); $edge->set_attributes( {arrowstyle => 'none', style => 'dotted'} ); $second->set_attributes({ origin=> '7', offset=> '1,1' }); 
+my ($first,$second,$edge) = $graph->add_edge('7','4','0.37'); $edge->set_attributes( {arrowstyle => 'none', style => 'dotted'} );
+my ($first,$second,$edge) = $graph->add_edge('2','0','0.26'); $edge->set_attributes( {arrowstyle => 'none'} ); $first->set_attributes({ border=> 'double' }); $second->set_attributes({ border=> 'double' });
+my ($first,$second,$edge) = $graph->add_edge('2','6','0.40'); $edge->set_attributes( {arrowstyle => 'none', style => 'dotted'} ); $second->set_attributes({ origin=> '3', offset=> '1,6' });
+my ($first,$second,$edge) = $graph->add_edge('0','4','0.38'); $edge->set_attributes( {arrowstyle => 'none', style => 'dotted'} );
+my ($first,$second,$edge) = $graph->add_edge('0','6','0.58'); $edge->set_attributes( {arrowstyle => 'none', style => 'dotted'} );
+my ($first,$second,$edge) = $graph->add_edge('4','6','0.93'); $edge->set_attributes( {arrowstyle => 'none', style => 'dotted'} );
+print $graph->as_boxart();
 
 #MST
 # my $graph = Graph::Easy->new();
