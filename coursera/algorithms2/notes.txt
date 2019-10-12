@@ -790,8 +790,23 @@
 	# (queue-based)	|cycles         |               |               |            #  
 	##############################################################################  
 																					
-	
-
+	Negative cycle application: arbitrage detection			Negative cycle application: arbitrage detection					Model as a negative cycle detection problem by taking logs.					
+	############################							Currency exchange graph.						                ・Let weight of edge v→w be - ln (exchange rate from currency v to w).
+	# 		USD	EUR	GBP	CHF	CAD#                            ・Vertex = currency.                                             ・Multiplication turns to addition; > 1 turns to < 0. 
+	# USD	1	0.7	0.6	1.0	1.0#                            ・Edge = transaction, with weight equal to exchange rate.        ・Find a directed cycle whose sum of edge weights is < 0 (negative cycle). 
+	# EUR	1.3	1	0.8	1.4	1.3#                            ・Find a directed cycle whose product of edge weights is > 1.
+	# GBP	1.5	1.1	1	1.6	1.5#								>0.741			0.741 * 1.366 * .995 = 1.00714497
+	# CHF	0.9	0.6	0.6	1	0.9#							+---+     +---+
+	# CAD	0.9	0.7	0.6	1.0	1  #                            |USD|<--->|EUR|				replace each weight with ln
+	############################                            +---+     +---+				-ln(.741) -ln(1.366) -ln(.995)		(ln(x) - time needed to grow to x with 100% continusos compund)
+	                                                         ^   ^   ^   ^ >1.366		.2998 - .3119 + .0050 = -.0071		e - constant 2.718
+	                                                         |    \ /    | 													e^3 is 20.08. After 3 units of time, we end up with 20.08 times what we started with.
+	                                                         |     /<0.99| 													log(x) tells you what power you must raise 10 to get x
+	                                                         |    / \    |                                                  ln(x) is log with base e 2.718
+	                                                         v   v   v   v                                                  ln(x) tells you what power you must raise e to get x
+                                                            +---+     +---+
+	                                                        |CHF|<--->|CAD|
+                                                            +---+     +---+
 ###############
 # week3
 ###############
