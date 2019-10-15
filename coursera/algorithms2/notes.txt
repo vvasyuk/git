@@ -897,8 +897,72 @@
     #####################################################################################
 
 
+- implementation
+	Flow edge data type. Associate flow fe and capacity ce with edge e = v→w.													###################################################################### 	#############################################################
+	Flow network data type. Need to process edge e = v→w in either direction: Include e in both v and w's adjacency lists.      # public class FlowEdge {                                            #  # public double residualCapacityTo(int vertex) {            #
+	Residual capacity.                                                                                                          #     private final int v,w; // from and to                          #  #     if (vertex == v) return flow;                         #  <-- backward edge
+	・Forward edge: residual capacity = ce - fe.                                                                                 #     private final double capacity; // capacity                     #  #      else if (vertex == w) return capacity - flow;        #  <-- forward edge 
+	・Backward edge: residual capacity = fe.                                                                                     #     private double flow; // flow                                   #  #      else throw new IllegalArgumentException();           # 
+	Augment flow.                                                                                                               #     public FlowEdge(int v, int w, double capacity) {               #  #                                                           #
+	・Forward edge: add ∆.                                                                                                       #         this.v = v;                                                #  # }                                                         # 
+	・Backward edge: subtract ∆.                                                                                                 #         this.w = w;                                                #  # public void addResidualFlowTo(int vertex, double delta) { # 
+	original network						residual network:                                                                   #         this.capacity = capacity;                                  #  #     if (vertex == v) flow -= delta;                       #  <-- backward edge
+	#####################################	same but:					Augmenting path in original network is equivalent to    #     }                                                              #  #      else if (vertex == w) flow += delta;                 #  <-- forward edge
+	#           +-+  9/9  +-+           #	s-1 = 1; 1-s = 9			directed path in residual network.                      #     public int from() {return v;}                                  #  #      else throw new IllegalArgumentException();           #
+	#          >|1|------>|2|\          #	s-3 = 1; 3-s = 4                                                                    #     public int to() {return w;}                                    #  # }                                                         #
+	#        -/ +-+       +-+ -\        #	1-3 = 4;                                                                            #     public double capacity() {return capacity;}                    #  #############################################################
+	#   9/10/    ^ -\4/4   |    \9/10   #	s-3 = 1; 3-s = 4                                                                    #     public double flow() {return flow;}                            #
+	#     -/  4/4|   --\   v     -\     #	2-1 = 9                                                                             #     public int other(int vertex) {                                 #
+	# +-+/      +-+     ->+-+      >+-+ #	4-1 = 4                                                                             #         if (vertex == v) return w;                                 #
+	# |s|------>|3|------>|4|------>|t| #	3-4 = 8 (cause was empty)                                                           #          else if (vertex == w) return v;                           #
+	# +-+  4/5  +-+  0/8  +-+  4/10 +-+ #	2-4 = 15 (cause was empty)                                                          #          else throw new RuntimeException("Illegal endpoint");      #
+	#####################################	4-t = 6; t-4 = 4                                                                    #                                                                    #
+											2-t = 1; t-2 = 9                                                                    #     }                                                              #
+	                                                                                                                            #     public double residualCapacityTo(int vertex) {...}             #
+	                                                                                                                            #     public void addResidualFlowTo(int vertex, double delta) {...}  #
+                                                                                                                                # }                                                                  #
+                                                                                                                                ######################################################################
 
+	############################################### 								Ford-Fulkerson: Java implementation
+    # public class FlowNetwork {                  #                                 ############################################################################### 							#################################################################### 
+    #     private final int V;                    #		same as EdgeWeightedGraph,  # public class FordFulkerson {                                                #                             # private boolean hasAugmentingPath(FlowNetwork G, int s, int t) { #
+    #     private Bag<FlowEdge> [] adj;           #  <--but adjacency lists of      #     private boolean[] marked; // true if s->v path in residual network      #                             #     edgeTo = new FlowEdge[G.V()];                                #
+    #                                             #		FlowEdges instead of Edges  #     private FlowEdge[] edgeTo; // last edge on s->v path                    #                             #     marked = new boolean[G.V()];                                 #
+    #     public FlowNetwork(int V) {             #                                 #     private double value; // value of flow                                  #                             #     Queue<Integer> queue = new Queue<Integer>();                 #
+    #         this.V = V;                         #                                 #     public FordFulkerson(FlowNetwork G, int s, int t) {                     #                             #     queue.enqueue(s);                                            #
+    #         adj = (Bag<FlowEdge> [])new Bag[V]; #                                 #         value = 0.0;                                                        #                             #     marked[s] = true;                                            #
+    #         for (int v = 0; v < V; v ++)        #                                 #         while (hasAugmentingPath(G, s, t)) {                                #                             #     while (!queue.isEmpty()) {                                   #
+    #             adj[v] = new Bag<FlowEdge>();   #                                 #             double bottle = Double.POSITIVE_INFINITY;                       #                             #         int v = queue.dequeue();                                 #
+    #     }                                       #                                 #             for (int v = t; v != s; v = edgeTo[v].other(v))                 #  <-- compute                #         for (FlowEdge e : G.adj(v)) {                            #
+    #     public void addEdge(FlowEdge e) {       #                                 #                 bottle = Math.min(bottle, edgeTo[v].residualCapacityTo(v)); #		 bottleneck capacity    #             int w = e.other(v);                                  #
+    #         int v = e.from();                   #                                 #             for (int v = t; v != s; v = edgeTo[v].other(v))                 #  <-- augment flow           #             if (e.residualCapacityTo(w) > 0 && !marked[w]) {     #  <-- found path from s to win the residual network?
+    #         int w = e.to();                     #                                 #                 edgeTo[v].addResidualFlowTo(v, bottle);                     #                             #                 edgeTo[w] = e;                                   #	  save last edge on path to w;
+    #         adj[v].add(e);                      #  <--add forward edge            #             value += bottle;                                                #                             #                 marked[w] = true;                                #  <-- mark w;
+    #         adj[w].add(e);                      #  <--add backward edge           #         }                                                                   #                             #                 queue.enqueue(w);                                #	  add w to the queue
+    #     }                                       #                                 #     }                                                                       #                             #             }                                                    #
+    #     public Iterable<FlowEdge> adj(int v) {  #                                 #     private boolean hasAugmentingPath(FlowNetwork G, int s, int t) {        #                             #         }                                                        #
+    #         return adj[v];                      #                                 #         /* See next slide. */                                               #                             #     }                                                            #
+    #     }                                       #                                 #     }                                                                       #                             #     return marked[t];                                            #
+    # }                                           #                                 #     public double value() {return value;}                                   #                             # }                                                                #
+    ###############################################                                 #     public boolean inCut(int v) {return marked[v];}                         #                             ####################################################################
+                                                                                    # }                                                                           #
+                                                                                    ###############################################################################
 
+- applications
+	Maxflow/mincut is a widely applicable problem-solving model.
+	・Data mining.
+	・Open-pit mining.
+	・Bipartite matching.
+	・Network reliability.
+	・Baseball elimination.
+	・Image segmentation.
+	・Network connectivity.
+	・Distributed computing.
+	・Security of statistical data.
+	・Egalitarian stable matching.
+	・Multi-camera scene reconstruction.
+	・Sensor placement for homeland security.
+	・Many, many, more.
 
 ###############
 # week4
