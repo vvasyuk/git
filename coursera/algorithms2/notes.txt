@@ -964,6 +964,60 @@
 	・Sensor placement for homeland security.
 	・Many, many, more.
 
+- Strings
+	How to efficiently reverse a string?									How to efficiently form array of suffixes?							How long to compute length of longest common prefix?
+	String																	String
+	##################################################						###############################################						#################################################
+    # public static String reverse(String s) {       #                      # public static String[] suffixes(String s) { #                     # public static int lcp(String s, String t) {   #
+    #     String rev = "";                           #                      #     int N = s.length();                     #                     #     int N = Math.min(s.length(), t.length()); #
+    #     for (int i = s.length() - 1; i >= 0; i --) #                      #     String[] suffixes = new String[N];      #                     #     for (int i = 0; i < N; i ++)              #
+    #         rev += s.charAt(i);                    #  <-- quadratic       #     for (int i = 0; i < N; i ++)            #  <-- linear         #         if (s.charAt(i) != t.charAt(i))       #  <-- linear worse
+    #                                                #                      #         suffixes[i] = s.substring(i, N);    #                     #             return i;                         #	   sublinear typical
+    #     return rev;                                #                      #                                             #                     #     return N;                                 #
+    # }                                              #                      #     return suffixes;                        #                     # }                                             #
+    ##################################################                      # }                                           #                     #################################################
+    StringBuilder                                                           ###############################################
+    ##################################################                      StringBuilder
+    # public static String reverse(String s) {       #                      ###############################################
+    #     StringBuilder rev = new StringBuilder();   #                      # public static String[] suffixes(String s) { #
+    #     for (int i = s.length() - 1; i >= 0; i --) #                      #     int N = s.length();                     #
+    #         rev.append(s.charAt(i));               #  <-- linear          #     StringBuilder sb = new StringBuilder(s);#  <-- quadratic
+    #                                                #                      #     String[] suffixes = new String[N];      #
+    #     return rev.toString();                     #                      #     for (int i = 0; i < N; i ++)            #
+    # }                                              #                      #         suffixes[i] = sb.substring(i, N);   #
+    ##################################################                      #                                             #
+                                                                            #     return suffixes;                        #
+                                                                            # }                                           #
+                                                                            ###############################################
+
+- key-indexed counting							
+	Keys used to sort are small integeres													Applications:						
+                                                                                            ・Sort string by first letter.       
+	Goal. Sort an array a[] of N integers between 0 and R - 1.                              ・Sort class roster by section.      
+	#################################						                                ・Sort phone numbers by area code.                   
+	#     +-----------------------+ #                                                       ・Subroutine in a sorting algorithm. 
+    # a[i]|d|a|c|f|f|b|d|b|f|b|e|a| #                                                 
+    #     +-----------------------+ #	  count frquencies using key as index                                                 
+    # i    0 1 2 3 4 5 6 7 8 9 1011 #	  ###########################                                                 
+    #################################     # 		  offset by 1   #                                                
+                                          # 	    +-------------+ #                                                
+    #################################	  # count[r]|0|2|3|1|2|1|3| #                                                
+    #int N = a.length;              #     # 	    +-/-/-/-/-/-/-+ #                                                
+    #int[] count = new int[R + 1];  #     # r		a b c d e f     #                                                
+    #for (int i = 0; i < N; i ++)   #  <--###########################                                                
+    #    count[a[i] + 1]++;         #     compute cumulitives                                                                  
+    #                               #     # 	    +--------------+#	go through count array and at each step                                                
+    #for (int r = 0; r < R; r ++)   #  <--# count[r]|0|2|5|6|8|9|12|#   add current one to sum computed so far                                                                   
+    #    count[r + 1] += count[r];  #     # 	    +-/-/-/-/-/-/--+#                                                
+    #                               #     # r		 a b c d e f    #
+    #for (int i = 0; i < N; i ++)   #     ###################################	6 keys <d 8 keys <e so d`s go in a[6] and a[]7
+    #    aux[count[a[i]]++] = a[i]; #  <--#       +-----------------------+ #	go through all array to be sorted and move each key where it has to go
+    #                               #     # aux[i]|a|a|b|b|b|c|d|d|e|f|f|f| #	last step move back to original array
+    #for (int i = 0; i < N; i ++)   #     #       +-----------------------+ #
+    #    a[i] = aux[i];             #     # i      0 1 2 3 4 5 6 7 8 9 1011 #
+    #################################     ###################################
+
+
 ###############
 # week4
 ###############

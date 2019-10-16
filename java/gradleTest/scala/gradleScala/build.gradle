@@ -48,6 +48,14 @@ task fatJar(type: Jar) {
     with jar
 }
 
+task fatDeploy(type:Exec){
+	workingDir "${buildDir}/libs"
+	commandLine = ['pscp', '=pw', 'passwd', 'your.jar', 'user@host:/dir/to']
+}<<{
+	println "Executed fatDeploy"
+}
+
+
 //eclipse{
 //    classpath{
 //        file{
