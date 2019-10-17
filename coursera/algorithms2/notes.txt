@@ -1017,6 +1017,80 @@
     #    a[i] = aux[i];             #     # i      0 1 2 3 4 5 6 7 8 9 1011 #
     #################################     ###################################
 
+- LSD radix sort
+	Least-significant-digit-first string sort									good to sort one million 32-bit integers.
+	LSD string (radix) sort.
+	・Consider characters from right to left.
+	・Stably sort using dth character as the key (using key-indexed counting)
+															LSD string sort: Java implementation
+					sort key	sort key	sort key		########################################################
+					(d = 2)		(d = 1)		(d = 1)         # public class LSD {                                   #
+	#################################################       #     public static void sort(String[] a, int W) {     #  <-- fixed-length W strings
+	# 				     *		   *	     *      #       #         int R = 256;                                 #  <-- radix R
+	#   +-----+     +-----+     +-----+     +-----+ #       #         int N = a.length;                            #
+	#  0|d a|b|    0|d a|b|    0|d|a|b|    0|a|c e| #       #         String[] aux = new String[N];                #      do key-indexed counting
+	#  1|a d|d|    1|c a|b|    1|c|a|b|    1|a|d d| #       #         for (int d = W - 1; d >= 0; d --) {          #  <-- for each digit from right to left
+	#  2|c a|b|    2|e b|b|    2|f|a|d|    2|b|a d| #       #             int[] count = new int[R + 1];            #
+	#  3|f a|d|    3|a d|d|    3|b|a|d|    3|b|e d| #       #             for (int i = 0; i < N; i ++)             #
+	#  4|f e|e|    4|f a|d|    4|d|a|d|    4|b|e e| #       #                 count[a[i].charAt(d) + 1]++;         #
+	#  5|b a|d|    5|b a|d|    5|e|b|b|    5|c|a b| #       #             for (int r = 0; r < R; r ++)             #  <-- key-indexed counting
+	#  6|d a|d|    6|d a|d|    6|a|c|e|    6|d|a b| #       #                 count[r + 1] += count[r];            #
+	#  7|b e|e|    7|f e|d|    7|a|d|d|    7|d|a d| #       #             for (int i = 0; i < N; i ++)             #
+	#  8|f e|d|    8|b e|d|    8|f|e|d|    8|e|b b| #       #                 aux[count[a[i].charAt(d)]++] = a[i]; #
+	#  9|b e|d|    9|f e|e|    9|b|e|d|    9|f|a d| #       #                                                      #
+	# 10|e b|b|   10|b e|e|   10|f|e|e|   10|f|e d| #       #             for (int i = 0; i < N; i ++)             #
+	# 11|a c|e|   11|a c|e|   11|b|e|e|   11|f|e e| #       #                 a[i] = aux[i];                       #
+	#   +-----+     +-----+     +-----+     +-----+ #       #         }                                            #
+	#################################################       #     }                                                #
+	                                                        # }                                                    #
+	                                                        ########################################################
+	
+- MSD radix sort																																	MSD string sort: Java implementation
+	MSD string (radix) sort.																														###############################################################################
+	・Partition array into R pieces according to first character(use key-indexed counting).                                                          # public static void sort(String[] a) {                                       # 
+	・Recursively sort all strings that start with each character (key-indexed counts delineate subarrays to sort).                                  #     aux = new String[a.length];                                             # 
+	                                                                                                                                                #     sort(a, aux, 0, a.length - 1, 0);                                       #
+											sort subarrays			Variable-length strings					                                        # }                                                                           #
+				   *		count[]			recursively				Treat strings as if they had an extra char at end (smaller than any char).      # private static void sort(String[] a, String[] aux, int lo, int hi, int d) { #
+	  +-----+	  +-----+                  +-----+					  +--------+				################################################	#     if (hi <= lo)                                                           #
+	 0|d a b|    0|a|d d|           ----->0|a d d|			         0|s e a +1|                # private static int charAt(String s, int d) { #    #         return;                                                             #
+	 1|a d d|    1|a|c e|          /      1|a c e|        	          +--------------------+    #     if (d < s.length()) return s.charAt(d);  #    #     int[] count = new int[R + 2];                                           #
+	 2|c a b|    2|b|a d|         /        +-----+        	         1|s e a s h e l l s +1|    #      else  return -1;                        #    #     for (int i = lo; i <= hi; i ++)                                         #
+	 3|f a d|    3|b|e e|    +--+/     -->2|b a d|        	          +--------------------+    # }                                            #    #         count[charAt(a[i], d) + 2]++;                                       #
+	 4|f e e|    4|b|e d|   a|0 |     /   3|b e e|        	         2|s e l l s +1|            ################################################    #     for (int r = 0; r < R + 1; r ++)                                        #
+	 5|b a d|    5|c|a b|   b|2 |-----    4|b e d|        	          +------------+                                                                #         count[r + 1] += count[r];                                           #
+	 6|d a d|    6|d|a b|   c|5 |-----     +-----+        	         3|s h e +1|				Observation 1.                                      #     for (int i = lo; i <= hi; i ++)                                         #
+	 7|b e e|    7|d|a d|   d|6 |---  \-->5|c a b|        	          +--------+                Much too slow for small subarrays.                  #         aux[count[charAt(a[i], d) + 1]++] = a[i];                           #
+	 8|f e d|    8|e|b b|   e|8 |-  \      +-----+        	         4|s h e +1|                ・Each function call needs its own count[] array.    #     for (int i = lo; i <= hi; i ++)                                         #
+	 9|b e d|    9|f|a d|   f|9 | \  ---->6|d a b|        	          +--------------+          ・ASCII (256 counts): 100x slower than copy pass     #         a[i] = aux[i - lo];                                                 #
+	10|e b b|   10|f|e e|   ++12|\ \      7|d a d|        	         5|s h e l l s +1|          for N = 2.                                          #     for (int r = 0; r < R; r ++)                                            #  <-- sort R subarrays recursively
+	11|a c e|   11|f|e d|    +--+ \ \      +-----+        	          +--------------+          ・Unicode (65,536 counts): 32,000x slower            #         sort(a, aux, lo + count[r], lo + count[r + 1] - 1, d + 1);          #
+	  +-----+     +-----+          \ ---->8|e b b|        	         6|s h o r e +1|            for N = 2.                                          #                                                                             #
+	                                \      +-----+        	          +--------------+          Observation 2. Huge number of small subarrays       # }                                                                           #
+	                                 ---->9|f a d|        	         7|s u r e l y +1|          because of recursion.                               ###############################################################################
+	                                     10|f e e|        	          +--------------+
+	                                     11|f e d|        	
+	                                       +-----+        	
+	        	
+	Cutoff to insertion sort												Summary of the performance of sorting algorithms							MSD string sort vs. quicksort for strings
+	Solution. Cutoff to insertion sort for small subarrays.					+-------------------------------------------------------------------+		Disadvantages of MSD string sort.		
+	・Insertion sort, but start at dth character.                            |algorithm | guarantee | random  |space  |stable?|operations on keys|        ・Extra space for aux[]. 
+	・Implement less() so that it compares starting at dth character.        |insertion | ½N^2      | ¼N^2    |1      |yes    |compareTo()       |        ・Extra space for count[]. 
+	###################################################################     |mergesort | NlgN      | NlgN    |N      |yes    |compareTo()       |       ・Inner loop has a lot of instructions.
+	#public static void sort(String[] a, int lo, int hi, int d) {     #     |quicksort | 1.39NlgN* | 1.39NlgN|clgN   |no     |compareTo()       |       ・Accesses memory "randomly" (cache inefficient).
+	#    for (int i = lo; i <= hi; i ++)                              #     |heapsort  | 2NlgN     | 2NlgN   |1      |no     |compareTo()       |		
+	#        for (int j = i; j > lo && less(a[j], a[j - 1], d); j --) #     |LSD       | 2NW       | 2NW     |N+R    |yes    |charAt()          |		Disadvantage of quicksort.
+	#            exch(a, j, j - 1);                                   #     |MSD       | 2NW       | NlogRN  |N+DR   |yes    |charAt()          |       ・Linearithmic number of string compares (not linear).
+	#}                                                                #     |          |           |         |       |       |                  |       ・Has to rescan many characters in keys with long prefix matches.
+	#private static boolean less(String v, String w, int d) {         #     +-------------------------------------------------------------------+
+	#    return v.substring(d).compareTo(w.substring(d)) < 0;         #
+    #}                                                                #
+    ###################################################################
+
+Disadvantage of quicksort.
+・Linearithmic number of string compares (not linear).
+・Has to rescan many characters in keys with long prefix matches.
+
 
 ###############
 # week4
