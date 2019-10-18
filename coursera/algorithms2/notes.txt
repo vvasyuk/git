@@ -1087,9 +1087,134 @@
     #}                                                                #
     ###################################################################
 
-Disadvantage of quicksort.
-・Linearithmic number of string compares (not linear).
-・Has to rescan many characters in keys with long prefix matches.
+
+- 3-way Radix Quicksort
+																											#################################################################					
+	partition by		partition <s by		partition =s by		partition =e by		                        # private static void sort(String[] a) {                        #
+	first char (s)		first char (b)		second char (e)		third char (a)                              #     sort(a, 0, a.length - 1, 0);                              #
+	+----------+ 		+---------+			+-----------+		+-----------+		+-----------+           # }                                                             #
+	|s|he      |        |b|y      | <s      |are        |		|are        |		|are        |           # private static void sort(String[] a, int lo, int hi, int d) { #
+	|s|ells    |        |a|re     |         |by         |		|by         |		|by         |           #     if (hi <= lo)                                             #	3-way partitioning
+	|s|eashells|        +---------+         +-----------+		+-----------+		+-----------+           #         return;                                               #	(using dth character)
+	|b|y       |        |seashells| =s      |s|e|ashells|		|se|a|shells|=e		|sea|s|hells|=a         #     int lt = lo,                                              #
+	|t|he      |        |she      |         |s|h|e      |		|se|l|ls    |		|sea| |     |           #     gt = hi;                                                  #
+	|s|ea      |        |seashells|         |s|e|ashells|		|se|a|shells|		|sea|s|hells|           #     int v = charAt(a[lo], d);                                 #  <-- to handle variable-length strings
+	|s|hore    |        |sea      |         |s|e|a      |		|se|a|      |		+-----------+           #     int i = lo + 1;                                           #
+	|t|he      |        |shore    |         |s|h|ore    |		|se|l|ls    |		|sells      |>a         #     while (i <= gt) {                                         #
+	|s|hells   |        |surely   |         |s|u|rely   |		+-----------+		|sells      |           #         int t = charAt(a[i], d);                              #  <-- to handle variable-length strings
+	|s|he      |        |shells   |         |s|h|ells   |		|shells     |>e		+-----------+           #         if (t < v)                                            #
+	|s|ells    |        |she      |         |s|h|e      |		|she        |		|shells     |           #             exch(a, lt ++, i ++);                             #
+	|a|re      |        |sells    |         |s|e|lls    |		|surely     |		|she        |           #          else if (t > v)                                      #
+	|s|urely   |        |sells    |         |s|e|lls    |		|shore      |		|surely     |           #             exch(a, i, gt --);                                #
+	|s|eashells|        +---------+         +-----------+		|she        |		|shore      |           #          else                                                 #
+	+----------+        |the      |>s       |the        |		+-----------+		|she        |           #             i ++;                                             #
+	                    |the      |         |the        |		|the        |		+-----------+           #     }                                                         #
+                        +---------+         +-----------+		|the        |		|the        |           #     sort(a, lo, lt - 1, d);                                   #
+                                            					+-----------+		|the        |           #     if (v >= 0) sort(a, lt, gt, d + 1);                       #  <-- sort 3 subarrays recursively
+                                            										+-----------+           #     sort(a, gt + 1, hi, d);                                   #
+                                                                                                            # }                                                             #
+                                                                                                            #################################################################
+	3-way string quicksort vs. standard quicksort									3-way string quicksort vs. MSD string sort
+    Standard quicksort.																MSD string sort.
+	・Uses ~ 2N ln N string compares on average.	                                    ・Is cache-inefficient.
+	・Costly for keys with long common prefixes (and this is a common case!)          ・Too much memory storing count[].                                                                                                
+																					・Too much overhead reinitializing count[] and aux[]
+	3-way string (radix) quicksort.                                  				
+	・Uses ~ 2N ln N character compares on average for random strings.       		3-way string quicksort.         
+    ・Avoids re-comparing long common prefixes.                                      ・Has a short inner loop.
+                                                                                    ・Is cache-friendly.
+                                                                                    ・Is in-place.   
+
+	Summary of the performance of sorting algorithms					
+    +-------------------------------------------------------------------+                    
+    |algorithm | guarantee | random  |space  |stable?|operations on keys|
+    |insertion | ½N^2      | ¼N^2    |1      |yes    |compareTo()       |
+    |mergesort | NlgN      | NlgN    |N      |yes    |compareTo()       |
+    |quicksort | 1.39NlgN* | 1.39NlgN|clgN   |no     |compareTo()       |
+    |heapsort  | 2NlgN     | 2NlgN   |1      |no     |compareTo()       |                    
+    |LSD       | 2NW       | 2NW     |N+R    |yes    |charAt()          |                    
+    |MSD       | 2NW       | NlogRN  |N+DR   |yes    |charAt()          |                    
+    |3way quick| 1.39WNlgR | 1.39NlgN|logN+W |no     |charAt()          |                    
+    +-------------------------------------------------------------------+                    
+                        
+- suffix arrays
+- Keyword-in-context search
+	Given a text of N characters, preprocess it to enable fast substring search
+	(find all occurrences of query string context).
+	
+	input string							form sufxes								sort sufxes to bring repeated substrings together
+	+----------------------------------+    +--------------------------------+      +--------------------------------+		Algorithm					
+	|i t w a s b e s t i t  w  a  s  w |    | 0 i t w a s b e s t i t w a s w|      | 3 a s b e s t                  |		・Preprocess: suffix sort the text.
+	|0 1 2 3 4 5 6 7 8 9 10 11 12 13 14|    | 1 t w a s b e s t i t w a s w  |      |12 a s w                        |		・Query: binary search for query; scan until mismatch.
+	+----------------------------------+    | 2 w a s b e s t i t w a s w    |      | 5 b e s t i t w a s w          |
+	                                        | 3 a s b e s t i t w a s w      |      | 6 e s t i t w a s w            |
+	                                        | 4 s b e s t i t w a s w        |      |  +---------+                   |
+	                                        | 5 b e s t i t w a s w          |      | 0|i t w a s|b e s t i t w a s w|
+	                                        | 6 e s t i t w a s w            |      | 9|i t w a s|w                  |
+	                                        | 7 s t i t w a s w              |      |  +---------+                   |
+	                                        | 8 t i t w a s w                |      | 4 s b e s t i t w a s w        |
+	                                        | 9 i t w a s w                  |      | 7 s t i t w a s w              |
+	                                        |10 t w a s w                    |      |13 s w                          |
+	                                        |11 w a s w                      |      | 8 t i t w a s w                |
+	                                        |12 a s w                        |      | 1 t w a s b e s t i t w a s w  |
+	                                        |13 s w                          |      |10 t w a s w                    |
+	                                        |14 w                            |      |14 w                            |
+	                                        +--------------------------------+      | 2 w a s b e s t i t w a s w    |
+	                                                                                |11 w a s w                      |
+	                                                                                +--------------------------------+
+	
+- Longest repeated substring
+	Given a string of N characters, find the longest repeated substring. 
+	
+	input string						 form sufxes						sort sufxes to bring repeated substrings together
+	+----------------------------------+ +--------------------------------+ +--------------------------------+			#######################################################
+	|a a c a a g t t t a c  a  a  g  c | | 0 a a c a a g t t t a c a a g c| | 0 a a c a a g t t t a c a a g c|          # public String lrs(String s) {                       #
+	|0 1 2 3 4 5 6 7 8 9 10 11 12 13 14| | 1 a c a a g t t t a c a a g c  | |11 a a g c                      |          #     int N = s.length();                             #
+	+----------------------------------+ | 2 c a a g t t t a c a a g c    | | 3 a a g t t t a c a a g c      |          #     String[] suffixes = new String[N];              #
+	                                     | 3 a a g t t t a c a a g c      | |  +---------+                   |          #     for (int i = 0; i < N; i ++)                    #  <--create suffixes
+	                                     | 4 a g t t t a c a a g c        | | 9|a c a a g|c                  |          #         suffixes[i] = s.substring(i, N);            #		(linear time and space)
+	                                     | 5 g t t t a c a a g c          | | 1|a c a a g|t t t a c a a g c  |          #     Arrays.sort(suffixes);                          #  <--sort suffixes
+	                                     | 6 t t t a c a a g c            | |  +---------+                   |          #     String lrs = "";                                #	    
+	                                     | 7 t t a c a a g c              | |12 a g c                        |          #     for (int i = 0; i < N - 1; i ++) {              #  <--find LCP between
+	                                     | 8 t a c a a g c                | | 4 a g t t t a c a a g c        |          #         int len = lcp(suffixes[i], suffixes[i + 1]);#		adjacent suffixes in
+	                                     | 9 a c a a g c                  | |14 c                            |          #         if (len > lrs.length())                     #		sorted order
+	                                     |10 c a a g c                    | |10 c a a g c                    |          #             lrs = suffixes[i].substring(0, len);    #
+	                                     |11 a a g c                      | | 2 c a a g t t t a c a a g c    |          #     }                                               #
+	                                     |12 a g c                        | |13 g c                          |          #     return lrs;                                     #
+	                                     |13 g c                          | | 5 g t t t a c a a g c          |          # }                                                   #
+	                                     +--------------------------------+ | 8 t a c a a g c                |          #######################################################
+	                                                                        | 7 t t a c a a g c              |
+	                                                                        +--------------------------------+
+	Problem. Suffix sorting: worst-case input	
+	Bad input: longest repeated substring very long.
+	・Ex: same letter repeated N times.
+	・Ex: two copies of the same Java codebase.
+	+---------------------+		+---------------------+	LRS needs at least 1 + 2 + 3 + ... + D character compares,
+	|0 t w i n s t w i n s|		|9|i n s|             | where D = length of longest match.
+	|1 w i n s t w i n s  |		|8|i n s|t w i n s    |	Running time. Quadratic (or worse) in D for LRS (and also for sort).
+	|2 i n s t w i n s    |		| +-----+             |
+	|3 n s t w i n s      |		|7 n s                |
+	|4 s t w i n s        |		|6 n s t w i n s      |
+	|5 t w i n s          |		|5 s                  |
+	|6 w i n s            |		|4 s t w i n s        |
+	|7 i n s              |		| +---------+         |
+	|8 n s                |		|3|t w i n s|         |
+	|9 s                  |		|2|t w i n s|t w i n s|
+	+---------------------+		| +---------+         |
+								|1|w i n s|           |
+								|0|w i n s|t w i n s  |
+								+---------------------+
+
+	Solution.
+	Suffix sorting in linearithmic time
+	Manber-Myers MSD algorithm overview.
+	・Phase 0: sort on first character using key-indexed counting sort.
+	・Phase i: given array of suffixes sorted on first 2i-1 characters,
+	create array of suffixes sorted on first 2i
+	characters.
+	Worst-case running time. N lg N.
+	・Finishes after lg N phases.
+	・Can perform a phase in linear time. (!) [ahead]
 
 
 ###############
