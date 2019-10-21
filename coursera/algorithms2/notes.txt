@@ -1275,15 +1275,111 @@
                                                 | 8|c b a b a a a a a 0                |    so suffixes8[9] ≤ suffixes8[0]
                                                 +--------------------------------------+
 
-
-
-
-
-
-
 ###############
 # week4
 ###############
+
+- R-way Tries
+	Tries. [from retrieval, but pronounced "try"]
+	・Store characters in nodes (not keys).
+	・Each node has R children, one for each possible character.
+	・For now, we do not draw null links.
+
+	######################################	+------------+		Search in a trie															#################################################################	###########################################
+    #                +-+root             #  |key   |value|		・Search hit: node where search ends has a non-null value.                   # public class TrieST<Value> {                                  #   # private static class Node {             #	characters are implicitly defined by link index 
+    #      /---------| |---------\       #  |by    |4    |      ・Search miss: reach null link or node where search ends has null value.     #     private static final int R = 256;                         #   #     private Object value;               # neither keys nor characters are explicitly stored 
+    #     /          +++          \      #  |sea   |6    |                                                                                  #     private Node root = new Node();                           #   #     private Node[] next = new Node[R];  # each node has an array of links and a value
+    #    /            |            \     #  |sells |1    |		Insertion into a trie                                                       #     private static class Node { /* see previous slide */      #   # }                                       #
+    # +-+            +++            +-+  #  |she   |0    |		・Encounter a null link: create new node.                                    #     }                                                         #   ########################################### 
+    # |b|          / |s| \          |t|  #  |shells|3    |      ・Encounter the last character of the key: set value in that node.           #     public void put(String key, Value val) {                  # 
+    # +++         /  +-+  \         +++  #  |shore |7    |                                                                                  #         root = put(root, key, val, 0);                        #	Trie performance
+    #  |       +-+         +-+       |   #  |the   |5    |		To delete a key-value pair:                                                 #     }                                                         #	Search hit. Need to examine all L characters for equality.
+    # +++      |e|         |h|      +++  #  +------------+      ・Find the node corresponding to key and set value to null.                  #     private Node put(Node x, String key, Value val, int d) {  #	Search miss. 
+    # |y|4     +-+         +-+      |h|  #                      ・If node has null value and all null links, remove that node (and recur).   #         if (x == null) x = new Node();                        #   ・Could have mismatch on first character. 
+    # +-+     /   \       /   \     +++  #                                                                                                  #                                                               #   ・Typical case: examine only a few characters (sublinear).
+    #       +-+   +-+   +-+   +-+    |   #                                                                                                  #         if (d == key.length()) { x.val = val; return x;}      #	Space. R null links at each leaf.
+    #       |a|2  |l|   |e|0  |o|   +++  #                                                                                                  #         char c = key.charAt(d);                               #	(but sublinear space possible if many short strings share common prefixes)
+    #       +-+   +++   +++   +++   |e|5 #                                                                                                  #         x.next[c] = put(x.next[c], key, val, d + 1);          #
+    #              |     |     |    +-+  #                                                                                                  #         return x;                                             #	Popular interview question
+    #             +++   +++   +++        #                                                                                                  #     }                                                         #	Goal. Design a data structure to perform efficient spell checking.
+    #             |l|   |l|   |r|        #                                                                                                  #     public boolean contains(String key) {                     #	Solution. Build a 26-way trie (key = word, value = bit).
+    #             +++   +++   +++        #                                                                                                  #         return get(key) != null;                              #
+    #              |     |     |         #                                                                                                  #     }                                                         #
+    #             +++   +++   +++        #                                                                                                  #     public Value get(String key) {                            #
+    #             |s|1  |l|   |e|7       #                                                                                                  #         Node x = get(root, key, 0);                           #
+    #             +-+   +++   +-+        #                                                                                                  #         if (x == null)                                        #
+    #                    |               #                                                                                                  #             return null;                                      #
+    #                   +++              #                                                                                                  #         return(Value)x.val;                                   #
+    #                   |s|3             #                                                                                                  #     }                                                         #
+    #                   +-+              #                                                                                                  #     private Node get(Node x, String key, int d) {             #
+    # 				                     #                                                                                                  #         if (x == null) return null;                           #
+    ######################################                                                                                                  #         if (d == key.length())  return x;                     #
+                                                                                                                                            #         char c = key.charAt(d);                               #
+                                                                                                                                            #         return get(x.next[c], key, d + 1);                    #
+                                                                                                                                            #     }                                                         #
+                                                                                                                                            # }                                                             #
+                                                                                                                                            #################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ###############
 # week5
