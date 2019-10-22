@@ -7,6 +7,28 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RegexTest {
+// ^cat      matches if you have the beginning of a line, followed immediately by cat
+// cat$      finds c·a·t only at the end of the line
+// [ea]      matches either e or a
+// gr[ea]y   grey or gray
+// [0-9]     digits
+// [a-z]     lowercase letters
+// [^1-6]    matches a character that’s not 1 through 6
+// 03.19.76  . matches any char 03/19/76 or 03-19-76
+// gr(a|e)y  grey or gray
+// colou?r   color or colour ? means optional
+// +         means one or more of the immediately-preceding item
+// *         means any number, including none, of the item.
+// [a-zA-Z]{1,5}  matches from one to five letters
+// (?=\d)    lookahead  successful at positions where a digit comes next (matches POSITION)
+// (?<=\d)   lookbehind looks back successful at positions with a digit to the left
+
+    public static void runRegexReplaceCommaInsideQuotes(){
+        String s = "abc,def,\"h,i,g\",xyz";
+
+        System.out.println(s.replaceAll(",(?=[^\"]*\"[^\"]*(?:\"[^\"]*\"[^\"]*)*$)", ""));
+    }
+
 
     public static void runRegexTest(){
         Map<String, String> replaceMap = new HashMap<>();

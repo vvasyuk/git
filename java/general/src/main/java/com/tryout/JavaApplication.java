@@ -4,6 +4,7 @@ import com.tryout.generalPuzzles.divideAndConquer.*;
 import com.tryout.generalPuzzles.greedy.*;
 import com.tryout.hocon.HoconMapper;
 import com.tryout.jsonMapper.JsonMapper;
+import com.tryout.regex.RegexTest;
 import com.tryout.yamlMapper.YamlMapper;
 
 import java.io.IOException;
@@ -53,6 +54,7 @@ public class JavaApplication {
 
 		// ### regex ###
 //		RegexTest.runRegexTest();
+		RegexTest.runRegexReplaceCommaInsideQuotes();
 //		System.out.println("Main ended");
 
 		// ### enum ###
@@ -67,7 +69,7 @@ public class JavaApplication {
 		//new YamlMapper().execute();
 
 		// ### HoconMapper ###
-		new HoconMapper().execute();
+		//new HoconMapper().execute();
 
 //		EnumSingleton enumSingleton = EnumSingleton.INSTANCE;
 //		enumSingleton.setValue(2);
