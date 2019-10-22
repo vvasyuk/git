@@ -4,6 +4,7 @@ import com.tryout.generalPuzzles.divideAndConquer.*;
 import com.tryout.generalPuzzles.greedy.*;
 import com.tryout.hocon.HoconMapper;
 import com.tryout.jsonMapper.JsonMapper;
+import com.tryout.passByValue.Swap;
 import com.tryout.regex.RegexTest;
 import com.tryout.yamlMapper.YamlMapper;
 
@@ -69,7 +70,7 @@ public class JavaApplication {
 		//new YamlMapper().execute();
 
 		// ### HoconMapper ###
-		//new HoconMapper().execute();
+//		new HoconMapper().execute();
 
 //		EnumSingleton enumSingleton = EnumSingleton.INSTANCE;
 //		enumSingleton.setValue(2);
@@ -171,6 +172,10 @@ public class JavaApplication {
 //		list.add(segmentJ);list.add(segmentK);
 //		System.out.println(ClosestPoints.execute(list));
 
+		// ### Swap ###
+		Integer a = 1; Integer b = 2;
+		new Swap().execute(a, b);
+		System.out.println("" + a+b);
 	}
 }
 
