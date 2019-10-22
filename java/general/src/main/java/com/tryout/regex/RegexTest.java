@@ -22,11 +22,15 @@ public class RegexTest {
 // [a-zA-Z]{1,5}  matches from one to five letters
 // (?=\d)    lookahead  successful at positions where a digit comes next (matches POSITION)
 // (?<=\d)   lookbehind looks back successful at positions with a digit to the left
-
+//(?=Jeffrey)Jeff    same as Jeff(?=rey)
+//(?:···)             non-capturing parentheses, group-but-don’t-capture
+//s/(?<=\d)(?=(\d\d\d)+$)/,/g;   makes 298,444,215 from 298444215
+//
+//,(?=[^"]*"[^"]*)   matches commas before" (last ")
     public static void runRegexReplaceCommaInsideQuotes(){
         String s = "abc,def,\"h,i,g\",xyz";
 
-        System.out.println(s.replaceAll(",(?=[^\"]*\"[^\"]*(?:\"[^\"]*\"[^\"]*)*$)", ""));
+        System.out.println(s.replaceAll(",(?=[^\"]*\"[^\"]*(?:\"[^\"]*\"[^\"]*)*$)", ""));    //matches commas before " also can have other quotes pairs ahead (?:\"[^\"]*\"[^\"]*)
     }
 
 
