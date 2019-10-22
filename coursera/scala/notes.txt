@@ -3,9 +3,9 @@
 ###############
 
 - call by value(default)
-def callByValue(x: Int) = {}	# evaluated once when entering method
+def callByValue(x: Int) = {}    # evaluated once when entering method
 - call by name
-def callByName(x: => Int) = {}	# evaluated each time when called
+def callByName(x: => Int) = {}  # evaluated each time when called
 
 - conditionals
 def and(x:Boolean, y:Boolean) = if (x) y else false
@@ -23,16 +23,16 @@ def gcd(a:Int, b:Int) = if (b==0) a else gcd(b, a%b)
 def factorial(n:Int) = if (n==0) 1 else n*factorial(n-1)
 - factorial (tail)
 def factorialTail(n:Int):Int = {
-	def loop(acc:Int, n:Int) = if (n==0) acc else loop(acc*n, n-1)
-	loop(1,n)
+    def loop(acc:Int, n:Int) = if (n==0) acc else loop(acc*n, n-1)
+    loop(1,n)
 }
 
 ###############
 # week 2
 ###############
 - higher order function
-def sum(f:Int=>Int, a:Int, b:Int) = if (a>b) 0 else f(a)+sum(f,a+1,b)	
-sum((x:Int)=>x*x*x,a,b)		# sum of cubes between a and b
+def sum(f:Int=>Int, a:Int, b:Int) = if (a>b) 0 else f(a)+sum(f,a+1,b)    
+sum((x:Int)=>x*x*x,a,b)        # sum of cubes between a and b
 
 def sum(f: Int => Int, a: Int, b: Int): Int = {
   def loop(a: Int, acc: Int): Int = {
@@ -54,18 +54,18 @@ def sum(f: Int => Int)(a: Int, b: Int):Int = if (a>b) 0 else f(a)+sum(f)(a+1,b)
 sum((x:Int)=>x*x*x) (a,b)
 
 def mapReduce(f:Int=>Int, combine:(Int,Int)=>Int,zero:Int)(a: Int, b: Int):Int=
-	if (a>b) zero else combine(f(a),mapReduce(f,combine,zero)(a+1,b))
+    if (a>b) zero else combine(f(a),mapReduce(f,combine,zero)(a+1,b))
 def product(f:Int=Int)(a:Int,b:Int):Int = mapReduce(f,(x,y)=>x*y,1)(a,b)
 
 - fixed points (x-fixed point if f(x)=x, example x=1+x/2 (x=2 fixed point))
 # sqrt of x = y*y so y = x/y # x is a fixed point of y = x/y 
 def isCloseEnough(x:Double, y:Double) = abs((x-y)/x)/x < 0.0001
 def fixedPoint(f:Double=>Double)(firstGuess:Double)={
-	def iterate(guess:Double):Double={
-		val next = f(guess)
-		if(isCloseEnough(guess,next)) next else iterate(next)
-	}
-	iterate(firstGuess)
+    def iterate(guess:Double):Double={
+        val next = f(guess)
+        if(isCloseEnough(guess,next)) next else iterate(next)
+    }
+    iterate(firstGuess)
 }
 def averageDamp(f:Double=>Double)(x:Double) = (x+f(x))/2
 def sqrt(x:Double) = fixedPoint(averageDamp(y=> x/y))(1)
@@ -76,28 +76,28 @@ def sqrt(x:Double) = fixedPoint(averageDamp(y=> x/y))(1)
 ###############
 
 - tree
-abstract class IntSet{																#incl 3
-	def incl(x:Int): IntSet													        ########################################
-	def contains(x:Int): Boolean                                                    #					+--+               #
-	def union(other: IntSet): IntSet}                                               #					|7 |               #
-                                                                                    #		   +--------+--+----+          #
-object Empty extends IntSet{                                                        #	       |                |          #
-	def contains(x:Int): Boolean = false                                            #		   |          +--+  |          #
-	def incl(x:Int): IntSet = new NonEmpty(x, new Empty, new Empty)                 #		   |          |7 |  |          #
-	def union(other: IntSet): IntSet = other                                        #		   |          +--+  |          #
-}                                                                                   #		+--+     +--+    +--+          #
-                                                                                    #		|5 |     |5 |    |12|          #
-class NonEmpty(elem: Int, left: IntSet, right: IntSet) extends IntSet{              #		+--+     +--+    +--+          #
-	def contains(x:Int): Boolean = {                                                #	+--+        e    e  e    e         #
-		if (x<elem) left contains x                                                 #	|3 |                               #
-		else if (x>elem) right contains x                                           #	+--+                               #
-		else true}                                                                  #	e    e                             #
-	def incl(x:Int): IntSet = {                                                     ########################################
-		if (x<elem) new NonEmpty(elem, left incl x, right)                  
-		if (x>elem) new NonEmpty(elem, left, right incl x)                  
-		else this                                                           
-		}
-	def union(other: IntSet): IntSet = ((left union right) union other) incl elem
+abstract class IntSet{                                                              #incl 3
+    def incl(x:Int): IntSet                                                         #########################################
+    def contains(x:Int): Boolean                                                    #                    +--+               #
+    def union(other: IntSet): IntSet}                                               #                    |7 |               #
+                                                                                    #           +--------+--+----+          #
+object Empty extends IntSet{                                                        #           |                |          #
+    def contains(x:Int): Boolean = false                                            #           |          +--+  |          #
+    def incl(x:Int): IntSet = new NonEmpty(x, new Empty, new Empty)                 #           |          |7 |  |          #
+    def union(other: IntSet): IntSet = other                                        #           |          +--+  |          #
+}                                                                                   #        +--+     +--+    +--+          #
+                                                                                    #        |5 |     |5 |    |12|          #
+class NonEmpty(elem: Int, left: IntSet, right: IntSet) extends IntSet{              #        +--+     +--+    +--+          #
+    def contains(x:Int): Boolean = {                                                #    +--+        e    e  e    e         #
+        if (x<elem) left contains x                                                 #    |3 |                               #
+        else if (x>elem) right contains x                                           #    +--+                               #
+        else true}                                                                  #    e    e                             #
+    def incl(x:Int): IntSet = {                                                     #########################################
+        if (x<elem) new NonEmpty(elem, left incl x, right)                  
+        if (x>elem) new NonEmpty(elem, left, right incl x)                  
+        else this                                                           
+        }
+    def union(other: IntSet): IntSet = ((left union right) union other) incl elem
 }
 
 - scala classes hierarchy
@@ -138,36 +138,36 @@ class NonEmpty(elem: Int, left: IntSet, right: IntSet) extends IntSet{          
 #Cons-List
 
 trait List[T] {
-	def isEmpty: Boolean
-	def head: T
-	def tail: List[T]}
+    def isEmpty: Boolean
+    def head: T
+    def tail: List[T]}
 class Cons[T](val head: T, val tail: List[T]) extends List[T]{
-	def isEmpty: = false}	
+    def isEmpty: = false}    
 class Nil[T] extends IntList[T] {
-	def isEmpty: = true
-	def head: Nothing = throw new Exception
-	def tail: Nothing = throw new Exception}
+    def isEmpty: = true
+    def head: Nothing = throw new Exception
+    def tail: Nothing = throw new Exception}
 object List{
-	//List(1,2) = List.apply(1,2)
-	def apply[T](x1:T,x2:T): List[T] = new Cons(x1, new Cons(x2,new Nil)) 
+    //List(1,2) = List.apply(1,2)
+    def apply[T](x1:T,x2:T): List[T] = new Cons(x1, new Cons(x2,new Nil)) 
 }
-	
+    
 
 - take nth elem
-	def nth(n:Int, xs:List[T]):T = if (n==0) xs.head else nth(n-1, xs.tail)
-	
+    def nth(n:Int, xs:List[T]):T = if (n==0) xs.head else nth(n-1, xs.tail)
+    
 ###############
 # week 4
-###############	
+###############    
 -object everywhere
 
-abstract class Nat{					# object Zero extends Nat{																# object Succ(n:Nat) extends Nat{
-	def isZero: Boolean             #    	def isZero: true                                                                # 	def isZero: false
-	def predecessor: Nat            #    	def predecessor: throw new Error("0.predecessor")                               # 	def predecessor:  n
-	def successor: new Succ(this)   #    	def -(that:Nat): that                                                           # 	def -(that:Nat): n-that.predecessor
-	def -(that:Nat): Nat            #    	def +(that:Nat): if(this.isZero) this else throw new Error("negative number")}  # 	def +(that:Nat): new Succ(n+that)}
-	def +(that:Nat): Nat}           #                                                                                       # 
-	
+abstract class Nat{                 # object Zero extends Nat{                                                               # object Succ(n:Nat) extends Nat{
+    def isZero: Boolean             #        def isZero: true                                                                #     def isZero: false
+    def predecessor: Nat            #        def predecessor: throw new Error("0.predecessor")                               #     def predecessor:  n
+    def successor: new Succ(this)   #        def -(that:Nat): that                                                           #     def -(that:Nat): n-that.predecessor
+    def -(that:Nat): Nat            #        def +(that:Nat): if(this.isZero) this else throw new Error("negative number")}  #     def +(that:Nat): new Succ(n+that)}
+    def +(that:Nat): Nat}           #                                                                                        # 
+    
 
 - functions as objects
 val f = (x:Int) => x*x*x
@@ -178,178 +178,178 @@ f.apply(7)
 
 
 - subtyping and generics (which are prinicpals of polymorphism)
-	upper bounds - s can be only subtype of IntSet
-	def assertAllPos (s <: IntSeT): IntSet
-	lower bounds - s can be only supertype of IntSet
-	def assertAllPos (s >: IntSeT): IntSet
-	mix bounds - s can be any type interval between NonEmpty and IntSeT
-	[s >: NonEmpty <: IntSet]
-	
+    upper bounds - s can be only subtype of IntSet
+    def assertAllPos (s <: IntSeT): IntSet
+    lower bounds - s can be only supertype of IntSet
+    def assertAllPos (s >: IntSeT): IntSet
+    mix bounds - s can be any type interval between NonEmpty and IntSeT
+    [s >: NonEmpty <: IntSet]
+    
 Arrays in Java are covariant:
-	NonEmpty[] <: IntSeT										#################################
-problem:														#+----+  +--+     +--+   +----+ #
-	NonEmpty[] a = new NonEmpty[](new NonEmpty(1,Empty,Empty))	#|a[N]|  |N | +-> |N |   |b[E]| #
-	IntSeT[] b = a                                              #+------>---+     +--+<-------+ #
-	b[0] = Empty                                                # a=N                    a=E    #
-	NonEmpty s = a[0]                                           #################################
+    NonEmpty[] <: IntSeT                                        #################################
+problem:                                                        #+----+  +--+     +--+   +----+ #
+    NonEmpty[] a = new NonEmpty[](new NonEmpty(1,Empty,Empty))  #|a[N]|  |N | +-> |N |   |b[E]| #
+    IntSeT[] b = a                                              #+------>---+     +--+<-------+ #
+    b[0] = Empty                                                # a=N                    a=E    #
+    NonEmpty s = a[0]                                           #################################
 fix:
-	so java stores a type of array during runtime and will throw ArrayStoreException
+    so java stores a type of array during runtime and will throw ArrayStoreException
 Arrays in Scala arrays are not covariant:
-	val a: Array[NonEmpty] = Array(new NonEmpty(1, Empty, Empty))
-	val b: Array[IntSeT] = a		# type error during compilation
-	
-	
+    val a: Array[NonEmpty] = Array(new NonEmpty(1, Empty, Empty))
+    val b: Array[IntSeT] = a        # type error during compilation
+    
+    
 - variance
-	C[A] <: C[B]	covariant		class C[+A]
-	C[A] >: C[B]	contravariant	class C[-A]
+    C[A] <: C[B]    covariant        class C[+A]
+    C[A] >: C[B]    contravariant    class C[-A]
 
 question: what is the relation:
-	type A = IntSet => NonEmpty		(you can do same here)
-	type B = NonEmpty => IntSet		(you can pass NonEmpty and get IntSet)
+    type A = IntSet => NonEmpty        (you can do same here)
+    type B = NonEmpty => IntSet        (you can pass NonEmpty and get IntSet)
 answer: A < B
 ...
 
 
 - pattern matching (for decomposition)
-	trait Expr{...}
-	case class Numbber(n: Int) extends Expr
-	case class Sum(e1: Expr, e2: Expr) extends Expr
+    trait Expr{...}
+    case class Numbber(n: Int) extends Expr
+    case class Sum(e1: Expr, e2: Expr) extends Expr
 case class adds companion object
-	object Number{
-		def apply(n:Int) = new Numbber(n)}
+    object Number{
+        def apply(n:Int) = new Numbber(n)}
 pattern matching:
-	def eval (e: Expr): Int = e match{
-		case Number(n) => n
-		case Sum(e1,e2) => eval(e1) + eval(e2)
-	}
+    def eval (e: Expr): Int = e match{
+        case Number(n) => n
+        case Sum(e1,e2) => eval(e1) + eval(e2)
+    }
 
 
 - lists
-	List(1,2,3,4)
+    List(1,2,3,4)
 all lists are constructed Nil and :: (pronounced cons)
-	x::xs					gives a new list with first elem x followed by elements of xs
-	1::(2::(3::(4::Nil)))
-	or
-	1::2::3::4::Nil			operators ending with : are method caals of right operand
-	is equivalent to:
-	Nil.::4.::3.::2.::1.::
+    x::xs                    gives a new list with first elem x followed by elements of xs
+    1::(2::(3::(4::Nil)))
+    or
+    1::2::3::4::Nil            operators ending with : are method caals of right operand
+    is equivalent to:
+    Nil.::4.::3.::2.::1.::
 list patterns:
-	1::2::xs		starts with 1 and 2
-	x::Nil			one element
-	List(x)			one element
-	List()			empty
-	Nil				empty
-	List(2::xs)		contains another list as onlu element and inner list starts with 2
+    1::2::xs        starts with 1 and 2
+    x::Nil            one element
+    List(x)            one element
+    List()            empty
+    Nil                empty
+    List(2::xs)        contains another list as onlu element and inner list starts with 2
 sort list(insertion sort):
-	def isort(xs: List[Int]) = xs match {	# def insert(x:Int, xs: List[Int]): List[Int] = xs match {
-		case List() => List()               # 	case List() => List(x)
-		case y::ys => insert(y, isort(ys))  # 	case y::ys => if(x<=y) x::xs else y::insert(x,ys)
-	}                                       # }	
+    def isort(xs: List[Int]) = xs match {   # def insert(x:Int, xs: List[Int]): List[Int] = xs match {
+        case List() => List()               #     case List() => List(x)
+        case y::ys => insert(y, isort(ys))  #     case y::ys => if(x<=y) x::xs else y::insert(x,ys)
+    }                                       # }    
 
 
 ###############
 # week5
-###############	
+###############    
 
 - more functions on list
-	xs.last				last element
-	xs.init				all except for last element
-	xs.take				list of first n elements
-	xs.drop				rest of list after taking n
-	xs ++ ys 			concats - cxs will be in the start
-	xs updated (n,x)	returns new list updating n element
+    xs.last                last element
+    xs.init                all except for last element
+    xs.take                list of first n elements
+    xs.drop                rest of list after taking n
+    xs ++ ys             concats - cxs will be in the start
+    xs updated (n,x)    returns new list updating n element
 
-	def last[T](xs: List[T]):T = xs match{	# def init[T](xs: List[T]):List[T] = xs match{
-		case List() => throw new Error("")  # 	case List() => throw new Error("")
-		case List(x) => x                   # 	case List(x) => List()
-		case y::ys => last(ys)}             # 	case y::ys => y::init(ys)}
-											#########################
-	def concat[T](xs: List[T], ys: List[T]):List[T] =xs match{		#def reverse[T](xs: List[T]):List[T] = xs match{
-		case List() => ys                                           #	case List() => xs
-		case z::zs => z::concat(zs, ys)}                            #	case y::ys => reverse(ys) ++ List(y)}
-	
-	def removeAt[T](n: Int, xs: List[T]) = (xs take n) ::: (xs drop n+1)
+    def last[T](xs: List[T]):T = xs match{  # def init[T](xs: List[T]):List[T] = xs match{
+        case List() => throw new Error("")  #     case List() => throw new Error("")
+        case List(x) => x                   #     case List(x) => List()
+        case y::ys => last(ys)}             #     case y::ys => y::init(ys)}
+                                            #########################
+    def concat[T](xs: List[T], ys: List[T]):List[T] =xs match{      #def reverse[T](xs: List[T]):List[T] = xs match{
+        case List() => ys                                           #    case List() => xs
+        case z::zs => z::concat(zs, ys)}                            #    case y::ys => reverse(ys) ++ List(y)}
+    
+    def removeAt[T](n: Int, xs: List[T]) = (xs take n) ::: (xs drop n+1)
 
 
 - tuples
-	non-Parametrized														# Parametrized
-	def msort(xs: List[Int]): List[Int] = {									# def msort[T](xs: List[T])(lt:(T,T) => Boolean): List[T] = {
-		val n = xs.length/2                                                 # 	val n = xs.length/2
-		if(n==0) xs                                                         # 	if(n==0) xs
-		else{                                                               # 	else{
-			def merge (xs: List[Int], ys: List[Int]) = (xs, ys) match{      # 		def merge (xs: List[T], ys: List[T]) = (xs, ys) match{
-				case (Nil, ys) => ys                                        # 			case (Nil, ys) => ys
-				case (xs, Nil) => xs                                        # 			case (xs, Nil) => xs
-				case (x :: xs1, y::ys1) => if (x<y) x::merge(xs1,ys)        # 			case (x :: xs1, y::ys1) => if (lt(x,y)) x::merge(xs1,ys)
-				else y::merge(xs, ys1)                                      # 			else y::merge(xs, ys1)
-			}                                                               # 		}
-			val (fst, snd) = xs.splitAt(n)                                  # 		val (fst, snd) = xs.splitAt(n)
-			merge(msort(fst), msort(snd))}}                                 # 		merge(msort(fst)(lt), msort(snd)(lt))}}
-																			#  msort(nums)(x,y)=>x<y)
+    non-Parametrized                                                        # Parametrized
+    def msort(xs: List[Int]): List[Int] = {                                 # def msort[T](xs: List[T])(lt:(T,T) => Boolean): List[T] = {
+        val n = xs.length/2                                                 #     val n = xs.length/2
+        if(n==0) xs                                                         #     if(n==0) xs
+        else{                                                               #     else{
+            def merge (xs: List[Int], ys: List[Int]) = (xs, ys) match{      #         def merge (xs: List[T], ys: List[T]) = (xs, ys) match{
+                case (Nil, ys) => ys                                        #             case (Nil, ys) => ys
+                case (xs, Nil) => xs                                        #             case (xs, Nil) => xs
+                case (x :: xs1, y::ys1) => if (x<y) x::merge(xs1,ys)        #             case (x :: xs1, y::ys1) => if (lt(x,y)) x::merge(xs1,ys)
+                else y::merge(xs, ys1)                                      #             else y::merge(xs, ys1)
+            }                                                               #         }
+            val (fst, snd) = xs.splitAt(n)                                  #         val (fst, snd) = xs.splitAt(n)
+            merge(msort(fst), msort(snd))}}                                 #         merge(msort(fst)(lt), msort(snd)(lt))}}
+                                                                            #  msort(nums)(x,y)=>x<y)
 
 - implicit parameters
 
-	import scala.math.Ordering                                              # using implicit
-	def msort[T](xs: List[T])(ord: Ordering[T]): List[T] = {                # def msort[T](xs: List[T])(implicit ord: Ordering[T]): List[T] = {                
-		val n = xs.length/2                                                 # 	val n = xs.length/2                                                 
-		if(n==0) xs                                                         # 	if(n==0) xs                                                         
-		else{                                                               # 	else{                                                               
-			def merge (xs: List[T], ys: List[T]) = (xs, ys) match{          # 		def merge (xs: List[T], ys: List[T]) = (xs, ys) match{          
-				case (Nil, ys) => ys                                        # 			case (Nil, ys) => ys                                        
-				case (xs, Nil) => xs                                        # 			case (xs, Nil) => xs                                        
-				case (x :: xs1, y::ys1) => if (ord.lt(x,y)) x::merge(xs1,ys)# 			case (x :: xs1, y::ys1) => if (ord.lt(x,y)) x::merge(xs1,ys)
-				else y::merge(xs, ys1)                                      # 			else y::merge(xs, ys1)                                      
-			}                                                               # 		}                                                               
-			val (fst, snd) = xs.splitAt(n)                                  # 		val (fst, snd) = xs.splitAt(n)                                  
-			merge(msort(fst)(ord), msort(snd)(ord))}}                       # 		merge(msort(fst), msort(snd))}}
-	msort(nums)(Ordering.Int)                                               # msort(nums)
+    import scala.math.Ordering                                              # using implicit
+    def msort[T](xs: List[T])(ord: Ordering[T]): List[T] = {                # def msort[T](xs: List[T])(implicit ord: Ordering[T]): List[T] = {                
+        val n = xs.length/2                                                 #     val n = xs.length/2                                                 
+        if(n==0) xs                                                         #     if(n==0) xs                                                         
+        else{                                                               #     else{                                                               
+            def merge (xs: List[T], ys: List[T]) = (xs, ys) match{          #         def merge (xs: List[T], ys: List[T]) = (xs, ys) match{          
+                case (Nil, ys) => ys                                        #             case (Nil, ys) => ys                                        
+                case (xs, Nil) => xs                                        #             case (xs, Nil) => xs                                        
+                case (x :: xs1, y::ys1) => if (ord.lt(x,y)) x::merge(xs1,ys)#             case (x :: xs1, y::ys1) => if (ord.lt(x,y)) x::merge(xs1,ys)
+                else y::merge(xs, ys1)                                      #             else y::merge(xs, ys1)                                      
+            }                                                               #         }                                                               
+            val (fst, snd) = xs.splitAt(n)                                  #         val (fst, snd) = xs.splitAt(n)                                  
+            merge(msort(fst)(ord), msort(snd)(ord))}}                       #         merge(msort(fst), msort(snd))}}
+    msort(nums)(Ordering.Int)                                               # msort(nums)
 
 - higher order functions
 map,filter
-	abstract class List[T]{...                  # 
-	def map[U](f: T=>U):List[U] = this match{	# def filter(p: T=>Boolean): List[T] = this match{
-		case Nil => this                        # 	case Nil => this
-		case x::xs => f(x)::xs.map(f)}}         # 	case x::xs => if(p(x)) x :: xs.filter(p) else xs.filter(p)}
-	xs.map(x=>x*x)                              # xs.filter(x=>x>0)
-	
-	val xs = List(2,-4,5,7,1)
-	xs.span(x=>x>0)				# (List(2), List(-4,5,7,1))
-	
+    abstract class List[T]{...                  # 
+    def map[U](f: T=>U):List[U] = this match{   # def filter(p: T=>Boolean): List[T] = this match{
+        case Nil => this                        #     case Nil => this
+        case x::xs => f(x)::xs.map(f)}}         #     case x::xs => if(p(x)) x :: xs.filter(p) else xs.filter(p)}
+    xs.map(x=>x*x)                              # xs.filter(x=>x>0)
+    
+    val xs = List(2,-4,5,7,1)
+    xs.span(x=>x>0)                # (List(2), List(-4,5,7,1))
+    
 task: pack consecutive duplocates into sublists
-	pack(List(a,a,a,b,c,c,a))	=>	List(List(a,a,a),List(b),List(c,c),List(a))
+    pack(List(a,a,a,b,c,c,a))    =>    List(List(a,a,a),List(b),List(c,c),List(a))
 solution
-	def pack[T](xs:List[T]): List[List[T]] = xs match{
-		case Nil => Nil
-		case xs :: xs1 => 
-			val(first,rest) = xs.span(y=> y==y)
-			first::pack(rest)}
+    def pack[T](xs:List[T]): List[List[T]] = xs match{
+        case Nil => Nil
+        case xs :: xs1 => 
+            val(first,rest) = xs.span(y=> y==y)
+            first::pack(rest)}
 task: using pack produce lenght of lists like List((a,3),(b,1)...)
 solution:
-	def encode[T](xs:List[T]): List[(T,Int)] = xs match{
-		pack(xs) map (ys => (ys.head, ys.length))}
+    def encode[T](xs:List[T]): List[(T,Int)] = xs match{
+        pack(xs) map (ys => (ys.head, ys.length))}
 
 
 - reduction
 can be implemented using usual recursive schema:
-	def sum(xs:List[Int]):Int = xs match{
-		case Nil => 0
-		case y::ys => y+sum(ys)}
-reduceLeft (can be applied to non empty lists)					###############	    #	foldLeft (can be applied to empty lists)						###############
-                                                                #     +--+    #     #   	def sum (xs:List[Int]) = (xs foldLeft 0)(_+_)               #     +--+    #
-	abstract class List[T]{                                     #     |op|    #     #   	                                                            #     |op|:U  #
-	def reduceLeft(op: (T,T)=>T):T = this match{                #     +--+    #     #   	abstract class List[T]{                                     #     +--+    #
-		case Nil => throw new Error("")                         # +--+    xn  #     #   	def foldLeft[U](z:U)(op: (U,T)=>U):U = this match{          # +--+    xn:T#
-		case x::xs => (xs foldLeft x)(op)}}                     # |op|        #     #   		case Nil => z                                           # |op|:U      #
-                                                                # +--+        #     #   		case x::xs => (xs foldLeft op(z,x))(op)}}               # +--+        #
-	def sum (xs:List[Int]) = (0::xs) reduceLeft ((x,y) => x+y)	#0    x1      #		#	                                                                #z:U  x1:T    #
-	                                                            ###############     #   	                                                            ###############
+    def sum(xs:List[Int]):Int = xs match{
+        case Nil => 0
+        case y::ys => y+sum(ys)}
+reduceLeft (can be applied to non empty lists)                  ###############     #    foldLeft (can be applied to empty lists)                       ###############
+                                                                #     +--+    #     #       def sum (xs:List[Int]) = (xs foldLeft 0)(_+_)               #     +--+    #
+    abstract class List[T]{                                     #     |op|    #     #                                                                   #     |op|:U  #
+    def reduceLeft(op: (T,T)=>T):T = this match{                #     +--+    #     #       abstract class List[T]{                                     #     +--+    #
+        case Nil => throw new Error("")                         # +--+    xn  #     #       def foldLeft[U](z:U)(op: (U,T)=>U):U = this match{          # +--+    xn:T#
+        case x::xs => (xs foldLeft x)(op)}}                     # |op|        #     #           case Nil => z                                           # |op|:U      #
+                                                                # +--+        #     #           case x::xs => (xs foldLeft op(z,x))(op)}}               # +--+        #
+    def sum (xs:List[Int]) = (0::xs) reduceLeft ((x,y) => x+y)  #0    x1      #     #                                                                   #z:U  x1:T    #
+                                                                ###############     #                                                                   ###############
 
-																					#
-foldRight														############		#	to concat two lists only foldRight would work					##############
-	abstract class List[T]{                                     # +--+     #        #   	def concat[T](xs: List[T], ys: List[T]): List[T] =          # +--+       #
-	def foldRight[U](z:U)(op: (T,U)=>U):U = this match{         # |op|     #        #   		(xs foldRight ys)(_ :: _)                               # |::|       #
-		case Nil => z                                           # +--+     #        #   because you can call :: on Nil and not on any T                 # +--+       #
-		case x::xs => op(x, (xs foldRight z)(op))               #x1   +--+ #        #   		                                                        #x1   +--+   #
+                                                                                    #
+foldRight                                                       ############        #    to concat two lists only foldRight would work                  ##############
+    abstract class List[T]{                                     # +--+     #        #       def concat[T](xs: List[T], ys: List[T]): List[T] =          # +--+       #
+    def foldRight[U](z:U)(op: (T,U)=>U):U = this match{         # |op|     #        #           (xs foldRight ys)(_ :: _)                               # |::|       #
+        case Nil => z                                           # +--+     #        #   because you can call :: on Nil and not on any T                 # +--+       #
+        case x::xs => op(x, (xs foldRight z)(op))               #x1   +--+ #        #                                                                   #x1   +--+   #
                                                                 #     |op| #        #                                                                   #     |::|   #
                                                                 #     +--+ #        #                                                                   #     +--+   #
                                                                 #    xn   z#        #                                                                   #    y1   Nil#
@@ -359,7 +359,7 @@ foldRight														############		#	to concat two lists only foldRight would 
 
 ###############
 # week6
-###############	
+###############    
 
 - vector
 ##################################
@@ -372,22 +372,22 @@ foldRight														############		#	to concat two lists only foldRight would 
 #+-+-+-+-+ +-+-+-+-+             #
 ##################################
 
-	access log32(N)
-	Vector(1,2,3)
-	::				does not exist (List thing)
-	x +: xs			creates a new Vector with leading x
-	xs :+ x			creates a new Vector with trailing x
-	xs exists p		true if element p(x) exists
-	xs forall p		true if p(x) for all elements
-	xs zip ys		a seq of pairs drawn from corresponding elements of xs and ys
-	xs flatMap f	applies collection values function f to all elements of xs and concatenates results
-	
-	val s = "Hello World"
-	val l = List(1,2,3)
-	l zip s 						# List((1,H),(2,e),(3,l))
-	s flatMap(c=. List(',', c))		# .H.e.l.l.o. .W.o.r.l.d
-	
-	to add an element(create 32 elements on each level):
+    access log32(N)
+    Vector(1,2,3)
+    ::                does not exist (List thing)
+    x +: xs            creates a new Vector with leading x
+    xs :+ x            creates a new Vector with trailing x
+    xs exists p        true if element p(x) exists
+    xs forall p        true if p(x) for all elements
+    xs zip ys        a seq of pairs drawn from corresponding elements of xs and ys
+    xs flatMap f    applies collection values function f to all elements of xs and concatenates results
+    
+    val s = "Hello World"
+    val l = List(1,2,3)
+    l zip s                         # List((1,H),(2,e),(3,l))
+    s flatMap(c=. List(',', c))     # .H.e.l.l.o. .W.o.r.l.d
+    
+    to add an element(create 32 elements on each level):
 #############################################
 #   copy                                    #
 #   +-+-+-+-+     +-+-+-+-+                 #
@@ -412,44 +412,44 @@ collections
 ############################################
 
 ranges
-val r : Range = 1 until 5		# 1,2,3,4
-val s : Range = 1 to 5			# 1,2,3,4,5
-1 to 10 by 3					# 1,3,7,10
-6 to 1 by -2					# 6,4,2
+val r : Range = 1 until 5        # 1,2,3,4
+val s : Range = 1 to 5           # 1,2,3,4,5
+1 to 10 by 3                     # 1,3,7,10
+6 to 1 by -2                     # 6,4,2
 
 task: list all combinations of numbers x and y where x is drawn from 1..M y is drawn from 1...N
 solution:
-	(1 to M) flatMap (x => (1..N) map (y=> (x,y)))
-	
+    (1 to M) flatMap (x => (1..N) map (y=> (x,y)))
+    
 
 - for expressions
 task: given a pos integer n find all pairs of positive integers i and j with 1 <= j < i < n such taht i+j is prime
 solution:
-	val n = 7
-	(1 until n) map (i=> (1 until i) map (j=> i,j))				# Vector((2,1)), Vector((3,1)), Vector((3,2)), Vector((4,1)), Vector((4,2)), Vector((4,3))...
-	(1 until n) flatMap (i=> (1 until i) map (j=> i,j))			# ((2,1),(3,1),(3,2) ...)
-	(1 until n) flatMap (i=> (1 until i) map (j=> i,j))
-	.filter(pair=> isPrime(pair._1 + pair._2))
+    val n = 7
+    (1 until n) map (i=> (1 until i) map (j=> i,j))                # Vector((2,1)), Vector((3,1)), Vector((3,2)), Vector((4,1)), Vector((4,2)), Vector((4,3))...
+    (1 until n) flatMap (i=> (1 until i) map (j=> i,j))            # ((2,1),(3,1),(3,2) ...)
+    (1 until n) flatMap (i=> (1 until i) map (j=> i,j))
+    .filter(pair=> isPrime(pair._1 + pair._2))
 
 for
-	for (p <- persons if p.age > 20) yield p.name				# obtain names of persons over 20 years old
-	alternative
-	persons filter (p=> p.age > 20) map (_.name)
-	
-	for (s) yield e
-	s - a seq of generators and filters
-	e - expression whose value is returned by iteration
-	generator - p <- e where p is a pattern and e is an expression whose value is a collection
-	filter is of form if f where f is a boolean expression
-	
-	for {
-		i <- 1 until n
-		j <- 1 until i
-		if isPrime(i+j)
-	} yield (i,j)
+    for (p <- persons if p.age > 20) yield p.name                # obtain names of persons over 20 years old
+    alternative
+    persons filter (p=> p.age > 20) map (_.name)
+    
+    for (s) yield e
+    s - a seq of generators and filters
+    e - expression whose value is returned by iteration
+    generator - p <- e where p is a pattern and e is an expression whose value is a collection
+    filter is of form if f where f is a boolean expression
+    
+    for {
+        i <- 1 until n
+        j <- 1 until i
+        if isPrime(i+j)
+    } yield (i,j)
 
 - set 
-	val s: Set = (1 to 6).toSet
+    val s: Set = (1 to 6).toSet
 
 problem: N-Queens problem is to place eight queens on a chessboard so that no queens on same row, column, diagonal
 algorithm: place a queen on each row 
@@ -463,96 +463,96 @@ algorithm: place a queen on each row
 # +-------+  #
 #2|o| | | |  #
 # +-------+  #
-#3| | |0| |  #	solution list of columns
-# +-+-----+  #	List(2,0,3,1)
+#3| | |0| |  #    solution list of columns
+# +-+-----+  #    List(2,0,3,1)
 ##############
 
-	def queens (n:Int): Set [List[Int] = {
-		def placeQueens(k:Int): Set[List[Int]] = 
-		if (k==0) Set(List()) 
-		else 
-			for {
-				queens <- placeQueens(k-1)
-				col <- 0 until n
-				if isSafe(col,queens)
-			} yield col :: queens
-		placeQueens(n)
-	}
-	def isSafe(col: Int, queens: List[Int]):Boolean = {
-		val row = queens.length
-		val queensWithRow = (row-1 to 0 by -1) zip queens				# List (0,3,1) -> List((2,0),(1,3),(2,0), (0,1))
-		queensWithRow forAll{
-			case (r,c) => col != c && math.abs(col-c) != row -r
-		}
-	}
+    def queens (n:Int): Set [List[Int] = {
+        def placeQueens(k:Int): Set[List[Int]] = 
+        if (k==0) Set(List()) 
+        else 
+            for {
+                queens <- placeQueens(k-1)
+                col <- 0 until n
+                if isSafe(col,queens)
+            } yield col :: queens
+        placeQueens(n)
+    }
+    def isSafe(col: Int, queens: List[Int]):Boolean = {
+        val row = queens.length
+        val queensWithRow = (row-1 to 0 by -1) zip queens                # List (0,3,1) -> List((2,0),(1,3),(2,0), (0,1))
+        queensWithRow forAll{
+            case (r,c) => col != c && math.abs(col-c) != row -r
+        }
+    }
 
 - map
-	val capitalOfCountry = Map("US" -> "Washington", "Switzerland" -> "Bern")		#                                                   #
-	capitalOfCountry("andorra")			NoSuchElementException                      # trait Option[+A]                                  # def showCapital(country:String) = capitalOfCountry.get(country) match {
-	capitalOfCountry get "andorra"		None                                        # case class Some[+A](value: A) extends option[A]   # 	case Some(capital) => capital
-	capitalOfCountry get "US"			Some(Washington)                            # object none extends Option[Nothing]               # 	case None => "missing"}
+    val capitalOfCountry = Map("US" -> "Washington", "Switzerland" -> "Bern")        #                                                   #
+    capitalOfCountry("andorra")            NoSuchElementException                    # trait Option[+A]                                  # def showCapital(country:String) = capitalOfCountry.get(country) match {
+    capitalOfCountry get "andorra"        None                                       # case class Some[+A](value: A) extends option[A]   #     case Some(capital) => capital
+    capitalOfCountry get "US"            Some(Washington)                            # object none extends Option[Nothing]               #     case None => "missing"}
 
 orderBy
-	val fruit = List (apple, pear, orange, pineapple)
-	fruit sortWith( _.length < _.length)				# List(pear, apple, orrange, pineapple)
-	fruit.sorted										# List(apple, orange, pear, pineapple)
-	
+    val fruit = List (apple, pear, orange, pineapple)
+    fruit sortWith( _.length < _.length)                # List(pear, apple, orrange, pineapple)
+    fruit.sorted                                        # List(apple, orange, pear, pineapple)
+    
 groupBy
-	fruit groupBy (_,head)		# Map ( p -> List(pear,pineapple), a -> List(apple), o -> List(orange))
-	
+    fruit groupBy (_,head)        # Map ( p -> List(pear,pineapple), a -> List(apple), o -> List(orange))
+    
 polynomial
-	can be seen as a map of exponents and coefficients
-	(x*x*x)-2x+5 can be expressed by map 
-	Map(0->5, 1->-2, 3->1)
-	
-	# (terms ++ other.terms) if terms does not have what is in other.terms - it is added, if terms contains what is in other.terms - it is overriden
-	class Poly(cal terms:Map[Int,Double]){											                                        # class Poly(val terms0: Map[Int,Double]){
-		def + (other:Poly) = new Poly(terms ++ (other.terms map adjust))				                                    # 	val terms = terms0 withDefault 0.0
-		def adjust(term: (Int,Double)):(Int,Double)={                                                                       # 	def + (other:Poly) = new Poly((other.terms foldLeft terms)(addTerm))
-			val (exp,coefd) = term                                                                                          # 	def addTerm(terms: Map[Int,Double], term: (Int,Double)): Map[Int,Double] = {
-			terms get exp match {                                                                                           # 		val (exp,coedd) = term
-			case Some(coeff1) => exp->(coeff+coeff1)                                                                        # 		terms + ( exp-> ( coeff + terms(exp)))
-			case None => exp -> coeff                                                                                       # }}	
-			}                                                                                                               #
-		}                                                                                                                   #
-		override def toString = (for ((exp.coeff) <- terms.toList.sorted.reverse) yield coeff+"x^"+exp) mkString " + "		#
-	}
-	val p1 = new Poly(Map(1->2.0, 3->4.0, 5->6.2))
-	val p2 = new Poly(Map(0->3.0, 3->7.0))
-	p1+p2		# merge coefficients that have the same exponents - Map (0->3.0, 1->2.0, 3->11, 5->6.2)
-	
-	
+    can be seen as a map of exponents and coefficients
+    (x*x*x)-2x+5 can be expressed by map 
+    Map(0->5, 1->-2, 3->1)
+    
+    # (terms ++ other.terms) if terms does not have what is in other.terms - it is added, if terms contains what is in other.terms - it is overriden
+    class Poly(cal terms:Map[Int,Double]){                                                                                  # class Poly(val terms0: Map[Int,Double]){
+        def + (other:Poly) = new Poly(terms ++ (other.terms map adjust))                                                    #     val terms = terms0 withDefault 0.0
+        def adjust(term: (Int,Double)):(Int,Double)={                                                                       #     def + (other:Poly) = new Poly((other.terms foldLeft terms)(addTerm))
+            val (exp,coefd) = term                                                                                          #     def addTerm(terms: Map[Int,Double], term: (Int,Double)): Map[Int,Double] = {
+            terms get exp match {                                                                                           #         val (exp,coedd) = term
+            case Some(coeff1) => exp->(coeff+coeff1)                                                                        #         terms + ( exp-> ( coeff + terms(exp)))
+            case None => exp -> coeff                                                                                       # }}    
+            }                                                                                                               #
+        }                                                                                                                   #
+        override def toString = (for ((exp.coeff) <- terms.toList.sorted.reverse) yield coeff+"x^"+exp) mkString " + "      #
+    }
+    val p1 = new Poly(Map(1->2.0, 3->4.0, 5->6.2))
+    val p2 = new Poly(Map(0->3.0, 3->7.0))
+    p1+p2        # merge coefficients that have the same exponents - Map (0->3.0, 1->2.0, 3->11, 5->6.2)
+    
+    
 - phone encoder
-	val mnemonics = Map(2->ABC, 3->DEF, 4->GHI, 5->JKL, 6->MNO, 7->PQRS, 8->TUV, 9XYZ)
-	7225247386 -> Scala is function
-	
-	objext x{
-	val in = Source.fromURL("...")
-	val words = in.getLines.toList filter (word => word forall (chr=>chr.isLetter))
-	
-	val mnem = Map(2->ABC, 3->DEF, 4->GHI, 5->JKL, 6->MNO, 7->PQRS, 8->TUV, 9XYZ)
-	
-	// invert mnem map to have Map(A->2, B->2)
-	val charCode: Map[Char,Char] = for ((digit,str) <-mnem; ltr <- str) yield ltr -> digit		# Map(E->3,X->9, ...)
-	// map a word to the digit string it can represent JAVA -> 5282
-	def wordCode(word:String):String = word.toUpperCase map charCode
-	// a map from digit strings to the words 5282 -> List(Java, Kata, Lava)
-	val wordsForNum: Map[String, Seq[String]] = words groupBy wordCode withDefault Seq()
-	// return all ways to encode a number as a list of words
-	def encode (number: String): Set[List[String]] = {
-		if(number.isEmpy) Set(List())
-		else
-			split <- 1 to number.length
-			word <- wordsForNum(number take split)
-			rest <- encode(number drop split)
-	} yield word :: rest	
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
+    val mnemonics = Map(2->ABC, 3->DEF, 4->GHI, 5->JKL, 6->MNO, 7->PQRS, 8->TUV, 9XYZ)
+    7225247386 -> Scala is function
+    
+    objext x{
+    val in = Source.fromURL("...")
+    val words = in.getLines.toList filter (word => word forall (chr=>chr.isLetter))
+    
+    val mnem = Map(2->ABC, 3->DEF, 4->GHI, 5->JKL, 6->MNO, 7->PQRS, 8->TUV, 9XYZ)
+    
+    // invert mnem map to have Map(A->2, B->2)
+    val charCode: Map[Char,Char] = for ((digit,str) <-mnem; ltr <- str) yield ltr -> digit        # Map(E->3,X->9, ...)
+    // map a word to the digit string it can represent JAVA -> 5282
+    def wordCode(word:String):String = word.toUpperCase map charCode
+    // a map from digit strings to the words 5282 -> List(Java, Kata, Lava)
+    val wordsForNum: Map[String, Seq[String]] = words groupBy wordCode withDefault Seq()
+    // return all ways to encode a number as a list of words
+    def encode (number: String): Set[List[String]] = {
+        if(number.isEmpy) Set(List())
+        else
+            split <- 1 to number.length
+            word <- wordsForNum(number take split)
+            rest <- encode(number drop split)
+    } yield word :: rest    
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    

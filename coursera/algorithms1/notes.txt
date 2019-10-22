@@ -4,270 +4,270 @@ O(n^2) > O(n log n) > O(n) > O(log n) > O(n)
 # week1
 ###############
 
-- dynamic connectivity													###############################			
-	given a set of N objects:											# +-+   +-+   +-+   +-+   +-+ #
-	・Union command: connect two objects                             	# |0|   |1+---+2|   |3+---+4| #  union(4,3) 
-	・Find/connected query: is there a path connecting two objects   	# +-+   +-+   +-+   +++   +++ #  union(3,8) 
-																		#                    |     |  #  union(6,5)
-	applications:                                                   	#                    |     |  #  union(9,4)
-	・Pixels in a digital photo.                                     	# +-+   +-+   +-+   +++   +++ #  union(2,1) 
-	・Computers in a network.                                        	# |5+---+6|   |7|   |8|   |9| # 
-	・Friends in a social network.                                   	# +-+   +-+   +-+   +-+   +-+ # 
-	・Transistors in a computer chip.                                	############################### 
-	・Elements in a mathematical set.
-	・Variable names in Fortran program.
-	・Metallic sites in a composite system.
-	
-	############################################################
-	# +-+   +-+   +-+   +-+              +-+   +-+   +-+   +-+ #
-	# |0|   |1|   |2+---+3|              |0|   |1|   |2+---+3| #
-	# +-+   +-+   +++   +++              +-+   +-+   +++   +++ #
-	#      X       |   X |   union(2,5)       X     X |   X |  #
-	#    X         | X   |   +------->      X     X   | X   |  #
-	# +-+   +-+   +++   +++              +-+   +-+   +++   +++ #
-	# |4+---+5|   |6|   |7|              |4+---+5|   |6|   |7| #
-	# +-+   +-+   +-+   +-+              +-+   +-+   +-+   +-+ #
-	#                                                          #
-	# {0}, {1 4 5}, {2 3 6 7}            {0}, {1 2 3 4 5 6 7}  #
-	############################################################
+- dynamic connectivity                                                  ###############################            
+    given a set of N objects:                                           # +-+   +-+   +-+   +-+   +-+ #
+    ・Union command: connect two objects                                 # |0|   |1+---+2|   |3+---+4| #  union(4,3) 
+    ・Find/connected query: is there a path connecting two objects       # +-+   +-+   +-+   +++   +++ #  union(3,8) 
+                                                                        #                    |     |  #  union(6,5)
+    applications:                                                       #                    |     |  #  union(9,4)
+    ・Pixels in a digital photo.                                         # +-+   +-+   +-+   +++   +++ #  union(2,1) 
+    ・Computers in a network.                                            # |5+---+6|   |7|   |8|   |9| # 
+    ・Friends in a social network.                                       # +-+   +-+   +-+   +-+   +-+ # 
+    ・Transistors in a computer chip.                                    ############################### 
+    ・Elements in a mathematical set.
+    ・Variable names in Fortran program.
+    ・Metallic sites in a composite system.
+    
+    ############################################################
+    # +-+   +-+   +-+   +-+              +-+   +-+   +-+   +-+ #
+    # |0|   |1|   |2+---+3|              |0|   |1|   |2+---+3| #
+    # +-+   +-+   +++   +++              +-+   +-+   +++   +++ #
+    #      X       |   X |   union(2,5)       X     X |   X |  #
+    #    X         | X   |   +------->      X     X   | X   |  #
+    # +-+   +-+   +++   +++              +-+   +-+   +++   +++ #
+    # |4+---+5|   |6|   |7|              |4+---+5|   |6|   |7| #
+    # +-+   +-+   +-+   +-+              +-+   +-+   +-+   +-+ #
+    #                                                          #
+    # {0}, {1 4 5}, {2 3 6 7}            {0}, {1 2 3 4 5 6 7}  #
+    ############################################################
 
 
 - quick find
-																###############################			implementation
-	################################################		 	# +-+   +-+   +-+   +-+   +-+ #         ############################################## 
-	#      0 1 2 3 4 5 6 7 8 9   0 5 6 connected   #            # |0|   |1+---+2|   |3+---+4| #         # public class QuickFindUF{                  #
-	#     +-------------------+  1 2 7 connected   # +------->  # +-+   +-+   +-+   +++   +++ #         # 	private int[] id;                        #
-	# id[]|0|1|1|8|8|0|0|1|8|8|  3 4 8 9 connected #            #  |           |     |     |  #         # 	public QuickFindUF(int N){               #
-	#     +-------------------+                    #            #  |           |     |     |  #         # 		id = new int[N];                     #
-	################################################            # +-+   +-+   +-+   +++   +++ #         # 		for (int i = 0; i < N; i++)          #	<-- set id of each object
-																# |5+---+6|   |7|   |8|   |9| #         # 		id[i] = i;}                          #
-																# +-+   +-+   +-+   +-+   +-+ #         # 	public boolean connected(int p, int q)   #
-																###############################         # 	{ return id[p] == id[q]; }               #	<-- check if p and q are in same component
-	check if p and q have same id:		id[6]=0; id[1]=1	-->		not connected                       # 	public void union(int p, int q)          #
-	union - to merge components containing p and q change all entries whose id equals id[p] to id[q]    # 	{                                        #
-	##############################                                                                      # 		int pid = id[p];                     #	<-- change all entries with id[p] to id[q]
-	#      0 1 2 3 4 5 6 7 8 9   #	after union 6 and 1                                                 # 		int qid = id[q];                     #
-	#     +-------------------+  #                                                                      # 		for (int i = 0; i < id.length; i++)  #
-	# id[]|1|1|1|8|8|1|1|1|8|8|  #                                                                      # 		if (id[i] == pid) id[i] = qid;       #
-	#     +-------------------+  #                                                                      # 	}                                        #
-	#      ・         ・ ・			 #                                                                      # }                                          #
-	##############################                                                                      ##############################################
+                                                                ###############################            implementation
+    ################################################            # +-+   +-+   +-+   +-+   +-+ #         ############################################## 
+    #      0 1 2 3 4 5 6 7 8 9   0 5 6 connected   #            # |0|   |1+---+2|   |3+---+4| #         # public class QuickFindUF{                  #
+    #     +-------------------+  1 2 7 connected   # +------->  # +-+   +-+   +-+   +++   +++ #         #     private int[] id;                      #
+    # id[]|0|1|1|8|8|0|0|1|8|8|  3 4 8 9 connected #            #  |           |     |     |  #         #     public QuickFindUF(int N){             #
+    #     +-------------------+                    #            #  |           |     |     |  #         #         id = new int[N];                   #
+    ################################################            # +-+   +-+   +-+   +++   +++ #         #         for (int i = 0; i < N; i++)        #    <-- set id of each object
+                                                                # |5+---+6|   |7|   |8|   |9| #         #         id[i] = i;}                        #
+                                                                # +-+   +-+   +-+   +-+   +-+ #         #     public boolean connected(int p, int q) #
+                                                                ###############################         #     { return id[p] == id[q]; }             #    <-- check if p and q are in same component
+    check if p and q have same id:        id[6]=0; id[1]=1    -->        not connected                  #     public void union(int p, int q)        #
+    union - to merge components containing p and q change all entries whose id equals id[p] to id[q]    #     {                                      #
+    ##############################                                                                      #         int pid = id[p];                   #    <-- change all entries with id[p] to id[q]
+    #      0 1 2 3 4 5 6 7 8 9   #    after union 6 and 1                                               #         int qid = id[q];                   #
+    #     +-------------------+  #                                                                      #         for (int i = 0; i < id.length; i++)#
+    # id[]|1|1|1|8|8|1|1|1|8|8|  #                                                                      #         if (id[i] == pid) id[i] = qid;     #
+    #     +-------------------+  #                                                                      #     }                                      #
+    #      ・         ・ ・         #                                                                      # }                                          #
+    ##############################                                                                      ##############################################
 
 
 - quick union
-	interpretation: id[i] is parent of i	 #######################################
-	                                         # +-+   +-+   +-+     +-+   +-+   +-+ #	root of 3 is 9
-	##############################           # |0|   |1|   |9|     |6|   |7|   |8| #	root of 5 is 6
-	#      0 1 2 3 4 5 6 7 8 9   #           # +-+   +-+   +-+     +-+   +-+   +-+ #
-	#     +-------------------+  #           #            X   X       X            #
-	# id[]|0|1|9|4|9|6|6|7|8|9|  #           #         +-+     +-+     +-+         #
-	#     +-------------------+  #           #         |2|     |4|     |5|         #
-	##############################           #         +-+     +++     +-+         #
-	                                         #                  |                  #
- 	                                         #                 +++                 #
+    interpretation: id[i] is parent of i     #######################################
+                                             # +-+   +-+   +-+     +-+   +-+   +-+ #    root of 3 is 9
+    ##############################           # |0|   |1|   |9|     |6|   |7|   |8| #    root of 5 is 6
+    #      0 1 2 3 4 5 6 7 8 9   #           # +-+   +-+   +-+     +-+   +-+   +-+ #
+    #     +-------------------+  #           #            X   X       X            #
+    # id[]|0|1|9|4|9|6|6|7|8|9|  #           #         +-+     +-+     +-+         #
+    #     +-------------------+  #           #         |2|     |4|     |5|         #
+    ##############################           #         +-+     +++     +-+         #
+                                             #                  |                  #
+                                             #                 +++                 #
                                              #                 |3|                 #
                                              #                 +-+                 #
                                              #######################################
-	
-	to merge components containing p and q - set the id of p`s root to the id of q`s root
-	
-	##############################			###############################			implementation
-	#      0 1 2 3 4 5 6 7 8 9   #          # +-+   +-+   +-+   +-+   +-+ #         ################################################
-	#     +-------------------+  #          # |0|   |1|   |6|   |7|   |8| #         # public class QuickUnionUF {                  #
-	# id[]|0|1|9|4|9|6|6|7|8|6|  #          # +-+   +-+   +-+   +-+   +-+ #         #     private int[] id;                        #
-	#     +-------------------+  #          #            X   X            #         #     public QuickUnionUF(int N) {             #
-	#                        ・	 #          #         +-+     +-+         #         #         id = new int[N];                     #	<-- set id of each object
-	##############################          #         |9|     |5|         #         #         for (int i = 0; i < N; i++)          #
- 	                                        #         +-+     +-+         #         #             id[i] = i;                       #
+    
+    to merge components containing p and q - set the id of p`s root to the id of q`s root
+    
+    ##############################          ###############################         implementation
+    #      0 1 2 3 4 5 6 7 8 9   #          # +-+   +-+   +-+   +-+   +-+ #         ################################################
+    #     +-------------------+  #          # |0|   |1|   |6|   |7|   |8| #         # public class QuickUnionUF {                  #
+    # id[]|0|1|9|4|9|6|6|7|8|6|  #          # +-+   +-+   +-+   +-+   +-+ #         #     private int[] id;                        #
+    #     +-------------------+  #          #            X   X            #         #     public QuickUnionUF(int N) {             #
+    #                        ・   #          #         +-+     +-+         #         #         id = new int[N];                     #    <-- set id of each object
+    ##############################          #         |9|     |5|         #         #         for (int i = 0; i < N; i++)          #
+                                            #         +-+     +-+         #         #             id[i] = i;                       #
                                             #        X   X                #         #     }                                        #
                                             #     +-+     +-+             #         #     private int root(int i) {                #
-                                            #     |2|     |4|             #         #         while (i != id[i])                   #	<-- chase parent pointers until reach root
+                                            #     |2|     |4|             #         #         while (i != id[i])                   #    <-- chase parent pointers until reach root
                                             #     +-+     +++             #         #             i = id[i];                       #
                                             #              |              #         #         return i;                            #
                                             #             +++             #         #     }                                        #
                                             #             |3|             #         #     public boolean connected(int p, int q) { #
-                                            #             +-+             #         #         return root(p) == root(q);           #	<-- check if p and q have same root
+                                            #             +-+             #         #         return root(p) == root(q);           #    <-- check if p and q have same root
                                             ###############################         #     }                                        #
                                                                                     #     public void union(int p, int q) {        #
-                                                                                    #         int i = root(p);                     #	<-- change root of p to point to root of q
+                                                                                    #         int i = root(p);                     #    <-- change root of p to point to root of q
                                                                                     #         int j = root(q);                     #
                                                                                     #         id[i] = j;                           #
                                                                                     #     }                                        #
                                                                                     # }                                            #
                                                                                     ################################################
 - quick union improvements
-	・Modify quick union to avoid tall trees
-	・Keep track of size of each tree
-	・balance by linking root of smaller tree to root od largert tree
-																    union(4 3)													 union(3 8)
-	#############################################################       #######################################################       ########################################################
-	# +-+   +-+   +-+   +-+   +-+   +-+   +-+   +-+   +-+   +-+ #       # +-+   +-+   +-+   +-+   +-+   +-+   +-+   +-+   +-+ #       # +-+   +-+   +-+   +-+   +-+   +-+   +-+   +-+   +-+  #
-	# |0|   |1|   |2|   |3|   |4|   |5|   |6|   |7|   |8|   |9| #  -->  # |0|   |1|   |2|   |4|   |5|   |6|   |7|   |8|   |9| #  -->  # |0|   |1|   |2|   |4|   |5|   |6|   |7|   |8|   |9|  #
-	# +-+   +-+   +-+   +-+   +-+   +-+   +-+   +-+   +-+   +-+ #       # +-+   +-+   +-+   +++   +-+   +-+   +-+   +-+   +-+ #       # +-+   +-+   +-+   +-+   +-+   +-+   +-+   +-+   +-+  #
-	#############################################################       #                    |                                #       #                  #   #                               #
-																		#                   +++                               #       #               +-+     +-+                            #
-																		#                   |3|                               #       #               |3|     |8|                            #
-																		#                   +-+                               #       #               +-+     +-+                            #
-																		#######################################################       ########################################################
-	
-	union(6 5)												union(9 4)									  union(2 1)								    union(5 0)
-	#################################################       #######################################       #######################################       #############################
-	# +-+   +-+   +-+   +-+         +-+   +-+   +-+ #       # +-+   +-+   +-+   +-+     +-+   +-+ #       # +-+   +-+         +-+     +-+   +-+ #       # +-+     +-+     +-+   +-+ #
-	# |0|   |1|   |2|   |4|         |6|   |7|   |9| #       # |0|   |1|   |2|   |4|     |6|   |7| #       # |0|   |2|         |4|     |6|   |7| #       # |2|     |4|     |6|   |7| #
-	# +-+   +-+   +-+   +-+         +++   +-+   +-+ #  -->  # +-+   +-+   +-+   +-+     +-+   +-+ #  -->  # +-+   +++         +++     +++   +-+ #  -->  # +++     +++     +++   +-+ #
-	#                  X   X         |              #       #                  X | X     |        #       #        |         X | X     |        #       #  |     X | X     | X      #
-	#               +-+     +-+     +++             #       #               +-+ +-+ +-+ +-+       #       #       +++     +-+ +++ +-+ +++       #       # +++ +-+ +++ +-+ +++ +-+   #
-	#               |3|     |8|     |5|             #       #               |3| |9| |8| |5|       #       #       |1|     |3| |9| |8| |5|       #       # |1| |3| |9| |8| |5| |0|   #
-	#               +-+     +-+     +-+             #       #               +-+ +-+ +-+ +-+       #       #       +-+     +-+ +-+ +-+ +-+       #       # +-+ +-+ +-+ +-+ +-+ +-+   #
-	#################################################       #######################################       #######################################       #############################
-	
-	union(7 2)								 union(6 1)						    union(7 3)
-	###################################      ############################       ############################
-	#     +-+         +-+     +-+     #      #     +-+          +-+     #       #           +-+            #
-	#     |2|         |4|     |6|     #      #     |4|          |6|     #       #           |6|            #
-	#     +++         +++     +++     #  --> #     +++          +++     #  -->  #           +-+            #
-	#    X |         X | X     | X    #      #    X | X        X | X    #       #        X   X   X         #
-	# +-+ +++     +-+ +++ +-+ +++ +-+ #      # +-+ +++ +-+  +-+ +++ +-+ #       #     +-+ +-+ +-+ +-+      #
-	# |7| |1|     |3| |9| |8| |5| |0| #      # |3| |9| |8|  |2| |5| |0| #       #     |2| |5| |0| |4|      #
-	# +-+ +-+     +-+ +-+ +-+ +-+ +-+ #      # +-+ +-+ +-+  +++ +-+ +-+ #       #     +++ +-+ +-+ +++      #
-	###################################      #             X |          #       #    X |         X | X     #
-											 #          +-+ +++         #       # +-+ +++     +-+ +++ +-+  #
-											 #          |7| |1|         #       # |7| |1|     |3| |9| |8|  #
-											 #          +-+ +-+         #       # +-+ +-+     +-+ +-+ +-+  #
-											 ############################       ############################
+    ・Modify quick union to avoid tall trees
+    ・Keep track of size of each tree
+    ・balance by linking root of smaller tree to root od largert tree
+                                                                    union(4 3)                                                     union(3 8)
+    #############################################################       #######################################################       ########################################################
+    # +-+   +-+   +-+   +-+   +-+   +-+   +-+   +-+   +-+   +-+ #       # +-+   +-+   +-+   +-+   +-+   +-+   +-+   +-+   +-+ #       # +-+   +-+   +-+   +-+   +-+   +-+   +-+   +-+   +-+  #
+    # |0|   |1|   |2|   |3|   |4|   |5|   |6|   |7|   |8|   |9| #  -->  # |0|   |1|   |2|   |4|   |5|   |6|   |7|   |8|   |9| #  -->  # |0|   |1|   |2|   |4|   |5|   |6|   |7|   |8|   |9|  #
+    # +-+   +-+   +-+   +-+   +-+   +-+   +-+   +-+   +-+   +-+ #       # +-+   +-+   +-+   +++   +-+   +-+   +-+   +-+   +-+ #       # +-+   +-+   +-+   +-+   +-+   +-+   +-+   +-+   +-+  #
+    #############################################################       #                    |                                #       #                  #   #                               #
+                                                                        #                   +++                               #       #               +-+     +-+                            #
+                                                                        #                   |3|                               #       #               |3|     |8|                            #
+                                                                        #                   +-+                               #       #               +-+     +-+                            #
+                                                                        #######################################################       ########################################################
+    
+    union(6 5)                                                union(9 4)                                      union(2 1)                                    union(5 0)
+    #################################################       #######################################       #######################################       #############################
+    # +-+   +-+   +-+   +-+         +-+   +-+   +-+ #       # +-+   +-+   +-+   +-+     +-+   +-+ #       # +-+   +-+         +-+     +-+   +-+ #       # +-+     +-+     +-+   +-+ #
+    # |0|   |1|   |2|   |4|         |6|   |7|   |9| #       # |0|   |1|   |2|   |4|     |6|   |7| #       # |0|   |2|         |4|     |6|   |7| #       # |2|     |4|     |6|   |7| #
+    # +-+   +-+   +-+   +-+         +++   +-+   +-+ #  -->  # +-+   +-+   +-+   +-+     +-+   +-+ #  -->  # +-+   +++         +++     +++   +-+ #  -->  # +++     +++     +++   +-+ #
+    #                  X   X         |              #       #                  X | X     |        #       #        |         X | X     |        #       #  |     X | X     | X      #
+    #               +-+     +-+     +++             #       #               +-+ +-+ +-+ +-+       #       #       +++     +-+ +++ +-+ +++       #       # +++ +-+ +++ +-+ +++ +-+   #
+    #               |3|     |8|     |5|             #       #               |3| |9| |8| |5|       #       #       |1|     |3| |9| |8| |5|       #       # |1| |3| |9| |8| |5| |0|   #
+    #               +-+     +-+     +-+             #       #               +-+ +-+ +-+ +-+       #       #       +-+     +-+ +-+ +-+ +-+       #       # +-+ +-+ +-+ +-+ +-+ +-+   #
+    #################################################       #######################################       #######################################       #############################
+    
+    union(7 2)                                 union(6 1)                            union(7 3)
+    ###################################      ############################       ############################
+    #     +-+         +-+     +-+     #      #     +-+          +-+     #       #           +-+            #
+    #     |2|         |4|     |6|     #      #     |4|          |6|     #       #           |6|            #
+    #     +++         +++     +++     #  --> #     +++          +++     #  -->  #           +-+            #
+    #    X |         X | X     | X    #      #    X | X        X | X    #       #        X   X   X         #
+    # +-+ +++     +-+ +++ +-+ +++ +-+ #      # +-+ +++ +-+  +-+ +++ +-+ #       #     +-+ +-+ +-+ +-+      #
+    # |7| |1|     |3| |9| |8| |5| |0| #      # |3| |9| |8|  |2| |5| |0| #       #     |2| |5| |0| |4|      #
+    # +-+ +-+     +-+ +-+ +-+ +-+ +-+ #      # +-+ +-+ +-+  +++ +-+ +-+ #       #     +++ +-+ +-+ +++      #
+    ###################################      #             X |          #       #    X |         X | X     #
+                                             #          +-+ +++         #       # +-+ +++     +-+ +++ +-+  #
+                                             #          |7| |1|         #       # |7| |1|     |3| |9| |8|  #
+                                             #          +-+ +-+         #       # +-+ +-+     +-+ +-+ +-+  #
+                                             ############################       ############################
 
-	implementation:
-	・Same as quick-union, but maintain extra array sz[i] to count number of objects in the tree rooted at i.
-	・Find. Identical to quick-union.
-	・Union. Modify quick-union to:
-		・Link root of smaller tree to root of larger tree.
-		・Update the sz[] array.
-		####################################################
-		#int i = root(p);                                  #
-		#int j = root(q);                                  #
-		#if (i == j) return;                               #
-		#if (sz[i] < sz[j]) { id[i] = j; sz[j] += sz[i]; } #
-		#else { id[j] = i; sz[i] += sz[j]; }               #
-		####################################################
-		
-	improvement2:
-	・Just after computing the root of p, set the id of each examined node to point to that root
-	・Make every other node in path point to its grandparent (thereby halving path length).
-	##############################	
-	# private int root(int i) {  #
-	#     while (i != id[i]) {   #
-	#         id[i] = id[id[i]]; #  <--  added code
-	#         i = id[i];         #
-	#     }                      #
-	#     return i;              #
-	# }                          #
-	##############################
+    implementation:
+    ・Same as quick-union, but maintain extra array sz[i] to count number of objects in the tree rooted at i.
+    ・Find. Identical to quick-union.
+    ・Union. Modify quick-union to:
+        ・Link root of smaller tree to root of larger tree.
+        ・Update the sz[] array.
+        ####################################################
+        #int i = root(p);                                  #
+        #int j = root(q);                                  #
+        #if (i == j) return;                               #
+        #if (sz[i] < sz[j]) { id[i] = j; sz[j] += sz[i]; } #
+        #else { id[j] = i; sz[i] += sz[j]; }               #
+        ####################################################
+        
+    improvement2:
+    ・Just after computing the root of p, set the id of each examined node to point to that root
+    ・Make every other node in path point to its grandparent (thereby halving path length).
+    ##############################    
+    # private int root(int i) {  #
+    #     while (i != id[i]) {   #
+    #         id[i] = id[id[i]]; #  <--  added code
+    #         i = id[i];         #
+    #     }                      #
+    #     return i;              #
+    # }                          #
+    ##############################
 
 
 ###############
 # week2
-###############	
+###############    
 
 - stacks
-	・Parsing in a compiler.							 ##################################																				
-	・Java virtual machine.                           #  stack                         # 
-	・Undo in a word processor.                       #  +-+-+-+-+-+-+-+-+-+-+ <-+push # 
-	・Back button in a Web browser.                   #  | | | | | | | | | | |         # 
-	・PostScript language for printers.               #  +-+-+-+-+-+-+-+-+-+-+ +->pop  # 
-	・Implementing function calls in a compiler.      ################################## 
+    ・Parsing in a compiler.                          ##################################                                                                                
+    ・Java virtual machine.                           #  stack                         # 
+    ・Undo in a word processor.                       #  +-+-+-+-+-+-+-+-+-+-+ <-+push # 
+    ・Back button in a Web browser.                   #  | | | | | | | | | | |         # 
+    ・PostScript language for printers.               #  +-+-+-+-+-+-+-+-+-+-+ +->pop  # 
+    ・Implementing function calls in a compiler.      ################################## 
 
-	implementation parametrized					array implementation
-	#######################################     ######################################################
-	# public class Stack<Item> {          #     # public class FixedCapacityStack<Item> {            #
+    implementation parametrized                    array implementation
+    #######################################     ######################################################
+    # public class Stack<Item> {          #     # public class FixedCapacityStack<Item> {            #
     # private Node first = null;          #     # private Item[] s;                                  #
     # private class Node {                #     # private int N = 0;                                 #
     #     Item item;                      #     #                                                    #
     #     Node next;                      #     # public FixedCapacityStackOfStrings(int capacity) { #
     # }                                   #     #     s = (Item[])new Object[capacity];              #
-	#                                     #     # }                                                  #
+    #                                     #     # }                                                  #
     # public boolean isEmpty() {          #     #                                                    #
     #     return first == null;           #     # public boolean isEmpty() {                         #
     # }                                   #     #     return N == 0;                                 #
     # public void push(String item) {     #     # }                                                  #
     #     Node oldfirst = first;          #     #                                                    #
-    #     first = new Node();             #     # public void push(Item item) {                      #										+-------------------------+
+    #     first = new Node();             #     # public void push(Item item) {                      #                                      +-------------------------+
     #     first.item = item;              #     #     s[N ++] = item;                                #                                      | public String pop() {   |
-    #     first.next = oldfirst;          #     # }                                                  #                                      | 	String item = s[--N]; |
-    # }                                   #     #                                                    #										| 	s[N] = null;          |
-    # public Item pop() {                 #     # public Item pop() {                                #                                      | 	return item;          |
+    #     first.next = oldfirst;          #     # }                                                  #                                      |     String item = s[--N]|
+    # }                                   #     #                                                    #                                      |     s[N] = null;        |
+    # public Item pop() {                 #     # public Item pop() {                                #                                      |     return item;        |
     #     Item item = first.item;         #     #     return s[-- N];                                #  <-- holding a reference to object   | }                       |
     #     first = first.next;             #     # }}                                                 #                                      +-------------------------+
     #     return item;                    #     ######################################################
-    # }}	                              #
-	#######################################
+    # }}                                  #
+    #######################################
 
 
 - resizing arrays
-	when array fills - crate a new one twice a size
-	###################################################																				Arithmetic expression evaluation
-	# public ResizingArrayStackOfStrings() {          #		   ##########################################################           ################################################################################# 	
-	#     s = new String[1];                          #        # public String pop() {                                  #           # public class Evaluate {                                                       #   Two-stack algorithm. [E. W. Dijkstra]
-	# }                                               #  <---  #     String item = s[--N];                              #           # 	public static void main(String[] args) {                                    #   ・Value: push onto the value stack.
-	# public void push(String item) {                 #        #     s[N] = null;                                       #           # 		Stack<String> ops = new Stack<String>();                                #   ・Operator: push onto the operator stack.
-	#     if(N == s.length) resize(2 * s.length);     #        #     if(N > 0 && N == s.length / 4) resize(s.length/2); #           # 		Stack<Double> vals = new Stack<Double>();                               #   ・Left parenthesis: ignore.
-	#     s[N++] = item;                              #        #     return item;                                       #           # 		while (!StdIn.isEmpty()) {                                              #   ・Right parenthesis: pop operator and two values;
-	# }                                               #        # }                                                      #           # 			String s = StdIn.readString();                                      #   push the result of applying that operator
-	# private void resize(int capacity) {             #        ##########################################################           # 			if (s.equals("(")) ;                                                #   to those values onto the operand stack.
-	#     String[] copy = new String[capacity];       #                                                                             # 			else if (s.equals("+")) ops.push(s);                                #
-	#     for (int i = 0; i < N; i++) copy[i] = s[i]; #                                                                             # 			else if (s.equals("*")) ops.push(s);                                #
-	#     s = copy;                                   #                                                                             # 			else if (s.equals(")")){                                            #
-	# }                                               #                                                                             # 				String op = ops.pop();                                          #
-	###################################################                                                                             # 				if (op.equals("+")) vals.push(vals.pop() + vals.pop());         #
-	                                                                                                                                # 				else if (op.equals("*")) vals.push(vals.pop() * vals.pop());    #
-	・linked list - uses extra time and space to deal with the links                                                                 # 			}                                                                   # 
-	・array - every operation takes constant amortized time.                                                                         # 			else vals.push(Double.parseDouble(s));                              # 
-	                                                                                                                                # 		}                                                                       #
-- queues                                                                                                                            # 	StdOut.println(vals.pop());                                                 #
-	############################################                                                                                    # }}                                                                            #
-	#          queue                           #                                                                                    #################################################################################
-	#          +-+-+-+-+-+-+-+-+-+-+           #
-	# enque+-> | | | | | | | | | | | +->deque  #
-	#          +-+-+-+-+-+-+-+-+-+-+           #
-	############################################
-	
-	linked list implementation								array implemeentation
-	#############################################			・Use array q[] to store items in queue.
-	# public class LinkedQueueOfStrings {       #           ・enqueue(): add new item at q[tail].
-	#     private Node first, last;             #           ・dequeue(): remove item from q[head].
-	#                                           #           ・Update head and tail modulo the capacity.
-	#     private class Node {                  #           ・Add resizing array.
-	#         ; /* same as in StackOfStrings */ #
-	#     }                                     #
-	#                                           #
-	#     public boolean isEmpty() {            #
-	#         return first == null;             #
-	#     }                                     #
-	#                                           #
-	#     public void enqueue(String item) {    #
-	#         Node oldlast = last;              #
-	#         last = new Node();                #
-	#         last.item = item;                 #
-	#         last.next = null;                 #
-	#         if(isEmpty()) first = last;       #
-	#         else oldlast.next = last;         #
-	#     }                                     #
-	#                                           #
-	#     public String dequeue() {             #
-	#         String item = first.item;         #
-	#         first = first.next;               #
-	#         if(isEmpty()) last = null;        #
-	#         return item;                      #
-	#     }                                     #
-	# }                                         #
-	#############################################
+    when array fills - crate a new one twice a size
+    ###################################################                                                                                Arithmetic expression evaluation
+    # public ResizingArrayStackOfStrings() {          #        ##########################################################           #################################################################################     
+    #     s = new String[1];                          #        # public String pop() {                                  #           # public class Evaluate {                                                       #   Two-stack algorithm. [E. W. Dijkstra]
+    # }                                               #  <---  #     String item = s[--N];                              #           #     public static void main(String[] args) {                                  #   ・Value: push onto the value stack.
+    # public void push(String item) {                 #        #     s[N] = null;                                       #           #         Stack<String> ops = new Stack<String>();                              #   ・Operator: push onto the operator stack.
+    #     if(N == s.length) resize(2 * s.length);     #        #     if(N > 0 && N == s.length / 4) resize(s.length/2); #           #         Stack<Double> vals = new Stack<Double>();                             #   ・Left parenthesis: ignore.
+    #     s[N++] = item;                              #        #     return item;                                       #           #         while (!StdIn.isEmpty()) {                                            #   ・Right parenthesis: pop operator and two values;
+    # }                                               #        # }                                                      #           #             String s = StdIn.readString();                                    #   push the result of applying that operator
+    # private void resize(int capacity) {             #        ##########################################################           #             if (s.equals("(")) ;                                              #   to those values onto the operand stack.
+    #     String[] copy = new String[capacity];       #                                                                             #             else if (s.equals("+")) ops.push(s);                              #
+    #     for (int i = 0; i < N; i++) copy[i] = s[i]; #                                                                             #             else if (s.equals("*")) ops.push(s);                              #
+    #     s = copy;                                   #                                                                             #             else if (s.equals(")")){                                          #
+    # }                                               #                                                                             #                 String op = ops.pop();                                        #
+    ###################################################                                                                             #                 if (op.equals("+")) vals.push(vals.pop() + vals.pop());       #
+                                                                                                                                    #                 else if (op.equals("*")) vals.push(vals.pop() * vals.pop());  #
+    ・linked list - uses extra time and space to deal with the links                                                                 #             }                                                                 # 
+    ・array - every operation takes constant amortized time.                                                                         #             else vals.push(Double.parseDouble(s));                            # 
+                                                                                                                                    #         }                                                                     #
+- queues                                                                                                                            #     StdOut.println(vals.pop());                                               #
+    ############################################                                                                                    # }}                                                                            #
+    #          queue                           #                                                                                    #################################################################################
+    #          +-+-+-+-+-+-+-+-+-+-+           #
+    # enque+-> | | | | | | | | | | | +->deque  #
+    #          +-+-+-+-+-+-+-+-+-+-+           #
+    ############################################
+    
+    linked list implementation                                array implemeentation
+    #############################################            ・Use array q[] to store items in queue.
+    # public class LinkedQueueOfStrings {       #           ・enqueue(): add new item at q[tail].
+    #     private Node first, last;             #           ・dequeue(): remove item from q[head].
+    #                                           #           ・Update head and tail modulo the capacity.
+    #     private class Node {                  #           ・Add resizing array.
+    #         ; /* same as in StackOfStrings */ #
+    #     }                                     #
+    #                                           #
+    #     public boolean isEmpty() {            #
+    #         return first == null;             #
+    #     }                                     #
+    #                                           #
+    #     public void enqueue(String item) {    #
+    #         Node oldlast = last;              #
+    #         last = new Node();                #
+    #         last.item = item;                 #
+    #         last.next = null;                 #
+    #         if(isEmpty()) first = last;       #
+    #         else oldlast.next = last;         #
+    #     }                                     #
+    #                                           #
+    #     public String dequeue() {             #
+    #         String item = first.item;         #
+    #         first = first.next;               #
+    #         if(isEmpty()) last = null;        #
+    #         return item;                      #
+    #     }                                     #
+    # }                                         #
+    #############################################
 
 
-- iterators																							implementation															array implementation
-	######################################															################################################################		########################################################################															
-	# public interface Iterable<Item > { #                                                          # import java.util.Iterator;                                   #        # import java.util.Iterator;                                           #
-	#     Iterator<Item> iterator();     #                                                          # public class Stack<Item > implements Iterable<Item > {       #        # public class Stack<Item > implements Iterable<Item > {               #
+- iterators                                                                                         implementation                                                            array implementation
+    ######################################                                                          ################################################################        ########################################################################                                                            
+    # public interface Iterable<Item > { #                                                          # import java.util.Iterator;                                   #        # import java.util.Iterator;                                           #
+    #     Iterator<Item> iterator();     #                                                          # public class Stack<Item > implements Iterable<Item > {       #        # public class Stack<Item > implements Iterable<Item > {               #
     # }                                  #                                                          #     public Iterator<Item > iterator() {                      #        #     public Iterator<Item > iterator() {                              #
-    #                                    #	<-- allows for (String s : stack) StdOut.println(s);    #         return new ListIterator();                           #        #         return new ReverseArrayIterator();                           #
+    #                                    #    <-- allows for (String s : stack) StdOut.println(s);  #         return new ListIterator();                           #        #         return new ReverseArrayIterator();                           #
     # public interface Iterator<Item > { #                                                          #     }                                                        #        #     }                                                                #
     #     boolean hasNext();             #                                                          #     private class ListIterator implements Iterator<Item > {  #        #     private class ReverseArrayIterator implements Iterator<Item > {  #
     #     Item next();                   #                                                          #         private Node current = first;                        #        #         private int i = N;                                           #
@@ -287,20 +287,20 @@ O(n^2) > O(n log n) > O(n) > O(log n) > O(n)
                                                                                                     ################################################################
 
 - selection sort
-	・In iteration i, find index min of smallest remaining entry.
-	・Swap a[i] and a[min].
-	################################################################################		############################################################
-	# public class Selection {                                                     #        # private static void exch(Comparable[] a, int i, int j) { #
-	#     public static void sort(Comparable[] a) {                                #        #     Comparable swap = a[i];                              #
-	#         int N = a.length;                                                    #        #     a[i] = a[j];                                         #
-	#         for(int i = 0; i < N; i++) {                                         #        #     a[j] = swap;                                         #
-	#             int min = i;                                                     #        # }                                                        #
-	#             for (int j = i+1; j < N; j++) if (less(a[j], a[min])) min = j;   #        ############################################################
-	#             exch(a, i, min);                                                 #
-	#         }                                                                    #
-	#     }                                                                        #
-	#     private static boolean less(Comparable v, Comparable w) {                #
-	#         return v.compareTo(w) < 0;                                           #
+    ・In iteration i, find index min of smallest remaining entry.
+    ・Swap a[i] and a[min].
+    ################################################################################        ############################################################
+    # public class Selection {                                                     #        # private static void exch(Comparable[] a, int i, int j) { #
+    #     public static void sort(Comparable[] a) {                                #        #     Comparable swap = a[i];                              #
+    #         int N = a.length;                                                    #        #     a[i] = a[j];                                         #
+    #         for(int i = 0; i < N; i++) {                                         #        #     a[j] = swap;                                         #
+    #             int min = i;                                                     #        # }                                                        #
+    #             for (int j = i+1; j < N; j++) if (less(a[j], a[min])) min = j;   #        ############################################################
+    #             exch(a, i, min);                                                 #
+    #         }                                                                    #
+    #     }                                                                        #
+    #     private static boolean less(Comparable v, Comparable w) {                #
+    #         return v.compareTo(w) < 0;                                           #
     #     }                                                                        #
     #     private static void exch(Comparable[] a, int i, int j) {                 #
     #         Comparable swap = a[i];                                              #
@@ -312,59 +312,59 @@ O(n^2) > O(n log n) > O(n) > O(log n) > O(n)
 
 
 - insertion sort
-	・In iteration i, swap a[i] with each larger entry to its left.
+    ・In iteration i, swap a[i] with each larger entry to its left.
 
-	##############################################################################
-	# public class Insertion {                                                   #
-	#     public static void sort(Comparable[] a) {                              #
-	#         int N = a.length;                                                  #
-	#         for (int i = 0; i < N; i ++)                                       #
-	#             for (int j = i; j > 0; j --)                                   #
-	#                 if (less(a[j], a[j - 1]))                                  #
-	#                     exch(a, j, j - 1);                                     #
-	#                 else                                                       #
-	#                     break;                                                 #
-	# }                                                                          #
-	# private static boolean less(Comparable v, Comparable w) { /* as before */  #
-	# }                                                                          #
-	# private static void exch(Comparable[] a, int i, int j) { /* as before */   #
-	# }}                                                                         #
-	##############################################################################
-	
-	
+    ##############################################################################
+    # public class Insertion {                                                   #
+    #     public static void sort(Comparable[] a) {                              #
+    #         int N = a.length;                                                  #
+    #         for (int i = 0; i < N; i ++)                                       #
+    #             for (int j = i; j > 0; j --)                                   #
+    #                 if (less(a[j], a[j - 1]))                                  #
+    #                     exch(a, j, j - 1);                                     #
+    #                 else                                                       #
+    #                     break;                                                 #
+    # }                                                                          #
+    # private static boolean less(Comparable v, Comparable w) { /* as before */  #
+    # }                                                                          #
+    # private static void exch(Comparable[] a, int i, int j) { /* as before */   #
+    # }}                                                                         #
+    ##############################################################################
+    
+    
 
 - shellsort
-	・Move entries more than one position at a time by h-sorting the array.
-	・Insertion sort, with stride length h.
-	###################################################################			input
-	# h=4                                                             #         S O R T E X A M P L E
-	# +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ #         #########################	#########################	#########################
-	# |l| |e| |e| |a| |m| |h| |l| |e| |p| |s| |o| |l| |t| |s| |x| |r| #         # 7-sort                #   # 3-sort                #   # 1-sort                #
-	# +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ #         # S O R T E X A M P L E #   # M O L E E X A S P R T #   #                       #
-	#                                                                 #         # ・             ・       #   # ・     ・               	#   # A E L E O P M S X R T	#
-	# +-+             +-+             +-+             +-+             #         # M O R T E X A S P L E #   # E O L M E X A S P R T #   #   ・                  	#
-	# |l+-------------+m+-------------+p+-------------+t|             #         #   ・             ・     #   #   ・     ・             	#   # A E L E O P M S X R T	#
-	# +-+             +-+             +-+             +-+             #         # M O R T E X A S P L E #   # E E L M O X A S P R T #   #     ・                	#
-	#                                                                 #         #     ・             ・   #   #     ・     ・           	#   # A E L E O P M S X R T	#
-	#     +-+             +-+             +-+             +-+         #         # M O L T E X A S P R E #   # E E L M O X A S P R T #   #     ・ ・              	#
-	#     |e+-------------+h+-------------+s+-------------+s|         #         #       ・             ・ #   #       ・     ・         	#   # A E E L O P M S X R T	#
-	#     +-+             +-+             +-+             +-+         #         # M O L E E X A S P R T #   # A E L E O X M S P R T #   #         ・            	#
-	#                                                                 #         #########################   #         ・     ・       #   # A E E L O P M S X R T	#
-	#         +-+             +-+             +-+             +-+     #         						    # A E L E O X M S P R T #   #         ・ ・          	#
-	#         |e+-------------+l+-------------+o+-------------+x|     #                                     #           ・     ・     #   # A E E L O P M S X R T	#
-	#         +-+             +-+             +-+             +-+     #                                     # A E L E O P M S X R T #   #         ・ ・ ・        	#
-	#                                                                 #                                     #             ・     ・   #   # A E E L M O P S X R T	#
-	#             +-+             +-+             +-+             +-+ #                                     # A E L E O P M S X R T #   #               ・      	#
-	#             |a+-------------+e+-------------+l+-------------+r| #                                     #               ・     ・ #   # A E E L M O P S X R T	#
-	#             +-+             +-+             +-+             +-+ #                                     # A E L E O P M S X R T #   #               ・ ・    	#
-	###################################################################                                     #########################   # A E E L M O P S X R T	#
-                                                                                                                                        #               ・ ・ ・   	#
-                                                                                                                                        # A E E L M O P R S X T	#
-    ##################################################################################                                                  #                   ・ ・	#
-    # public class Shell {                                                           #                                                  # A E E L M O P R S T X	#
+    ・Move entries more than one position at a time by h-sorting the array.
+    ・Insertion sort, with stride length h.
+    ###################################################################            input
+    # h=4                                                             #         S O R T E X A M P L E
+    # +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ #         #########################   #########################   #########################
+    # |l| |e| |e| |a| |m| |h| |l| |e| |p| |s| |o| |l| |t| |s| |x| |r| #         # 7-sort                #   # 3-sort                #   # 1-sort                #
+    # +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ +-+ #         # S O R T E X A M P L E #   # M O L E E X A S P R T #   #                       #
+    #                                                                 #         # ・             ・       #   # ・     ・                #   # A E L E O P M S X R T #
+    # +-+             +-+             +-+             +-+             #         # M O R T E X A S P L E #   # E O L M E X A S P R T #   #   ・                    #
+    # |l+-------------+m+-------------+p+-------------+t|             #         #   ・             ・     #   #   ・     ・              #   # A E L E O P M S X R T #
+    # +-+             +-+             +-+             +-+             #         # M O R T E X A S P L E #   # E E L M O X A S P R T #   #     ・                  #
+    #                                                                 #         #     ・             ・   #   #     ・     ・            #   # A E L E O P M S X R T #
+    #     +-+             +-+             +-+             +-+         #         # M O L T E X A S P R E #   # E E L M O X A S P R T #   #     ・ ・                #
+    #     |e+-------------+h+-------------+s+-------------+s|         #         #       ・             ・ #   #       ・     ・          #   # A E E L O P M S X R T #
+    #     +-+             +-+             +-+             +-+         #         # M O L E E X A S P R T #   # A E L E O X M S P R T #   #         ・              #
+    #                                                                 #         #########################   #         ・     ・       #   # A E E L O P M S X R T  #
+    #         +-+             +-+             +-+             +-+     #                                     # A E L E O X M S P R T #   #         ・ ・            #
+    #         |e+-------------+l+-------------+o+-------------+x|     #                                     #           ・     ・     #   # A E E L O P M S X R T  #
+    #         +-+             +-+             +-+             +-+     #                                     # A E L E O P M S X R T #   #         ・ ・ ・          #
+    #                                                                 #                                     #             ・     ・   #   # A E E L M O P S X R T  #
+    #             +-+             +-+             +-+             +-+ #                                     # A E L E O P M S X R T #   #               ・        #
+    #             |a+-------------+e+-------------+l+-------------+r| #                                     #               ・     ・ #   # A E E L M O P S X R T  #
+    #             +-+             +-+             +-+             +-+ #                                     # A E L E O P M S X R T #   #               ・ ・      #
+    ###################################################################                                     #########################   # A E E L M O P S X R T #
+                                                                                                                                        #               ・ ・ ・    #
+                                                                                                                                        # A E E L M O P R S X T #
+    ##################################################################################                                                  #                   ・ ・  #
+    # public class Shell {                                                           #                                                  # A E E L M O P R S T X #
     #     public static void sort(Comparable[] a) {                                  #                                                  #########################
     #         int N = a.length;                                                      #
-	#         int h = 1;                                                             #
+    #         int h = 1;                                                             #
     #         while (h < N / 3)                                                      #
     #             h = 3 * h + 1;                                                     #
     #          // 1, 4, 13, 40, 121, 364, ...                                        #
@@ -385,162 +385,162 @@ O(n^2) > O(n log n) > O(n) > O(log n) > O(n)
 
 
 - convex hull
-	・The convex hull of a set of N points is the smallest perimeter fence enclosing the points.
-	############################		Fact. Farthest pair of points are extreme points on convex hull.																##############################################################################################
-	#       +X+----------+X    #		Fact. Can traverse the convex hull by making only counterclockwise turns.                                                       # public class Point2D {                                                                     #
-	#  +----+             ++   #		Fact. The vertices of convex hull appear in increasing order of polar angle with respect to point p with lowest y-coordinate.   #     public final Comparator<Point2D> POLAR_ORDER = new PolarOrder();                       #
-	#  X               X   +   #		solution                                                                                                                        #     private final double x,y;                                                              #
-	#  +   X        X      X   #		・Choose point p with smallest y-coordinate.                                                                                     #     private static int ccw(Point2D a, Point2D b, Point2D c) { /* as in previous lecture */ # 
-	#  |              X    ++  #        ・Sort points by polar angle with p.                                                                                             #     }                                                                                      # 
-	# ++       X   X     X  +  #        ・Consider points in order; discard unless it create a ccw turn.                                                                 #     private class PolarOrder implements Comparator<Point2D> {                              # 
-	# X   X           X     X  #																						#####################                           #         public int compare(Point2D q1, Point2D q2) {                                       #
-	# +          X          +  #		Given three points a, b, and c, is a → b→ c a counterclockwise turn?    		# c+-+         +-+c #                           #             double dy1 = q1.y - y;                                                         #
-    # |                     +  #		#############################################################################	#    +b       b|    #                           #             double dy2 = q2.y - y;                                                         #
-    # |      +-------------+X  #        # public static int ccw(Point2D a, Point2D b, Point2D c) {                  #	#     ++      +-+   #                           #             if (dy1 == 0 && dy2 == 0) {                                                    #
-    # +----+X+                 #        #     double area2 = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x); #	#      +        +   #                           #                 ...                                                                        #
-    ############################        #     if (area2 < 0)                                                        #	#      a        a   #                           #         } else if (dy1 >= 0 && dy2 < 0)                                                    #
-										#         return -1;	// clockwise                                        #	#   yes       no    #                           #             return -1;                                                                     #
-										#		else if (area2 > 0)                                                 #	#####################                           #          else if (dy2 >= 0 && dy1 < 0)                                                     #
-										#         return + 1;	// counter-clockwise                                #					                                #             return + 1;                                                                    #
-										#		else                                                                #					                                #          else                                                                              #
-                                        #         return 0;		// collinear                                        #                                                   #             return -ccw(Point2D.this, q1, q2);                                             #
-										# }                                                                         #                                                   #                                                                                            #
-										#############################################################################                                                   #     }                                                                                      #
+    ・The convex hull of a set of N points is the smallest perimeter fence enclosing the points.
+    ############################        Fact. Farthest pair of points are extreme points on convex hull.                                                                ##############################################################################################
+    #       +X+----------+X    #        Fact. Can traverse the convex hull by making only counterclockwise turns.                                                       # public class Point2D {                                                                     #
+    #  +----+             ++   #        Fact. The vertices of convex hull appear in increasing order of polar angle with respect to point p with lowest y-coordinate.   #     public final Comparator<Point2D> POLAR_ORDER = new PolarOrder();                       #
+    #  X               X   +   #        solution                                                                                                                        #     private final double x,y;                                                              #
+    #  +   X        X      X   #        ・Choose point p with smallest y-coordinate.                                                                                     #     private static int ccw(Point2D a, Point2D b, Point2D c) { /* as in previous lecture */ # 
+    #  |              X    ++  #        ・Sort points by polar angle with p.                                                                                             #     }                                                                                      # 
+    # ++       X   X     X  +  #        ・Consider points in order; discard unless it create a ccw turn.                                                                 #     private class PolarOrder implements Comparator<Point2D> {                              # 
+    # X   X           X     X  #                                                                                        #####################                           #         public int compare(Point2D q1, Point2D q2) {                                       #
+    # +          X          +  #        Given three points a, b, and c, is a → b→ c a counterclockwise turn?            # c+-+         +-+c #                           #             double dy1 = q1.y - y;                                                         #
+    # |                     +  #        #############################################################################   #    +b       b|    #                           #             double dy2 = q2.y - y;                                                         #
+    # |      +-------------+X  #        # public static int ccw(Point2D a, Point2D b, Point2D c) {                  #   #     ++      +-+   #                           #             if (dy1 == 0 && dy2 == 0) {                                                    #
+    # +----+X+                 #        #     double area2 = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x); #   #      +        +   #                           #                 ...                                                                        #
+    ############################        #     if (area2 < 0)                                                        #   #      a        a   #                           #         } else if (dy1 >= 0 && dy2 < 0)                                                    #
+                                        #         return -1;    // clockwise                                        #   #   yes       no    #                           #             return -1;                                                                     #
+                                        #        else if (area2 > 0)                                                #   #####################                           #          else if (dy2 >= 0 && dy1 < 0)                                                     #
+                                        #         return + 1;    // counter-clockwise                               #                                                   #             return + 1;                                                                    #
+                                        #        else                                                               #                                                   #          else                                                                              #
+                                        #         return 0;        // collinear                                     #                                                   #             return -ccw(Point2D.this, q1, q2);                                             #
+                                        # }                                                                         #                                                   #                                                                                            #
+                                        #############################################################################                                                   #     }                                                                                      #
                                                                                                                                                                         # }}                                                                                         #
-	####################################################                                                                                                                ##############################################################################################
-    # Stack <2D> hull = new Stack<Point>()             #
-    # Arrays.sort(p, Point2D.Y_ORDER)                  #  <-- p[0] is now point on lowest y coordinate
-    # Arrays.sort(p, p[0].BY_POLAR_ORDER)              #  <-- sort by polar angle with respect to p[0]
-    #                                                  #
-    # hull.push(p[0])                                  #  <-- definitely on hull
-    # hull.push(p[1])                                  #
-    #                                                  #
-    # for (int i = 2; i<N;i++) {                       #
-    # 	Point2D top = hull.pop();                      #
-    # 	while(Point2D.ccw(hull.peek(), top, p[i]) <=0) #  <-- discard points that would create clockwise turn
-    # 		top = hull.pop();                          #
-    # 	hull.push(top);                                #
-    # 	hull.push(p[]i)                                #  <-- add p[i] to putative hull
-    # }                                                #
-    ####################################################
+    ######################################################                                                                                                                ##############################################################################################
+    # Stack <2D> hull = new Stack<Point>()               #
+    # Arrays.sort(p, Point2D.Y_ORDER)                    #  <-- p[0] is now point on lowest y coordinate
+    # Arrays.sort(p, p[0].BY_POLAR_ORDER)                #  <-- sort by polar angle with respect to p[0]
+    #                                                    #
+    # hull.push(p[0])                                    #  <-- definitely on hull
+    # hull.push(p[1])                                    #
+    #                                                    #
+    # for (int i = 2; i<N;i++) {                         #
+    #     Point2D top = hull.pop();                      #
+    #     while(Point2D.ccw(hull.peek(), top, p[i]) <=0) #  <-- discard points that would create clockwise turn
+    #         top = hull.pop();                          #
+    #     hull.push(top);                                #
+    #     hull.push(p[]i)                                #  <-- add p[i] to putative hull
+    # }                                                  #
+    ######################################################
 
-	
+    
 ###############
 # week3        
 ###############
-	
+    
 - mergesort
-	・Divide array into two halves.
-	・Recursively sort each half.
-	・Merge two halves.
-	
-	merge																										implementation
-	#########################################################	##########################################		#########################################################
-	# private static void merge(Comparable[] a,             #   #                                        #      # public class Merge {                                  #
-	#							Comparable[] aux,           #   #       lo i    j hi             k       #      #     private static void merge(...) { /* as before */  #
-	#							int lo, int mid, int hi) {  #   #      +-----------+      +-----------+  #      #     }                                                 #
-	#     for (int k = lo; k <= hi; k ++)                   #   # aux[]|aglor|himst|   a[]|aghil|m    |  #      #                                                       #
-	#         aux[k] = a[k];                                #   #      +-----------+      +-----------+  #      #     private static void sort(Comparable[] a,          #
-	#                                                       #   #            mi                          #      #							   Comparable[] aux,        #
-	#     int i = lo,                                       #   ##########################################      #							   int lo, int hi) {        #
-	#     j = mid + 1;                                      #                                                   #         if (hi <= lo)                                 #
-	#     for (int k = lo; k <= hi; k ++) {                 #                                                   #             return;                                   #
-	#         if (i > mid)                                  #                                                   #                                                       #
-	#             a[k] = aux[j ++];                         #                                                   #         int mid = lo + (hi - lo) / 2;                 #
-	#          else if (j > hi)                             #                                                   #         sort(a, aux, lo, mid);                        #
-	#             a[k] = aux[i ++];                         #                                                   #         sort(a, aux, mid + 1, hi);                    #
-	#          else if (less(aux[j], aux[i]))               #                                                   #         merge(a, aux, lo, mid, hi);                   #
-	#             a[k] = aux[j ++];                         #                                                   #     }                                                 #
-	#          else                                         #                                                   #     public static void sort(Comparable[] a) {         #
-	#             a[k] = aux[i ++];                         #                                                   #         aux = new Comparable[a.length];               #
-	#                                                       #                                                   #         sort(a, aux, 0, a.length - 1);                #
-	#     }                                                 #                                                   #     }                                                 #
-	# }                                                     #                                                   # }                                                     #
-	#########################################################                                                   #########################################################
-	
+    ・Divide array into two halves.
+    ・Recursively sort each half.
+    ・Merge two halves.
+    
+    merge                                                                                                        implementation
+    #########################################################   ##########################################      #########################################################
+    # private static void merge(Comparable[] a,             #   #                                        #      # public class Merge {                                  #
+    #                            Comparable[] aux,          #   #       lo i    j hi             k       #      #     private static void merge(...) { /* as before */  #
+    #                            int lo, int mid, int hi) { #   #      +-----------+      +-----------+  #      #     }                                                 #
+    #     for (int k = lo; k <= hi; k ++)                   #   # aux[]|aglor|himst|   a[]|aghil|m    |  #      #                                                       #
+    #         aux[k] = a[k];                                #   #      +-----------+      +-----------+  #      #     private static void sort(Comparable[] a,          #
+    #                                                       #   #            mi                          #      #                               Comparable[] aux,       #
+    #     int i = lo,                                       #   ##########################################      #                               int lo, int hi) {       #
+    #     j = mid + 1;                                      #                                                   #         if (hi <= lo)                                 #
+    #     for (int k = lo; k <= hi; k ++) {                 #                                                   #             return;                                   #
+    #         if (i > mid)                                  #                                                   #                                                       #
+    #             a[k] = aux[j ++];                         #                                                   #         int mid = lo + (hi - lo) / 2;                 #
+    #          else if (j > hi)                             #                                                   #         sort(a, aux, lo, mid);                        #
+    #             a[k] = aux[i ++];                         #                                                   #         sort(a, aux, mid + 1, hi);                    #
+    #          else if (less(aux[j], aux[i]))               #                                                   #         merge(a, aux, lo, mid, hi);                   #
+    #             a[k] = aux[j ++];                         #                                                   #     }                                                 #
+    #          else                                         #                                                   #     public static void sort(Comparable[] a) {         #
+    #             a[k] = aux[i ++];                         #                                                   #         aux = new Comparable[a.length];               #
+    #                                                       #                                                   #         sort(a, aux, 0, a.length - 1);                #
+    #     }                                                 #                                                   #     }                                                 #
+    # }                                                     #                                                   # }                                                     #
+    #########################################################                                                   #########################################################
+    
 - mergesort bottom-up
-	#####################################################################################
-	# public class MergeBU {                                                            #
-	#     private static void merge(...) { /* as before */                              #
-	#     }                                                                             #
-	#     public static void sort(Comparable[] a) {                                     #
-	#         int N = a.length;                                                         #
-	#         Comparable[] aux = new Comparable[N];                                     #
-	#         for (int sz = 1; sz < N; sz = sz + sz)                                    #
-	#             for (int lo = 0; lo < N - sz; lo += sz + sz)                          #
-	#                 merge(a, aux, lo, lo + sz - 1, Math.min(lo + sz + sz - 1, N - 1));#
-	#     }                                                                             #
-	# }                                                                                 #
-	#####################################################################################
-	
+    #####################################################################################
+    # public class MergeBU {                                                            #
+    #     private static void merge(...) { /* as before */                              #
+    #     }                                                                             #
+    #     public static void sort(Comparable[] a) {                                     #
+    #         int N = a.length;                                                         #
+    #         Comparable[] aux = new Comparable[N];                                     #
+    #         for (int sz = 1; sz < N; sz = sz + sz)                                    #
+    #             for (int lo = 0; lo < N - sz; lo += sz + sz)                          #
+    #                 merge(a, aux, lo, lo + sz - 1, Math.min(lo + sz + sz - 1, N - 1));#
+    #     }                                                                             #
+    # }                                                                                 #
+    #####################################################################################
+    
 - comparators
-	・Create Comparator object.												#############################################################################
-	・Pass as second argument to Arrays.sort().                      		# public static void sort(Object[] a, Comparator comparator) {              # 	java 8 lambda
-	##########################################################      		#     int N = a.length;                                                     #	########################################################################
-	# String[] a;                                            #      		#     for (int i = 0; i < N; i ++)                                          #   # listDevs.sort((Developer o1, Developer o2)->o1.getAge()-o2.getAge());#
-	# Arrays.sort(a);                                        #      		#         for (int j = i; j > 0 && less(comparator, a[j], a[j - 1]); j --)  #   ########################################################################
-	# Arrays.sort(a, String.CASE_INSENSITIVE_ORDER);         #      		#             exch(a, j, j - 1);                                            #
-	# Arrays.sort(a, Collator.getInstance(new Locale("es")));#      		# }                                                                         #
-	##########################################################      		# private static boolean less(Comparator c, Object v, Object w) {           #
-																			#     return c.compare(v, w) < 0;                                           #
-	####################################################################	# }                                                                         #
-	# Collections.sort(listDevs, new Comparator<Developer>() {         #	# private static void exch(Object[] a, int i, int j) {                      #
-	#     @Override public int compare(Developer o1, Developer o2) {   #	#     Object swap = a[i];                                                   #
-	#         return o1.getAge() - o2.getAge();                        #	#     a[i] = a[j];                                                          #
-	#     }                                                            #	#     a[j] = swap;                                                          #
-	# });                                                              #	# }                                                                         #
-	####################################################################	#############################################################################
-	
+    ・Create Comparator object.                                              #############################################################################
+    ・Pass as second argument to Arrays.sort().                              # public static void sort(Object[] a, Comparator comparator) {              #   java 8 lambda
+    ##########################################################              #     int N = a.length;                                                     #   ########################################################################
+    # String[] a;                                            #              #     for (int i = 0; i < N; i ++)                                          #   # listDevs.sort((Developer o1, Developer o2)->o1.getAge()-o2.getAge());#
+    # Arrays.sort(a);                                        #              #         for (int j = i; j > 0 && less(comparator, a[j], a[j - 1]); j --)  #   ########################################################################
+    # Arrays.sort(a, String.CASE_INSENSITIVE_ORDER);         #              #             exch(a, j, j - 1);                                            #
+    # Arrays.sort(a, Collator.getInstance(new Locale("es")));#              # }                                                                         #
+    ##########################################################              # private static boolean less(Comparator c, Object v, Object w) {           #
+                                                                            #     return c.compare(v, w) < 0;                                           #
+    ####################################################################    # }                                                                         #
+    # Collections.sort(listDevs, new Comparator<Developer>() {         #    # private static void exch(Object[] a, int i, int j) {                      #
+    #     @Override public int compare(Developer o1, Developer o2) {   #    #     Object swap = a[i];                                                   #
+    #         return o1.getAge() - o2.getAge();                        #    #     a[i] = a[j];                                                          #
+    #     }                                                            #    #     a[j] = swap;                                                          #
+    # });                                                              #    # }                                                                         #
+    ####################################################################    #############################################################################
+    
 - quicksort
-	・Shuffle the array.														##############################################################################################
-	・Partition so that, for some j                                          #public class Quick {                                                                        # 
-	– entry a[j] is in place                                                #    private static int partition(Comparable[] a, int lo, int hi) { /* see previous slide */ #
-	– no larger entry to the left of j                                      #    }                                                                                       #
-	– no smaller entry to the right of j                                    #    public static void sort(Comparable[] a) {                                               #
-	・Sort each piece recursively.                                           #        StdRandom.shuffle(a);                                                               # 
+    ・Shuffle the array.                                                     ##############################################################################################
+    ・Partition so that, for some j                                          #public class Quick {                                                                        # 
+    – entry a[j] is in place                                                #    private static int partition(Comparable[] a, int lo, int hi) { /* see previous slide */ #
+    – no larger entry to the left of j                                      #    }                                                                                       #
+    – no smaller entry to the right of j                                    #    public static void sort(Comparable[] a) {                                               #
+    ・Sort each piece recursively.                                           #        StdRandom.shuffle(a);                                                               # 
                                                                             #        sort(a, 0, a.length - 1);                                                           #
-	#################################################################       #    }                                                                                       #
-	#private static int partition(Comparable[] a, int lo, int hi) { #       #    private static void sort(Comparable[] a, int lo, int hi) {                              #
-	#    int i = lo,                                                #       #        if (hi <= lo)                                                                       #
-	#    j = hi + 1;                                                #       #            return;                                                                         #
-	#    while (true) {                                             #       #                                                                                            #
-	#        while (less(a[++ i], a[lo]))                           #       #        int j = partition(a, lo, hi);                                                       #
-	#            if (i == hi)                                       #       #        sort(a, lo, j - 1);                                                                 #
-	#                break;                                         #       #        sort(a, j + 1, hi);                                                                 #
-	#        while (less(a[lo], a[-- j]))                           #       #    }                                                                                       #
-	#            if (j == lo)                                       #       #}                                                                                           #
-	#                break;                                         #       ##############################################################################################
-	#        if (i >= j)                                            #
-	#            break;                                             #
-	#        exch(a, i, j);                                         #
-	#    }                                                          #
-	#    exch(a, lo, j);                                            #
-	#    return j;}                                                 #
-	#################################################################
-	
-	
+    #################################################################       #    }                                                                                       #
+    #private static int partition(Comparable[] a, int lo, int hi) { #       #    private static void sort(Comparable[] a, int lo, int hi) {                              #
+    #    int i = lo,                                                #       #        if (hi <= lo)                                                                       #
+    #    j = hi + 1;                                                #       #            return;                                                                         #
+    #    while (true) {                                             #       #                                                                                            #
+    #        while (less(a[++ i], a[lo]))                           #       #        int j = partition(a, lo, hi);                                                       #
+    #            if (i == hi)                                       #       #        sort(a, lo, j - 1);                                                                 #
+    #                break;                                         #       #        sort(a, j + 1, hi);                                                                 #
+    #        while (less(a[lo], a[-- j]))                           #       #    }                                                                                       #
+    #            if (j == lo)                                       #       #}                                                                                           #
+    #                break;                                         #       ##############################################################################################
+    #        if (i >= j)                                            #
+    #            break;                                             #
+    #        exch(a, i, j);                                         #
+    #    }                                                          #
+    #    exch(a, lo, j);                                            #
+    #    return j;}                                                 #
+    #################################################################
+    
+    
 ###############
 # week4
 ###############
 
 - priority queues
-	API`s:																		Priority queue: unordered array implementation
-	・Stack. Remove the item most recently added.								################################################################
-	・Queue. Remove the item least recently added.                               # public class UnorderedMaxPQ < Key extends Comparable<Key> > {# 
-	・Randomized queue. Remove a random item.                                    #     private Key[] pq; 	// pq[i] = ith element on pq       # 
-	・Priority queue. Remove the largest (or smallest) item.                     #     private int N; 		// number of elements on pq        # 
+    API`s:                                                                        Priority queue: unordered array implementation
+    ・Stack. Remove the item most recently added.                                ################################################################
+    ・Queue. Remove the item least recently added.                               # public class UnorderedMaxPQ < Key extends Comparable<Key> > {# 
+    ・Randomized queue. Remove a random item.                                    #     private Key[] pq;     // pq[i] = ith element on pq       # 
+    ・Priority queue. Remove the largest (or smallest) item.                     #     private int N;         // number of elements on pq       # 
                                                                                 #     public UnorderedMaxPQ(int capacity) {                    #
-	Priority queue applications                                                 #         pq = (Key[])new Comparable[capacity];                #
-	・Event-driven simulation. 	[customers in a line, colliding particles]      #     }                                                        #
-	・Numerical computation. 	[reducing roundoff error]                       #     public boolean isEmpty() {                               #
-	・Data compression. 			[Huffman codes]                                 #         return N == 0;                                       #
-	・Graph searching. 			[Dijkstra's algorithm, Prim's algorithm]        #     }                                                        #
-	・Number theory. 			[sum of powers]                                 #     public void insert(Key x) {                              #
-	・Artificial intelligence. 	[A* search]                                     #         pq[N ++] = x;                                        #
-	・Statistics. 				[maintain largest M values in a sequence]       #     }                                                        #
-	・Operating systems. 		[load balancing, interrupt handling]            #     public Key delMax() {                                    #
-	・Discrete optimization. 	[bin packing, scheduling]                       #         int max = 0;                                         #
-	・Spam filtering. 			[Bayesian spam filter]                          #         for (int i = 1; i < N; i ++)                         #
+    Priority queue applications                                                 #         pq = (Key[])new Comparable[capacity];                #
+    ・Event-driven simulation.     [customers in a line, colliding particles]    #     }                                                        #
+    ・Numerical computation.     [reducing roundoff error]                       #     public boolean isEmpty() {                               #
+    ・Data compression.             [Huffman codes]                              #         return N == 0;                                       #
+    ・Graph searching.             [Dijkstra's algorithm, Prim's algorithm]      #     }                                                        #
+    ・Number theory.             [sum of powers]                                 #     public void insert(Key x) {                              #
+    ・Artificial intelligence.     [A* search]                                   #         pq[N ++] = x;                                        #
+    ・Statistics.                 [maintain largest M values in a sequence]      #     }                                                        #
+    ・Operating systems.         [load balancing, interrupt handling]            #     public Key delMax() {                                    #
+    ・Discrete optimization.     [bin packing, scheduling]                       #         int max = 0;                                         #
+    ・Spam filtering.             [Bayesian spam filter]                         #         for (int i = 1; i < N; i ++)                         #
                                                                                 #             if (less(max, i))                                #
                                                                                 #                 max = i;                                     #
                                                                                 #         exch(max, N - 1);                                    #
@@ -549,7 +549,7 @@ O(n^2) > O(n log n) > O(n) > O(log n) > O(n)
                                                                                 # }                                                            #
                                                                                 ################################################################
 - Binary Heaps
-	#########################				Promotion in a heap													Insertion in a heap																	############################################################# 					
+    #########################                Promotion in a heap                                                Insertion in a heap                                                                 #############################################################                     
     #          +-+          #               Problem.  Child's key becomes larger key than its parent's key.     Add node at end, then swim it up                                                    # public class MaxPQ < Key extends Comparable<Key> > {      #
     #          | |          #               Solution:                                                           ################################                                                    #     private Key[] pq;                                     #
     #      +---+-+---+      #               Exchange key in child with key in parent.                           # public void insert(Key x) {  #                                                    #     private int N;                                        #
@@ -559,16 +559,16 @@ O(n^2) > O(n log n) > O(n) > O(log n) > O(n)
     # +-+   +-+   +-+   +-+ #               #     while (k > 1 && less(k / 2, k)) { #                           ################################                                                    #     public boolean isEmpty() {                            #
     # | |   | |   | |   | | #               #         exch(k, k / 2);               #                                                                                                               #         return N == 0;                                    #
     # +-+   +-+   +-+   +-+ #               #         k = k / 2;                    #                                                                                                               #     }                                                     #
-    #########################               # }}                                    # 				Demotion in a heap                                                                              #     public void insert(Key key)                           #
+    #########################               # }}                                    #                 Demotion in a heap                                                                            #     public void insert(Key key)                           #
                                             #########################################               Problem. Parent's key becomes smaller than one (or both) of its children's.                     #     public Key delMax() { /* see previous code */         #                           
-	Array representation of a heap-ordered complete binary tree.                                    Solution:                                                                                       #     }                                                     #
-	####################################	・Largest key is a[1], which is root of binary tree.     ・Exchange key in parent with key in larger child.                                               #     private void swim(int k)                              #   
-    #  i 	 0 1 2 3 4 5 6 7 8 9 10 11 #	・Can use array indices to move through tree.            ・Repeat until heap order restored.                                                              #     private void sink(int k) { /* see previous code */    # 
-    # a[i] -   T S R P N O A E I H  G  #	・Parent of node at k is at k/2.                         ########################################	Delete the maximum in a heap 	                    #     }                                                     #                             
-    #          T                       #	・Children of node at k are at 2k and 2k+1.              # private void sink(int k) {           #    Exchange root with node at end, then sink it down.  #     private boolean less(int i, int j) {                  #                                                 
-    # 	         S|R                   #                                                            #     while (2 * k <= N) {             # -->##########################                          #         return pq[i].compareTo(pq[j]) < 0;                #                       
-    # 			     P|N O|A           #                                                            #         int j = 2 * k;               #    # public Key delMax() {  #                          #     }                                                     #                      
-    # 					     E|I  H|G  #                                                            #         if (j < N && less(j, j + 1)) #    #     Key max = pq[1];   #                          #     private void exch(int i, int j) {                     #                      
+    Array representation of a heap-ordered complete binary tree.                                    Solution:                                                                                       #     }                                                     #
+    ####################################    ・Largest key is a[1], which is root of binary tree.     ・Exchange key in parent with key in larger child.                                               #     private void swim(int k)                              #   
+    #  i      0 1 2 3 4 5 6 7 8 9 10 11#    ・Can use array indices to move through tree.            ・Repeat until heap order restored.                                                              #     private void sink(int k) { /* see previous code */    # 
+    # a[i] -   T S R P N O A E I H  G  #    ・Parent of node at k is at k/2.                         ########################################    Delete the maximum in a heap                        #     }                                                     #                             
+    #          T                       #    ・Children of node at k are at 2k and 2k+1.              # private void sink(int k) {           #    Exchange root with node at end, then sink it down.  #     private boolean less(int i, int j) {                  #                                                 
+    #              S|R                 #                                                            #     while (2 * k <= N) {             # -->##########################                          #         return pq[i].compareTo(pq[j]) < 0;                #                       
+    #                  P|N O|A         #                                                            #         int j = 2 * k;               #    # public Key delMax() {  #                          #     }                                                     #                      
+    #                          E|I  H|G#                                                            #         if (j < N && less(j, j + 1)) #    #     Key max = pq[1];   #                          #     private void exch(int i, int j) {                     #                      
     ####################################                                                            #             j ++;                    #    #     exch(1, N --);     #                          #         Key t = pq[i];                                    #
                                                                                                     #                                      #    #     sink(1);           #                          #         pq[i] = pq[j];                                    #
                                                                                                     #         if (!less(k, j))             #    #     pq[N + 1] = null;  #                          #         pq[j] = t;                                        #
@@ -581,9 +581,9 @@ O(n^2) > O(n log n) > O(n) > O(log n) > O(n)
                                                                                                     ########################################
 
 - heapsort
-	・Create max-heap with all N keys.
-	・Repeatedly remove the maximum key.
-	#####################################################################################
+    ・Create max-heap with all N keys.
+    ・Repeatedly remove the maximum key.
+    #####################################################################################
     # public class Heap {                                                               #
     #     public static void sort(Comparable[] a) {                                     #
     #         int N = a.length;                                                         #
@@ -604,15 +604,15 @@ O(n^2) > O(n log n) > O(n) > O(log n) > O(n)
     # }                                                                                 #
     #####################################################################################
 
-- event-driven simulation																													##########################################################################													
-	Simulate the motion of N moving particles that behave according to the laws of elastic collision.                                       # public void simulate() {                                               #
-	Change state only when something happens.                                                                                               #     pq = new MinPQ<Event>();                                           #
-	・Between collisions, particles move in straight-line trajectories.                                                                      #     for (int i = 0; i < N; i ++)                                       # 
-	・Focus only on times when collisions occur.                                                                                             #         predict(particles[i]);                                         # 
-	・Maintain PQ of collision events, prioritized by time.                                                                                  #                                                                        # 
-	・Remove the min = get next collision.                                                                                                   #     pq.insert(new Event(0, null, null));                               # 
-	Collision prediction. Given position, velocity, and radius of a particle,when will it collide next with a wall or another particle?     #     while (!pq.isEmpty()) {                                            #
-	Collision resolution. If collision occurs, update colliding particle(s)according to laws of elastic collisions.                         #         Event event = pq.delMin();                                     #
+- event-driven simulation                                                                                                                   ##########################################################################                                                    
+    Simulate the motion of N moving particles that behave according to the laws of elastic collision.                                       # public void simulate() {                                               #
+    Change state only when something happens.                                                                                               #     pq = new MinPQ<Event>();                                           #
+    ・Between collisions, particles move in straight-line trajectories.                                                                      #     for (int i = 0; i < N; i ++)                                       # 
+    ・Focus only on times when collisions occur.                                                                                             #         predict(particles[i]);                                         # 
+    ・Maintain PQ of collision events, prioritized by time.                                                                                  #                                                                        # 
+    ・Remove the min = get next collision.                                                                                                   #     pq.insert(new Event(0, null, null));                               # 
+    Collision prediction. Given position, velocity, and radius of a particle,when will it collide next with a wall or another particle?     #     while (!pq.isEmpty()) {                                            #
+    Collision resolution. If collision occurs, update colliding particle(s)according to laws of elastic collisions.                         #         Event event = pq.delMin();                                     #
                                                                                                                                             #         if (!event.isValid())                                          #
                                                                                                                                             #             continue;                                                  #
                                                                                                                                             #                                                                        #
@@ -641,12 +641,12 @@ O(n^2) > O(n log n) > O(n) > O(log n) > O(n)
                                                                                                                                             ##########################################################################
 
 - binary search trees
-	A BST is a reference to a root Node.
-	A Node is comprised of four fields:
-		・A Key and a Value.
-		・A reference to the left and right subtree
-	
-##########################################	##################################################################	#############################################	##################################################
+    A BST is a reference to a root Node.
+    A Node is comprised of four fields:
+        ・A Key and a Value.
+        ・A reference to the left and right subtree
+    
+##########################################  ##################################################################  #############################################   ##################################################
 # private class Node {                   #  # public class BST < Key extends Comparable<Key>,                #  # public Value get(Key key) {               #   # public void put(Key key, Value val) {          #
 #     private Key key;                   #  # Value > {                                                      #  #     Node x = root;                        #   #     root = put(root, key, val);                #
 #     private Value val;                 #  #     privateNode root;                                          #  #     while (x != null) {                   #   # }                                              #
@@ -669,16 +669,16 @@ O(n^2) > O(n log n) > O(n) > O(log n) > O(n)
 
 - ordered operations in BST
 - deletion in BST
-	##################################################
-	# public void delete(Key key) {                  #
-	#     root = delete(root, key);                  #
-	# }                                              #
-	# private Node delete(Node x, Key key) {         #
-	#     if (x == null)                             #
-	#         return null;                           #
-	#                                                #
-	#     int cmp = key.compareTo(x.key);            #
-	#     if (cmp < 0)                               #
+    ##################################################
+    # public void delete(Key key) {                  #
+    #     root = delete(root, key);                  #
+    # }                                              #
+    # private Node delete(Node x, Key key) {         #
+    #     if (x == null)                             #
+    #         return null;                           #
+    #                                                #
+    #     int cmp = key.compareTo(x.key);            #
+    #     if (cmp < 0)                               #
     #         x.left = delete(x.left, key);          #  <--  search key
     #      else if (cmp > 0)                         #
     #         x.right = delete(x.right, key);        #
@@ -707,10 +707,10 @@ O(n^2) > O(n log n) > O(n) > O(log n) > O(n)
 # week5
 ###############
 
-- 2-3 search trees															insert l		
-	Allow 1 or 2 keys per node.                                             convert 3node to 4node			split 4node - move l to parent	split 4node - move l to parent - the only time when height changes
-	・2-node: one key, two children.         ###########################     ###########################     ###########################     ###########################  
-	・3-node: two keys, three children.      #          +---+          #     #          +---+          #     #          +---+          #     #           +-+           # 
+- 2-3 search trees                                                            insert l        
+    Allow 1 or 2 keys per node.                                             convert 3node to 4node            split 4node - move l to parent    split 4node - move l to parent - the only time when height changes
+    ・2-node: one key, two children.         ###########################     ###########################     ###########################     ###########################  
+    ・3-node: two keys, three children.      #          +---+          #     #          +---+          #     #          +---+          #     #           +-+           # 
                                             #          |e|r|          #     #          |e|r|          #     #          |elr|          #     #           |l|           #
                                             #          +---+          #     #          +---+          #     #          +---+          #     #           +-+           #
                                             #         /  |  \         #     #         /  |  \         #     #         /|   |\         #     #          /   \          #
@@ -728,9 +728,9 @@ O(n^2) > O(n log n) > O(n) > O(log n) > O(n)
 
 
 - red-black BST
-	・Represent 2–3 tree as a BST.								search											representation
-	・Use "internal" left-leaning links as "glue" for 3–nodes.	##########################################      ##############################################
-	###############		#################                       # public Val get(Key key) {              #      # private static final boolean RED = true;   #
+    ・Represent 2–3 tree as a BST.                                search                                            representation
+    ・Use "internal" left-leaning links as "glue" for 3–nodes.   ##########################################      ##############################################
+    ###############     #################                       # public Val get(Key key) {              #      # private static final boolean RED = true;   #
     #    +---+    #     #        +-+    #                       #     Node x = root;                     #      # private static final boolean BLACK = false;#
     #    |a|b|    #     #        |b|    #                       #     while (x != null) {                #      # private class Node {                       #
     #    +---+    # ==> #   red  +-+    #                       #         int cmp = key.compareTo(x.key);#      #     Key key;                               #
@@ -743,90 +743,90 @@ O(n^2) > O(n log n) > O(n) > O(log n) > O(n)
                         #        <b     #                       #                                        #      #     if (x == null)                         #
                         #################                       #     }                                  #      #         return false;                      #
                                                                 #     return null;                       #      #                                            #
-	A BST such that:                                            # }                                      #      #     return x.color == RED;                 #
-	・No node has two red links connected to it.                 ##########################################      # }                                          # 
-	・Every path from root to null link has the same number of black links.                                      ############################################## 
-	・Red links lean left.
+    A BST such that:                                            # }                                      #      #     return x.color == RED;                 #
+    ・No node has two red links connected to it.                 ##########################################      # }                                          # 
+    ・Every path from root to null link has the same number of black links.                                      ############################################## 
+    ・Red links lean left.
 
-	Left rotation.																				Right rotation.
-	Orient a (temporarily) right-leaning red link to lean left.                                 Orient a left-leaning red link to (temporarily) lean right.
-	################### 	###################		####################################        ###################		###################		#####################################
-	#      +-+        #     #				  #     # private Node rotateLeft(Node h) {#        #				  #     #      +-+        #     # private Node rotateRight(Node h) {#
-	#      |e|h       #     #        +-+      #     #     assert isRed(h.right);       #        #        +-+      #     #      |e|x       #     #     assert isRed(h.left);         #
-	#      +-+        #     #        |s|x     #     #     Node x = h.right;            #        #        |s|h     #     #      +-+        #     #     Node x = h.left;              #
-	#     /   \red    # --> #        +-+      #     #     h.right = x.left;            #        #        +-+      #     #     /   \red    #     #     h.left = x.right;             #
-	#   <e     +-+    #     #    red/   \     #     #     x.left = h;                  #        #    red/   \     # --> #   <e     +-+    # --> #     x.right = h;                  #
-	#          |s|x   #     #    +-+     >s   #     #     x.color = h.color;           #        #    +-+     >s   #     #          |s|h   #     #     x.color = h.color;            #
-	#          +-+    #     #    |e|h         #     #     h.color = RED;               #        #    |e|x         #     #          +-+    #     #     h.color = RED;                #
-	#         /   \   #     #    +-+          #     #     return x;                    #        #    +-+          #     #         /   \   #     #     return x;                     #
-	#       <s     >s #     #   /   \         #     # }                                #        #   /   \         #     #       <s     >s #     # }                                 #
-	#       >e        #     # <e     <s       #     ####################################        # <e     <s       #     #       >e        #     #####################################
-	###################     #        >e       #                                                 #        >e       #     ###################
-	                        ###################                                                 ###################
-	
-	Color flip. Recolor to split a (temporary) 4-node.
-	#################     #################			##################################### 
-	#       |       #	  #       |red    #         # private void flipColors(Node h) { #
-	#      +++      #     #      +++      #         #     assert !isRed(h);             #
-	#      |e|      #     #      |e|      #         #     assert isRed(h.left);         #
-	#      +-+      # --> #      +-+      #         #     assert isRed(h.right);        #
-	#  red/   \red  #     #     /   \     #         #     h.color = RED;                #
-	#  +-+     +-+  #     #  +-+     +-+  #         #     h.left.color = BLACK;         #
-	#  |a|     |s|  #     #  |a|     |s|  #         #     h.right.color = BLACK;        #
-	#  +-+     +-+  #     #  +-+     +-+  #         # }                                 #
-	# /   \   /   \ #     # /   \   /   \ #         ##################################### 
-	#################     #################
-	
-	
-	Insert into a tree with exactly 1 node
-	Left add							Right		  attached new		
-													  with red link		totate left
-	#########	  #############			#########	  #############		############# 
-	#  +-+  #     #      +-+  #         #  +-+  #     #  +-+      #     #      +-+	#
-	#  |b|  # --> #      |b|  #         #  |a|  # --> #  |a|      # --> #      |b|  #
-	#  +-+  #     #      +-+  #         #  +-+  #     #  +-+      #     #      +-+  #
-	# /   \ #     #  red/   \ #         # /   \ #     # /   \red  #     #  red/   \ #
-	#########     #  +-+      #         #########     #      +-+  #     #  +-+      #
+    Left rotation.                                                                                Right rotation.
+    Orient a (temporarily) right-leaning red link to lean left.                                 Orient a left-leaning red link to (temporarily) lean right.
+    ###################     ###################     ####################################        ###################     ###################     #####################################
+    #      +-+        #     #                 #     # private Node rotateLeft(Node h) {#        #                 #     #      +-+        #     # private Node rotateRight(Node h) {#
+    #      |e|h       #     #        +-+      #     #     assert isRed(h.right);       #        #        +-+      #     #      |e|x       #     #     assert isRed(h.left);         #
+    #      +-+        #     #        |s|x     #     #     Node x = h.right;            #        #        |s|h     #     #      +-+        #     #     Node x = h.left;              #
+    #     /   \red    # --> #        +-+      #     #     h.right = x.left;            #        #        +-+      #     #     /   \red    #     #     h.left = x.right;             #
+    #   <e     +-+    #     #    red/   \     #     #     x.left = h;                  #        #    red/   \     # --> #   <e     +-+    # --> #     x.right = h;                  #
+    #          |s|x   #     #    +-+     >s   #     #     x.color = h.color;           #        #    +-+     >s   #     #          |s|h   #     #     x.color = h.color;            #
+    #          +-+    #     #    |e|h         #     #     h.color = RED;               #        #    |e|x         #     #          +-+    #     #     h.color = RED;                #
+    #         /   \   #     #    +-+          #     #     return x;                    #        #    +-+          #     #         /   \   #     #     return x;                     #
+    #       <s     >s #     #   /   \         #     # }                                #        #   /   \         #     #       <s     >s #     # }                                 #
+    #       >e        #     # <e     <s       #     ####################################        # <e     <s       #     #       >e        #     #####################################
+    ###################     #        >e       #                                                 #        >e       #     ###################
+                            ###################                                                 ###################
+    
+    Color flip. Recolor to split a (temporary) 4-node.
+    #################     #################         ##################################### 
+    #       |       #     #       |red    #         # private void flipColors(Node h) { #
+    #      +++      #     #      +++      #         #     assert !isRed(h);             #
+    #      |e|      #     #      |e|      #         #     assert isRed(h.left);         #
+    #      +-+      # --> #      +-+      #         #     assert isRed(h.right);        #
+    #  red/   \red  #     #     /   \     #         #     h.color = RED;                #
+    #  +-+     +-+  #     #  +-+     +-+  #         #     h.left.color = BLACK;         #
+    #  |a|     |s|  #     #  |a|     |s|  #         #     h.right.color = BLACK;        #
+    #  +-+     +-+  #     #  +-+     +-+  #         # }                                 #
+    # /   \   /   \ #     # /   \   /   \ #         ##################################### 
+    #################     #################
+    
+    
+    Insert into a tree with exactly 1 node
+    Left add                            Right          attached new        
+                                                      with red link        totate left
+    #########     #############         #########     #############     ############# 
+    #  +-+  #     #      +-+  #         #  +-+  #     #  +-+      #     #      +-+  #
+    #  |b|  # --> #      |b|  #         #  |a|  # --> #  |a|      # --> #      |b|  #
+    #  +-+  #     #      +-+  #         #  +-+  #     #  +-+      #     #      +-+  #
+    # /   \ #     #  red/   \ #         # /   \ #     # /   \red  #     #  red/   \ #
+    #########     #  +-+      #         #########     #      +-+  #     #  +-+      #
                   #  |a|      #                       #      |b|  #     #  |a|      #
                   #  +-+      #                       #      +-+  #     #  +-+      #
                   # /   \     #                       #     /   \ #     # /   \     #
                   #############                       #############     #############
 
-	Insert into a tree with 2 nodes
-	・Do standard BST insert; color new link red.
-	・If new red link is a right link, rotate left.
-	Insert C
-	
-	larger		 	  attach c with red	    fliped colors
-	#############	  #################		#################														##################################################
-	#      +-+  #     #      +-+      #     #      +-+      #                                                       # private Node put(Node h, Key key, Value val) { #
-	#      |b|  #     #      |b|      #     #      |b|      #                                                       #     if (h == null)                             #
-	#      +-+  #     #      +-+      #     #      +-+      #                                                       #         return new Node(key, val, RED);        #
-	#  red/   \ # --> #  red/   \red  # --> #     /   \     #                                                       #                                                #
-	#  +-+      #     #  +-+     +-+  #     #  +-+     +-+  #                                                       #     int cmp = key.compareTo(h.key);            #
-	#  |a|      #     #  |a|     |c|  #     #  |a|     |c|  #                                                       #     if (cmp < 0)                               #
-	#  +-+      #     #  +-+     +-+  #     #  +-+     +-+  #                                                       #         h.left = put(h.left, key, val);        #
-	# /   \     #     # /   \   /   \ #     # /   \   /   \ #                                                       #      else if (cmp > 0)                         #
-	#############     #################     #################                                                       #         h.right = put(h.right, key, val);      #
-	                                                                                                                #      else if (cmp == 0)                        #
-	smaller		 	  attach c with red	    rotated right          fliped colors                                    #         h.val = val;                           #
-	#############     #################	    #################	  #################                                 #                                                #
-	#      +-+  #     #          +-+  #     #      +-+      #     #      +-+      #                                 #     if (isRed(h.right) && !isRed(h.left))      #
-	#      |c|  #     #          |c|  #     #      |b|      #     #      |b|      #                                 #         h = rotateLeft(h);                     #
-	#      +-+  #     #          +-+  #     #      +-+      #     #      +-+      #                                 #                                                #
-	#  red/   \ # --> #      red/   \ # --> #  red/   \red  # --> #     /   \     #                                 #     if (isRed(h.left) && isRed(h.left.left))   #
-	#  +-+      #     #      +-+      #     #  +-+     +-+  #     #  +-+     +-+  #                                 #         h = rotateRight(h);                    #
-	#  |b|      #     #      |b|      #     #  |a|     |c|  #     #  |a|     |c|  #                                 #                                                #
-	#  +-+      #     #      +-+      #     #  +-+     +-+  #     #  +-+     +-+  #                                 #     if (isRed(h.left) && isRed(h.right))       #
-	# /   \     #     #  red/   \     #     # /   \   /   \ #     # /   \   /   \ #                                 #         flipColors(h);                         #
-	#############     #  +-+          #     #################     #################                                 #     return h;                                  #
-	                  #  |a|          #                                                                             # }                                              #
-	                  #  +-+          #                                                                             ##################################################
-	                  # /   \         #
-	                  #################
-	
-	between			  attach c with red    rotated left			 rotated right          fliped colors
-	#############     ##############       #################	 #################	  #################
+    Insert into a tree with 2 nodes
+    ・Do standard BST insert; color new link red.
+    ・If new red link is a right link, rotate left.
+    Insert C
+    
+    larger               attach c with red        fliped colors
+    #############     #################     #################                             ##################################################                          
+    #      +-+  #     #      +-+      #     #      +-+      #                             # private Node put(Node h, Key key, Value val) { #                          
+    #      |b|  #     #      |b|      #     #      |b|      #                             #     if (h == null)                             #                          
+    #      +-+  #     #      +-+      #     #      +-+      #                             #         return new Node(key, val, RED);        #                          
+    #  red/   \ # --> #  red/   \red  # --> #     /   \     #                             #                                                #                          
+    #  +-+      #     #  +-+     +-+  #     #  +-+     +-+  #                             #     int cmp = key.compareTo(h.key);            #                          
+    #  |a|      #     #  |a|     |c|  #     #  |a|     |c|  #                             #     if (cmp < 0)                               #                          
+    #  +-+      #     #  +-+     +-+  #     #  +-+     +-+  #                             #         h.left = put(h.left, key, val);        #                          
+    # /   \     #     # /   \   /   \ #     # /   \   /   \ #                             #      else if (cmp > 0)                         #                          
+    #############     #################     #################                             #         h.right = put(h.right, key, val);      #                          
+                                                                                          #      else if (cmp == 0)                        #                          
+    smaller           attach c with red      rotated right        fliped colors           #         h.val = val;                           #                          
+    #############     #################     #################     #################       #                                                #                          
+    #      +-+  #     #          +-+  #     #      +-+      #     #      +-+      #       #     if (isRed(h.right) && !isRed(h.left))      #                          
+    #      |c|  #     #          |c|  #     #      |b|      #     #      |b|      #       #         h = rotateLeft(h);                     #                          
+    #      +-+  #     #          +-+  #     #      +-+      #     #      +-+      #       #                                                #                          
+    #  red/   \ # --> #      red/   \ # --> #  red/   \red  # --> #     /   \     #       #     if (isRed(h.left) && isRed(h.left.left))   #                          
+    #  +-+      #     #      +-+      #     #  +-+     +-+  #     #  +-+     +-+  #       #         h = rotateRight(h);                    #                          
+    #  |b|      #     #      |b|      #     #  |a|     |c|  #     #  |a|     |c|  #       #                                                #                          
+    #  +-+      #     #      +-+      #     #  +-+     +-+  #     #  +-+     +-+  #       #     if (isRed(h.left) && isRed(h.right))       #                          
+    # /   \     #     #  red/   \     #     # /   \   /   \ #     # /   \   /   \ #       #         flipColors(h);                         #                          
+    #############     #  +-+          #     #################     #################       #     return h;                                  #                          
+                      #  |a|          #                                                   # }                                              #                          
+                      #  +-+          #                                                   ##################################################                          
+                      # /   \         #
+                      #################
+    
+    between              attach c with red    rotated left             rotated right          fliped colors
+    #############     ##############       #################     #################      #################
     #      +-+  #     #      +-+   #       #          +-+  #     #      +-+      #     #      +-+      #
     #      |c|  #     #      |c|   #       #          |c|  #     #      |b|      #     #      |b|      #
     #      +-+  #     #      +-+   #       #          +-+  #     #      +-+      #     #      +-+      #
@@ -842,14 +842,14 @@ O(n^2) > O(n log n) > O(n) > O(log n) > O(n)
                       ##############       #################
 
 - B-tree
-	Generalize 2-3 trees by allowing up to M - 1 key-link pairs per node.
-	・At least 2 key-link pairs at root.
-	・At least M / 2 key-link pairs in other nodes.																								
-	・External nodes contain client keys.																							
-	・Internal nodes contain copies of keys to guide search.                                                                         
-	B-tree (M=6)													search e														
-	#######################################################			#######################################################			
-	#                        +---------+                  #         #                        +---------+                  #         
+    Generalize 2-3 trees by allowing up to M - 1 key-link pairs per node.
+    ・At least 2 key-link pairs at root.
+    ・At least M / 2 key-link pairs in other nodes.                                                                                                
+    ・External nodes contain client keys.                                                                                            
+    ・Internal nodes contain copies of keys to guide search.                                                                         
+    B-tree (M=6)                                                    search e                                                        
+    #######################################################         #######################################################            
+    #                        +---------+                  #         #                        +---------+                  #         
     #                        |*|k| | | |                  #         #                        |*|k| | | |                  #         
     #                        +---------+                  #         #                        +---------+                  #         
     #                        /   \                        #         #       e between * and k/   \                        #         
@@ -870,40 +870,40 @@ O(n^2) > O(n log n) > O(n) > O(log n) > O(n)
     # +---------+                             +---------+ #         # +---------+                             +---------+ #         
     #######################################################         #######################################################         
 
-					・Search for new key.
-					・Insert at bottom. 
-	insert a        ・Split nodes with M key-link pairs on the way up the tree.
-	insert a									overflow									splitted but overflowed another one	
-	####################################### 	#######################################		#########################################		####################################################### 
-	#             +---------+             #     #             +---------+             #     #             +---------+               #       #                        +-----+-+-+                  # 
-	#             |*|h|k|q|u|             #     #             |*|h|k|q|u|             #     #     overflow|*|c|h|k|q|u+-----------+ #       #                        |*|k| | | |                  #
-	#             ++-+-+-+-++             #     #             ++-+-+-+-++             #     #             ++-+-+-+-++             | #       #                        +-----+-+-+                  #
-	#              | | | | |              #     #  overflow    | | | | |              #     #  splitted    | | | | |              | #       #                        /   \                        #
-	# +---------+  | | | | |  +---------+ # --> # +---------+  | | | | |  +---------+ # --> # +---------+  | | | | |  +---------+ | # -->   #             +-------+-+     +-------+-+             #
-	# |*|b|c|e|f+--+ | | +----+q|r|t| | | #     # |*|a|b|c|e|f-+ | | +----+q|r|t| | | #     # |*|a|b| | +--+ | | +----+k|m|n|o|p| | #       #             |*|c|h| | |     |k|q|u| | |             #
-	# +---------+    | |   |  +---------+ #     # +---------+    | |   |  +---------+ #     # +---------+    | |   |  +---------+ | #       #             ++-+-+--+-+     ++-+-+--+-+             #
-	#                | |   |              #     #                | |   |              #     #                | |   |              | #       #              | | |           | | |                  #
-	# +---------+    | |   |  +---------+ #     # +---------+    | |   |  +---------+ #     # +---------+    | |   |  +---------+ | #       # +---------+  | | |           | | |      +---------+ #
-	# |h|i|j| | +----+ |   +--+u|w|x| | | #     # |h|i|j| | +----+ |   +--+u|w|x| | | #     # |c|e|f| | +----+ |   +--+q|r|t| | | | #       # |*|a|b| | +--+ | |           +----------+k|m|n|o|p| #
-	# +---------+      |      +---------+ #     # +---------+      |      +---------+ #     # +---------+      |      +---------+ | #       # +---------+    | |             | |      +---------+ #
-	#                  |                  #     #                  |                  #     #                  |                  | #       #                | |             | |                  #
-	# +---------+      |                  #     # +---------+      |                  #     # +---------+      |      +---------+ | #       # +---------+    | |             | |      +---------+ #
-	# |k|m|n|o|p+------+                  #     # |k|m|n|o|p+------+                  #     # |h|i|j| | +------+      |u|w|x| | +-+ #       # |c|e|f| | +----+ |             +--------+q|r|t| | | #
-	# +---------+                         #     # +---------+                         #     # +---------+             +---------+   #       # +---------+      |               |      +---------+ #
-	#######################################     #######################################     #########################################       #                  |               |                  #
-	                                                                                                                                        # +---------+      |               |      +---------+ #
-	                                                                                                                                        # |h|i|j| | +------+               +------+u|w|x| | | #
-	                                                                                                                                        # +---------+                             +---------+ #
+                    ・Search for new key.
+                    ・Insert at bottom. 
+    insert a        ・Split nodes with M key-link pairs on the way up the tree.
+    insert a                                    overflow                                    splitted but overflowed another one    
+    #######################################     #######################################     #########################################       ####################################################### 
+    #             +---------+             #     #             +---------+             #     #             +---------+               #       #                        +-----+-+-+                  # 
+    #             |*|h|k|q|u|             #     #             |*|h|k|q|u|             #     #     overflow|*|c|h|k|q|u+-----------+ #       #                        |*|k| | | |                  #
+    #             ++-+-+-+-++             #     #             ++-+-+-+-++             #     #             ++-+-+-+-++             | #       #                        +-----+-+-+                  #
+    #              | | | | |              #     #  overflow    | | | | |              #     #  splitted    | | | | |              | #       #                        /   \                        #
+    # +---------+  | | | | |  +---------+ # --> # +---------+  | | | | |  +---------+ # --> # +---------+  | | | | |  +---------+ | # -->   #             +-------+-+     +-------+-+             #
+    # |*|b|c|e|f+--+ | | +----+q|r|t| | | #     # |*|a|b|c|e|f-+ | | +----+q|r|t| | | #     # |*|a|b| | +--+ | | +----+k|m|n|o|p| | #       #             |*|c|h| | |     |k|q|u| | |             #
+    # +---------+    | |   |  +---------+ #     # +---------+    | |   |  +---------+ #     # +---------+    | |   |  +---------+ | #       #             ++-+-+--+-+     ++-+-+--+-+             #
+    #                | |   |              #     #                | |   |              #     #                | |   |              | #       #              | | |           | | |                  #
+    # +---------+    | |   |  +---------+ #     # +---------+    | |   |  +---------+ #     # +---------+    | |   |  +---------+ | #       # +---------+  | | |           | | |      +---------+ #
+    # |h|i|j| | +----+ |   +--+u|w|x| | | #     # |h|i|j| | +----+ |   +--+u|w|x| | | #     # |c|e|f| | +----+ |   +--+q|r|t| | | | #       # |*|a|b| | +--+ | |           +----------+k|m|n|o|p| #
+    # +---------+      |      +---------+ #     # +---------+      |      +---------+ #     # +---------+      |      +---------+ | #       # +---------+    | |             | |      +---------+ #
+    #                  |                  #     #                  |                  #     #                  |                  | #       #                | |             | |                  #
+    # +---------+      |                  #     # +---------+      |                  #     # +---------+      |      +---------+ | #       # +---------+    | |             | |      +---------+ #
+    # |k|m|n|o|p+------+                  #     # |k|m|n|o|p+------+                  #     # |h|i|j| | +------+      |u|w|x| | +-+ #       # |c|e|f| | +----+ |             +--------+q|r|t| | | #
+    # +---------+                         #     # +---------+                         #     # +---------+             +---------+   #       # +---------+      |               |      +---------+ #
+    #######################################     #######################################     #########################################       #                  |               |                  #
+                                                                                                                                            # +---------+      |               |      +---------+ #
+                                                                                                                                            # |h|i|j| | +------+               +------+u|w|x| | | #
+                                                                                                                                            # +---------+                             +---------+ #
                                                                                                                                             #######################################################
 
 ###############
 # week6
 ###############
 - separate chaining
-	Use an array of M < N linked lists. [H. P. Luhn, IBM 1953]		###########################################################		###################################################
-	・Hash: map key to integer i between 0 and M - 1.                # public class SeparateChainingHashST<Key, Value> {       #     # public void put(Key key, Value val) {           # 
-	・Insert: put at front of ith chain (if not already there).      #     private int M = 97; // number of chains             #     #     int i = hash(key);                          # 
-	・Search: need to search only ith chain.                         #     private Node[] st = new Node[M]; // array of chains #     #     for (Node x = st[i]; x != null; x = x.next) # 
+    Use an array of M < N linked lists. [H. P. Luhn, IBM 1953]      ###########################################################     ###################################################
+    ・Hash: map key to integer i between 0 and M - 1.                # public class SeparateChainingHashST<Key, Value> {       #     # public void put(Key key, Value val) {           # 
+    ・Insert: put at front of ith chain (if not already there).      #     private int M = 97; // number of chains             #     #     int i = hash(key);                          # 
+    ・Search: need to search only ith chain.                         #     private Node[] st = new Node[M]; // array of chains #     #     for (Node x = st[i]; x != null; x = x.next) # 
                                                                     #     private static class Node {                         #     #         if (key.equals(x.key)) {                #
                                                                     #         private Object key;                             #     #             x.val = val;                        #
                                                                     #         private Object val;                             #     #             return;                             #
@@ -923,11 +923,11 @@ O(n^2) > O(n log n) > O(n) > O(log n) > O(n)
                                                                     #     return null;                                        #
                                                                     # }}                                                      #
                                                                     ###########################################################
-																	
+                                                                    
 - linear probing
-	When a new key collides, find next empty slot, and put it there.######################################################################
-	Hash. Map key to integer i between 0 and M-1.                   # public class LinearProbingHashST<Key, Value> {                     #
-	Insert. Put at table index i if free; if not try i+1, i+2, etc. #     private int M = 30001;                                         #
+    When a new key collides, find next empty slot, and put it there.######################################################################
+    Hash. Map key to integer i between 0 and M-1.                   # public class LinearProbingHashST<Key, Value> {                     #
+    Insert. Put at table index i if free; if not try i+1, i+2, etc. #     private int M = 30001;                                         #
                                                                     #     private Value[] vals = (Value[])new Object[M];                 #
                                                                     #     private Key[] keys = (Key[])new Object[M];                     #
                                                                     #     private int hash(Key key) { /* as before */                    #
