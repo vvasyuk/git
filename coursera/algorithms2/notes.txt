@@ -1345,37 +1345,50 @@
     #      +-+  +-+  +-+       #    ・Faster than hashing (especially for search misses).                                                     #     public Value get(String key) {                                             #
     ############################    ・More flexible than red-black BSTs. [stay tuned]                                                         #         Node x = get(root, key, 0);                                            #
                                                                                                                                              #         if (x == null)  return null;                                           #
-                                                                                                                                             #         return x.val;                                                          #
-                                                                                                                                             #     }                                                                          #
-                                                                                                                                             #     private Node get(Node x, String key, int d) {                              #
-                                                                                                                                             #         if (x == null)  return null;                                           #
-                                                                                                                                             #         char c = key.charAt(d);                                                #
-                                                                                                                                             #         if (c < x.c)  return get(x.left, key, d);                              #
-                                                                                                                                             #         else if (c > x.c)  return get(x.right, key, d);                        #
-                                                                                                                                             #         else if (d < key.length() - 1)  return get(x.mid, key, d + 1);         #
-                                                                                                                                             #         else  return x;                                                        #
-                                                                                                                                             #     }                                                                          #
-                                                                                                                                             # }                                                                              #
-                                                                                                                                             ##################################################################################
+    Ordered iteration                                                                                                                        #         return x.val;                                                          #
+    To iterate through all keys in sorted order:                                                                                             #     }                                                                          #
+      ・Do inorder traversal of trie; add keys encountered to a queue.                                                                        #     private Node get(Node x, String key, int d) {                              #
+      ・Maintain sequence of characters on path from root to node.                                                                            #         if (x == null)  return null;                                           #
+    ###################################################################                                                                      #         char c = key.charAt(d);                                                #
+    # public Iterable<String> keys() {                                #                                                                      #         if (c < x.c)  return get(x.left, key, d);                              #
+    #     Queue<String> queue = new Queue<String>();                  #                                                                      #         else if (c > x.c)  return get(x.right, key, d);                        #
+    #     collect(root, "", queue);                                   #                                                                      #         else if (d < key.length() - 1)  return get(x.mid, key, d + 1);         #
+    #     return queue;                                               #                                                                      #         else  return x;                                                        #
+    # }                                                               #                                                                      #     }                                                                          #
+    # private void collect(Node x, String prefix, Queue<String> q) {  #                                                                      # }                                                                              #
+    #     if (x == null) return;                                      #                                                                      ##################################################################################
+    #     if (x.val != null) q.enqueue(prefix);                       #   
+    #     for (char c = 0; c < R; c ++)                               #   
+    #         collect(x.next[c], prefix + c, q);                      #   
+    #                                                                 #   
+    # }                                                               #   
+    ###################################################################   
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    ############################    Prefix matches in an R-way trie                                 Longest prefix
+    #           +-+            #    ############################################################    Find longest key in symbol table that is a prefix of query string.
+    #           |s|            #    # public Iterable<String> keysWithPrefix(String prefix) {  #    ・Search for query string.
+    #        /--+-+--\         #    #     Queue<String> queue = new Queue<String>();           #    ・Keep track of longest key encountered.
+    #    /---    |    ---\     #    #     Node x = get(root, prefix, 0);                       #    Find longest key in symbol table that is a prefix of query string.
+    # +-+       +|+       +-+  #    #     collect(x, prefix, queue);                           #    ・Search for query string.
+    # |b|       |h|       |t|  #    #     return queue;                                        #    ・Keep track of longest key encountered.
+    # +-+      /+-+       +-+  #    # }                                                        #    ##################################################################
+    #  |      /  |         |   #    ############################################################    # public String longestPrefixOf(String query) {                  #
+    # +-+  +-+  +|+       +-+  #                                                                    #     int length = search(root, query, 0, 0);                    #
+    # |y|4 |e|  |e|0      |h|  #    keysWithPrefix("sh")                                            #     return query.substring(0, length);                         #
+    # +-+  +-+  +-+\      +-+  #    she shells shore                                                # }                                                              #
+    #       |    |  \      |   #                                                                    # private int search(Node x, String query, int d, int length) {  #
+    #      +|+  +|+  +-+  +-+  #                                                                    #     if (x == null)  return length;                             #
+    #      |l|  |l|  |o|  |e|5 #                                                                    #                                                                #
+    #     /+-+  +-+  +-+  +-+  #                                                                    #     if (x.val != null) length = d;                             #
+    #    /  |    |    |        #                                                                    #                                                                #
+    # +-+  +|+  +|+  +|+       #                                                                    #     if (d == query.length()) return length;                    #
+    # |a|  |l|  |l|  |r|       #                                                                    #                                                                #
+    # +-+  +-+  +-+  +-+       #                                                                    #     char c = query.charAt(d);                                  #
+    #       |    |    |        #                                                                    #     return search(x.next[c], query, d + 1, length);            #
+    #      +|+  +|+  +|+       #                                                                    # }                                                              #
+    #      |s|1 |s|3 |e|7      #                                                                    ##################################################################
+    #      +-+  +-+  +-+       #
+    ############################
 
 
 
