@@ -1,14 +1,12 @@
-public String longestPrefixOf(String query) {
-    int length = search(root, query, 0, 0);
-    return query.substring(0, length);
-}
-private int search(Node x, String query, int d, int length) {
-    if (x == null)  return length;
-    
-    if (x.val != null) length = d;
-    
-    if (d == query.length()) return length;
-    
-    char c = query.charAt(d);
-    return search(x.next[c], query, d + 1, length);
+public KMP(String pat) {
+    this.pat = pat;
+    M = pat.length();
+    dfa = new int[R][M];
+    dfa[pat.charAt(0)][0] = 1;
+    for (int X = 0, j = 1; j < M; j ++) {
+        for (int c = 0; c < R; c ++) 
+            dfa[c][j] = dfa[c][X];
+        dfa[pat.charAt(j)][j] = j + 1;
+        X = dfa[pat.charAt(j)][X];
+    }
 }

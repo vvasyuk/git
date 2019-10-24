@@ -1390,91 +1390,64 @@
     #      +-+  +-+  +-+       #
     ############################
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+- SUBSTRING SEARCH
+
+    brute force
+	#########################################################
+    # public static int search(String pat, String txt) {    #
+    #     int M = pat.length();                             #
+    #     int N = txt.length();                             #
+    #     for (int i = 0; i <= N - M; i ++) {               #
+    #         int j;                                        #
+    #         for (j = 0; j < M; j ++)                      #
+    #             if (txt.charAt(i + j) != pat.charAt(j))   #
+    #                 break;                                #      index in text where
+    #         if (j == M)                                   #  <-- pattern starts
+    #             return i;                                 #
+    #     }                                                 #
+    #     return N;                                         #  <-- not found
+    # }                                                     #
+    #########################################################
+
+- Knuth-Morris-Pratt
+    Intuition. Suppose we are searching in text for pattern BAAAAAAAAA.
+    ・Suppose we match 5 chars in pattern, with mismatch on 6th char.
+    ・We know previous 6 chars in text are BAAAAB.
+    ・Don't need to back up text pointer!
+
+    Deterministic finite state automaton (DFA)                    Interpretation of Knuth-Morris-Pratt DFA
+    DFA is abstract string-searching machine.                     Q. What is interpretation of DFA state after reading in txt[i]?
+    ・Finite number of states (including start and halt).          A. State = number of characters in pattern that have been matched. <-- (length of longest prefix of pat[] that is a suffix of txt[0..i])
+    ・Exactly one transition for each char in alphabet.            Ex. DFA is in state 3 after reading in txt[0..6].
+    ・Accept if sequence of transitions leads to halt state.	                   i
+                                                                  +-----------------+           +-----------+
+    internal representation                                       |0|1|2|3|4|5|6|7|8|           |0|1|2|3|4|5|
+                j  0 1 2 3 4 5                                    +-----------------+           +-----------+
+				--------------    If in state j reading char c:   |B|C|B|A|A|B|A|C|A|  <-- txt  |A|B|A|B|A|C|  <-- pat
+    pat.charAt(j)  A B A B A C    if j is 6 halt and accept       +-----------------+           +-----------+
+                |A 1 1 3 1 5 1    else move to state dfa[c][j]             * * *                 * * *
+        dfa[][j]|B 0 2 0 4 0 4                                        suffix of txt[0..6]        prefix of pat
+                |C 0 0 0 0 0 6	
+
+    graphical representation                                      Knuth-Morris-Pratt substring search: Java implementation           Constructing the DFA for KMP substring search: Java implementation
+    #########################################################     Key differences from brute-force implementation.                   For each state j:
+    #                                   A                   #     ・Need to precompute dfa[][] from pattern.                           ・Copy dfa[][X] to dfa[][j] for mismatch case. 
+    #                /<---------------------\               #     ・Text pointer i never decrements.                                   ・Set dfa[pat.charAt(j)][j] to j+1 for match case. 
+    #  B C      A   /     A                  \              #                                                                         ・Update X.
+    #  ---     --- /<--------\              B \             #    ##################################################                   ##############################################      How to build DFA from pattern?
+    #  | |     | |/           \           /<--\\            #    # public int search(String txt) {                #                   # public KMP(String pat) {                   #      Mismatch transition. If in state j and next char c != pat.charAt(j),
+    #  v-+ A   v-+ B   +-+ A   +-+ B   +-+ A   +-+ C   +-+  #    #     int i,j,N = txt.length();                  #                   #     this.pat = pat;                        #      then the last j-1 characters of input are pat[1..j-1], followed by c.
+    #  |0|---->|1|---->|2|---->|3|---->|4|---->|5|---->|6|  #    #     for (i = 0, j = 0; i < N && j < M; i ++)   #                   #     M = pat.length();                      #      
+    #  +-+  C  +-+     +-+     +-+     +-+     +-+     +-+  #    #         j = dfa[txt.charAt(i)][j];             #  <-- no backup    #     dfa = new int[R][M];                   #      To compute dfa[c][j]: Simulate pat[1..j-1] on DFA and take transition c.
+    #   \\\<--/  B C  /       /       /                     #    #     if (j == M) return i - M;                  #                   #     dfa[pat.charAt(0)][0] = 1;             #      Running time. Takes only constant time if we maintain state X.
+    #    \\<---------/    C  /       /                      #    #      else return N;                            #                   #     for (int X = 0, j = 1; j < M; j ++) {  #      
+    #     \\<---------------/  B C  /                       #    # }                                              #                   #         for (int c = 0; c < R; c ++)       #      Ex.  dfa['A'][5] = 1;      dfa['B'][5] = 4;      X'= 0                +-----------+
+    #      \<----------------------/                        #    ##################################################                   #             dfa[c][j] = dfa[c][X];         #           from state X,         from state X,         from state X,        |0|1|2|3|4|5|
+    #########################################################	                                                                      #         dfa[pat.charAt(j)][j] = j + 1;     #           take transition 'A'   take transition 'B'   take transition 'C'  +-----------+
+                                                                                                                                      #         X = dfa[pat.charAt(j)][X];         #           = dfa['A'][X]         = dfa['B'][X]         = dfa['C'][X]        |A|B|A|B|A|C|
+                                                                                                                                      #     }                                      #                                                                            +-----------+
+                                                                                                                                      # }                                          #                                                                               * * * *
+                                                                                                                                      ############################################## 
 
 
 
