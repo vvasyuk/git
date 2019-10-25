@@ -1,12 +1,30 @@
-              i ... 2 3 4 5 6 7 ...
-             +---------------------+
-current ^alue     1 4 1 5 9 2 6 5
-    new value       4 1 5 9 2 6 5
-
-                    4 1 5 9 2        current value
-                  + 4 0 0 0 0
-                      1 5 9 2        substract leading digit
-                        * 1 0        multiply by radix
-                    1 5 9 2 0
-                          + 6        add new trailing digit
-                    1 5 9 2 6        new value
+public class RabinKarp {
+    private long patHash; // pattern hash value
+    private int M; // pattern length
+    private long Q; // modulus
+    private int R; // radix
+    private long RM; // R^(M-1) % Q
+    public RabinKarp(String pat) {
+        M = pat.length();
+        R = 256;
+        Q = longRandomPrime();
+        RM = 1;
+        for (int i = 1; i <= M - 1; i ++) 
+            RM = (R * RM) % Q;
+        
+        patHash = hash(pat, M);
+    }
+    private long hash(String key, int M) { /* as before */}
+    public int search(String txt) {
+        int N = txt.length();
+        int txtHash = hash(txt, M);
+        if (patHash == txtHash) return 0;
+        for (int i = M; i < N; i ++) {
+            txtHash = (txtHash + Q - RM * txt.charAt(i - M) % Q) % Q;
+            txtHash = (txtHash * R + txt.charAt(i)) % Q;
+            if (patHash == txtHash) 
+                return i - M + 1;
+        }
+        return N;
+    }
+}

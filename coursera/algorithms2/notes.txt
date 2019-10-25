@@ -1393,7 +1393,7 @@
 - SUBSTRING SEARCH
 
     brute force
-	#########################################################
+    #########################################################
     # public static int search(String pat, String txt) {    #
     #     int M = pat.length();                             #
     #     int N = txt.length();                             #
@@ -1419,7 +1419,7 @@
     DFA is abstract string-searching machine.                     Q. What is interpretation of DFA state after reading in txt[i]?
     ・Finite number of states (including start and halt).          A. State = number of characters in pattern that have been matched. <-- (length of longest prefix of pat[] that is a suffix of txt[0..i])
     ・Exactly one transition for each char in alphabet.            Ex. DFA is in state 3 after reading in txt[0..6].
-    ・Accept if sequence of transitions leads to halt state.	                   i
+    ・Accept if sequence of transitions leads to halt state.                       i
                                                                   +-----------------+           +-----------+
     internal representation                                       |0|1|2|3|4|5|6|7|8|           |0|1|2|3|4|5|
                 j  0 1 2 3 4 5                                    +-----------------+           +-----------+
@@ -1427,7 +1427,7 @@
     pat.charAt(j)  A B A B A C    if j is 6 halt and accept       +-----------------+           +-----------+
                 |A 1 1 3 1 5 1    else move to state dfa[c][j]             * * *                 * * *
         dfa[][j]|B 0 2 0 4 0 4                                        suffix of txt[0..6]        prefix of pat
-                |C 0 0 0 0 0 6	
+                |C 0 0 0 0 0 6    
 
     graphical representation                                      Knuth-Morris-Pratt substring search: Java implementation           Constructing the DFA for KMP substring search: Java implementation
     #########################################################     Key differences from brute-force implementation.                   For each state j:
@@ -1443,7 +1443,7 @@
     #    \\<---------/    C  /       /                      #    #      else return N;                            #                   #     for (int X = 0, j = 1; j < M; j ++) {  #      
     #     \\<---------------/  B C  /                       #    # }                                              #                   #         for (int c = 0; c < R; c ++)       #      Ex.  dfa['A'][5] = 1;      dfa['B'][5] = 4;      X'= 0                +-----------+
     #      \<----------------------/                        #    ##################################################                   #             dfa[c][j] = dfa[c][X];         #           from state X,         from state X,         from state X,        |0|1|2|3|4|5|
-    #########################################################	                                                                      #         dfa[pat.charAt(j)][j] = j + 1;     #           take transition 'A'   take transition 'B'   take transition 'C'  +-----------+
+    #########################################################                                                                          #         dfa[pat.charAt(j)][j] = j + 1;     #           take transition 'A'   take transition 'B'   take transition 'C'  +-----------+
                                                                                                                                       #         X = dfa[pat.charAt(j)][X];         #           = dfa['A'][X]         = dfa['B'][X]         = dfa['C'][X]        |A|B|A|B|A|C|
                                                                                                                                       #     }                                      #                                                                            +-----------+
                                                                                                                                       # }                                          #                                                                               * * * *
@@ -1526,56 +1526,87 @@
     ##############################################                   #################################################    #############################################
     #     pat.charAt(i)                          #                   # pat.charAt()                                  #    # // Compute hash for M-digit key           #
     #   i 0 1 2 3 4                              #                   # i 0 1 2 3 4                                   #    # private long hash(String key, int M) {    #
-	# +------------+                             #                   #   2 6 5 3 5                                   #    #     long h = 0;                           #
-	#     2 6 5 3 5 % 997 = 613                  #                   # 0 2 % 997 = 2                                 #    #     for (int j = 0; j < M; j ++)          #
-	#                                            #                   # 1 2 6 % 997 = (2*10 + 6) % 997 = 26           #    #         h = (R * h + key.charAt(j)) % Q;  #
-	#                                            #                   # 2 2 6 5 % 997 = (26*10 + 5) % 997 = 265       #    #     return h;                             #
-	#                txt.charAt(i)               #                   # 3 2 6 5 3 % 997 = (265*10 + 3) % 997 = 659    #    # }                                         #
-	#  i 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15   #                   # 4 2 6 5 3 5 % 997 = (659*10 + 5) % 997 = 613  #    #############################################
-	# +---------------------------------------+  #                   #################################################
-	#    3 1 4 1 5 9 2 6 5 3 5  8  9  7  9  3    #
-	#  0 3 1 4 1 5 % 997 = 508                   #
-	#  1   1 4 1 5 9 % 997 = 201                 #                   what is -30
-	#  2     4 1 5 9 2 % 997 = 715               #                   ###############################################################################    #################################################################
-	#  3       1 5 9 2 6 % 997 = 971             #                   #  i 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15                                    #    #               i ... 2 3 4 5 6 7 ...                           #
-	#  4         5 9 2 6 5 % 997 = 442           #                   # +---------------------------------------+                                   #    #              +---------------------+                          #
-	#  5           9 2 6 5 3 % 997 = 929         #                   #    3 1 4 1 5 9 2 6 5 3 5  8  9  7  9  3                                     #    # current ^alue     1 4 1 5 9 2 6 5                             #
-	#  6             2 6 5 3 5 % 997 = 613       #                   #  0 3 % 997 = 3                                                              #    #     new value       4 1 5 9 2 6 5                             #
-	##############################################                   #  1 3 1 % 997 = (3*10 + 1) % 997 = 31                                        #    #                                                               #
-	                                                                 #  2 3 1 4 % 997 = (31*10 + 4) % 997 = 314                                    #    #                     4 1 5 9 2        current value            #
-	                                                                 #  3 3 1 4 1 % 997 = (314*10 + 1) % 997 = 150                                 #    #                   + 4 0 0 0 0                                 #
-	                                                                 #  4 3 1 4 1 5 % 997 = (150*10 + 5) % 997 = 508                               #    #                       1 5 9 2        substract leading digit  #
-	                                                                 #  5   1 4 1 5 9 % 997 = ((508 + 3*(997 - 30))*10 + 9) % 997 = 201            #    #                         * 1 0        multiply by radix        #
-	                                                                 #  6     4 1 5 9 2 % 997 = ((201 + 1*(997 - 30))*10 + 2) % 997 = 715          #    #                     1 5 9 2 0                                 #
-	                                                                 #  7       1 5 9 2 6 % 997 = ((715 + 4*(997 - 30))*10 + 6) % 997 = 971        #    #                           + 6        add new trailing digit   #
-	                                                                 #  8         5 9 2 6 5 % 997 = ((971 + 1*(997 - 30))*10 + 5) % 997 = 442      #    #                     1 5 9 2 6        new value                #
-	                                                                 #  9           9 2 6 5 3 % 997 = ((442 + 5*(997 - 30))*10 + 3) % 997 = 929    #    #################################################################
-	                                                                 # 10             2 6 5 3 5 % 997 = ((929 + 9*(997 - 30))*10 + 5) % 997 = 613  #
-	                                                                 ###############################################################################
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+    # +------------+                             #                   #   2 6 5 3 5                                   #    #     long h = 0;                           #
+    #     2 6 5 3 5 % 997 = 613                  #                   # 0 2 % 997 = 2                                 #    #     for (int j = 0; j < M; j ++)          #
+    #                                            #                   # 1 2 6 % 997 = (2*10 + 6) % 997 = 26           #    #         h = (R * h + key.charAt(j)) % Q;  #
+    #                                            #                   # 2 2 6 5 % 997 = (26*10 + 5) % 997 = 265       #    #     return h;                             #
+    #                txt.charAt(i)               #                   # 3 2 6 5 3 % 997 = (265*10 + 3) % 997 = 659    #    # }                                         #
+    #  i 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15   #                   # 4 2 6 5 3 5 % 997 = (659*10 + 5) % 997 = 613  #    #############################################
+    # +---------------------------------------+  #                   #################################################
+    #    3 1 4 1 5 9 2 6 5 3 5  8  9  7  9  3    #
+    #  0 3 1 4 1 5 % 997 = 508                   #
+    #  1   1 4 1 5 9 % 997 = 201                 #                   what is -30
+    #  2     4 1 5 9 2 % 997 = 715               #                   ###############################################################################    #################################################################
+    #  3       1 5 9 2 6 % 997 = 971             #                   #  i 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15                                    #    #               i ... 2 3 4 5 6 7 ...                           #
+    #  4         5 9 2 6 5 % 997 = 442           #                   # +---------------------------------------+                                   #    #              +---------------------+                          #
+    #  5           9 2 6 5 3 % 997 = 929         #                   #    3 1 4 1 5 9 2 6 5 3 5  8  9  7  9  3                                     #    # current ^alue     1 4 1 5 9 2 6 5                             #
+    #  6             2 6 5 3 5 % 997 = 613       #                   #  0 3 % 997 = 3                                                              #    #     new value       4 1 5 9 2 6 5                             #
+    ##############################################                   #  1 3 1 % 997 = (3*10 + 1) % 997 = 31                                        #    #                                                               #
+                                                                     #  2 3 1 4 % 997 = (31*10 + 4) % 997 = 314                                    #    #                     4 1 5 9 2        current value            #
+                                                                     #  3 3 1 4 1 % 997 = (314*10 + 1) % 997 = 150                                 #    #                   + 4 0 0 0 0                                 #
+                                                                     #  4 3 1 4 1 5 % 997 = (150*10 + 5) % 997 = 508                               #    #                       1 5 9 2        substract leading digit  #
+                                                                     #  5   1 4 1 5 9 % 997 = ((508 + 3*(997 - 30))*10 + 9) % 997 = 201            #    #                         * 1 0        multiply by radix        #
+                                                                     #  6     4 1 5 9 2 % 997 = ((201 + 1*(997 - 30))*10 + 2) % 997 = 715          #    #                     1 5 9 2 0                                 #
+                                                                     #  7       1 5 9 2 6 % 997 = ((715 + 4*(997 - 30))*10 + 6) % 997 = 971        #    #                           + 6        add new trailing digit   #
+                                                                     #  8         5 9 2 6 5 % 997 = ((971 + 1*(997 - 30))*10 + 5) % 997 = 442      #    #                     1 5 9 2 6        new value                #
+                                                                     #  9           9 2 6 5 3 % 997 = ((442 + 5*(997 - 30))*10 + 3) % 997 = 929    #    #################################################################
+                                                                     # 10             2 6 5 3 5 % 997 = ((929 + 9*(997 - 30))*10 + 5) % 997 = 613  #
+                                                                     ###############################################################################
+    
+    Rabin-Karp: Java implementation
+    ##########################################################################
+    # public class RabinKarp {                                               #
+    #     private long patHash; // pattern hash value                        #
+    #     private int M; // pattern length                                   #
+    #     private long Q; // modulus                                         #
+    #     private int R; // radix                                            #
+    #     private long RM; // R^(M-1) % Q                                    #
+    #     public RabinKarp(String pat) {                                     #
+    #         M = pat.length();                                              #
+    #         R = 256;                                                       #     a large prime
+    #         Q = longRandomPrime();                                         #  <--(but avoid overflow)
+    #         RM = 1;                                                        #
+    #         for (int i = 1; i <= M - 1; i ++)                              #  <--precompute R^M – 1 (mod Q)
+    #             RM = (R * RM) % Q;                                         #
+    #                                                                        #
+    #         patHash = hash(pat, M);                                        #
+    #     }                                                                  #
+    #     private long hash(String key, int M) { /* as before */}            #
+    #     public int search(String txt) {                                    #  <--check for hash collision
+    #         int N = txt.length();                                          #     using rolling hash function
+    #         int txtHash = hash(txt, M);                                    #
+    #         if (patHash == txtHash) return 0;                              #
+    #         for (int i = M; i < N; i ++) {                                 #
+    #             txtHash = (txtHash + Q - RM * txt.charAt(i - M) % Q) % Q;  #
+    #             txtHash = (txtHash * R + txt.charAt(i)) % Q;               #
+    #             if (patHash == txtHash)                                    #
+    #                 return i - M + 1;                                      #
+    #         }                                                              #
+    #         return N;                                                      #
+    #     }                                                                  #
+    # }                                                                      #
+    ##########################################################################
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
 
