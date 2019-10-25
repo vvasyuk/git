@@ -1,12 +1,12 @@
-public KMP(String pat) {
-    this.pat = pat;
-    M = pat.length();
-    dfa = new int[R][M];
-    dfa[pat.charAt(0)][0] = 1;
-    for (int X = 0, j = 1; j < M; j ++) {
-        for (int c = 0; c < R; c ++) 
-            dfa[c][j] = dfa[c][X];
-        dfa[pat.charAt(j)][j] = j + 1;
-        X = dfa[pat.charAt(j)][X];
-    }
-}
+              i ... 2 3 4 5 6 7 ...
+             +---------------------+
+current ^alue     1 4 1 5 9 2 6 5
+    new value       4 1 5 9 2 6 5
+
+                    4 1 5 9 2        current value
+                  + 4 0 0 0 0
+                      1 5 9 2        substract leading digit
+                        * 1 0        multiply by radix
+                    1 5 9 2 0
+                          + 6        add new trailing digit
+                    1 5 9 2 6        new value
