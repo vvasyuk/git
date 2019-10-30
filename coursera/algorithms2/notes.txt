@@ -1686,7 +1686,95 @@
 	+-+   +-+   +-+
     |(|-->|(|-->|A|
     +-+   +-+   +-+
-	
+
+- DATA COMPRESSION
+    Lossless compression and expansion                             Data representation: genomic code
+    Message. Binary data B we want to compress.                    Genome. String over the alphabet { A, C, T, G }.
+    Compress. Generates a "compressed" representation C(B).        Goal. Encode an N-character genome: ATAGATGCATAG ...
+    Expand. Reconstructs original bitstream B.                     Standard ASCII encoding.    Two-bit encoding.
+    Compression ratio. Bits in C(B) / bits in B.                   ・8 bits per char.            ・2 bits per char. 
+    Ex. 50–75% or better compression ratio for natural language    ・8 N bits.                   ・2 N bits. 
+                                                                   
+                                                                   #####################    ################
+                                                                   # char hex binary   #    # char binary  #
+                                                                   # A    41 01000001  #    # A    00      #
+                                                                   # C    43 01000011  #    # C    01      #
+                                                                   # T    54 01010100  #    # T    10      #
+                                                                   # G    47 01000111  #    # G    11      #
+                                                                   #####################    ################
+    
+    Writing binary data                                                                             Three ints (BinaryStdOut)
+    Date representation. Three different ways to represent 12/31/1999.                              BinaryStdOut.write(mobth);
+    A character stream (StdOut)                                                                     BinaryStdOut.write(day);
+    StdOut.print(month + "/" + day + "/" + year);                                                   BinaryStdOut.write(year);
+    00110001001100100010111100110111001100010010111100110001001110010011100100111001  <-- 80 bits   000000000000000000000000000011000000000000000000000000000001111100000000000000000000011111001111  <-- 96 bits
+
+    A 4-bit field, a 5-bit field, and a 12-bit field (BinaryStdOut)
+    BinaryStdOut.write(month, 4);
+    BinaryStdOut.write(day, 5);
+    BinaryStdOut.write(year, 12);
+    110011111011111001111000  <-- 21 bits ( + 3 bits for byte alignment at close)
+
+- run-length coding
+    Run-length encoding
+    Simple type of redundancy in a bitstream. Long runs of repeated bits.
+    0000000000000001111111000000011111111111  <-- 40 bits
+    Representation. 4-bit counts to represent alternating runs of 0s and 1s:
+    15 0s, then 7 1s, then 7 0s, then 11 1s  <-- 16 bits (instead of 40)
+
+    Run-length encoding: Java implementation
+    ####################################################                                            #############################################
+    # public class RunLength {                         #                                            # public static void compress() {           #
+    #     private final static int R = 256;            #  <--maximum run-length count               #     char cnt = 0;                         #
+    #     private final static int lgR = 8;            #  <--number of bits per count               #     boolean b,                            #
+    #     public static void compress() {              #                                            #     old = false;                          #
+    #         /* see next pic */                       #                                            #     while (!BinaryStdIn.isEmpty()) {      #
+    #     }                                            #                                            #         b = BinaryStdIn.readBoolean();    #
+    #     public static void expand() {                #                                            #         if (b != old) {                   #
+    #         boolean bit = false;                     #                                            #             BinaryStdOut.write(cnt);      #
+    #         while (!BinaryStdIn.isEmpty()) {         #                                            #             cnt = 0;                      #
+    #             int run = BinaryStdIn.readInt(lgR);  #  <--read 8-bit count from standard input   #             old = !old;                   #
+    #             for (int i = 0; i < run; i ++)       #                                            #         } else {                          #
+    #                 BinaryStdOut.write(bit);         #  <--write 1 bit to standard output         #             if (cnt == 255) {             #
+    #                                                  #                                            #                 BinaryStdOut.write(cnt);  #
+    #             bit = !bit;                          #                                            #                 cnt = 0;                  #
+    #         }                                        #                                            #                 BinaryStdOut.write(cnt);  #
+    #         BinaryStdOut.close();                    #  <--pad 0s for byte alignment              #             }                             #
+    #     }                                            #                                            #         }                                 #
+    # }                                                #                                            #         cnt ++;                           #
+    ####################################################                                            #     }                                     #
+                                                                                                    #     BinaryStdOut.write(cnt);              #
+                                                                                                    #     BinaryStdOut.close();                 #
+                                                                                                    # }                                         #
+                                                                                                    #############################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	
 ###############
 # week6
