@@ -1,22 +1,22 @@
-public static void compress() {
-    char cnt = 0;
-    boolean b,
-    old = false;
-    while (!BinaryStdIn.isEmpty()) {
-        b = BinaryStdIn.readBoolean();
-        if (b != old) {
-            BinaryStdOut.write(cnt);
-            cnt = 0;
-            old = !old;
-        } else {
-            if (cnt == 255) {
-                BinaryStdOut.write(cnt);
-                cnt = 0;
-                BinaryStdOut.write(cnt);
-            }
-        }
-        cnt ++;
-    }
-    BinaryStdOut.write(cnt);
-    BinaryStdOut.close();
-}
+###############################################
+# private static void writeTrie(Node x) {     #
+#     if (x.isLeaf()) {                       #
+#         BinaryStdOut.write(true);           #
+#         BinaryStdOut.write(x.ch, 8);        #
+#         return;                             #
+#     }                                       #
+#     BinaryStdOut.write(false);              #
+#     writeTrie(x.left);                      #
+#     writeTrie(x.right);                     #
+# }                                           #
+#                                             #
+# private static Node readTrie() {            #
+#     if (BinaryStdIn.readBoolean()) {        #
+#         char c = BinaryStdIn.readChar(8);   #
+#         return new Node(c, 0, null, null);  #
+#     }                                       #
+#     Node x = readTrie();                    #
+#     Node y = readTrie();                    #
+#     return new Node('\0', 0, x, y);         #
+# }                                           #
+###############################################

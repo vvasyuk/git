@@ -1748,18 +1748,59 @@
                                                                                                     # }                                         #
                                                                                                     #############################################
 
-
-
-
-
-
-
-
-
-
-
-
-
+- Huffman compression
+    Variable-length codes
+    in morse code  ...---... can be sos, v7, IAMIE, EEWNI
+    Q. How do we avoid ambiguity?
+    A. Ensure that no codeword is a prefix of another
+                                            trie representation
+    ###################################     #############################   Compression.
+    # Codeword table                  #     #    +-+                    #   ・Method 1: start at leaf; follow path up to the root; print bits in reverse.
+    # !   101                         #     #    | |                    #   ・Method 2: create ST of key-value pairs
+    # A   0                           #     #   0+-+1                   #   
+    # B   1111                        #     # +-+   \                   #   Expansion.
+    # C   110                         #     # |A|    +-+                #   ・Start at root.
+    # D   100                         #     # +-+    | |                #   ・Go left if bit is 0; go right if 1.
+    # R   1110                        #     #       0+-+1               #   ・If leaf node, print char and return to root
+    #                                 #     #     +-+   \               #
+    # Compressed bitstring            #     #     | |    \              #
+    # 011111110011001000111111100101  #     #    0+-+1    \             #
+    # A    B  RA  CA  DA    B RA   !  #     #  +-+   +-+   \            #
+    ###################################     #  |D|   |!|    +-+         #
+                                            #  +-+   +-+    | |         #
+                                            #              0+-+1        #
+                                            #            +-+   \        #
+                                            #            |C|    +-+     #
+                                            #            +-+    | |     #
+                                            #                  0+-+1    #
+                                            #                +-+   +-+  #
+                                            #                |R|   |B|  #
+                                            #                +-+   +-+  #
+                                            #############################
+    Huffman trie node data type
+    ################################################################    #################################################                                   ###############################################           
+    # private static class Node implements Comparable<Node> {      #    # public void expand() {                        #                                   # private static void writeTrie(Node x) {     #
+    #     private final char ch; // used only for leaf nodes       #    #     Node root = readTrie();                   #  <--read in encoding trie         #     if (x.isLeaf()) {                       #
+    #     private final int freq; // used only for compress        #    #     int N = BinaryStdIn.readInt();            #  <--read in number of chars       #         BinaryStdOut.write(true);           #
+    #     private final Node left,                                 #    #     for (int i = 0; i < N; i ++) {            #                                   #         BinaryStdOut.write(x.ch, 8);        #
+    #     right;                                                   #    #         Node x = root;                        #  <--expand codeword for ith char  #         return;                             #
+    #                                                              #    #         while (!x.isLeaf()) {                 #                                   #     }                                       #
+    #     public Node(char ch, int freq, Node left, Node right) {  #    #             if (!BinaryStdIn.readBoolean())   #                                   #     BinaryStdOut.write(false);              #
+    #         this.ch = ch;                                        #    #                 x = x.left;                   #                                   #     writeTrie(x.left);                      #
+    #         this.freq = freq;                                    #    #              else                             #                                   #     writeTrie(x.right);                     #
+    #         this.left = left;                                    #    #                 x = x.right;                  #                                   # }                                           #
+    #         this.right = right;                                  #    #         }                                     #                                   #                                             #
+    #     }                                                        #    #         BinaryStdOut.write(x.ch, 8);          #                                   # private static Node readTrie() {            #
+    #                                                              #    #     }                                         #                                   #     if (BinaryStdIn.readBoolean()) {        #
+    #     public boolean isLeaf() {                                #    #     BinaryStdOut.close();                     #                                   #         char c = BinaryStdIn.readChar(8);   #
+    #         return left == null && right == null;                #    # }                                             #                                   #         return new Node(c, 0, null, null);  #
+    #     }                                                        #    #################################################                                   #     }                                       #
+    #                                                              #                                                                                        #     Node x = readTrie();                    #
+    #     public int compareTo(Node that) {                        #                                                                                        #     Node y = readTrie();                    #
+    #         return this.freq - that.freq;                        #  <--compare Nodes                                                                      #     return new Node('\0', 0, x, y);         #
+    #     }                                                        #     by frequency                                                                       # }                                           #
+    # }                                                            #                                                                                        ###############################################
+    ################################################################
 
 
 
