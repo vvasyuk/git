@@ -1629,7 +1629,7 @@
     #                                                                         #    Maintain set of all possible states that NFA could be in   
     #                 \                 /-----------\                         #    after reading in the first i text characters               
     #                / v               /             v                        #                                                               
-    # +-+   +-+   +-+   +-+   +-+   +--   +-+   +-+   +-+   +-+    +-+   +-+  #    When no more input characters:                             
+    # +-+   +-+   +-+   +-+   +-+   +-+   +-+   +-+   +-+   +-+    +-+   +-+  #    When no more input characters:                             
     # |(|-->|(|-->|A|-->|*|-->|B|-->|||-->|A|-->|C|-->|)|-->|D|--->|)|-->| |  #    ・Accept if any state reachable is an accept state.         
     # +-+   +-+   +-+   --+   +-+   +-+   +-+   +-+   +-+   +-+    +-+   +-+  #    ・Reject otherwise.                                         
     #          \     ^ /                 ^                                    #                                                               
@@ -1645,9 +1645,9 @@
 	#     private Digraph G; // epsilon transition digraph   #    #     DirectedDFS dfs = new DirectedDFS(G, 0);                #     states reachable from			#     Stack<Integer> ops = new Stack<Integer>();              #																															  
 	#     private int M; // number of states                 #    #     for (int v = 0; v < G.V(); v ++)                        #  <--start by ε-transitions		#     for (int i = 0; i < M; i ++) {                          #																																  
 	#     public NFA(String regexp) {                        #    #         if (dfs.marked(v))                                  # 									#         int lp = i;                                         #																									  
-	#         M = regexp.length();                           #    #             pc.add(v);                                      # 									#         if (re[i] == '(' || re[i] == '|')                   #																									  
+	#         M = regexp.length();                           #    #             pc.add(v);                                      # 									#         if (re[i] == '(' || re[i] == '|')                   #  <--left parentheses and |																								  
 	#         re = regexp.toCharArray();                     #    #     for (int i = 0; i < txt.length(); i ++) {               #  <--states reachable after 		#             ops.push(i);                                    #																																  
-	#         G = buildEpsilonTransitionDigraph();           #    #         Bag<Integer> match = new Bag<Integer>();            #     scanning past txt.charAt(i)	#          else if (re[i] == ')') {                           #																																	  
+	#         G = buildEpsilonTransitionDigraph();           #    #         Bag<Integer> match = new Bag<Integer>();            #     scanning past txt.charAt(i)	#          else if (re[i] == ')') {                           #  <--2-way or																																	  
 	#     }                                                  #    #         for (int v : pc) {                                  #									#             int or = ops.pop();                             #																									  
 	#     public boolean recognizes(String txt) {            #    #             if (v == M) continue;                           #									#             if (re[or] == '|') {                            #																									  
 	#     /* see next slide */                               #    #             if ((re[v] == txt.charAt(i)) || re[v] == '.')   #									#                 lp = ops.pop();                             #																									  
@@ -1656,11 +1656,11 @@
 	#     /* stay tuned */                                   #    #         dfs = new DirectedDFS(G, match);                    #  <--follow ε-transitions			#             } else                                          #																															  
 	#     }                                                  #    #         pc = new Bag<Integer>();                            #									#                 lp = or;                                    #																									  
 	# }                                                      #    #         for (int v = 0; v < G.V(); v ++)                    #									#         }                                                   #																									  
-	##########################################################    #             if (dfs.marked(v))                              #									#         if (i < M - 1 && re[i + 1] == '*') {                #																									  
-	                                                              #                 pc.add(v);                                  #									#             G.addEdge(lp, i + 1);                           #																									  
+	##########################################################    #             if (dfs.marked(v))                              #									#         if (i < M - 1 && re[i + 1] == '*') {                #  <--closure																									  
+	                                                              #                 pc.add(v);                                  #									#             G.addEdge(lp, i + 1);                           #	    (needs 1-character lookahead)																								  
 	                                                              #     }                                                       #									#             G.addEdge(i + 1, lp);                           #																									  
 	                                                              #     for (int v : pc)                                        #  <--accept if can end in state M	#         }                                                   #																																	  
-	                                                              #         if (v == M) return true;                            #									#         if (re[i] == '(' || re[i] == '*' || re[i] == ')')   #																									  
+	                                                              #         if (v == M) return true;                            #									#         if (re[i] == '(' || re[i] == '*' || re[i] == ')')   #  <--metasymbols																								  
 	                                                              #     return false;                                           #									#             G.addEdge(i, i + 1);                            #																									  
 	                                                              # }                                                           #									#     }                                                       #																									  
 	                                                              #                                                             #									#     return G;                                               #																									  
@@ -1676,17 +1676,34 @@
     add ε-transition edges for closure/or.
 
     NFA construction: ( ( A * B | A C ) D )
-	Left paranthesis                                    Alphabet symbol
-	-add e-transition to next state                     -Add match transition to next state
-	-push index of state corresponding to ( onto stack  - do one-char lookahead:
-                                                        add e-transition if next char is *
-														
-    stack: 0 1
-	 0     1
-	+-+   +-+   +-+
-    |(|-->|(|-->|A|
-    +-+   +-+   +-+
-
+	Left paranthesis                                    Alphabet symbol                      Right paranthesis:
+	-add e-transition to next state                     -Add match transition to next state  -add e-transition to next state
+	-push index of state corresponding to ( onto stack  - do one-char lookahead:             -pop corresponding ( and possibly intervening |;
+                                                        add e-transition if next char is *   add e-transition edges for it
+                                                                                             - do one-char lookahead:          
+                                                                                             add e-transition if next char is *
+														              (added 5->8, 1->6)
+    stack:0    stack:0 1                     stack:0 1 5              stack:0      stack:
+                               \                 /------------------\ 
+	 0          1           2 / v 3     4     5 /          6     7   v 8
+	+-+        +-+         +-+   +-+   +-+ ` +-+          +-+   +-+   +-+   +-+    +-+   +-+  
+    |(|-->     |(|-->      |A|-->|*|-->|B|-->|||-->       |A|-->|C|-->|)|-->|D|--->|)|-->| |
+    +-+        +-+         +-+   --+   +-+   +-+          +-+   +-+   +-+   +-+    +-+   +-+
+	              \           ^ /                        ^
+	               \           \                        / 
+                    \----------------------------------/  
+                               
+                               
+    Abstract machines, languages, and nondeterminism.
+    ・Basis of the theory of computation.
+    ・Intensively studied since the 1930s.
+    ・Basis of programming languages.
+    
+    Compiler. A program that translates a program to machine code.
+    ・KMP string ⇒ DFA.
+    ・grep RE ⇒ NFA.
+    ・javac Java language ⇒ Java byte code.                               
+                               
 - DATA COMPRESSION
     Lossless compression and expansion                             Data representation: genomic code
     Message. Binary data B we want to compress.                    Genome. String over the alphabet { A, C, T, G }.
@@ -1930,3 +1947,4 @@
 ###############
 # week6
 ###############
+
