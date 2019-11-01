@@ -1887,7 +1887,46 @@
     # }                                                             #
     #################################################################                       
 
-	
+- LZW compression
+    Statistical methods                                                         LZW compression example
+    Static model. Same model for all texts.                                     #####################################################################
+    -Fast.                                                                      # input:      A  B  R  A  C  A  D  A  B  R  A  B  R A   B  R  A     # 
+    -Not optimal: different texts have different statistical properties.        # matches:    A  B  R  A  C  A  D  AB    RA    BR   ABR       A     # 
+    -Ex: ASCII, Morse code.                                                     # value:      41 42 52 41 43 41 44 81    83    82   88        41 80 # 
+    Dynamic model. Generate model based on text.                                #####################################################################
+    -Preliminary pass needed to generate model.                                 codeword table 
+    -Must transmit the model.                                                   ################################################################### 
+    -Ex: Huffman code.                                                          # A  B  C  D  AB  BR  RA  AC  CA  AD  DA  ABR  RAB  BRA  ABRA     # 
+    Adaptive model. Progressively learn and update model as you read text.      # 41 42 43 44 81  82  83  84  85  86  87  88   89   8A   8B       #
+    -More accurate modeling produces better compression.                        ################################################################### 
+    -Decoding must start from beginning.
+    -Ex: LZW.
+
+
+    LZW compression.                                                            ##############################################      LZW compression: Java implementation
+    -Create ST associating W-bit codewords with string keys.                    #                   +-+                      #      ############################################################
+    -Initialize ST with codewords for single-char keys.                         #                   | |                      #      # public static void compress() {                          #
+    -Find longest string s in ST that is a prefix of unscanned part of input.   #        +----------+-+----+-----+-----+     #      #     String input = BinaryStdIn.readString();             #  <--read in input as a string
+    -Write the W-bit codeword associated with s.                                #        |           |     |     |     |     #      #     TST<Integer> st = new TST<Integer>();                #     codewords for single
+    -Add s + c to ST, where c is next char in the input.                        #        v           v     v     v     v     #      #     for (int i = 0; i < R; i ++)                         #  <--char, radix R keys
+    Q. How to represent LZW compression code table?                             #       +-+         +-+   +-+   +-+   +-+    #      #         st.put("" + (                                    #
+    A. A trie to support longest prefix match.                                  #       |A|41       |B|42 |C|43 |D|44 |R|52  #      #         char)i, i);                                      #
+                                                                                #      /+-+\        +-+   +-+   +-+   +-+    #      #                                                          #
+    LZW expansion                                                               #     /  v  \        v     v     v     v     #      #     int code = R + 1;                                    #
+    LZW expansion.                                                              # +-+/  +-+  \+-+   +-+   +-+   +-+   +-+    #      #     while (input.length() > 0) {                         #
+    -Create ST associating string values with W-bit keys.                       # |B|81 |C|84 |D|86 |R|82 |A|85 |A|87 |A|83  #      #         String s = st.longestPrefixOf(input);            #  <--find longest prefix match s
+    -Initialize ST to contain single-char values.                               # +-+   +-+   +-+   +-+   +-+   +-+   +-+    #      #         BinaryStdOut.write(st.get(s), W);                #  <--write W-bit codeword for s
+    -Read a W-bit key.                                                          #  v                 v                 v     #      #         int t = s.length();                              #
+    -Find associated string value in ST and write it out.                       # +-+               +-+               +-+    #      #         if (t < input.length() && code < L)              #
+    -Update ST.                                                                 # |R|88             |A|8A             |B|89  #      #             st.put(input.substring(0, t + 1), code ++);  #  <--add new codeword
+    Q. How to represent LZW expansion code table?                               # +-+               +-+               +-+    #      #                                                          #  <--scan past s in input
+    A. An array of size 2W.                                                     #  v                                         #      #         input = input.substring(t);                      #
+                                                                                # +-+                                        #      #     }                                                    #     write "stop" codeword 
+                                                                                # |A|8B                                      #      #     BinaryStdOut.write(R, W);                            #  <--and close input stream
+                                                                                # +-+                                        #      #     BinaryStdOut.close();                                #
+                                                                                ##############################################      # }                                                        #
+                                                                                                                                    ############################################################
+
 ###############
 # week6
 ###############
