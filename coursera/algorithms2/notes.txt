@@ -1947,4 +1947,55 @@
 ###############
 # week6
 ###############
+- Reduction
+    Def. Problem X reduces to problem Y if you can use an algorithm that solves Y to help solve X.
+    
+    Ex 1. [finding the median reduces to sorting]       Ex 2. [element distinctness reduces to sorting]     Ex.
+    To find the median of N items:                      To solve element distinctness on N items:           ・3-collinear reduces to sorting. [assignment]
+    ・Sort N items.                                       ・Sort N items.                                      ・Finding the median reduces to sorting. 
+    ・Return item in the middle.                          ・Check adjacent pairs for equality.                 ・Element distinctness reduces to sorting. 
+    Cost of solving finding the median. N log N + 1 .   Cost of solving element distinctness. N log N + N.  ・CPM reduces to topological sort. [shortest paths lecture]
+                                                                                                            ・Arbitrage reduces to shortest paths. [shortest paths lecture]
+                                                                                                            ・Burrows-Wheeler transform reduces to suffix sort. [assignment]
+                                                                                                            ・…
+                                                                                                            Mentality. Since I know how to solve Y, can I use that algorithm to solve X ?
+    
+    Convex hull reduces to sorting
+    Sorting. Given N distinct integers, rearrange them in ascending order.
+    Convex hull. Given N points in the plane, identify the extreme points of the convex hull (in counterclockwise order)
+    Proposition. Convex hull reduces to sorting
+    Pf. Graham scan algorithm (see next slide).
+    Graham scan.
+    ・Choose point p with smallest (or largest) y-coordinate.
+    ・Sort points by polar angle with p to get simple polygon.
+    ・Consider points in order, and discard those that would create a clockwise turn. 
+    
+    Shortest paths on edge-weighted graphs and digraphs
+    Proposition. Undirected shortest paths (with nonnegative weights) reduces to directed shortest path.
+    Pf. Replace each undirected edge by two directed edges.
+    Cost of undirected shortest paths. E log V + E.
+    Caveat. Reduction is invalid for edge-weighted graphs with negative weights (even if no negative cycles).
+    
+    Linear-time reductions involving familiar problems
+    sorting                 shortest paths in digraphs                                  maxflow
+    -finding the median     =arbitrage (currency excahnge)                              -network reliability
+    -SPT scheduling         -parallel scheduling (precedence-constrained)               -bipartite matching
+    =element distinctness   -hortest paths in undirected graphs (no negative weights)   -product distribution
+    -convex hull 
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+    
+    
+    
