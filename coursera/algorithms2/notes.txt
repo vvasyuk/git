@@ -2030,19 +2030,19 @@
     -Repeat until optimal.
     
     
-    ################################################    ############################################                                Simplex algorithm: initialization
-    #     +(B,Sh,Sm)                               #    # maximize        Z                        #
-    #     |(0,32)                                  #    #                 13A + 23B -Z= 0          #
-    #     X                                        #    # subject         5A + 15B +Sc= 480        #
-    #     |                                        #    # to the          4A + 4B  +Sh= 160        #
-    #     |         (A,B,Sm)basic feasible solution#    # constraints     35A + 20B+Sm= 1190       #
-    #     |       X (12,28)                        #    ############################################
-    #     |                                        #
-    #     |                                        #    Simplex algorithm: basis
-    #  ale|                                        #    A basis is a subset of m of the n variables.
-    #     |                                        #    Basic feasible solution (BFS).
-    #     |                                        #    -Set n – m nonbasic variables to 0, solve for remaining m variables.
-    #     |                                        #    -Solve m equations in m unknowns.
+    ################################################    ############################################                                
+    #     +(B,Sh,Sm)                               #    # maximize        Z                        #                                  
+    #     |(0,32)                                  #    #                 13A + 23B -Z= 0          #                                
+    #     X                                        #    # subject         5A + 15B +Sc= 480        #                                
+    #     |                                        #    # to the          4A + 4B  +Sh= 160        #                                
+    #     |         (A,B,Sm)basic feasible solution#    # constraints     35A + 20B+Sm= 1190       #                                
+    #     |       X (12,28)                        #    ############################################                                
+    #     |                                        #                                                                                
+    #     |                                        #    Simplex algorithm: basis        
+    #  ale|                                        #    A basis is a subset of m of the n variables.                                
+    #     |                                        #    Basic feasible solution (BFS).                                              
+    #     |                                        #    -Set n – m nonbasic variables to 0, solve for remaining m variables.        
+    #     |                                        #    -Solve m equations in m unknowns.                                           
     #     |                           (A,B,Sc)     #    -If unique and feasible ⇒ BFS.
     #     |                         X (26,14)      #    -BFS ⇔ extreme point.
     #     |                                        #
@@ -2054,9 +2054,41 @@
     #     +                                        #
     ################################################
     
+    Simplex algorithm: initialization                                       Simplex algorithm: pivot 1 (15B)
+    ############################################  basis = { SC, SH, SM }    5A + 15B +Sc= 480                                                                                                   Q. Why pivot on column 2 (corresponding to variable B)?
+    # maximize        Z                        #  A = B = 0                 substitute B = (1/15) (480 – 5A – SC) and add B into the basis                                                      -Its objective function coefficient is positive.
+    #                 13A + 23B -Z= 0          #  Z = 0                     (rewrite 2nd equation, eliminate B in 1st, 3rd, and 4th equations)                                                  (each unit increase in B from 0 increases objective value by $23)
+    # subject         5A + 15B +Sc= 480        #  SC = 480                  ########################################################    basis = { B, SH, SM }                                   -Pivoting on column 1 (corresponding to A) also OK.
+    # to the          4A + 4B  +Sh= 160        #  SH = 160                  # maximize        Z                                    #    A = SC = 0                                              Q. Why pivot on row 2?
+    # constraints     35A + 20B+Sm= 1190       #  SM = 1190                 #                 (16/3)A     - (23/15)SC - Z   = -736 #    Z = 736 (A and SC are 0 so Z = (23*480)/15)=736         -Preserves feasibility by ensuring RHS ≥ 0.
+    ############################################                            # subject         (1/3) A + B + (1/15)SC        = 32   #    B = 32  (A and SC are 0 so B = 32)                      -Minimum ratio rule: min { 480/15, 160/4, 1190/20 }.
+                                                                            # to the          (8/3) A     - (4/15) SC + SH  = 32   #    SH = 32 (A and SC are 0 so SH = 32)
+    Initial basic feasible solution.                                        # constraints     (85/3)A     - (4/3) SC + SM   = 550  #    SM = 550 (A and SC are 0 so SM = 1190=((20*480)/15)=550
+    -Start with slack variables { SC , SH , SM } as the basis.              ########################################################
+    -Set non-basic variables A and B to 0.
+    -3 equations in 3 unknowns yields SC = 480, SH = 160, SM = 1190
+                                                                            Simplex algorithm: pivot 2 (8/3)A                                                                                   Q. When to stop pivoting?
+                                                                            substitute A = (3/8) (32 + (4/15) SC – SH ) and add A into the basis                                                A. When no objective function coefficient is positive.
+                                                                            (rewrite 3rd equation, eliminate A in 1st, 2nd, and 4th equations)                                                  Q. Why is resulting solution optimal?
+                                                                            ##############################################################  basis = { A, B, SM}                                 A. Any feasible solution satisfies current system of equations.
+                                                                            # maximize        Z                                          #  SC=SH=0                                             -In particular: Z = 800 – SC – 2 SH
+                                                                            #                               − SC − 2 SH − Z = -800       #  Z = 800 (SC=SH=0 so 13A+23B where a=12,b=28 is 800) -Thus, optimal objective value Z* ≤ 800 since SC , SH ≥ 0.
+                                                                            # subject              B + (1/10) SC + (1/8) SH = 28         #  B = 28                                              -Current BFS has value 800 ⇒ optimal.
+                                                                            # to the          A −      (1/10) SC + (3/8) SH = 12         #  SH = 12
+                                                                            # constraints            − (25/6) SC − (85/8) SH + SM = 110  #  SM = 110
+                                                                            ##############################################################
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+
     
     
     
