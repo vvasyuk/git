@@ -2030,26 +2030,34 @@
     -Repeat until optimal.
     
     
-    ################################################    ############################################
-    #     +                                        #    # maximize        Z                        #
-    #     |                                        #    #                 13A + 23B -Z= 0          #
+    ################################################    ############################################                                Simplex algorithm: initialization
+    #     +(B,Sh,Sm)                               #    # maximize        Z                        #
+    #     |(0,32)                                  #    #                 13A + 23B -Z= 0          #
     #     X                                        #    # subject         5A + 15B +Sc= 480        #
-    #     |   X                                    #    # to the          4A + 4B  +Sh= 160        #
-    #     |                                        #    # constraints     35A + 20B+Sm= 1190       #
-    #     |           X                            #    ############################################
+    #     |                                        #    # to the          4A + 4B  +Sh= 160        #
+    #     |         (A,B,Sm)basic feasible solution#    # constraints     35A + 20B+Sm= 1190       #
+    #     |       X (12,28)                        #    ############################################
     #     |                                        #
+    #     |                                        #    Simplex algorithm: basis
+    #  ale|                                        #    A basis is a subset of m of the n variables.
+    #     |                                        #    Basic feasible solution (BFS).
+    #     |                                        #    -Set n – m nonbasic variables to 0, solve for remaining m variables.
+    #     |                                        #    -Solve m equations in m unknowns.
+    #     |                           (A,B,Sc)     #    -If unique and feasible ⇒ BFS.
+    #     |                         X (26,14)      #    -BFS ⇔ extreme point.
     #     |                                        #
-    #  ale|                                        #
-    #     |                                        #
-    #     |                                        #
-    #     |                                        #
-    #     |                                        #
-    #     |                         X              #
-    #     |                                        #
-    #     |                                        #
-    #     |                                        #
+    #     | (Sh,Sm,Sc)                             #    (B,Sh,Sm) - B, Sh,Sm in basis - then B=0 and A = 32
+    #     | (0,0)                                  #
     # +---X-------------------------------X-----+  #
-    #     |       beer                             #
-    #     |                                        #
+    #     |       beer                    (A,Sh,Sc)#
+    #     |                               (34,0)   #
     #     +                                        #
     ################################################
+    
+    
+    
+    
+    
+    
+    
+    
