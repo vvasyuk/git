@@ -2078,18 +2078,173 @@
                                                                             # constraints            − (25/6) SC − (85/8) SH + SM = 110  #  SM = 110
                                                                             ##############################################################
     
+- implementations
+    Simplex tableau
+    Encode standard form LP in a single Java 2D array.  initial simplex tableaux    
+    ########################################            +----------------+          +-------+
+    # maximize    Z                        #            |5  15|1 0 0|480 |         m|A| I| b|
+    #             13A + 23B   - Z   = 0    #            |4  4 |0 1 0|160 |          +-------+
+    # subject     5A  + 15B   + SC  = 480  #            |35 20|0 0 1|1190|         i|c| 0| 0|
+    # to the      4A  + 4B    + SH  = 160  #            +----------------+          +-------+
+    # constraints 35A + 20B   + SM  = 1190 #            |13 23|0 0 0|0   |           n  m  1
+    ########################################            +----------------+
+
+    Simplex algorithm transforms initial 2D array into solution.    final simplex tableaux    
+    ##############################################################  +---+-------------+----+    +-------------+
+    # maximize    Z                                              #  |0 1|1/10  1/8   0|28  |    |    |    | x*|
+    #                 − SC − 2 SH − Z =-800                      #  |   |             |    |    +-------------+
+    # subject           B     + (1/10) SC + (1/8) SH = 28        #  |1 0|-1/10 3/8   0|12  |    |<=0 |<=0 |-Z*|
+    # to the      A           − (1/10) SC + (3/8) SH = 12        #  |   |             |    |    +-------------+
+    # constraints             − (25/6) SC − (85/8) SH + SM = 110 #  |0 0|-25/6 -85/8 1|110 |
+    ##############################################################  +----------------------+
+                                                                    |0 0|-1    -2    0|-800|
+                                                                    +---+-------------+----+
+
+    Construct the initial simplex tableau.
+    ###############################################################  +-------+
+    # public class Simplex {                                      # m|A| I| b|
+    #     private double[][] a; // simplex tableaux               #  +-------+
+    #     private int m, n; // M constraints, N variables         # i|c| 0| 0|
+    #     public Simplex(double[][] A, double[] b, double[] c) {  #  +-------+
+    #         m = b.length;                                       #   n  m  1
+    #         n = c.length;                                       #
+    #         a = new double[m + 1][m + n + 1];                   #
+    #         for (int i = 0; i < m; i ++)                        #  <--put A[][] into tableau
+    #             for (int j = 0; j < n; j ++)                    #
+    #                 a[i][j] = A[i][j];                          #
+    #         for (int j = n; j < m + n; j ++)                    #  <--put I[][] into tableau
+    #             a[j - n][j] = 1.0;                              #
+    #         for (int j = 0; j < n; j ++)                        #  <--put c[] into tableau
+    #             a[m][j] = c[j];                                 #
+    #         for (int i = 0; i < m; i ++)                        #  <--put b[] into tableau
+    #             a[i][m + n] = b[i];                             #
+    #     }                                                       #
+    ###############################################################
+
+    Simplex algorithm: Bland's rule                 
+    Find entering column q using Bland's rule:      
+    index of first column whose objective function  
+    coefficient is positive.                                                         0 q   m+n
+                                                                                     +-------+
+    ##########################################                                      0| | | | |
+    # private int bland() {                  #                                       +-------+
+    #     for (int q = 0; q < m + n; q ++)   #     entering column q has positive   p| |+| | |
+    #         if (a[M][q] > 0)               #  <--objective function coefficient    +-------+ 
+    #             return q;                  #                                       | | | | |
+    #     return -1;                         #  <--optimal                           +-------+
+    # }                                      #                                      m| |+| | |
+    ##########################################                                       +-+-+---+
+
+    Find leaving row p using min ratio rule.
+    (Bland's rule: if a tie, choose first such row)
+    ######################################################################                           0 q   m+n
+    # private int minRatioRule(int q) {                                  #                           +-------+
+    #     int p = -1;                                                    #                          0| | | | |
+    #     for (int i = 0; i < m; i ++) {                                 #  <--leaving row           +-------+
+    #         if (a[i][q] <= 0)                                          #  <--consider only        p| |+| | |
+    #             continue;                                              #     positive entries      +-------+
+    #          else if (p == -1)                                         #                           | | | | |
+    #             p = i;                                                 #                           +-------+
+    #          else if (a[i][m + n] / a[i][q] < a[p][m + n] / a[p][q])   #                          m| |+| | |
+    #             p = i;                                                 #  <--row p has min         +-+-+---+
+    #     }                                                              #     ratio so far
+    #     return p;                                                      #
+    # }                                                                  #
+    ######################################################################
+
+    Pivot on element row p, column q.                                                                     Execute the simplex algorithm.
+    ############################################################                             0 q   m+n    #####################################
+    # public void pivot(int p, int q) {                        #                             +-------+    # public void solve() {             #
+    #     for (int i = 0; i <= m; i ++)                        #                            0| | | | |    #     while (true) {                #
+    #         for (int j = 0; j <= m + n; j ++)                #                             +-------+    #         int q = bland();          #  <--entering column q (optimal if -1)
+    #             if (i != p && j != q)                        #  <--scale all entries but  p| |+| | |    #         if (q == -1)              #
+    #                 a[i][j] -= a[p][j] * a[i][q] / a[p][q];  #     row p and column q      +-------+    #             break;                #
+    #     for (int i = 0; i <= m; i ++)                        #                             | | | | |    #         int p = minRatioRule(q);  #  <--leaving row p (unbounded if -1)
+    #         if (i != p)                                      #                             +-------+    #         if (p == -1) ...          #
+    #             a[i][q] = 0.0;                               #  <--zero out column q      m| |+| | |    #         pivot(p, q);              #  <--pivot on row p, column q
+    #     for (int j = 0; j <= m + n; j ++)                    #                             +-+-+---+    #     }                             #
+    #         if (j != q)                                      #                                          # }                                 #
+    #             a[p][j] /= a[p][q];                          #  <--scale row p                          #####################################
+    #     a[p][q] = 1.0;                                       #
+    # }                                                        #
+    ############################################################
+
+- Modeling
+    Linear “programming” (1950s term) = reduction to LP (modern term).
+    -Process of formulating an LP model for a problem.
+    -Solution to LP for a specific problem gives solution to the problem.
+    1. Identify variables.
+    2. Define constraints (inequalities and equations).
+    3. Define objective function.
+    4. Convert to standard form.
+    Examples.
+    -Maxflow.
+    -Shortest paths.
+    -Bipartite matching.
+    -Assignment problem.
+    -2-person zero-sum games.
     
-    
-    
-    
-    
+    Maxflow problem (revisited)
+    Input. Weighted digraph G, single source s and single sink t.
+    Goal. Find maximum flow from s to t.
+    maxfow problem
+    ################    0 1 2.0
+    #     +-+      #    0 2 3.0
+    #     |0|      #    1 3 3.0
+    #     +-+      #    1 4 1.0
+    #   2/   \3    #    2 3 1.0
+    #   v     v    #    2 4 1.0
+    # +-+     +-+  #    3 5 2.0
+    # |1|     |2|  #    4 5 3.0
+    # +-+\   /+-+  #
+    #  |3 \1/1 |1  #
+    #  v   \   v   #
+    # +-+ / \ +-+  #
+    # |3|<   >|4|  #
+    # +-+     +-+  #
+    #    \2  /3    #
+    #     v v      #
+    #     +-+      #
+    #     |5|      #
+    #     +-+      #
+    ################    
     
     
     
     
     
 
+
+
+
+
+
+
+
     
+    
+    
+    
+
+
+    
+
+
+
+
+
+
+
+    
+    
+
+
+
+
+
+
+
+
     
     
     

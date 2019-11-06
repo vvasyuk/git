@@ -1,25 +1,18 @@
-maximize Z
-subject
-to the
-constraints
-− SC − 2 SH − Z = -800
-subject
-to the
-constraints
-B + (1/10) SC + (1/8) SH = 28 subject
-to the
-constraints A − (1/10) SC + (3/8) SH = 12
-subject
-to the
-constraints
-− (25/6) SC − (85/8) SH + SM = 110
-A , B , SC , SH , SM ≥ 0
-
-
-##############################################################
-# maximize        Z                                          #
-#                               − SC − 2 SH − Z = -800       #
-# subject              B + (1/10) SC + (1/8) SH = 28         #
-# to the          A −      (1/10) SC + (3/8) SH = 12         #
-# constraints            − (25/6) SC − (85/8) SH + SM = 110  #
-##############################################################
+    +-+    
+    |0|    
+    +-+    
+  2/   \3  
+  v     v  
++-+     +-+
+|1|     |2|
++-+\   /+-+
+ |3 \1/1 |1
+ v   \   v 
++-+ / \ +-+
+|3|<   >|4|
++-+     +-+
+   \2  /3  
+    v v    
+    +-+    
+    |5|    
+    +-+  
