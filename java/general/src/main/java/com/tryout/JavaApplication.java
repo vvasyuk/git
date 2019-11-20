@@ -1,6 +1,7 @@
 package com.tryout;
 
 import com.tryout.generalPuzzles.divideAndConquer.*;
+import com.tryout.generalPuzzles.general.Hanoi;
 import com.tryout.generalPuzzles.greedy.*;
 import com.tryout.hocon.HoconMapper;
 import com.tryout.jsonMapper.JsonMapper;
@@ -55,7 +56,7 @@ public class JavaApplication {
 
 		// ### regex ###
 //		RegexTest.runRegexTest();
-		RegexTest.runRegexReplaceCommaInsideQuotes();
+//		RegexTest.runRegexReplaceCommaInsideQuotes();
 //		System.out.println("Main ended");
 
 		// ### enum ###
@@ -95,7 +96,7 @@ public class JavaApplication {
 		// ### General Puzzles ###
 		// Hanoi
 		//int[] ar = new int[1]; ar[0]=0;
-		//Hanoi.execute(4, 'a', 'b', 't');
+		Hanoi.execute(3, 'a', 'b', 't');
 
 		// Fibonacci
 		//System.out.println(Fibonacci.execute(8));
