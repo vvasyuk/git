@@ -57,7 +57,7 @@
     # +--------------------+ #        2    T            0           step6 - mark with T came from 0 (check 0)                               #     private void dfs(Graph G, int v) {       #
     #   5  0  0  5  5  3  0  #        3    T            5           step5 - mark with T came from 5 (check 5 4)    both 5 4 already visited #         marked[v] = true;                    #
     #   1        4  6  4  4  #        4    T            6           step3 - mark with T came from 6 (check 5 6 3)                           #         for (int w : G.adj(v))               #
-    #   2           3  0     #        5    T            4           step4 - mark with T came from 4 (check 3 4 0)                           #             if (!marked[w]) {                #
+    #   2           3  0     #        5    T            4           step4 - mark with T came from 4 (check 3 4 0)                           #             if (<=marked[w]) {                #
     #   6                    #        6    T            0           step2 - mark with T came from 0 (check 0 4)                             #                 dfs(G, w);                   #
     ##########################        7    F            -                                                                                   #                 edgeTo[w] = v;               #
                                                                                                                                             #             }                                #
@@ -75,10 +75,10 @@
     graph                                                                                                                                               #         Queue<Integer> q = new Queue<Integer>(); #
     #######################     v    edgeTo[v]   distTo[]                                                                                               #         q.enqueue(s);                            #
     # +-----------------+ #     0    -           0           step1 - add 0 to queue (0), deque 0, add 0`s adj`s to queue that are not marked (2 1 5)    #         marked[s] = true;                        #
-    # | 0| 1| 2| 3| 4| 5| #     1    0           1           step1                                                                                      #         while (!q.isEmpty()) {                   #
+    # | 0| 1| 2| 3| 4| 5| #     1    0           1           step1                                                                                      #         while (<=q.isEmpty()) {                   #
     # +-----------------+ #     2    0           1           step1                                                                                      #             int v = q.dequeue();                 #
     #   5  0  0  5  2  3  #     3    2           2           step2 - deque 2, add 2`s adj`s to queue (1 5 3)                                            #             for (int w : G.adj(v)) {             #
-    #   1     3  4  3  0  #     4    2           2           step1 - add 2`s adj`s to queue (1 5 3 4)                                                   #                 if (!marked[w]) {                #
+    #   1     3  4  3  0  #     4    2           2           step1 - add 2`s adj`s to queue (1 5 3 4)                                                   #                 if (<=marked[w]) {                #
     #   2     4  2        #     5    0           1           step1                                                                                      #                     q.enqueue(w);                #
     #######################                                                                                                                             #                     marked[w] = true;            #
                                                                                                                                                         #                     edgeTo[w] = v;               #
@@ -99,9 +99,9 @@
     #      |0|--\            #      1    T           0        7 visit1: check 0 (cc 0)                          #         marked = new boolean[G.V()];       #  # }                                  #
     #      +-+-\ ---\        #      2    T           0        6 visit2: check 0 (cc 0)                          #         id = new int[G.V()];               #  # private void dfs(Graph G, int v) { #
     #     / \   --\  ---\    #      3    T           0        5 visit3: check 5 4 (cc 0)                        #         for (int v = 0; v < G.V(); v ++) { #  #     marked[v] = true;              #
-    #    |   +-+   +-+   +-+ #      4    T           0        3 visit4: check 5 6 3  (cc 0)                     #             if (!marked[v]) {              #  #     id[v] = count;                 #
+    #    |   +-+   +-+   +-+ #      4    T           0        3 visit4: check 5 6 3  (cc 0)                     #             if (<=marked[v]) {              #  #     id[v] = count;                 #
     #    /   |1|   |2|   |6| #      5    T           0        4 visit5: check 3 4 0 (cc 0)                      #                 dfs(G, v);                 #  #     for (int w : G.adj(v))         #
-    #   |    +-+   +-+   +-+ #      6   T            0        2 visit6: check 0 4 (cc 0)                        #                 count ++;                  #  #         if (!marked[w])            #
+    #   |    +-+   +-+   +-+ #      6   T            0        2 visit6: check 0 4 (cc 0)                        #                 count ++;                  #  #         if (<=marked[w])            #
     #   /                /   #                                                                                  #             }                              #  #             dfs(G, w);             #
     #  |      +-+     +-+    #        To visit a vertex v :                                                     #         }                                  #  #                                    #
     #  /    /-|3|-----|4|    #      ・Mark vertex v as visited.                                                  #     }                                      #  #                                    # 
@@ -179,7 +179,7 @@
     #     private void dfs(Digraph G, int v) {   #      ・Edge = jump.                                                                    ・Directed Euler path. 
     #         marked[v] = true;                  #                                                                                      ・Strongly-connected components.
     #         for (int w : G.adj(v))             #    Reachability application: mark-sweep garbage collector
-    #             if (!marked[w])                #        Every data structure is a digraph.
+    #             if (<=marked[w])                #        Every data structure is a digraph.
     #                 dfs(G, w);                 #      ・Vertex = object.
     #     }                                      #      ・Edge = reference.
     #     public boolean visited(int v) {        #        Roots. Objects known to be directly accessible by program (e.g., stack).
@@ -195,7 +195,7 @@
          - remove the least recently added vertex v                 # String root = "http://www.princeton.edu";      #
          - for each unmarked vertex pointing from v:                # queue.enqueue(root);                           #  <-- start crawling from root website
          add to queue and mark as visited.                          # marked.add(root);                              #  
-                                                                    # while (!queue.isEmpty()) {                     #  
+                                                                    # while (<=queue.isEmpty()) {                     #  
     Q. How to implement multi-source shortest paths algorithm?      #     String v = queue.dequeue();                #  <-- read in raw html from nextwebsite in queue
     A. Use BFS, but initialize by enqueuing all source vertices.    #     StdOut.println(v);                         #  
                                                                     #     In in = new In(v);                         #  
@@ -205,7 +205,7 @@
                                                                     #     Matcher matcher = pattern.matcher(input);  #  
                                                                     #     while (matcher.find()) {                   #  
                                                                     #         String w = matcher.group();            #  
-                                                                    #         if (!marked.contains(w)) {             #  <-- if unmarked, mark it and put on the queue
+                                                                    #         if (<=marked.contains(w)) {             #  <-- if unmarked, mark it and put on the queue
                                                                     #             marked.add(w);                     #
                                                                     #             queue.enqueue(w);                  #
                                                                     #         }                                      #
@@ -238,18 +238,18 @@
     ################################################    applications:
     # public class DepthFirstOrder {               #    Directed cycle detection application: precedence scheduling
     #     private boolean[] marked;                #    Directed cycle detection application: cyclic inheritance (The Java compiler does cycle detection.)
-    #     private Stack<Integer> reversePost;      #    Directed cycle detection application: spreadsheet recalculation (Microsoft Excel does cycle detection (and has a circular reference toolbar!))
+    #     private Stack<Integer> reversePost;      #    Directed cycle detection application: spreadsheet recalculation (Microsoft Excel does cycle detection (and has a circular reference toolbar<=))
     #     public DepthFirstOrder(Digraph G) {      #
     #         reversePost = new Stack<Integer>();  #
     #         marked = new boolean[G.V()];         #
     #         for (int v = 0; v < G.V(); v ++)     #
-    #             if (!marked[v])                  #
+    #             if (<=marked[v])                  #
     #                 dfs(G, v);                   #
     #     }                                        #
     #     private void dfs(Digraph G, int v) {     #
     #         marked[v] = true;                    #
     #         for (int w : G.adj(v))               #
-    #             if (!marked[w])                  #
+    #             if (<=marked[w])                  #
     #                 dfs(G, w);                   #
     #         reversePost.push(v);                 #
     #     }                                        #
@@ -304,7 +304,7 @@
     #         id = new int[G.V()];                                     #
     #         DepthFirstOrder dfs = new DepthFirstOrder(G.reverse());  #
     #         for (int v : dfs.reversePost()) {                        #
-    #             if (!marked[v]) {                                    #
+    #             if (<=marked[v]) {                                    #
     #                 dfs(G, v);                                       #
     #                 count ++;                                        #
     #             }                                                    #
@@ -314,7 +314,7 @@
     #         marked[v] = true;                                        #
     #         id[v] = count;                                           #
     #         for (int w : G.adj(v))                                   #
-    #             if (!marked[w])                                      #
+    #             if (<=marked[w])                                      #
     #                 dfs(G, w);                                       #
     #     }                                                            #
     #     public boolean stronglyConnected(int v, int w) {             #
@@ -444,31 +444,31 @@
     Consider edges in ascending order of weight.
     ・Add next edge to tree T unless doing so would create a cycle.                        sorted wights                                                Kruskal's Algorithm
     ###############################################################################        0-7 0.16            step1  no cycle - add                   #############################################################
-    #                                          0.29!(6)                           #        2-3 0.17            step2  no cycle - add                   # public class KruskalMST {                                 #
+    #                                          0.29<=(6)                           #        2-3 0.17            step2  no cycle - add                   # public class KruskalMST {                                 #
     #                                  ┌·················┐                        #        1-7 0.19            step3  no cycle - add                   #     private Queue<Edge> mst = new Queue<Edge>();          #
     #                                  :                 :                        #        0-2 0.26            step4  no cycle - add                   #     public KruskalMST(EdgeWeightedGraph G) {              #
-    #              ╔═══════╗0.32!(7) ╔═══════╗         ╔═══════╗                  #        5-7 0.28            step5  no cycle - add                   #         MinPQ<Edge> pq = new MinPQ<Edge>();               #  <-- build priority queue
+    #              ╔═══════╗0.32<=(7) ╔═══════╗         ╔═══════╗                  #        5-7 0.28            step5  no cycle - add                   #         MinPQ<Edge> pq = new MinPQ<Edge>();               #  <-- build priority queue
     #           ┌─ ║   5   ║ ······· ║   1   ║ ·┐      ║   3   ║ ···············┐ #        1-3 0.29            step6  cycle - no add                   #         for (Edge e : G.edges())                          #
     #           │  ╚═══════╝         ╚═══════╝  :      ╚═══════╝                : #        1-5 0.32            step7  cycle - no add                   #             pq.insert(e);                                 #
     #           │    │                 │        :        │                      : #        2-7 0.34            step8  cycle - no add                   #                                                           #
-    #           │    │0.28(4)          │0.19(3) :0.36!10 │ 0.17(2)              : #        4-5 0.35            step9  no cycle - add                   #         UF uf = new UF(G.V());                            #
-    #           │    │                 │        :        │                      : #        1-2 0.36            step10 cycle - no add                   #         while (!pq.isEmpty() && mst.size() < G.V() - 1) { #
+    #           │    │0.28(4)          │0.19(3) :0.36<=10 │ 0.17(2)              : #        4-5 0.35            step9  no cycle - add                   #         UF uf = new UF(G.V());                            #
+    #           │    │                 │        :        │                      : #        1-2 0.36            step10 cycle - no add                   #         while (<=pq.isEmpty() && mst.size() < G.V() - 1) { #
     #           │    │      ╔═══════╗  │        :      ╔═══════╗                : #        4-7 0.37            step11 cycle - no add                   #             Edge e = pq.delMin();                         #
     #           │    └───── ║       ║ ─┘        └····· ║       ║                : #        0-4 0.38            step12 cycle - no add                   #             int v = e.either(),                           #  <-- greedily add edges to MST
     #           │           ║       ║                  ║       ║                : #        6-2 0.40            step13 no cycle - add    MST is ready   #             w = e.other(v);                               #
-    #           │0.35(9)    ║       ║      0.34!(8)    ║       ║                : #        3-6 0.52                                                    #             if (!uf.connected(v, w)) {                    #  <-- edge v-w does not create a cycle
+    #           │0.35(9)    ║       ║      0.34<=(8)    ║       ║                : #        3-6 0.52                                                    #             if (<=uf.connected(v, w)) {                    #  <-- edge v-w does not create a cycle
     #           │           ║   7   ║ ················ ║   2   ║                : #        6-0 0.58                                                    #                 uf.union(v, w);                           #  <-- merge sets
     #           │           ║       ║                  ║       ║                : #        6-4 0.93                                                    #                 mst.enqueue(e);                           #  <-- add edges to MST
     #           │           ║       ║       0.26(4)    ║       ║                : #                                                                    #             }                                             #
     #  ┌········┼·········· ║       ║  ┌────────────── ║       ║ ──────┐        : #                                                                    #         }                                                 #
     #  :        │           ╚═══════╝  │               ╚═══════╝       │        : #                                                                    #     }                                                     #
     #  :        │             │      ╔═══════╗  0.58                   │        : #                                                                    #     public Iterable<Edge> edges() {                       #
-    #  :0.37!11 │             └───── ║   0   ║ ···················┐    │0.40(13): #                                                                    #         return mst;                                       #
+    #  :0.37<=11 │             └───── ║   0   ║ ···················┐    │0.40(13): #                                                                    #         return mst;                                       #
     #  :        │            0.16(1) ╚═══════╝                    :    │        : #                                                                    #     }                                                     #
     #  :      ╔═══╗  0.93              :                        ╔═══╗  │        : #                                                                    # }                                                         #
     #  └····· ║ 4 ║ ···················┼······················· ║ 6 ║ ─┘        : #                                                                    #############################################################
     #         ╚═══╝                    :                        ╚═══╝           : #
-    #           :   0.38!12            :                          :   0.52      : #
+    #           :   0.38<=12            :                          :   0.52      : #
     #           └······················┘                          └·············┘ #
     #                                                                             #
     ###############################################################################    
@@ -495,21 +495,21 @@
     #           │           ║       ║                  ║       ║                : #     #         mst = new Queue<Edge>();                          #
     #           │           ║       ║       0.26(3)    ║       ║                : #     #         marked = new boolean[G.V()];                      #
     #  ┌········┼·········· ║       ║  ┌────────────── ║       ║ ──────┐        : #     #         visit(G, 0);                                      #  <-- assume G is connected
-    #  :        │           ╚═══════╝  │               ╚═══════╝       │        : #     #         while (!pq.isEmpty() && mst.size() < G.V() - 1) { #
+    #  :        │           ╚═══════╝  │               ╚═══════╝       │        : #     #         while (<=pq.isEmpty() && mst.size() < G.V() - 1) { #
     #  :        │             │      ╔═══════╗  0.58                   │        : #     #             Edge e = pq.delMin();                         #  <-- repeatedly delete the min weight edge e = v–w from PQ
     #  :0.37    │             └───── ║   0   ║ ···················┐    │0.40(7  : #     #             int v = e.either(),                           #
     #  :        │            0.16(1) ╚═══════╝                    :    │        : #     #             w = e.other(v);                               #
     #  :      ╔═══╗  0.93              :                        ╔═══╗  │        : #     #             if (marked[v] && marked[w]) continue;         #  <-- ignore if both endpoints in T
     #  └····· ║ 4 ║ ···················┼······················· ║ 6 ║ ─┘        : #     #                                                           #
     #         ╚═══╝                    :                        ╚═══╝           : #     #             mst.enqueue(e);                               #  <-- add edge e to tree
-    #           :   0.38               :                          :   0.52      : #     #             if (!marked[v]) visit(G, v);                  #  <-- add v or w to tree
-    #           └······················┘                          └·············┘ #     #             if (!marked[w]) visit(G, w);                  #
+    #           :   0.38               :                          :   0.52      : #     #             if (<=marked[v]) visit(G, v);                  #  <-- add v or w to tree
+    #           └······················┘                          └·············┘ #     #             if (<=marked[w]) visit(G, w);                  #
     #                                                                             #     #         }                                                 #
     ###############################################################################     #     }                                                     #
                                                                                         #     private void visit(WeightedGraph G, int v) {          #
                                                                                         #         marked[v] = true;                                 #  <-- add v to T
                                                                                         #         for (Edge e : G.adj(v))                           #
-                                                                                        #             if (!marked[e.other(v)])                      #
+                                                                                        #             if (<=marked[e.other(v)])                      #
                                                                                         #                 pq.insert(e);                             #  <-- for each edge e = v–w, add to PQ if w not already in T
                                                                                         #     }                                                     #
                                                                                         #     public Iterable<Edge> mst() {return mst;}             #
@@ -561,7 +561,7 @@
      1           5->1 0.32     1.05                                    # }                                                                     #
      2           0->2 0.26     0.26                                    # public Iterable<DirectedEdge> pathTo(int v) {                         #
      3           7->3 0.37     0.97                                    #     Stack<DirectedEdge> path = new Stack<DirectedEdge>();             #
-     4           0->4 0.38     0.38                                    #     for (DirectedEdge e = edgeTo[v]; e != null; e = edgeTo[e.from()]) #
+     4           0->4 0.38     0.38                                    #     for (DirectedEdge e = edgeTo[v]; e <== null; e = edgeTo[e.from()]) #
      5           4->5 0.35     0.73                                    #         path.push(e);                                                 #
      6           3->6 0.52     1.49                                    #     return path;                                                      #
      7           2->7 0.34     0.60                                    # }                                                                     #
@@ -611,7 +611,7 @@
     #   :     :   ╔════════════════╗        7     ║    ║         :             #    #   │     │   ╔════════════════╗        7     ║    ║         :            #     #            distTo[v] = Double.POSITIVE_INFINITY;     #    #             pq.insert(w, distTo[w]);          #
     #   : 9   └·> ║                ║ ···········> ║ 2  ║         : 9           #    #   │ 9   └─> ║                ║ ···········> ║ 2  ║         : 9          #     #        distTo[s] = 0.0;                              #    #      }                                        #
     #   v         ║       7        ║              ║    ║         v             #    #   v         ║       7        ║              ║    ║         v            #     #        pq.insert(s, 0.0);                            #    # }                                             #
-    # ╔════╗  5   ║                ║              ║    ║  11   ╔════════════╗  #    # ╔════╗  5   ║                ║              ║    ║  11   ╔════════════╗ #     #        while (!pq.isEmpty()) {                       #    #################################################
+    # ╔════╗  5   ║                ║              ║    ║  11   ╔════════════╗  #    # ╔════╗  5   ║                ║              ║    ║  11   ╔════════════╗ #     #        while (<=pq.isEmpty()) {                       #    #################################################
     # ║    ║ ···> ║                ║              ║    ║ ····> ║     6      ║  #    # ║    ║ ···> ║                ║              ║    ║ ────> ║     6      ║ #     #            int v = pq.delMin();                      #
     # ║    ║      ╚════════════════╝              ╚════╝       ╚════════════╝  #    # ║    ║      ╚════════════════╝              ╚════╝       ╚════════════╝ #     #            for (DirectedEdge e : G.adj(v))           #
     # ║    ║        :                               ^            ^      ^      #    # ║    ║        :                               ^            ^      ^     #     #                relax(e);                             #
@@ -926,11 +926,11 @@
     #     public FlowNetwork(int V) {             #                                 #     private double value; // value of flow                                  #                             #     Queue<Integer> queue = new Queue<Integer>();                 #
     #         this.V = V;                         #                                 #     public FordFulkerson(FlowNetwork G, int s, int t) {                     #                             #     queue.enqueue(s);                                            #
     #         adj = (Bag<FlowEdge> [])new Bag[V]; #                                 #         value = 0.0;                                                        #                             #     marked[s] = true;                                            #
-    #         for (int v = 0; v < V; v ++)        #                                 #         while (hasAugmentingPath(G, s, t)) {                                #                             #     while (!queue.isEmpty()) {                                   #
+    #         for (int v = 0; v < V; v ++)        #                                 #         while (hasAugmentingPath(G, s, t)) {                                #                             #     while (<=queue.isEmpty()) {                                   #
     #             adj[v] = new Bag<FlowEdge>();   #                                 #             double bottle = Double.POSITIVE_INFINITY;                       #                             #         int v = queue.dequeue();                                 #
-    #     }                                       #                                 #             for (int v = t; v != s; v = edgeTo[v].other(v))                 #  <-- compute                #         for (FlowEdge e : G.adj(v)) {                            #
+    #     }                                       #                                 #             for (int v = t; v <== s; v = edgeTo[v].other(v))                 #  <-- compute                #         for (FlowEdge e : G.adj(v)) {                            #
     #     public void addEdge(FlowEdge e) {       #                                 #                 bottle = Math.min(bottle, edgeTo[v].residualCapacityTo(v)); #      bottleneck capacity    #             int w = e.other(v);                                  #
-    #         int v = e.from();                   #                                 #             for (int v = t; v != s; v = edgeTo[v].other(v))                 #  <-- augment flow           #             if (e.residualCapacityTo(w) > 0 && !marked[w]) {     #  <-- found path from s to win the residual network?
+    #         int v = e.from();                   #                                 #             for (int v = t; v <== s; v = edgeTo[v].other(v))                 #  <-- augment flow           #             if (e.residualCapacityTo(w) > 0 && <=marked[w]) {     #  <-- found path from s to win the residual network?
     #         int w = e.to();                     #                                 #                 edgeTo[v].addResidualFlowTo(v, bottle);                     #                             #                 edgeTo[w] = e;                                   #      save last edge on path to w;
     #         adj[v].add(e);                      #  <--add forward edge            #             value += bottle;                                                #                             #                 marked[w] = true;                                #  <-- mark w;
     #         adj[w].add(e);                      #  <--add backward edge           #         }                                                                   #                             #                 queue.enqueue(w);                                #      add w to the queue
@@ -966,7 +966,7 @@
     # public static String reverse(String s) {       #                      # public static String[] suffixes(String s) { #                     # public static int lcp(String s, String t) {   #
     #     String rev = "";                           #                      #     int N = s.length();                     #                     #     int N = Math.min(s.length(), t.length()); #
     #     for (int i = s.length() - 1; i >= 0; i --) #                      #     String[] suffixes = new String[N];      #                     #     for (int i = 0; i < N; i ++)              #
-    #         rev += s.charAt(i);                    #  <-- quadratic       #     for (int i = 0; i < N; i ++)            #  <-- linear         #         if (s.charAt(i) != t.charAt(i))       #  <-- linear worse
+    #         rev += s.charAt(i);                    #  <-- quadratic       #     for (int i = 0; i < N; i ++)            #  <-- linear         #         if (s.charAt(i) <== t.charAt(i))       #  <-- linear worse
     #                                                #                      #         suffixes[i] = s.substring(i, N);    #                     #             return i;                         #       sublinear typical
     #     return rev;                                #                      #                                             #                     #     return N;                                 #
     # }                                              #                      #     return suffixes;                        #                     # }                                             #
@@ -1112,7 +1112,7 @@
     3-way string quicksort vs. standard quicksort                                    3-way string quicksort vs. MSD string sort
     Standard quicksort.                                                                MSD string sort.
     ・Uses ~ 2N ln N string compares on average.                                         ・Is cache-inefficient.
-    ・Costly for keys with long common prefixes (and this is a common case!)             ・Too much memory storing count[].                                                                                                
+    ・Costly for keys with long common prefixes (and this is a common case<=)             ・Too much memory storing count[].                                                                                                
                                                                                         ・Too much overhead reinitializing count[] and aux[]
     3-way string (radix) quicksort.                                                  
     ・Uses ~ 2N ln N character compares on average for random strings.                3-way string quicksort.         
@@ -1209,7 +1209,7 @@
     characters.
     Worst-case running time. N lg N.
     ・Finishes after lg N phases.
-    ・Can perform a phase in linear time. (!) [ahead]
+    ・Can perform a phase in linear time. (<=) [ahead]
     
     Linearithmic suffix sort example: 
                                                 phase 0                                            phase 1                                        phase 2
@@ -1298,7 +1298,7 @@
     #              |     |     |    +-+  #                                                                                                  #         return x;                                             #    Popular interview question
     #             +++   +++   +++        #                                                                                                  #     }                                                         #    Goal. Design a data structure to perform efficient spell checking.
     #             |l|   |l|   |r|        #                                                                                                  #     public boolean contains(String key) {                     #    Solution. Build a 26-way trie (key = word, value = bit).
-    #             +++   +++   +++        #                                                                                                  #         return get(key) != null;                              #
+    #             +++   +++   +++        #                                                                                                  #         return get(key) <== null;                              #
     #              |     |     |         #                                                                                                  #     }                                                         #
     #             +++   +++   +++        #                                                                                                  #     public Value get(String key) {                            #
     #             |s|1  |l|   |e|7       #                                                                                                  #         Node x = get(root, key, 0);                           #
@@ -1340,7 +1340,7 @@
     # |a|  |l|  |l|  |r|       #    ・Works only for strings (or digital keys).                                                               #         return x;                                                              #
     # +-+  +-+  +-+  +-+       #    ・Only examines just enough key characters.                                                               #     }                                                                          #
     #       |    |    |        #    ・Search miss may involve only a few characters.                                                          #     public boolean contains(String key) {                                      #
-    #      +|+  +|+  +|+       #    ・Supports ordered symbol table operations (plus others!).                                                #         return get(key) != null;                                               #
+    #      +|+  +|+  +|+       #    ・Supports ordered symbol table operations (plus others<=).                                                #         return get(key) <== null;                                               #
     #      |s|1 |s|3 |e|7      #    Bottom line. TSTs are:                                                                                   #     }                                                                          #
     #      +-+  +-+  +-+       #    ・Faster than hashing (especially for search misses).                                                     #     public Value get(String key) {                                             #
     ############################    ・More flexible than red-black BSTs. [stay tuned]                                                         #         Node x = get(root, key, 0);                                            #
@@ -1357,7 +1357,7 @@
     # }                                                               #                                                                      #     }                                                                          #
     # private void collect(Node x, String prefix, Queue<String> q) {  #                                                                      # }                                                                              #
     #     if (x == null) return;                                      #                                                                      ##################################################################################
-    #     if (x.val != null) q.enqueue(prefix);                       #   
+    #     if (x.val <== null) q.enqueue(prefix);                       #   
     #     for (char c = 0; c < R; c ++)                               #   
     #         collect(x.next[c], prefix + c, q);                      #   
     #                                                                 #   
@@ -1379,7 +1379,7 @@
     #       |    |  \      |   #                                                                    # private int search(Node x, String query, int d, int length) {  #
     #      +|+  +|+  +-+  +-+  #                                                                    #     if (x == null)  return length;                             #
     #      |l|  |l|  |o|  |e|5 #                                                                    #                                                                #
-    #     /+-+  +-+  +-+  +-+  #                                                                    #     if (x.val != null) length = d;                             #
+    #     /+-+  +-+  +-+  +-+  #                                                                    #     if (x.val <== null) length = d;                             #
     #    /  |    |    |        #                                                                    #                                                                #
     # +-+  +|+  +|+  +|+       #                                                                    #     if (d == query.length()) return length;                    #
     # |a|  |l|  |l|  |r|       #                                                                    #                                                                #
@@ -1400,7 +1400,7 @@
     #     for (int i = 0; i <= N - M; i ++) {               #
     #         int j;                                        #
     #         for (j = 0; j < M; j ++)                      #
-    #             if (txt.charAt(i + j) != pat.charAt(j))   #
+    #             if (txt.charAt(i + j) <== pat.charAt(j))   #
     #                 break;                                #      index in text where
     #         if (j == M)                                   #  <-- pattern starts
     #             return i;                                 #
@@ -1413,7 +1413,7 @@
     Intuition. Suppose we are searching in text for pattern BAAAAAAAAA.
     ・Suppose we match 5 chars in pattern, with mismatch on 6th char.
     ・We know previous 6 chars in text are BAAAAB.
-    ・Don't need to back up text pointer!
+    ・Don't need to back up text pointer<=
 
     Deterministic finite state automaton (DFA)                    Interpretation of Knuth-Morris-Pratt DFA
     DFA is abstract string-searching machine.                     Q. What is interpretation of DFA state after reading in txt[i]?
@@ -1435,7 +1435,7 @@
     #                /<---------------------\               #     ・Text pointer i never decrements.                                   ・Set dfa[pat.charAt(j)][j] to j+1 for match case. 
     #  B C      A   /     A                  \              #                                                                         ・Update X.
     #  ---     --- /<--------\              B \             #    ##################################################                   ##############################################      How to build DFA from pattern?
-    #  | |     | |/           \           /<--\\            #    # public int search(String txt) {                #                   # public KMP(String pat) {                   #      Mismatch transition. If in state j and next char c != pat.charAt(j),
+    #  | |     | |/           \           /<--\\            #    # public int search(String txt) {                #                   # public KMP(String pat) {                   #      Mismatch transition. If in state j and next char c <== pat.charAt(j),
     #  v-+ A   v-+ B   +-+ A   +-+ B   +-+ A   +-+ C   +-+  #    #     int i,j,N = txt.length();                  #                   #     this.pat = pat;                        #      then the last j-1 characters of input are pat[1..j-1], followed by c.
     #  |0|---->|1|---->|2|---->|3|---->|4|---->|5|---->|6|  #    #     for (i = 0, j = 0; i < N && j < M; i ++)   #                   #     M = pat.length();                      #      
     #  +-+  C  +-+     +-+     +-+     +-+     +-+     +-+  #    #         j = dfa[txt.charAt(i)][j];             #  <-- no backup    #     dfa = new int[R][M];                   #      To compute dfa[c][j]: Simulate pat[1..j-1] on DFA and take transition c.
@@ -1505,7 +1505,7 @@
     align text 'N' with rightmost pattern 'N'      align text 'E' with rightmost pattern 'E' ?              #  B| -1 -1-1-1-1-1-1 -1         #    # for (int j = 0; j < M; j ++)   #    #     for (int i = 0; i <= N - M; i += skip) {                       #
                                                    mismatch character 'E' in pattern: increment i by 1      #  C| -1 -1-1-1-1-1-1 -1         #    #     right[pat.charAt(j)] = j;  #    #         skip = 0;                                                  #
     before       after                             before       after                                       #  D| -1 -1-1-1 3-1-1  3         #    ##################################    #         for (int j = M - 1; j >= 0; j --) {                        #
-           *            *                                 *            *                                    #  E| -1 -1 1 2-1-1 5  5         #                                          #             if (pat.charAt(j) != txt.charAt(i + j)) {              #
+           *            *                                 *            *                                    #  E| -1 -1 1 2-1-1 5  5         #                                          #             if (pat.charAt(j) <== txt.charAt(i + j)) {              #
        +------+     +---------+                       +------+     +---------+                              #  .|                 -1         #    Boyer-Moore skip table computation    #                 skip = Math.max(1, j - right[txt.charAt(i + j)]);  #
     txt|...NLE|  txt|...NLE   |                    txt|...ELE|  txt|...ELE   |                              #  L| -1 -1-1-1-1 4 4  4         #                                          #                 break;                                             #
     pat|NEEDLE|  pat|   NEEDLE|                    pat|NEEDLE|  pat| NEEDLE  |                              #  M| -1 -1-1-1-1-1-1  0         #                                          #             }                                                      #
@@ -1745,16 +1745,16 @@
     #     private final static int R = 256;            #  <--maximum run-length count               #     char cnt = 0;                         #
     #     private final static int lgR = 8;            #  <--number of bits per count               #     boolean b,                            #
     #     public static void compress() {              #                                            #     old = false;                          #
-    #         /* see next pic */                       #                                            #     while (!BinaryStdIn.isEmpty()) {      #
+    #         /* see next pic */                       #                                            #     while (<=BinaryStdIn.isEmpty()) {      #
     #     }                                            #                                            #         b = BinaryStdIn.readBoolean();    #
-    #     public static void expand() {                #                                            #         if (b != old) {                   #
+    #     public static void expand() {                #                                            #         if (b <== old) {                   #
     #         boolean bit = false;                     #                                            #             BinaryStdOut.write(cnt);      #
-    #         while (!BinaryStdIn.isEmpty()) {         #                                            #             cnt = 0;                      #
-    #             int run = BinaryStdIn.readInt(lgR);  #  <--read 8-bit count from standard input   #             old = !old;                   #
+    #         while (<=BinaryStdIn.isEmpty()) {         #                                            #             cnt = 0;                      #
+    #             int run = BinaryStdIn.readInt(lgR);  #  <--read 8-bit count from standard input   #             old = <=old;                   #
     #             for (int i = 0; i < run; i ++)       #                                            #         } else {                          #
     #                 BinaryStdOut.write(bit);         #  <--write 1 bit to standard output         #             if (cnt == 255) {             #
     #                                                  #                                            #                 BinaryStdOut.write(cnt);  #
-    #             bit = !bit;                          #                                            #                 cnt = 0;                  #
+    #             bit = <=bit;                          #                                            #                 cnt = 0;                  #
     #         }                                        #                                            #                 BinaryStdOut.write(cnt);  #
     #         BinaryStdOut.close();                    #  <--pad 0s for byte alignment              #             }                             #
     #     }                                            #                                            #         }                                 #
@@ -1773,7 +1773,7 @@
                                             trie representation
     ###################################     #############################   Compression.
     # Codeword table                  #     #    +-+                    #   ・Method 1: start at leaf; follow path up to the root; print bits in reverse.
-    # !   101                         #     #    | |                    #   ・Method 2: create ST of key-value pairs
+    # <=   101                         #     #    | |                    #   ・Method 2: create ST of key-value pairs
     # A   0                           #     #   0+-+1                   #   
     # B   1111                        #     # +-+   \                   #   Expansion.
     # C   110                         #     # |A|    +-+                #   ・Start at root.
@@ -1782,8 +1782,8 @@
     #                                 #     #     +-+   \               #
     # Compressed bitstring            #     #     | |    \              #
     # 011111110011001000111111100101  #     #    0+-+1    \             #
-    # A    B  RA  CA  DA    B RA   !  #     #  +-+   +-+   \            #
-    ###################################     #  |D|   |!|    +-+         #
+    # A    B  RA  CA  DA    B RA   <=  #     #  +-+   +-+   \            #
+    ###################################     #  |D|   |<=|    +-+         #
                                             #  +-+   +-+    | |         #
                                             #              0+-+1        #
                                             #            +-+   \        #
@@ -1801,8 +1801,8 @@
     #     private final int freq; // used only for compress        #    #     int N = BinaryStdIn.readInt();            #  <--read in number of chars       
     #     private final Node left,                                 #    #     for (int i = 0; i < N; i ++) {            #                                   
     #     right;                                                   #    #         Node x = root;                        #  <--expand codeword for ith char  
-    #                                                              #    #         while (!x.isLeaf()) {                 #                                   
-    #     public Node(char ch, int freq, Node left, Node right) {  #    #             if (!BinaryStdIn.readBoolean())   #                                   
+    #                                                              #    #         while (<=x.isLeaf()) {                 #                                   
+    #     public Node(char ch, int freq, Node left, Node right) {  #    #             if (<=BinaryStdIn.readBoolean())   #                                   
     #         this.ch = ch;                                        #    #                 x = x.left;                   #                                   
     #         this.freq = freq;                                    #    #              else                             #                                   
     #         this.left = left;                                    #    #                 x = x.right;                  #                                   
@@ -1822,7 +1822,7 @@
     Q. How to write the trie?                                         
     A. Write preorder traversal of trie;                Q. How to read in the trie?                         #############################   leaves                                                             
         mark leaf and internal nodes with a bit.        A. Reconstruct from preorder traversal of trie.     #    +-+                    #     |          |         |        |         |      
-    ###############################################     ###############################################     #    |1|                    #     V       A  V       D V       !V       C V       R       B                                         
+    ###############################################     ###############################################     #    |1|                    #     V       A  V       D V       <=V       C V       R       B                                         
     # private static void writeTrie(Node x) {     #     # private static Node readTrie() {            #     #    +-+                    #    01010000010010100010001000010101010000110101010010101000010
     #     if (x.isLeaf()) {                       #     #     if (BinaryStdIn.readBoolean()) {        #     # +-+   \                   #    1         23         4                  5   
     #         BinaryStdOut.write(true);           #     #         char c = BinaryStdIn.readChar(8);   #     # |A|    +-+                #                                           
@@ -1836,7 +1836,7 @@
     ###############################################                                                         #         |4|    \          #                                          
                                                                                                             #         +-+     \         #
                                                                                                             #      +-+   +-+   \        #
-                                                                                                            #      |!|   |C|    +-+     #
+                                                                                                            #      |<=|   |C|    +-+     #
                                                                                                             #      +-+   +-+    |5|     #
                                                                                                             #                   +-+     #
                                                                                                             #                +-+   +-+  #
@@ -1846,18 +1846,18 @@
     
     Huffman algorithm
     -count frequencies for each char
-    input A B R A C A D A B R A !
+    input A B R A C A D A B R A <=
     ch  freq    encode
     A   5       
     B   2
     C   1
     D   1
     R   2
-    !   1
+    <=   1
     
     -build one node for each char
     +-+     +-+     +-+     +-+     +-+     +-+
-    |!|1    |C|1    |D|1    |R|2    |B|2    |A|5
+    |<=|1    |C|1    |D|1    |R|2    |B|2    |A|5
     +-+     +-+     +-+     +-+     +-+     +-+
     
     -merge into single trie with cumulative weight
@@ -1867,22 +1867,22 @@
     #         +-+                 +-+                            +-+                       +-+                B   2       111      #    ・Start with one node corresponding to each char i (with weight freq[i]).                                                                              
     #       0/   \1             0/   \1                        0/   \1                   0/   \1              C   1       1011     #    ・Repeat until single trie formed:                                                                              
     #     +-+     +-+         +-+     +-+                      /     \                 +-+     +-+            D   1       100      #    – select two tries with min weight freq[i] and freq[j]                                                                              
-    #     |!|1    |C|1        |D|1    | |2                    /       \                |A|5    | |7           R   2       110      #    – merge into single trie with weight freq[i] + freq[j]                                                                                        
-    #     +-+     +-+         +-+     +-+                    /         \               +-+     +-+            !   1       1010     #                                                                                  
+    #     |<=|1    |C|1        |D|1    | |2                    /       \                |A|5    | |7           R   2       110      #    – merge into single trie with weight freq[i] + freq[j]                                                                                        
+    #     +-+     +-+         +-+     +-+                    /         \               +-+     +-+            <=   1       1010     #                                                                                  
     #                               0/   \1               +-+           +-+                  0/   \1                               #                                                                                  
     #                             +-+     +-+             | |3          | |4                 /     \                               #                                                                                  
-    #                             |!|1    |C|1            +-+           +-+                 /       \                              #                                                                                  
+    #                             |<=|1    |C|1            +-+           +-+                 /       \                              #                                                                                  
     #                             +-+     +-+           0/   \1       0/   \1              /         \                             #                                                                                  
     #                                                 +-+     +-+   +-+     +-+         +-+           +-+                          #                                                                                  
     #                                                 |D|1    | |2  |R|2    |B|2        | |3          | |4                         #                                                                                  
     #                                                 +-+     +-+   +-+     +-+         +-+           +-+                          #                                                                                  
     #                                                       0/   \1                   0/   \1       0/   \1                        #                                                                                  
     #                                                     +-+     +-+               +-+     +-+   +-+     +-+                      #                                                                                  
-    #                                                     |!|1    |C|1              |D|1    | |2  |R|2    |B|2                     #                                                                                  
+    #                                                     |<=|1    |C|1              |D|1    | |2  |R|2    |B|2                     #                                                                                  
     #                                                     +-+     +-+               +-+     +-+   +-+     +-+                      #                                                                                  
     #                                                                                     0/   \1                                  #                          
     #                                                                                   +-+     +-+                                #               
-    #                                                                                   |!|1    |C|1                               #              
+    #                                                                                   |<=|1    |C|1                               #              
     #                                                                                   +-+     +-+                                #                
     ################################################################################################################################                
                  
@@ -2157,13 +2157,13 @@
     # public void pivot(int p, int q) {                        #                             +-------+    # public void solve() {             #
     #     for (int i = 0; i <= m; i ++)                        #                            0| | | | |    #     while (true) {                #
     #         for (int j = 0; j <= m + n; j ++)                #                             +-------+    #         int q = bland();          #  <--entering column q (optimal if -1)
-    #             if (i != p && j != q)                        #  <--scale all entries but  p| |+| | |    #         if (q == -1)              #
+    #             if (i <== p && j <== q)                        #  <--scale all entries but  p| |+| | |    #         if (q == -1)              #
     #                 a[i][j] -= a[p][j] * a[i][q] / a[p][q];  #     row p and column q      +-------+    #             break;                #
     #     for (int i = 0; i <= m; i ++)                        #                             | | | | |    #         int p = minRatioRule(q);  #  <--leaving row p (unbounded if -1)
-    #         if (i != p)                                      #                             +-------+    #         if (p == -1) ...          #
+    #         if (i <== p)                                      #                             +-------+    #         if (p == -1) ...          #
     #             a[i][q] = 0.0;                               #  <--zero out column q      m| |+| | |    #         pivot(p, q);              #  <--pivot on row p, column q
     #     for (int j = 0; j <= m + n; j ++)                    #                             +-+-+---+    #     }                             #
-    #         if (j != q)                                      #                                          # }                                 #
+    #         if (j <== q)                                      #                                          # }                                 #
     #             a[p][j] /= a[p][q];                          #  <--scale row p                          #####################################
     #     a[p][q] = 1.0;                                       #
     # }                                                        #
@@ -2184,22 +2184,22 @@
     -Assignment problem.
     -2-person zero-sum games.
     
-    Maxflow problem (revisited)
-    Input. Weighted digraph G, single source s and single sink t.
-    Goal. Find maximum flow from s to t.
-    maxfow problem
-    ################    0 1 2.0
-    #     +-+      #    0 2 3.0
-    #     |0|      #    1 3 3.0
-    #     +-+      #    1 4 1.0
-    #   2/   \3    #    2 3 1.0
-    #   v     v    #    2 4 1.0
-    # +-+     +-+  #    3 5 2.0
-    # |1|     |2|  #    4 5 3.0
-    # +-+\   /+-+  #
-    #  |3 \1/1 |1  #
-    #  v   \   v   #
-    # +-+ / \ +-+  #
+    Maxflow problem (revisited)                                     Modeling the maxflow problem as a linear program
+    Input. Weighted digraph G, single source s and single sink t.   Variables. xvw = flow on edge v→w.
+    Goal. Find maximum flow from s to t.                            Constraints. Capacity and flow conservation.
+    maxfow problem                                                  Objective function. Net flow into t
+    ################    0 1 2.0                                     0 <= x 01<=2    (from 0 to 1 cap is 2)
+    #     +-+      #    0 2 3.0                                     0 <= x 02<=3
+    #     |0|      #    1 3 3.0                                     0 <= x 13<=3
+    #     +-+      #    1 4 1.0                                     0 <= x 14<=1    capacity constraints
+    #   2/   \3    #    2 3 1.0                                     0 <= x 23<=1
+    #   v     v    #    2 4 1.0                                     0 <= x 24<=1
+    # +-+     +-+  #    3 5 2.0                                     0 <= x 35<=2
+    # |1|     |2|  #    4 5 3.0                                     0 <= x 45<=3
+    # +-+\   /+-+  #                                                x01=x13+x14     (input should = output 0-1 shoud = 1-3 + 1=4)
+    #  |3 \1/1 |1  #                                                x02=x23+x24     flow conservation
+    #  v   \   v   #                                                x13+x23=x35     constraints
+    # +-+ / \ +-+  #                                                x14+x24=x4
     # |3|<   >|4|  #
     # +-+     +-+  #
     #    \2  /3    #
@@ -2208,6 +2208,19 @@
     #     |5|      #
     #     +-+      #
     ################    
+    
+    
+
+
+
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
