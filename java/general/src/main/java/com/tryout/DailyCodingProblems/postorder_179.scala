@@ -1,13 +1,17 @@
 package com.tryout.DailyCodingProblems
 
 object postorder_179 {
-  case class BSTNode(value: String, var left: BSTNode = null, var right: BSTNode = null)
+  case class N(value: String, var left: N = null, var right: N = null)
 
-  def reconstruct(postorder: List[String]):BSTNode={
-    if(postorder.size==1) return BSTNode(postorder(0))
+  def reconstruct(postorder: List[String]):N={
+    postorder match{
+      case Nil => return null
+      case a::Nil => return N(a)
+      case _ =>
+    }
 
     val rootVal = postorder.last
-    val root = BSTNode(rootVal)
+    val root = N(rootVal)
 
     postorder.init.zipWithIndex.foreach{
       case (v, idx) => {
@@ -20,12 +24,15 @@ object postorder_179 {
         }
       }
     }
-    val leftSubTree = reconstruct(postorder.init)
-    root.left = leftSubTree
-    root
+
+    val lSubTree = reconstruct(postorder.init)
+    root.left = lSubTree
+    return root
   }
 
   def main(args: Array[String]): Unit = {
     println("postorder_179 started")
+    val x = reconstruct(List("2", "4", "3", "8", "7", "5"))
+    println("postorder_179 ended")
   }
 }
