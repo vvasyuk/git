@@ -13,12 +13,40 @@ object palindrome_182 {
     // 2 char palindromes
     for(n <- Range(0,sz-1)){a(n)(n+1) = s(n)==s(n+1)}
 
-    //a.foreach(x=>println(x))
+    var i=0
+    var k=3
+    while(k<=sz){
+      while (i<(sz-k+1)){
+        val j = i + k - 1
+        a(i)(j) = a(i + 1)(j - 1) && s(i) == s(j)
+        i += 1
+      }
+      k += 1
+      i = 0
+    }
+
+
+    val res = ArrayBuffer.fill(sz+1,sz+1)("")
+    res.foreach(println(_))
+    println(res(1)(1).isEmpty)
+    for(
+      i <- Range(0,res.size);
+      j <- Range(0,i)
+    ) {
+      println("i:" + i + " j:" + j)
+      val matrix_i = i - 1
+      if (a(j)(matrix_i)){
+        if (res(i)(0).isEmpty || res(j).size+1 < res(j).size){
+//          res(i) = res(j) + [s[j:i]]
+        }
+      }
+    }
+//    a.foreach(println(_))
   }
 
   def main(args: Array[String]): Unit = {
     println("palindrome_182 started")
-    execute("racecaar")
+    execute("racecar")
   }
 }
 
