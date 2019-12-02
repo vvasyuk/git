@@ -1,16 +1,30 @@
 package com.tryout.DailyCodingProblems
 
 object rectangle_intersection_185 {
-  def execute(): Unit = {
-    null
+  def execute(rec1: rect, rec2: rect): Unit = {
+    val leftBorder = Math.max(rec1.topLeft._1, rec2.topLeft._1)
+    val rightBorder = Math.min(rec1.topLeft._1 + rec1.dimensions._1, rec2.topLeft._1 + rec2.dimensions._1)
+    val topBorder = Math.min(rec1.topLeft._2, rec2.topLeft._2)
+    val bottomBorder = Math.max(rec1.topLeft._2 - rec1.dimensions._2, rec2.topLeft._2 - rec2.dimensions._2)
+
+    if(leftBorder>rightBorder || topBorder<bottomBorder){
+      println("squares are not intersecting")
+    }else{
+      println("square is: " + (rightBorder-leftBorder)*(topBorder-bottomBorder))
+    }
+
+
   }
 
   def main(args: Array[String]): Unit = {
     println("rectangle_intersection_185 started")
-    execute()
+    val rec1 = rect((1,4),(3,3))
+    val rec2 = rect((0,5),(4,3))
+    execute(rec1, rec2)
   }
 }
 
+case class rect(topLeft: (Int, Int), dimensions: (Int,Int))
 //Problem
 //This problem was asked by Google.
 //
