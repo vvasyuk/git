@@ -1,21 +1,6 @@
-//for(
-//  i <- Range(0,5);
-//  j <- Range(0,i)
-//) println("i:" + i + " j:" + j)
+val a = Array(5, 10, 15, 20, 25)
+val b = Array(5)
 
-val a = Array("a", "b", "c")
+val c = a.diff(b)
 
-//println(a)
-//println(a.head)
-//a.init.foreach(println(_))
-//println(a.last)
-//a.tail.foreach(println(_))
-//val x = a.tail
-
-
-def f(inArray: Array[String]):Unit={
-  inArray match{
-    case Array(a) => println("last element")
-    case Array(a,b) => f(inArray.tail)
-  }
-}
+a.sum
