@@ -1,6 +1,6 @@
 package com.tryout.DailyCodingProblems
 
-object postorder_179 {
+object n179_postorder {
   case class N(value: String, var left: N = null, var right: N = null)
 
   def reconstruct(postorder: List[String]):N={

@@ -1,6 +1,6 @@
 package com.tryout.DailyCodingProblems
 
-object max_sum_subarray_of_circular_array_190 {
+object n190_max_sum_subarray_of_circular_array {
   def execute(ints: Array[Int]): Unit = {
     var maxEndingHere = 0
     var maxSoFar = 0

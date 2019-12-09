@@ -2,7 +2,7 @@ package com.tryout.DailyCodingProblems
 
 import scala.collection.mutable.ArrayBuffer
 
-object palindrome_181 {
+object n181_palindrome {
 
   def execute(s:String): Unit ={
     val sz = s.size

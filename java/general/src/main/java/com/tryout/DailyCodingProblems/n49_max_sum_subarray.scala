@@ -1,6 +1,6 @@
 package com.tryout.DailyCodingProblems
 
-object max_sum_subarray_49 {
+object n49_max_sum_subarray {
 
   def execute(ints: Array[Int]): Unit = {
     var maxEndingHere = 0

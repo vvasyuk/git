@@ -2,7 +2,7 @@ package com.tryout.DailyCodingProblems
 
 import scala.collection.mutable.ArrayBuffer
 
-object subsets_combination_min_diff_186 {
+object n186_subsets_combination_min_diff {
   def combinations(inArray: Array[Int], accum: Array[Int], res: ArrayBuffer[Array[Int]], length: Int):Unit={
     if (inArray.nonEmpty){
       val tempAcc = accum:+inArray.head

@@ -1,6 +1,6 @@
 package com.tryout.DailyCodingProblems
 
-object graph_minimally_connected_182 {
+object n182_graph_minimally_connected {
 
   // 1 option to identify that graph is minimally connected is to find if it has cycles (if yes then it is not minimally connected)
   // 2 option is simplier - each vertex must have exactly one edge coming out of it (must be n-1 edges)

@@ -1,6 +1,6 @@
 package com.tryout.DailyCodingProblems
 
-object gcds_184 {
+object n184_gcds {
 
   def execute(seq: Seq[Int]): Unit = {
     //val a = 1

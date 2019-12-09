@@ -1,7 +1,7 @@
 package com.tryout.DailyCodingProblems
 import scala.collection.mutable.Map
 
-object longest_distinct_subarray_189 {
+object n189_longest_distinct_subarray {
 
   def execute(arr:Array[Int]): Unit={
     val m = Map[Int,Int]()
