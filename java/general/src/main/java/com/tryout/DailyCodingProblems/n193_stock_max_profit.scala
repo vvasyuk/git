@@ -2,7 +2,7 @@ package com.tryout.DailyCodingProblems
 
 object n193_stock_max_profit {
   def main(args: Array[String]):Unit={
-    val arr = Array(1, 3, 2, 8, 4, 10)  //fee = 2, you should return 9, since you could buy the stock at 1 dollar, and sell at 8 dollars, and then buy it at 4 dollars and sell it at 10 dollars
+    val arr = Array(1, 3, 2, 100, 4, 10)  //fee = 2, you should return 9, since you could buy the stock at 1 dollar, and sell at 8 dollars, and then buy it at 4 dollars and sell it at 10 dollars
     //Since we did two transactions, there is a 4 dollar fee, so we have 7 + 6 = 13 profit minus 4 dollars of fees.
     execute(arr)
   }
@@ -14,11 +14,13 @@ object n193_stock_max_profit {
     //hold, which is the the maximum profit we could have if we currently own the stock
 
     var current_max_profit = 0
-    var balance = -arr(0)
+    var hold = -arr(0)
 
     arr.tail.foreach(price=>{
-      current_max_profit=Math.max(current_max_profit, balance+price-fee)
-      balance = Math.max(balance, current_max_profit-price)
+      //if price goes up next time - it will rewrite max and leave hold price the same
+      //if price goes down next time - max will leave the same, hold will be overwritten if max is mre then price with prev hold
+      current_max_profit=Math.max(current_max_profit, hold+price-fee)
+      hold = Math.max(hold, current_max_profit-price)
     })
 
     println(current_max_profit)
