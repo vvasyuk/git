@@ -5,7 +5,7 @@ object n194_line_intersection {
   def execute(l1: Array[Int], l2: Array[Int]): Unit = {
 
     for(n<-l1.zipWithIndex;
-        m<-l2.zipWithIndex if m._1 > n._1
+        m<-l2.zipWithIndex if (m._1 > n._1)
         ){
       println(n._2 + " : " + m._2)
     }
