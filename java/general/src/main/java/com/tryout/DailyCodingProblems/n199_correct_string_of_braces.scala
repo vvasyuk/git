@@ -1,26 +1,40 @@
 package com.tryout.DailyCodingProblems
 
-import scala.collection.mutable
+import scala.Char
+import scala.collection.mutable.ArrayBuffer
 
 object n199_correct_string_of_braces {
 
 
-  def execute(value: "(()"): Unit = {
-    var s = mutable.Stack[(String, Int)]()
+  def execute(value: String): Unit = {
+    val res = ArrayBuffer[Char]()
+    var open_brackets = 0
 
-    value.zipWithIndex.foreach(x=>{
-      println(x._1 + " : " + x._2)
-      x._1 match{
-        case '(' => s.push(("(", x._2))
-        case ')' => s.pop()
+    value.foreach(x=>{
+      x match{
+        case '(' => {
+          res.append('(')
+          open_brackets+=1
+        }
+        case ')' => {
+          if(open_brackets>0){
+            open_brackets-=1
+            res.append(')')
+          }
+          //no need to cover case when char is ) and open_brackets <0 - it will just no be added to res
+        }
       }
     })
 
-    s.foreach(println(_))
-
+    println("open brackets: " + open_brackets)
+    while (open_brackets>0){
+      open_brackets-=1
+      res.append(')')
+    }
+    res.foreach(println(_))
   }
 
   def main(args: Array[String]):Unit={
-    execute("(()")
+    execute(")(()")
   }
 }

@@ -14,8 +14,8 @@ object n196_subtree_max {
       case _ => {
         val sum = root.value + execute(root.left) + execute(root.right)
         m.get(sum) match{
-          case Some(e) => m.addOne(sum, e+1)
-          case None => m.addOne(sum, 1)
+          case Some(e) => m+=((sum, e+1))
+          case None => m.+=((sum, 1))
         }
         sum
       }
