@@ -2,7 +2,7 @@ package com.tryout.DailyCodingProblems
 
 import scala.collection.mutable.ArrayBuffer
 
-object n_198_subset_with_condition {
+object n198_subset_with_condition {
 
   def execute(arr: Array[Int]): Unit = {
     val res: ArrayBuffer[Int] = ArrayBuffer()

@@ -2,7 +2,7 @@ package com.tryout.DailyCodingProblems
 
 import scala.collection.mutable.ArrayBuffer
 
-object n_197_rotate_k_latest_elements {
+object n197_rotate_k_latest_elements {
   def reverse (arr: ArrayBuffer[Int], s:Int, e:Int)={
     var (start, end) = (s,e)
 
