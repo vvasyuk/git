@@ -3,3 +3,21 @@ docker run hello-world
 docker run --rm -it -p 2181:2181 -p 3030:3030 -p 8081:8081 -p 8082:8082 -p 8083:8083 -p 9092:9092 -e ADV_HOST=127.0.0.1 landoop/fast-data-dev
 
 http://127.0.0.1:3030
+
+# Kafka command line tools
+docker run --rm -it --net=host landoop/fast-data-dev bash
+
+# create topic
+kafka-topics --zookeeper 127.0.0.1:2181 --create --topic first_topic --partitions 3 --replication-factor 1
+kafka-topics --zookeeper 127.0.0.1:2181 --list
+kafka-topics --zookeeper 127.0.0.1:2181 --describe --topic first_topic
+
+# produce data
+kafka-console-producer --broker-list 127.0.0.1:9092 --topic first_topic
+
+# consume data
+kafka-console-consumer --bootstrap-server 127.0.0.1:9092 --topic first_topic
+kafka-console-consumer --bootstrap-server 127.0.0.1:9092 --topic first_topic --from-beginning
+kafka-console-consumer --bootstrap-server 127.0.0.1:9092 --topic first_topic --from-beginning --partition 0
+#after reading once will commit latest message and not read it anymore
+kafka-console-consumer --bootstrap-server 127.0.0.1:9092 --topic first_topic --consumer-property group.id=mygroup1 --from-beginning
