@@ -1,4 +1,4 @@
-package com.tryout.DailyCodingProblems
+package com.tryout.DailyCodingProblems.P19
 
 object n195_matrix_elements_smaller_bigger {
 

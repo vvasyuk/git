@@ -1,4 +1,4 @@
-package com.tryout.DailyCodingProblems
+package com.tryout.DailyCodingProblems.P19
 
 object n194_line_intersection {
 

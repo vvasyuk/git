@@ -1,4 +1,4 @@
-package com.tryout.DailyCodingProblems
+package com.tryout.DailyCodingProblems.P18
 
 object n182_graph_minimally_connected {
 

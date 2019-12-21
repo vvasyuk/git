@@ -1,6 +1,5 @@
-package com.tryout.DailyCodingProblems
+package com.tryout.DailyCodingProblems.P19
 
-import scala.Char
 import scala.collection.mutable.ArrayBuffer
 
 object n199_correct_string_of_braces {

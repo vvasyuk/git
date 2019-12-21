@@ -1,4 +1,4 @@
-package com.tryout.DailyCodingProblems
+package com.tryout.DailyCodingProblems.P19
 
 object n193_stock_max_profit {
   def main(args: Array[String]):Unit={

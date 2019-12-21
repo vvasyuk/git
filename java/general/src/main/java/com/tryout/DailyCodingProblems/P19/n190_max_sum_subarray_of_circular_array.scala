@@ -1,4 +1,4 @@
-package com.tryout.DailyCodingProblems
+package com.tryout.DailyCodingProblems.P19
 
 object n190_max_sum_subarray_of_circular_array {
   def execute(ints: Array[Int]): Unit = {

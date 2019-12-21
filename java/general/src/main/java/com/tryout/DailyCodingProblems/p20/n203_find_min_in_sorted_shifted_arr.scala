@@ -1,4 +1,4 @@
-package com.tryout.DailyCodingProblems
+package com.tryout.DailyCodingProblems.p20
 
 object n203_find_min_in_sorted_shifted_arr {
 

@@ -1,4 +1,5 @@
-package com.tryout.DailyCodingProblems
+package com.tryout.DailyCodingProblems.P18
+
 import scala.collection.mutable.Map
 
 object n189_longest_distinct_subarray {

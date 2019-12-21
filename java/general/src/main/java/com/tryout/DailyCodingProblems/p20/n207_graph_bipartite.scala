@@ -1,4 +1,4 @@
-package com.tryout.DailyCodingProblems
+package com.tryout.DailyCodingProblems.p20
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer

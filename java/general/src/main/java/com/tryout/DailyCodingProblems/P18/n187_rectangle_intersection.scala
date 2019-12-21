@@ -1,4 +1,4 @@
-package com.tryout.DailyCodingProblems
+package com.tryout.DailyCodingProblems.P18
 
 object rectangle_intersection_187 {
   def isIntersecting(r1: RectangleCoordinates2, r2: RectangleCoordinates2):Boolean={

@@ -1,4 +1,4 @@
-package com.tryout.DailyCodingProblems
+package com.tryout.DailyCodingProblems.p20
 
 object n204_btree_nodes_cnt {
 
@@ -29,3 +29,4 @@ object n204_btree_nodes_cnt {
     }
   }
 }
+case class Node(value:Int, left:Node=null, right:Node=null)

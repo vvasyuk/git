@@ -1,4 +1,4 @@
-package com.tryout.DailyCodingProblems
+package com.tryout.DailyCodingProblems.p20
 
 object n205_next_higher_permutation {
   def execute(arr: Array[Int]): Unit = {
