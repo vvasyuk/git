@@ -10,7 +10,7 @@ import scala.collection.mutable.ArrayBuffer
 
 object n208_linkedlist_pivot_on_int {
 
-  def execute(l: util.LinkedList[Int], k: 3): Unit = {
+  def execute(l: util.LinkedList[Int], k: Int): Unit = {
     val itr = l.iterator()
     val cache = ArrayBuffer[Int]()
     while(itr.hasNext()){
