@@ -10,7 +10,7 @@ object n209_longest_common_subsequence {
 
   def execute(str1: String, str2: String): Unit = {
 
-    val matrix = ArrayBuffer.fill(str2.size+2)(ArrayBuffer.fill(str1.size+1)(0))
+    val matrix = ArrayBuffer.fill(str2.size+1)(ArrayBuffer.fill(str1.size+1)(0))
 
     str1.zipWithIndex.foreach(x=>{
       str2.zipWithIndex.foreach(y=>{
@@ -31,7 +31,8 @@ object n209_longest_common_subsequence {
   }
 
   def main(args: Array[String]):Unit={
-    execute("epidemiologist", "refrigeration")
+    //execute("epidemiologist", "refrigeration")
     //execute("qwert", "zwcxe")
+    execute("abc", "afc")
   }
 }
