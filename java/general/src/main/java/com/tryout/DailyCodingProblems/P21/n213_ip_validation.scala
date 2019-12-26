@@ -2,6 +2,14 @@ package com.tryout.DailyCodingProblems.P21
 
 object n213_ip_validation {
 
+  def notStartsWithZero(t:String):Boolean={
+    if (t.size>1 && t.startsWith("0")){
+      false
+    }else{
+      true
+    }
+  }
+
   def execute(s: String, res: String, oct: Int): Unit = {
     if(oct==0){
       println(res + s)
@@ -11,8 +19,8 @@ object n213_ip_validation {
         val tmpRes = res + tmp + "."
         if(
           oct*3 >= s.slice(x,s.size).size &&
-          tmp.toInt <= 254
-
+          tmp.toInt <= 254 &&
+          notStartsWithZero(tmp)
         ){
           execute(s.slice(x,s.size), tmpRes, oct-1)
         }
