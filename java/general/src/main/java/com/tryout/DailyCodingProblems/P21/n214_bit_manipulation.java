@@ -1,11 +1,14 @@
 package com.tryout.DailyCodingProblems.P21;
 
+//Given an integer n, return the length of the longest consecutive run of 1s in its binary representation.
+//For example, given 156, you should return 3.
+
 public class n214_bit_manipulation {
 
     public static void main(String[] args) {
                           //1   0  0  1  1 1 0 0
         //execute(156);   //128 64 32 16 8 4 2 1
-        executeWithBitManipulation(40);
+        executeWithBitManipulation(156);
     }
 
     private static void executeWithBitManipulation(int i) {
@@ -16,7 +19,7 @@ public class n214_bit_manipulation {
         //& 00111000
         //-----------
         //  00011000
-        //With this in mind, we can continue to AND our input with a shifted version of itself until we reach 0.
+        //With this in mind, weh can continue to AND our input with a shifted version of itself until we reach 0.
         //The number of times we perform this operation will be our answer.
 
         int max = 0;
