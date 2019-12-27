@@ -1,0 +1,12 @@
+Primitive types:
+Integers:
+ byte    (8 bits)  127
+ char    (16 bits) char c = 'A'; char c = 65;
+ short   (16 bits) 32,767
+ int     (32 bits) 2,147,483,647
+ long    (64 bits) long l = 65L
+Floating 
+ float   (32 bits) float f = 65f
+ double  (64 bits) double d = 65.55;
+Other
+ boolean (1 bits)
