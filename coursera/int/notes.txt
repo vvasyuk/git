@@ -1,4 +1,6 @@
-Primitive types:
+###########
+#Primitive types:
+###########
 Integers:
  byte    (8 bits)  127
  char    (16 bits) char c = 'A'; char c = 65;
@@ -10,3 +12,51 @@ Floating
  double  (64 bits) double d = 65.55;
 Other
  boolean (1 bits)
+
+###########
+#Bit operations:
+###########
+A   B   A|B A&B A^B ~A
+0   0   0   0   0   1
+1   0   1   0   1   0
+0   1   1   0   1   1
+1   1   1   1   0   0
+64<<1=128
+32>>1=16
+
+###########
+#Passing arguments:
+###########
+pass by value - value is copied to formal parameter not affecting argument
+pass by refference - parameter gets a ref to argument, changes to the ref object will affect argument
+
+java uses pass by value (result depends if we pass primitive or ref)
+void modify(int i){i++}
+a=10; modify(a);        // initial a will not be affected, cause argument was copied by value
+void modify(Test o){o.i++}
+modify(test);           // ref to test is copied and passeed as perameter
+
+###########
+#Exceptions
+###########
+Throwable:
+ Error(stackOverfllow)
+ Exception
+  RuntimeExceptiom
+   NullPointerException
+   ArrayIndexOutofBound
+   IllegalArgumentException
+   ArithmeticException(/0)
+  Other exceptions
+
+Checked exception - compile-time (SQLException, IOException, ClassNotFoundException)
+Unchecked exception - occur during the execution (RuntimeExceptiom)
+
+###########
+#Generics
+###########
+
+###########
+#Lambda
+###########
+ 
