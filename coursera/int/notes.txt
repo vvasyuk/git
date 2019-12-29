@@ -1,56 +1,148 @@
 ###########
 #Primitive types:
 ###########
-Integers:
- byte    (8 bits)  127
- char    (16 bits) char c = 'A'; char c = 65;
- short   (16 bits) 32,767
- int     (32 bits) 2,147,483,647
- long    (64 bits) long l = 65L
-Floating 
- float   (32 bits) float f = 65f
- double  (64 bits) double d = 65.55;
-Other
- boolean (1 bits)
+ Integers:
+  byte    (8 bits)  127
+  char    (16 bits) char c = 'A'; char c = 65;
+  short   (16 bits) 32,767
+  int     (32 bits) 2,147,483,647
+  long    (64 bits) long l = 65L
+ Floating 
+  float   (32 bits) float f = 65f
+  double  (64 bits) double d = 65.55;
+ Other
+  boolean (1 bits)
 
 ###########
 #Bit operations:
 ###########
-A   B   A|B A&B A^B ~A
-0   0   0   0   0   1
-1   0   1   0   1   0
-0   1   1   0   1   1
-1   1   1   1   0   0
-64<<1=128
-32>>1=16
+ A   B   A|B A&B A^B ~A
+ 0   0   0   0   0   1
+ 1   0   1   0   1   0
+ 0   1   1   0   1   1
+ 1   1   1   1   0   0
+ 64<<1=128
+ 32>>1=16
 
 ###########
 #Passing arguments:
 ###########
-pass by value - value is copied to formal parameter not affecting argument
-pass by refference - parameter gets a ref to argument, changes to the ref object will affect argument
+ pass by value - value is copied to formal parameter not affecting argument
+ pass by refference - parameter gets a ref to argument, changes to the ref object will affect argument
 
-java uses pass by value (result depends if we pass primitive or ref)
-void modify(int i){i++}
-a=10; modify(a);        // initial a will not be affected, cause argument was copied by value
-void modify(Test o){o.i++}
-modify(test);           // ref to test is copied and passeed as perameter
+ java uses pass by value (result depends if we pass primitive or ref)
+ void modify(int i){i++}
+ a=10; modify(a);        // initial a will not be affected, cause argument was copied by value
+ void modify(Test o){o.i++}
+ modify(test);           // ref to test is copied and passeed as perameter
 
 ###########
 #Exceptions
 ###########
-Throwable:
- Error(stackOverfllow)
- Exception
-  RuntimeExceptiom
-   NullPointerException
-   ArrayIndexOutofBound
-   IllegalArgumentException
-   ArithmeticException(/0)
-  Other exceptions
+ Throwable:
+  Error(stackOverfllow)
+  Exception
+   RuntimeExceptiom
+    NullPointerException
+    ArrayIndexOutofBound
+    IllegalArgumentException
+    ArithmeticException(/0)
+   Other exceptions
+ 
+ Checked exception - compile-time (SQLException, IOException, ClassNotFoundException)
+ Unchecked exception - occur during the execution (RuntimeExceptiom)
 
-Checked exception - compile-time (SQLException, IOException, ClassNotFoundException)
-Unchecked exception - occur during the execution (RuntimeExceptiom)
+###########
+#Functions
+###########
+ public interface MyIF {
+     int getNumЬer();
+     default String getString () {
+         return "bla";
+     }
+ }
+
+###########
+#Multithreading
+###########
+#states
+ blocked         not running waits to get the lock (runnable<->blocked)
+ new             not picked up by cpu yet (new->runnable)
+ runnable        running by cpu
+ terminated      ended (runnable->terminated)
+ timed_waiting   sleep, wait, join (runnable<->timed_waiting)
+ waiting         wait, join without time specified (runnable<->waiting)
+#create
+ class NewThread extends Thread {
+     NewThread() {
+         suреr("Демонстрационный поток");
+         start(); 11 запустить поток на исполнение
+     }
+     puЬlic void run() {
+         try {
+             for(int i = 5; i > О; i--) {
+             Thread.sleep(500);
+         catch (InterruptedException е) {...}
+             }
+         }
+     }
+ }
+#join()
+ NewThread оbj1 = new NewThread ( "One" );
+#wait till thread is over
+ obj1.join();
+
+#consumer producer
+ public class Q {
+     int n;
+     boolean valueSet = false;
+     synchronized int get(){
+         while (!valueSet){                     // wait if value is not set
+             try {wait();}
+             catch(InterruptedException е) {System.out.println("interrupted");}
+         }
+         System.out.println("Received: " + n); //get message if value is set
+         valueSet = false;
+         notify ();
+         return n;
+     }
+     synchronized void put(int n){
+         while(valueSet){                    // if value is set - wait
+             try {wait();}
+             catch(InterruptedException е){ System.out.println("interrupted");}
+             this.n = n;
+         }
+         valueSet = true;
+         System.out.println("Sent: " + n);   // set value and send a message
+         notify ();
+     }
+     static class Producer implements Runnable {
+         Q q;
+         Producer(Q q){
+             this.q = q;
+             new Thread(this, "Поставщик").start();
+         }
+         public void run(){
+             int i = 0;
+             while(true){
+                 q.put (i++); }}}
+     static class Consumer implements Runnable {
+         Q q;
+         Consumer (Q q) {
+             this.q = q;
+             new Thread(this, "Потребитель").start(); }
+         public void run(){
+             while(true)
+                 q.get (); }}
+     static class QTester {
+         public static void main(String[] args) {
+             Q q = new Q();
+             new Producer(q);
+             new Consumer(q); }}}
+
+###########
+#Enum
+###########
 
 ###########
 #Generics
