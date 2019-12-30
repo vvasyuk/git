@@ -24,18 +24,25 @@ public class n217_bit_sparse_number {
 
         // go through list of bits when find that 11s are finished - put 1 after them
         // and zero all previous 11s
-        int highest_zeroed_bit  =0;
+        int highest_zeroed_bit =0;
         for(int j=0; j<arr.size()-2; j++){
             if (arr.get(j)==1 && arr.get(j+1)==1 && arr.get(j+2)!=1){
                 arr.set(j+2,1);
 
-                for(int b=j+2; b>highest_zeroed_bit ; b--){
+                for(int b=j+1; b>highest_zeroed_bit-1 ; b--){
                     arr.set(b,0);
                 }
                 highest_zeroed_bit  = j+2;
             }
         }
 
-        arr.forEach(x->System.out.println(x));
+        //arr.forEach(x->System.out.println(x));
+
+        //back to number
+        int res = 0;
+        for (int j=0; j<arr.size(); j++){
+            res+= arr.get(j)*(1<<j);
+        }
+        System.out.println("res: " + res);
     }
 }
