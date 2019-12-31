@@ -31,6 +31,23 @@ public class n215_horizontal_dist {
                 new Node(7,new Node(6),new Node(9,new Node(8), null))
         );
 
+        Map<Integer, Integer[]> m = new HashMap();
+
+        traverse(root, m, 0,0);
+
+        m.forEach((k,v)-> System.out.println(v[0]));
+    }
+
+    private static void traverse(Node root, Map<Integer, Integer[]> m, int distance, int level) {
+        if (root == null){ return; }
+        Integer[] arr = {root.value, level};
+
+        if(!m.containsKey(distance) || m.get(distance)[1] < level){
+            m.put(distance,arr);
+        }
+
+        traverse(root.left, m, distance-1, level+1);
+        traverse(root.right, m, distance+1, level+1);
     }
 
     static class Node{
