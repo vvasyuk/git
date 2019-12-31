@@ -143,10 +143,88 @@
 ###########
 #Enum
 ###########
+enum Apple {
+    Jonathan(10), GoldenDel(9), RedDel, Winesap(15), Cortland(8);
+    private int price;
+    Apple ( int р) { price = р; }
+    Apple() { price = -1;}
+    int getPrice () { return price;}
+}
+Apple ар = Apple.GoldenDel;
+Arrays.stream(Apple.values()).forEach(x-> System.out.println(x + ":" + x.getPrice()));
+System.out.println(Apple.valueOf("Winesap"));
+
 
 ###########
 #Generics
 ###########
+class Gen<T> {
+    Т оЬ;
+    Gen (Т о) {оЬ = о;}
+    Т getob() {return оЬ;}
+    void showТype (){System.out.println(ob.getClass().getName());}}
+class GenDemo {
+    puЬlic static void main(String args[])
+    Gen<Integer> iOb = new Gen<Integer>(88);
+    iOb.showТype();
+    int v = iOb.getob();}
+class NonGen {
+    NonGen(Object о) {оЬ = о;}
+    Obj ect getob () {return оЬ;}}
+class NonGenDemo {
+    puЬlic static void main(String args[])
+    NonGen iOb = new NonGen(88);
+    int v =(Integer) iOb.getob(); // can be issues
+}
+#unknown type
+class Stats<T extends NumЬer> {
+    Т[] nums; // array of Number subclasses
+    Stats(T[] о){nums = о;}
+    double average() {
+        double sum = 0.0;
+        for(int i=0; i < nums.length; i++){sum += nums[i].douЬleValue();}
+        return sum / nums.length;}
+    boolean sameAvg(Stats<?> оb){   // ?(unknown type) can accept Stats<Integer>, Stats<Double>
+        if(average() == ob.average()) return true;
+        return false;}}
+#bounded unknown type        
+class TwoD {
+    int х, у;
+    TwoD(int а, int b) {х = а;у = b;}}
+class ThreeD extends TwoD {
+    int z;
+    ThreeD(int а, int b, int c) {super(a,b);z = c;}}
+class Coords<T extends TwoD> {  //array of coordinates
+    Т[] coords;
+    Coords (Т[] o) {coords = о;}}
+class BoundedWildcard {
+    static void showXY(Coords<?> с) {   //TwoD and ThreeD have x and y
+        for(int i=0; i < c.coords.length; i++){
+            System.out.println(c.coords[i].х + " " + c.coords[i].у);
+        }}
+    static void showXYZ(Coords<? extends ThreeD> с) { //only ThreeD has z
+        for(int i=O; i < c.coords.length; i++){
+            Systern.out.println(c.coords[i].х + c.coords[i].у + с.coords[i].z) ;
+        }}}
+#generic method
+class GenMethDemo {
+    static <Т extends ComparaЬle<T>, V extends Т> boolean isIn(T х, V[] у) {
+        for(int i=O; i < y.length; i++){
+            if(x.equals(y[i] )) return true;}
+        return false;}}
+usage:
+    isIn(2,nums)
+   
+#type erasure
+type constraints enforced during compile time
+this one is replace after compilation
+public class Stack<E> {         --> Stack
+    private E[] stackContent;   --> Object[] stackContent;
+    public void push(E data){}  --> push(Object data)
+    public E pop(){}            --> Object pop()
+}
+#cannot create instance from generic type
+T ob = new T(); // not working
 
 ###########
 #Lambda

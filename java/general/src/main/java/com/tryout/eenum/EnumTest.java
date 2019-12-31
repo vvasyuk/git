@@ -1,5 +1,7 @@
 package com.tryout.eenum;
 
+import java.util.Arrays;
+
 public enum EnumTest {
     // enum fields
     FOO("f") {
@@ -29,4 +31,9 @@ public enum EnumTest {
     }
 
     public abstract String print();
+
+    public static void main(String[] args) {
+        Arrays.stream(Apple.values()).forEach(x-> System.out.println(x + ":" + x.getPrice()));
+        //System.out.println(Apple.valueOf("Winesap"));
+    }
 }
