@@ -229,4 +229,19 @@ T ob = new T(); // not working
 ###########
 #Lambda
 ###########
- 
+() -> 123.45
+(n) -> (n % 2)==0
+interface MyNumЬer {double getValue();}
+MyNumЬer myNum = () -> 123.45; // class instance created myNum.getValue()
+#with param
+interface NumericTest {boolean test(int n);}
+NumericTest isEven = (n) -> (n % 2)==0; // sEven.test(9);
+#generic functional interface
+interf ace SomeFunc<T> {т f(T t);}
+SomeFunc<String> foo = (str) -> {return "1:"+ str;};    // foo.f("one")
+#lambda as argument
+interface StringFunc {String func(String n);}
+static String stringOp(StringFunc sf, String s){return sf.func(s);} // stringOp((str) -> str.toUpperCase(), "test");
+#method reference
+class MyStringOps {
+static String strUp(String str){return str.toUpperCase();} // stringOp(MyStringOps::strUp, "test");
