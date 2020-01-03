@@ -6,6 +6,6 @@ package com.tryout.DailyCodingProblems.P22;
 public class n221_sevenish_numbers {
 
     public static void main(String[] args) {
-        
+
     }
 }
