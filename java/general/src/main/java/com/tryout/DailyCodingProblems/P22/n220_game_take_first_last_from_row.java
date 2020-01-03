@@ -37,6 +37,21 @@ public class n220_game_take_first_last_from_row {
         //2 length row
         IntStream.range(0,n-1).forEach(x-> m[x][x+1]=Math.max(m[x][x], m[x+1][x+1]));
 
+        //skip first two numbers whiwh were set previously
+        IntStream.range(2,n).forEach(gap->{
+            //iterate from 0 till gap before end
+            IntStream.range(0,n-gap).forEach(i->{
+                int j = i+gap;
+                System.out.println("i: " + i + " j: " + j);
+                int left = m[i][j-2];
+                int diagonal = m[i+1][j-1];
+                int bottom = m[i+2][j];
+                m[i][j]=Math.max(
+                        l.get(i)+Math.min(diagonal,bottom),
+                        l.get(j)+Math.min(left,diagonal)
+                );
+            });
+        });
 
         printMatrix(m);
     }
