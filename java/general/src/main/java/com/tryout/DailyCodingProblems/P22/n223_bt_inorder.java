@@ -27,10 +27,12 @@ public class n223_bt_inorder {
                 while(desc.right!=null && curr!=desc.right){
                     desc=desc.right;
                 }
+                // set desc.right to current when iterating first time
                 if(desc.right==null){
                     desc.right=curr;
                     curr=curr.left;
                 }else{
+                    // null desc.right when iterating second time and print 4
                     desc.right=null;
                     System.out.println(curr.value);
                     curr = curr.right;
