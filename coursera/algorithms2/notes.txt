@@ -170,18 +170,18 @@
 - digraph search
     Depth-first search in digraphs                                                                                                        Depth-first search in digraphs summary
     ##############################################    Mark v as visited.                                                                    DFS enables direct solution of simple digraph problems.
-    # public class DirectedDFS {                 #    Recursively visit all unmarked vertices w pointing from v.                          ・Reachability.
-    #     private boolean[] marked;              #                                                                                      ・Path finding.
-    #     public DirectedDFS(Digraph G, int s) { #    Applications:                                                                       ・Topological sort.
-    #         marked = new boolean[G.V()];       #    Reachability application: program control-flow analysis:                            ・Directed cycle detection.
+    # public class DirectedDFS {                 #    Recursively visit all unmarked vertices w pointing from v.                          -Reachability.
+    #     private boolean[] marked;              #                                                                                      -Path finding.
+    #     public DirectedDFS(Digraph G, int s) { #    Applications:                                                                       -Topological sort.
+    #         marked = new boolean[G.V()];       #    Reachability application: program control-flow analysis:                            -Directed cycle detection.
     #         dfs(G, s);                         #        Every program is a digraph.                                                     Basis for solving difficult digraph problems.
-    #     }                                      #      ・Vertex = basic block of instructions (straight-line program).                   ・2-satisfiability. 
-    #     private void dfs(Digraph G, int v) {   #      ・Edge = jump.                                                                    ・Directed Euler path. 
-    #         marked[v] = true;                  #                                                                                      ・Strongly-connected components.
+    #     }                                      #      -Vertex = basic block of instructions (straight-line program).                   -2-satisfiability. 
+    #     private void dfs(Digraph G, int v) {   #      -Edge = jump.                                                                    -Directed Euler path. 
+    #         marked[v] = true;                  #                                                                                      -Strongly-connected components.
     #         for (int w : G.adj(v))             #    Reachability application: mark-sweep garbage collector
-    #             if (<=marked[w])                #        Every data structure is a digraph.
-    #                 dfs(G, w);                 #      ・Vertex = object.
-    #     }                                      #      ・Edge = reference.
+    #             if (!=marked[w])               #        Every data structure is a digraph.
+    #                 dfs(G, w);                 #      -Vertex = object.
+    #     }                                      #      -Edge = reference.
     #     public boolean visited(int v) {        #        Roots. Objects known to be directly accessible by program (e.g., stack).
     #         return marked[v];                  #        Reachable objects. Objects indirectly accessible by program
     #     }                                      #
@@ -249,7 +249,7 @@
     #     private void dfs(Digraph G, int v) {     #
     #         marked[v] = true;                    #
     #         for (int w : G.adj(v))               #
-    #             if (<=marked[w])                  #
+    #             if (!marked[w])                  #
     #                 dfs(G, w);                   #
     #         reversePost.push(v);                 #
     #     }                                        #
