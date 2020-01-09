@@ -19,6 +19,8 @@ public class n227_boggle {
     public static void main(String[] args) {
         ArrayList<String> dictionary = new ArrayList<>(Arrays.asList("bat", "car", "cat"));
 
+        ArrayList<String> res = new ArrayList<>();
+
         Trie root = new Trie((char) 0);
         dictionary.forEach(w->constructTrie(w, root));
 
@@ -26,20 +28,24 @@ public class n227_boggle {
             for (int j = 0; j < grid.length; j++) {
                 boolean [][] visited = new boolean [grid.length][grid.length];
                 for (boolean[] row : visited) { Arrays.fill(row, false); };
-                System.out.println(dfs(root, grid[i][j], visited,i,j));
+                dfs(root, i, j,res,"");
             }
         }
+
+        res.forEach(x-> System.out.println(x));
     }
 
-    private static String dfs(Trie root, Character c, boolean[][] visited, Integer x,Integer y) {
-        visited[x][y]=true;
-        String res = "";
+    private static void dfs(Trie root, Integer x,Integer y,ArrayList<String> res, String accum) {
+        Character c = grid[x][y];
+
         if(root.children.containsKey(c)){
+            if (root.children.get(c).end){
+                res.add(accum+c);
+            }
             for( Coord coord : getNeighbors(x,y)){
-                res = c + dfs(root.children.get(c), grid[coord.x][coord.y], visited, x,y);
+                dfs(root.children.get(c), coord.x,coord.y,res, accum+c);
             }
         }
-        return res;
     }
 
     public static ArrayList<Coord> getNeighbors(Integer x, Integer y){
