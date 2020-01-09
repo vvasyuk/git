@@ -22,8 +22,6 @@ public class n227_boggle {
         Trie root = new Trie((char) 0);
         dictionary.forEach(w->constructTrie(w, root));
 
-        //root.children.get('c').children.get('a').children.forEach((k,v)-> System.out.println(v.value));
-
         for (int i = 0; i < grid.length; i++) {
             for (int j = 0; j < grid.length; j++) {
                 boolean [][] visited = new boolean [grid.length][grid.length];
