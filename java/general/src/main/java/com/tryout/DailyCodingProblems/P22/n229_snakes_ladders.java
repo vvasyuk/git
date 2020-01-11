@@ -12,16 +12,6 @@ import java.util.LinkedList;
 
 public class n229_snakes_ladders {
     public static void main(String[] args) {
-//        Integer [][] board = new Integer [10][10];
-//        for (Integer[] row : board) { Arrays.fill(row, 0); };
-//
-//        HashMap<Integer, Integer> snakes = new HashMap<>();
-//        snakes.put(16, 6);snakes.put(48, 26);snakes.put(49, 11);snakes.put(56, 53);snakes.put(62, 19);
-//        snakes.put(64, 60);snakes.put(87, 24);snakes.put(93, 73);snakes.put(95, 75);snakes.put(98, 78);
-//
-//        HashMap<Integer, Integer> ladders = new HashMap<>();
-//        ladders.put( 1, 38);ladders.put(4, 14);ladders.put(9, 31);ladders.put(21, 42);ladders.put(28, 84);
-//        ladders.put( 36, 44);ladders.put(51, 67);ladders.put(9, 31);ladders.put(71, 91);ladders.put(80, 100);
 
         // init board
         int[] board = new int[200];
@@ -32,6 +22,7 @@ public class n229_snakes_ladders {
         int[] start = {0,0};
         q.addLast(start);
 
+        //bfs
         while(!q.isEmpty()){
             int[] curr = q.removeFirst();
             if (curr[0]>=100){
