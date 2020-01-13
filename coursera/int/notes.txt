@@ -78,7 +78,7 @@
          suреr("Демонстрационный поток");
          start(); 11 запустить поток на исполнение
      }
-     puЬlic void run() {
+     public void run() {
          try {
              for(int i = 5; i > О; i--) {
              Thread.sleep(500);
@@ -139,6 +139,246 @@
              Q q = new Q();
              new Producer(q);
              new Consumer(q); }}}
+
+#Blocking vs Non-Blocking
+- Blocking
+  one thread at given time holds monitor, others wait for lock to free;
+  Synchronized ArrayList or HashMap, ArrayBlockingQueue or 
+  LinkedBlockingQueue
+- Non-Blocking
+  Compare-And-Swap - read-modify-write kind of instruction:
+  1. A memory location M on which to operate
+  2. Expected old value OV
+  3. New value NV
+  CAS match expected OV to the value stored in memory location M, if both 
+  match then only CAS will update the memory location M to the new value NV, 
+  otherwise nothing;
+  Thread that looses can: try again, do nothing, or something else;
+  Example: M=5, 1 thread expects OV as 5 and NV as 6. At same time 2 thread
+  tries to change value M passing 6 as OV and 7 as NV.
+  1 thread will succeed M = 6, 2 thread will report failure
+  AtomicInteger, AtomicLong, ConcurrentLinkedQueue
+  
+#Context Switch:
+  When CPU switches from one thread to another = CPU needs to save local  
+  data, program pointer etc. of the current thread, and load the local data,
+  program pointer etc. of another thread 
+  
+#Concurrency Models:
+Parallel Workers
+  If your jobs are naturally parallel, independent and with no shared state
+  necessary
+Assembly Line (Aktors, channels)
+  jobs are not naturally parallel and independent though
+Functional Parallelism
+
+#Creating and Starting Threads
+  public class T extends Thread {public void run(){...}}
+  public class T implements Runnable {public void run(){...}}
+  Runnable t =new Runnable(){public void run(){...}}
+  Runnable t =() -> { ...; };
+  
+#Race Conditions
+ occurs if code executed by multiple threads and result is different depending  
+ on sequence
+  public class Counter {
+    protected long count = 0;
+    public void add(long value){
+        this.count = this.count + value;} }
+  add code is not atomic - will be executed like this:
+ -read this.count
+ -add value to register
+ -write register to memory
+ if A wants to add 2 and B 3:
+ 1.A reads 0 and B reads 0
+ 2.A adds 2 and writes 2 to memory (res:2)
+ 3.B adds 3 and writes 3 to memory (res:3)
+ To prevent - one can synchronize code
+ public void add(int val1, int val2){
+     synchronized(this){
+         this.sum1 += val1;   
+         this.sum2 += val2;} }
+ or
+ private Integer sum1Lock = new Integer(1);
+ private Integer sum2Lock = new Integer(2); 
+ public void add(int val1, int val2){
+     synchronized(this.sum1Lock){
+         this.sum1 += val1;   }
+     synchronized(this.sum2Lock){
+         this.sum2 += val2;} }
+         
+#Thread safety
+ Local Variables are stored in each thread stack (never shared)
+ Local Object Refs: if obj created locally, not leaked - its safe
+ public void someMethod(){
+  LocalObject localObject = new LocalObject();
+  localObject.callMethod();
+  method2(localObject); }
+ public void method2(LocalObject localObject){
+   localObject.setValue("value"); }
+ Object Member Variables not safe
+ public class NotThreadSafe{
+    StringBuilder builder = new StringBuilder();
+    public add(String text){
+        this.builder.append(text);} }
+ The Thread Control Escape Rule:
+ If a resource is created, used and disposed within
+ the control of the same thread,
+ and never escapes the control of this thread,
+ the use of that resource is thread safe.
+ 
+#Thread Safety and Immutability
+ if objects are not updated - they are safe
+ 
+#Java Memory Model
+ Is how threads can see values written to shared variables by other threads
+ -memory divided between thread stacks and heap
+ Thread stack contains methods(with local vars) that were called
+ primitive local vars fully stored in thread stack
+ one thread can send a copy of promitive var to another thread, but not var 
+ itself
+ Heap contains all objs created, includes Byte, Integer,etc
+ obj`s memeber vars stored on heap even if var is primitive
+ Static class vars stored on heap
+ If 2 threads call method on same obj - they will have access to its vars, but 
+ each will have own copy of local vars
+ Hardware architecture: CPU & CPU registers, CPU mem cache, RAM
+ Access speed: CPU registers > CPU mem cache > RAM
+ To read - cpu copies from RAM to cache or registers
+ To write - flush registers -> cache -> RAM
+ cache -> RAM happens when cpu needs to reuse cache for smth else
+ Java Memory Model and Hardware architecture:
+ On hardware both: thread stack, heap located in RAM
+ Visibility of Shared Objects
+ if threads share obj(not volatile or synchronized) - updates by 1 not seen by 
+ 2
+ thread 1 reads obj value to cpu cache, updates it, before flush it is not visible 
+ to thread 2
+ with volatile - changes applied to RAM directly
+ Race Conditions
+ if both threads read obj value to diff cpu caches and increment it - value will 
+ be 1 instead of 2 if threads were run in sequence
+ to fix this use synchronized block 
+ 
+#The Java synchronized Keyword
+ Synchronized Instance Methods
+ public synchronized void add(int value){
+    this.count += value;}
+ is synched on object owning method
+ each instance has diff synched obj - one thread per instance
+ Synchronized Blocks in Instance Methods
+ public void add(int value){
+   synchronized(this){
+     this.count += value;}}
+ this - is called monitor obj
+ Java Synchronized Example
+ public class Counter{
+    long count = 0;
+    public synchronized void add(long value){
+      this.count += value;}} 
+ public class CounterThread extends Thread{
+    protected Counter counter = null;
+    public CounterThread(Counter counter){
+       this.counter = counter;}
+    public void run() {
+       for(int i=0; i<10; i++){
+          counter.add(i);}}}
+ Thread  threadA = new CounterThread(counter);
+ Thread  threadB = new CounterThread(counter);
+ threadA.start();
+ threadB.start();
+ 
+#Java Volatile Keyword
+ volatile var is stored in RAM
+ Variable Visibility Problems:
+ guarantees visibility of changes across threads
+ Problem whrn var is not volatile:
+ Thread A runs on CPU1 (reads and updates counter)
+ Thread B runs on CPU2 (reads counter)
+ Thread A may copy counter to CPU1 cache and update
+ Thread B wont see these changes from CPU2
+ When is volatile Enough?
+ if two threads read/write = volatile is not enough
+ in those cases use synchronized or Atomic
+ volatile is enough if 1 thread reads/writes and others read
+ reading/writing directly to RAm is expensive
+ 
+#Java ThreadLocal
+ each thread see only its threadLocal
+ ThreadLocal tl = new ThreadLocal();
+ tl.set("A thread local value");
+ String v = (String) tl.get();
+ or generic
+ ThreadLocal<String> tl = new ThreadLocal();
+ 
+#Thread Signaling
+ thread B may wait for signal from thread A saying data ready
+ A and B may use shared obj for signals
+ public class MySignal{
+  protected boolean hasData = false;
+  public synchronized boolean get(){
+    return this.hasData;}
+  public synchronized void set(boolean b){
+    this.hasData = b;  }
+ }
+ Busy Wait(ineffective)
+ B is waiting for signal from A
+ MySignal sharedSignal = ...
+ while(!sharedSignal.get()){
+  //do nothing... busy waiting
+ }
+ wait(), notify() and notifyAll()
+ waiting thread sleeps until receives a signal
+ thread that calls wait() on any obj becomes inactive
+ until another thread calls notify() on that obj
+ in order to call wait/notify - thread should have a lock on that obj
+ once a thread calls wait() it releases the lock
+ public class MonitorObject{}
+ public class MyWaitNotify{
+  MonitorObject m = new MonitorObject();
+  public void doWait(){
+   synchronized(m){
+    try{m.wait();
+    } catch(InterruptedException e){...}}
+  }
+  public void doNotify(){
+   synchronized(m){m.notify();}}
+ }
+ wakened thread must reobtain lock on monitor obj before it can exit the 
+ wait() call
+ If multiple threads awakened by notifyAll() - one awakened thread at a time 
+ can exit the wait() method
+ Missed Signals
+ if a thread calls notify() before the thread to signal has called wait(), the 
+ signal will be missed
+ to fix - check before wait if(!wasSignalled){...wait...}
+ MonitorObject myMonitorObject = new MonitorObject();
+ boolean wasSignalled = false;
+ Spurious Wakeups
+ threads can wake up without notify()
+ to fix - while(!wasSignalled){...wait...}
+ Don't call wait() on constant String's or global objects
+ because string refs point to same obj
+ 
+#Deadlock
+ thread 1 locks A, and tries to lock B, and thread 2 has already locked B, and 
+ tries to lock A
+Deadlock Prevention
+ Lock Ordering
+ Deadlock occurs when multiple threads need the same locks but obtain 
+ them in different order.
+ if locks always taken in same order by any thread, deadlocks cannot occur.
+ Lock Timeout
+ thread trying to obtain a lock will only try for so long before giving up
+ Deadlock Detection
+ when thread takes a lock it is noted in map
+ when thread requests a lock it is noted in map
+ When thread requests a lock but is denied it traverse the lock graph to check 
+ for deadlocks
+ 
+ 
+ 
+ 
 
 ###########
 #Enum
