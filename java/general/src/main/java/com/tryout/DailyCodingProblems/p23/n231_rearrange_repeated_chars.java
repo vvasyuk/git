@@ -18,27 +18,24 @@ public class n231_rearrange_repeated_chars {
             map.put(c, map.getOrDefault(c, 0)+1);
         }
 
-        Queue<Integer> q = new PriorityQueue<>();
+        Queue<Map.Entry<Character, Integer>> q = new PriorityQueue<>((a,b)->b.getValue()-a.getValue());
+        map.entrySet().forEach(x->q.add(x));
 
-//        //map.forEach((k,v)-> System.out.println(k + ":" + v));
-//        Map<Integer, Character> swapped = map.entrySet().stream().collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
-//        //swapped.forEach((k,v)-> System.out.println(k + ":" + v));
-//        TreeMap<Integer, Character> tree = new TreeMap<>();
-//
-//        tree.putAll(swapped);
-//
-//        Map.Entry<Integer, Character> last = tree.pollLastEntry();
-//        res.append(last.getValue());
-//
-//        while(tree.size()>0){
-//            Map.Entry<Integer, Character> curr = tree.pollLastEntry();
-//            res.append(curr.getValue());
-//            if(last.getKey()>1){
-//                tree.put(last.getKey()-1, last.getValue());
-//            }
-//            last=curr;
-//        }
-//        System.out.println(res.toString());
+        q.forEach(x-> System.out.println(x));
+
+        Map.Entry<Character, Integer> last = q.poll();
+        res.append(last.getKey());
+
+        while(q.size()>0){
+            Map.Entry<Character, Integer> curr = q.poll();
+            res.append(curr.getKey());
+            if(last.getValue()>1){
+                last.setValue(last.getValue()-1);
+                q.add(last);
+            }
+            last=curr;
+        }
+        System.out.println(res.toString());
 
     }
 }
