@@ -1,10 +1,36 @@
-closest_string = []
+from collections import defaultdict
+import heapq
 
-closest_string.append("a")
-closest_string += "b"
-closest_string.append("c")
+heap = []
+heapq.heappush(heap, (1, "a"))
+heapq.heappush(heap, (1, "a"))
+heapq.heappush(heap, (2, "a"))
 
-print(closest_string)
+print(heap)
+# string="aaabbc"
+# frequencies = defaultdict(int)
+# for letter in string:
+#     frequencies[letter] += 1
+#
+# heap = []
+# for char, count in frequencies.items():
+#     heapq.heappush(heap, (-count, char))
+#
+# count, char = heapq.heappop(heap)
+# result = [char]
+#
+# print(frequencies)
+# print(heap)
+# print(char)
+
+
+# closest_string = []
+#
+# closest_string.append("a")
+# closest_string += "b"
+# closest_string.append("c")
+#
+# print(closest_string)
 
 # s = "hello world"
 # print("string: " + s)

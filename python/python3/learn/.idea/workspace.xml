@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9c0ecbc2-9e17-45fc-8f84-2ab90081b74e" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../../../java/general/src/main/java/com/tryout/DailyCodingProblems/n_197_rotate_k_latest_elements.scala" beforeDir="false" afterPath="$PROJECT_DIR$/../../../java/general/src/main/java/com/tryout/DailyCodingProblems/n197_rotate_k_latest_elements.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../../java/general/src/main/java/com/tryout/DailyCodingProblems/n_198_subset_with_condition.scala" beforeDir="false" afterPath="$PROJECT_DIR$/../../../java/general/src/main/java/com/tryout/DailyCodingProblems/n198_subset_with_condition.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../java/general/src/main/java/com/tryout/DailyCodingProblems/p23/n231_rearrange_repeated_chars.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../../java/general/src/main/java/com/tryout/DailyCodingProblems/p23/n231_rearrange_repeated_chars.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -18,8 +16,11 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="88">
-              <caret line="4" column="24" selection-start-line="4" selection-start-column="24" selection-end-line="4" selection-end-column="24" />
+            <state relative-caret-position="132">
+              <caret line="6" column="30" lean-forward="true" selection-start-line="6" selection-start-column="30" selection-end-line="6" selection-end-column="30" />
+              <folding>
+                <element signature="e#0#35#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -46,7 +47,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="464" />
     <option name="y" value="-26" />
     <option name="width" value="1400" />
@@ -189,8 +190,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="88">
-          <caret line="4" column="24" selection-start-line="4" selection-start-column="24" selection-end-line="4" selection-end-column="24" />
+        <state relative-caret-position="132">
+          <caret line="6" column="30" lean-forward="true" selection-start-line="6" selection-start-column="30" selection-end-line="6" selection-end-column="30" />
+          <folding>
+            <element signature="e#0#35#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
