@@ -1,17 +1,16 @@
 package com.tryout.DailyCodingProblems.p23;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.HashSet;
 
 // Recall that the minimum spanning tree is the subset of edges of a tree that connect all its vertices with the smallest possible total edge weight.
 // Given an undirected graph with weighted edges, compute the maximum weight spanning tree.
 
 //                            29
-//                    ┌·················┐
+//                    ┌-----------------┐
 //                    :                 :
 //╔═══════╗    32   ╔═══════╗         ╔═══════╗
-//║   0   ║ ······· ║   1   ║ ·┐      ║   2   ║
+//║   0   ║ ------- ║   1   ║ ·┐      ║   2   ║
 //╚═══════╝         ╚═══════╝  :      ╚═══════╝
 //  :                 :        :        │
 //  : 28              : 19     :   36   │ 17
@@ -20,7 +19,7 @@ import java.util.LinkedList;
 //  :      ║       ║ ─┘        └····· ║       ║
 //  └····· ║       ║                  ║       ║
 //         ║       ║          34      ║       ║
-//         ║   3   ║ ················ ║   4   ║
+//         ║   3   ║ ---------------- ║   4   ║
 //         ║       ║                  ║       ║
 //         ║       ║                  ║       ║
 //         ║       ║                  ║       ║
@@ -49,6 +48,44 @@ public class n234_max_weight_spanning_tree {
         g.addEgde(4, 3, 34);
 
         g.adjacencylist[1].forEach(x-> System.out.println(x.destination));
+
+        HashSet<WeightedGraph.Edge> res = maxSpanningTree(g);
+        System.out.println("asdf");
+    }
+
+    private static HashSet<WeightedGraph.Edge> maxSpanningTree(WeightedGraph.Graph g) {
+        HashSet<WeightedGraph.Edge> tree = new HashSet<>();
+        int n = g.vertices;
+        DisjointSet ds = new DisjointSet(n);
+        g.edges.sort((a, b) -> b.weight - a.weight);
+
+        for (WeightedGraph.Edge e:g.edges){
+            if(ds.find(e.source) != ds.find(e.destination)){
+                tree.add(e);
+                ds.join(e.source, e.destination);
+            }
+        }
+        return tree;
+    }
+
+    static class DisjointSet{
+        ArrayList<Integer> parents = new ArrayList();
+        public DisjointSet(int n) {
+            for (int i = 0; i <n ; i++) {
+                parents.add(i);
+            }
+        }
+        public int find(int v){
+            while (parents.get(v)!=v){
+                v=parents.get(v);
+            }
+            return v;
+        }
+        public void join(int v1, int v2){
+            int s1 = find(v1);
+            int s2 = find(v2);
+            parents.set(s1, s2);
+        }
     }
 
     static class WeightedGraph {
@@ -67,7 +104,7 @@ public class n234_max_weight_spanning_tree {
         static class Graph {
             int vertices;
             ArrayList<Edge>[] adjacencylist;    // array of ArrayList<Edge>
-            ArrayList<Edge> edges;
+            ArrayList<Edge> edges = new ArrayList<>();
 
             Graph(int vertices) {
                 this.vertices = vertices;
