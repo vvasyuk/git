@@ -99,7 +99,7 @@
     #      |0|--\            #      1    T           0        7 visit1: check 0 (cc 0)                          #         marked = new boolean[G.V()];       #  # }                                  #
     #      +-+-\ ---\        #      2    T           0        6 visit2: check 0 (cc 0)                          #         id = new int[G.V()];               #  # private void dfs(Graph G, int v) { #
     #     / \   --\  ---\    #      3    T           0        5 visit3: check 5 4 (cc 0)                        #         for (int v = 0; v < G.V(); v ++) { #  #     marked[v] = true;              #
-    #    |   +-+   +-+   +-+ #      4    T           0        3 visit4: check 5 6 3  (cc 0)                     #             if (<=marked[v]) {             #  #     id[v] = count;                 #
+    #    |   +-+   +-+   +-+ #      4    T           0        3 visit4: check 5 6 3  (cc 0)                     #             if (!marked[v]) {              #  #     id[v] = count;                 #
     #    /   |1|   |2|   |6| #      5    T           0        4 visit5: check 3 4 0 (cc 0)                      #                 dfs(G, v);                 #  #     for (int w : G.adj(v))         #
     #   |    +-+   +-+   +-+ #      6    T           0        2 visit6: check 0 4 (cc 0)                        #                 count ++;                  #  #         if (<=marked[w])           #
     #   /                /   #                                                                                  #             }                              #  #             dfs(G, w);             #
@@ -451,12 +451,12 @@
     #           ┌─ ║   5   ║ ······· ║   1   ║ ·┐      ║   3   ║ ···············┐ #        1-3 0.29            step6  cycle - no add                   #         for (Edge e : G.edges())                          #
     #           │  ╚═══════╝         ╚═══════╝  :      ╚═══════╝                : #        1-5 0.32            step7  cycle - no add                   #             pq.insert(e);                                 #
     #           │    │                 │        :        │                      : #        2-7 0.34            step8  cycle - no add                   #                                                           #
-    #           │    │0.28(4)          │0.19(3) :0.36<=10 │ 0.17(2)             : #        4-5 0.35            step9  no cycle - add                   #         UF uf = new UF(G.V());                            #
-    #           │    │                 │        :        │                      : #        1-2 0.36            step10 cycle - no add                   #         while (<=pq.isEmpty() && mst.size() < G.V() - 1) {#
+    #           │    │0.28(4)          │0.19(3) :0.36<=10│ 0.17(2)              : #        4-5 0.35            step9  no cycle - add                   #         UF uf = new UF(G.V());                            #
+    #           │    │                 │        :        │                      : #        1-2 0.36            step10 cycle - no add                   #         while (!pq.isEmpty() && mst.size() < G.V() - 1) { #
     #           │    │      ╔═══════╗  │        :      ╔═══════╗                : #        4-7 0.37            step11 cycle - no add                   #             Edge e = pq.delMin();                         #
     #           │    └───── ║       ║ ─┘        └····· ║       ║                : #        0-4 0.38            step12 cycle - no add                   #             int v = e.either(),                           #  <-- greedily add edges to MST
     #           │           ║       ║                  ║       ║                : #        6-2 0.40            step13 no cycle - add    MST is ready   #             w = e.other(v);                               #
-    #           │0.35(9)    ║       ║      0.34<=(8)   ║       ║                : #        3-6 0.52                                                    #             if (<=uf.connected(v, w)) {                   #  <-- edge v-w does not create a cycle
+    #           │0.35(9)    ║       ║      0.34<=(8)   ║       ║                : #        3-6 0.52                                                    #             if (!uf.connected(v, w)) {                    #  <-- edge v-w does not create a cycle
     #           │           ║   7   ║ ················ ║   2   ║                : #        6-0 0.58                                                    #                 uf.union(v, w);                           #  <-- merge sets
     #           │           ║       ║                  ║       ║                : #        6-4 0.93                                                    #                 mst.enqueue(e);                           #  <-- add edges to MST
     #           │           ║       ║       0.26(4)    ║       ║                : #                                                                    #             }                                             #
