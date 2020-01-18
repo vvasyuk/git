@@ -47,14 +47,17 @@ public class n234_max_weight_spanning_tree {
         g.addEgde(4, 2, 17);
         g.addEgde(4, 3, 34);
 
-        g.adjacencylist[1].forEach(x-> System.out.println(x.destination));
-
-        HashSet<WeightedGraph.Edge> res = maxSpanningTree(g);
-        System.out.println("asdf");
+        // sort edges by weight
+        // take source and dest from each weight
+        // check if they have same parent in disjoint set
+        // if not then add this edge to result
+        // and join that source and destination
+        ArrayList<WeightedGraph.Edge> res = maxSpanningTree(g);
+        res.forEach(x-> System.out.println("source: " + x.source + " destination: " + x.destination));
     }
 
-    private static HashSet<WeightedGraph.Edge> maxSpanningTree(WeightedGraph.Graph g) {
-        HashSet<WeightedGraph.Edge> tree = new HashSet<>();
+    private static ArrayList<WeightedGraph.Edge> maxSpanningTree(WeightedGraph.Graph g) {
+        ArrayList<WeightedGraph.Edge> tree = new ArrayList<>();
         int n = g.vertices;
         DisjointSet ds = new DisjointSet(n);
         g.edges.sort((a, b) -> b.weight - a.weight);
