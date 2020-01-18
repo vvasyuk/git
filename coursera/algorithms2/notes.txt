@@ -261,8 +261,8 @@
     
 - strong components
     Vertices v and w are strongly connected if there is both a directed path from v to w and a directed path from w to v.
-    ・If v is strongly connected to w, then w is strongly connected to v.
-    ・If v is strongly connected to w and w to x, then v is strongly connected to x.
+    -If v is strongly connected to w, then w is strongly connected to v.
+    -If v is strongly connected to w and w to x, then v is strongly connected to x.
     A strong component is a maximal subset of strongly-connected vertices.
     
     Kosaraju-Sharir algorithm: intuition                                Phase 1. Compute reverse postorder in GR.
@@ -304,7 +304,7 @@
     #         id = new int[G.V()];                                     #
     #         DepthFirstOrder dfs = new DepthFirstOrder(G.reverse());  #
     #         for (int v : dfs.reversePost()) {                        #
-    #             if (<=marked[v]) {                                    #
+    #             if (<=marked[v]) {                                   #
     #                 dfs(G, v);                                       #
     #                 count ++;                                        #
     #             }                                                    #
@@ -314,7 +314,7 @@
     #         marked[v] = true;                                        #
     #         id[v] = count;                                           #
     #         for (int w : G.adj(v))                                   #
-    #             if (<=marked[w])                                      #
+    #             if (<=marked[w])                                     #
     #                 dfs(G, w);                                       #
     #     }                                                            #
     #     public boolean stronglyConnected(int v, int w) {             #
@@ -332,12 +332,12 @@
     A spanning tree of G is a subgraph T that is both a tree (connected and acyclic) 
     and spanning (includes all of the vertices).                                                    
     ###############################################################################        MST is fundamental problem with diverse applications.
-    #                                          0.29                               #     ・Dithering.                                     ・Find road networks in satellite and aerial imagery.
-    #                                  ┌·················┐                        #     ・Cluster analysis.                           ・Reducing data storage in sequencing amino acids in a protein. 
-    #                                  :                 :                        #     ・Max bottleneck paths.                       ・Model locality of particle interactions in turbulent fluid flows. 
-    #              ╔═══════╗  0.32   ╔═══════╗         ╔═══════╗                  #     ・Real-time face verification.                ・Autoconfig protocol for Ethernet bridging to avoid cycles in a network. 
-    #           ┌─ ║   5   ║ ······· ║   1   ║ ·┐      ║   3   ║ ···············┐ #     ・LDPC codes for error correction.            ・Approximation algorithms for NP-hard problems (e.g., TSP, Steiner tree).
-    #           │  ╚═══════╝         ╚═══════╝  :      ╚═══════╝                : #     ・Image registration with Renyi entropy.      ・Network design (communication, electrical, hydraulic, computer, road). 
+    #                                          0.29                               #     -Dithering.                                  -Find road networks in satellite and aerial imagery.
+    #                                  ┌·················┐                        #     -Cluster analysis.                           -Reducing data storage in sequencing amino acids in a protein. 
+    #                                  :                 :                        #     -Max bottleneck paths.                       -Model locality of particle interactions in turbulent fluid flows. 
+    #              ╔═══════╗  0.32   ╔═══════╗         ╔═══════╗                  #     -Real-time face verification.                -Autoconfig protocol for Ethernet bridging to avoid cycles in a network. 
+    #           ┌─ ║   5   ║ ······· ║   1   ║ ·┐      ║   3   ║ ···············┐ #     -LDPC codes for error correction.            -Approximation algorithms for NP-hard problems (e.g., TSP, Steiner tree).
+    #           │  ╚═══════╝         ╚═══════╝  :      ╚═══════╝                : #     -Image registration with Renyi entropy.      -Network design (communication, electrical, hydraulic, computer, road). 
     #           │    │                 │        :        │                      : #
     #           │    │ 0.28            │ 0.19   : 0.36   │ 0.17                 : #
     #           │    │                 │        :        │                      : #
@@ -363,10 +363,10 @@
 
 
 - Greedy algorithms
-    Greedy MST                                                                            cut graph into 2 partition [0 1 4 5 7] and [2 3 6]                                    divide graph into 2 partition [5] and [1 7 4 ...]                                                    
-    ・Start with all edges colored gray.                                                    find cut between 2 partitions with min weight and paint it black                    find cut between 2 partitions with min weight and paint it black                                    
-    ・Find cut with no black crossing edges; color its min-weight edge black.            min cut is 0 2 among ([1 3],[0 2],[2 7],[1 2],[6 9],[6 4])                            min cut is 5 7 
-    ・Repeat until V - 1 edges are colored black.                                        MST 0 2,                                                                            MST [0 2], [5 7]
+    Greedy MST                                                                          cut graph into 2 partition [0 1 4 5 7] and [2 3 6]                                  divide graph into 2 partition [5] and [1 7 4 ...]                                                    
+    -Start with all edges colored gray.                                                 find cut between 2 partitions with min weight and paint it black                    find cut between 2 partitions with min weight and paint it black                                    
+    -Find cut with no black crossing edges; color its min-weight edge black.            min cut is 0 2 among ([1 3],[0 2],[2 7],[1 2],[6 9],[6 4])                          min cut is 5 7 
+    -Repeat until V - 1 edges are colored black.                                        MST 0 2,                                                                            MST [0 2], [5 7]
     ###############################################################################     ###############################################################################     ###############################################################################
     #                                          0.29                               #     #                                          0.29                               #     #                                          0.29                               #
     #                                  ┌·················┐                        #     #                                  ┌·················┐                        #     #                                  ┌·················┐                        #
@@ -442,33 +442,33 @@
     
 - Kruskal's Algorithm
     Consider edges in ascending order of weight.
-    ・Add next edge to tree T unless doing so would create a cycle.                        sorted wights                                                Kruskal's Algorithm
+    -Add next edge to tree T unless doing so would create a cycle.                        sorted wights                                                Kruskal's Algorithm
     ###############################################################################        0-7 0.16            step1  no cycle - add                   #############################################################
-    #                                          0.29<=(6)                           #        2-3 0.17            step2  no cycle - add                   # public class KruskalMST {                                 #
+    #                                          0.29<=(6)                          #        2-3 0.17            step2  no cycle - add                   # public class KruskalMST {                                 #
     #                                  ┌·················┐                        #        1-7 0.19            step3  no cycle - add                   #     private Queue<Edge> mst = new Queue<Edge>();          #
     #                                  :                 :                        #        0-2 0.26            step4  no cycle - add                   #     public KruskalMST(EdgeWeightedGraph G) {              #
-    #              ╔═══════╗0.32<=(7) ╔═══════╗         ╔═══════╗                  #        5-7 0.28            step5  no cycle - add                   #         MinPQ<Edge> pq = new MinPQ<Edge>();               #  <-- build priority queue
+    #              ╔═══════╗0.32<=(7)╔═══════╗         ╔═══════╗                  #        5-7 0.28            step5  no cycle - add                   #         MinPQ<Edge> pq = new MinPQ<Edge>();               #  <-- build priority queue
     #           ┌─ ║   5   ║ ······· ║   1   ║ ·┐      ║   3   ║ ···············┐ #        1-3 0.29            step6  cycle - no add                   #         for (Edge e : G.edges())                          #
     #           │  ╚═══════╝         ╚═══════╝  :      ╚═══════╝                : #        1-5 0.32            step7  cycle - no add                   #             pq.insert(e);                                 #
     #           │    │                 │        :        │                      : #        2-7 0.34            step8  cycle - no add                   #                                                           #
-    #           │    │0.28(4)          │0.19(3) :0.36<=10 │ 0.17(2)              : #        4-5 0.35            step9  no cycle - add                   #         UF uf = new UF(G.V());                            #
-    #           │    │                 │        :        │                      : #        1-2 0.36            step10 cycle - no add                   #         while (<=pq.isEmpty() && mst.size() < G.V() - 1) { #
+    #           │    │0.28(4)          │0.19(3) :0.36<=10 │ 0.17(2)             : #        4-5 0.35            step9  no cycle - add                   #         UF uf = new UF(G.V());                            #
+    #           │    │                 │        :        │                      : #        1-2 0.36            step10 cycle - no add                   #         while (<=pq.isEmpty() && mst.size() < G.V() - 1) {#
     #           │    │      ╔═══════╗  │        :      ╔═══════╗                : #        4-7 0.37            step11 cycle - no add                   #             Edge e = pq.delMin();                         #
     #           │    └───── ║       ║ ─┘        └····· ║       ║                : #        0-4 0.38            step12 cycle - no add                   #             int v = e.either(),                           #  <-- greedily add edges to MST
     #           │           ║       ║                  ║       ║                : #        6-2 0.40            step13 no cycle - add    MST is ready   #             w = e.other(v);                               #
-    #           │0.35(9)    ║       ║      0.34<=(8)    ║       ║                : #        3-6 0.52                                                    #             if (<=uf.connected(v, w)) {                    #  <-- edge v-w does not create a cycle
+    #           │0.35(9)    ║       ║      0.34<=(8)   ║       ║                : #        3-6 0.52                                                    #             if (<=uf.connected(v, w)) {                   #  <-- edge v-w does not create a cycle
     #           │           ║   7   ║ ················ ║   2   ║                : #        6-0 0.58                                                    #                 uf.union(v, w);                           #  <-- merge sets
     #           │           ║       ║                  ║       ║                : #        6-4 0.93                                                    #                 mst.enqueue(e);                           #  <-- add edges to MST
     #           │           ║       ║       0.26(4)    ║       ║                : #                                                                    #             }                                             #
     #  ┌········┼·········· ║       ║  ┌────────────── ║       ║ ──────┐        : #                                                                    #         }                                                 #
     #  :        │           ╚═══════╝  │               ╚═══════╝       │        : #                                                                    #     }                                                     #
     #  :        │             │      ╔═══════╗  0.58                   │        : #                                                                    #     public Iterable<Edge> edges() {                       #
-    #  :0.37<=11 │             └───── ║   0   ║ ···················┐    │0.40(13): #                                                                    #         return mst;                                       #
+    #  :0.37<=11│             └───── ║   0   ║ ···················┐    │0.40(13): #                                                                    #         return mst;                                       #
     #  :        │            0.16(1) ╚═══════╝                    :    │        : #                                                                    #     }                                                     #
     #  :      ╔═══╗  0.93              :                        ╔═══╗  │        : #                                                                    # }                                                         #
     #  └····· ║ 4 ║ ···················┼······················· ║ 6 ║ ─┘        : #                                                                    #############################################################
     #         ╚═══╝                    :                        ╚═══╝           : #
-    #           :   0.38<=12            :                          :   0.52      : #
+    #           :   0.38<=12           :                          :   0.52      : #
     #           └······················┘                          └·············┘ #
     #                                                                             #
     ###############################################################################    
@@ -495,21 +495,21 @@
     #           │           ║       ║                  ║       ║                : #     #         mst = new Queue<Edge>();                          #
     #           │           ║       ║       0.26(3)    ║       ║                : #     #         marked = new boolean[G.V()];                      #
     #  ┌········┼·········· ║       ║  ┌────────────── ║       ║ ──────┐        : #     #         visit(G, 0);                                      #  <-- assume G is connected
-    #  :        │           ╚═══════╝  │               ╚═══════╝       │        : #     #         while (<=pq.isEmpty() && mst.size() < G.V() - 1) { #
+    #  :        │           ╚═══════╝  │               ╚═══════╝       │        : #     #         while (<=pq.isEmpty() && mst.size() < G.V() - 1) {#
     #  :        │             │      ╔═══════╗  0.58                   │        : #     #             Edge e = pq.delMin();                         #  <-- repeatedly delete the min weight edge e = v–w from PQ
     #  :0.37    │             └───── ║   0   ║ ···················┐    │0.40(7  : #     #             int v = e.either(),                           #
     #  :        │            0.16(1) ╚═══════╝                    :    │        : #     #             w = e.other(v);                               #
     #  :      ╔═══╗  0.93              :                        ╔═══╗  │        : #     #             if (marked[v] && marked[w]) continue;         #  <-- ignore if both endpoints in T
     #  └····· ║ 4 ║ ···················┼······················· ║ 6 ║ ─┘        : #     #                                                           #
     #         ╚═══╝                    :                        ╚═══╝           : #     #             mst.enqueue(e);                               #  <-- add edge e to tree
-    #           :   0.38               :                          :   0.52      : #     #             if (<=marked[v]) visit(G, v);                  #  <-- add v or w to tree
-    #           └······················┘                          └·············┘ #     #             if (<=marked[w]) visit(G, w);                  #
+    #           :   0.38               :                          :   0.52      : #     #             if (<=marked[v]) visit(G, v);                 #  <-- add v or w to tree
+    #           └······················┘                          └·············┘ #     #             if (<=marked[w]) visit(G, w);                 #
     #                                                                             #     #         }                                                 #
     ###############################################################################     #     }                                                     #
                                                                                         #     private void visit(WeightedGraph G, int v) {          #
                                                                                         #         marked[v] = true;                                 #  <-- add v to T
                                                                                         #         for (Edge e : G.adj(v))                           #
-                                                                                        #             if (<=marked[e.other(v)])                      #
+                                                                                        #             if (<=marked[e.other(v)])                     #
                                                                                         #                 pq.insert(e);                             #  <-- for each edge e = v–w, add to PQ if w not already in T
                                                                                         #     }                                                     #
                                                                                         #     public Iterable<Edge> mst() {return mst;}             #
@@ -561,7 +561,7 @@
      1           5->1 0.32     1.05                                    # }                                                                     #
      2           0->2 0.26     0.26                                    # public Iterable<DirectedEdge> pathTo(int v) {                         #
      3           7->3 0.37     0.97                                    #     Stack<DirectedEdge> path = new Stack<DirectedEdge>();             #
-     4           0->4 0.38     0.38                                    #     for (DirectedEdge e = edgeTo[v]; e <== null; e = edgeTo[e.from()]) #
+     4           0->4 0.38     0.38                                    #     for (DirectedEdge e = edgeTo[v]; e <== null; e = edgeTo[e.from()])#
      5           4->5 0.35     0.73                                    #         path.push(e);                                                 #
      6           3->6 0.52     1.49                                    #     return path;                                                      #
      7           2->7 0.34     0.60                                    # }                                                                     #
@@ -569,10 +569,10 @@
 
     Edge relaxation
     Relax edge e = v→w.                                                                     #################################################
-    ・ distTo[v] is length of shortest known path from s to v.                               # private void relax(DirectedEdge e) {          # 
-    ・ distTo[w] is length of shortest known path from s to w.                               #     int v = e.from(),                         # 
-    ・ edgeTo[w] is last edge on shortest known path from s to w.                            #     w = e.to();                               # 
-    ・If e = v→w gives shorter path to w through v, update both distTo[w] and edgeTo[w].     #     if (distTo[w] > distTo[v] + e.weight()) { # 
+    - distTo[v] is length of shortest known path from s to v.                               # private void relax(DirectedEdge e) {          # 
+    - distTo[w] is length of shortest known path from s to w.                               #     int v = e.from(),                         # 
+    - edgeTo[w] is last edge on shortest known path from s to w.                            #     w = e.to();                               # 
+    - If e = v→w gives shorter path to w through v, update both distTo[w] and edgeTo[w].    #     if (distTo[w] > distTo[v] + e.weight()) { # 
                                                                                             #         distTo[w] = distTo[v] + e.weight();   #
                                                                                             #         edgeTo[w] = e;                        #
                                                                                             #     }                                         #
@@ -581,11 +581,11 @@
 
     Optimality conditions
     distTo array represents shortest path distances from source if nelow 2 conditions hold
-    ・For each vertex v, distTo[v] is the length of some path from s to v.
-    ・For each edge e = v→w, distTo[w] ≤ distTo[v] + e.weight().
+    -For each vertex v, distTo[v] is the length of some path from s to v.
+    -For each edge e = v→w, distTo[w] ≤ distTo[v] + e.weight().
     Proof
-    ・Suppose that distTo[w] > distTo[v] + e.weight() for some edge e = v→w.
-    ・Then, e gives a path from s to w (through v) of length less than distTo[w].    
+    -Suppose that distTo[w] > distTo[v] + e.weight() for some edge e = v→w.
+    -Then, e gives a path from s to w (through v) of length less than distTo[w].    
 
     Generic shortest-paths algorithm
     Generic algorithm (to compute SPT from s)
@@ -595,9 +595,9 @@
 
 
 - Dijkstra's Algorithm
-    ・Consider vertices in increasing order of distance from s
+    -Consider vertices in increasing order of distance from s
     (non-tree vertex with the lowest distTo[] value).
-    ・Add vertex to tree and relax all edges pointing from that vertex.              SPT
+    -Add vertex to tree and relax all edges pointing from that vertex.              SPT
     ############################################################################    ###########################################################################     ########################################################    #################################################
     #                         ╔════╗        15    ╔════╗                       #    #                         ╔════╗        15    ╔════╗                      #     #public class DijkstraSP {                             #    # private void relax(DirectedEdge e) {          #
     #                         ║    ║ ···········> ║ 3  ║ ········┐             #    #                         ║    ║ ···········> ║ 3  ║ ········┐            #     #    private DirectedEdge[] edgeTo;                    #    #     int v = e.from(),                         #
@@ -611,7 +611,7 @@
     #   :     :   ╔════════════════╗        7     ║    ║         :             #    #   │     │   ╔════════════════╗        7     ║    ║         :            #     #            distTo[v] = Double.POSITIVE_INFINITY;     #    #             pq.insert(w, distTo[w]);          #
     #   : 9   └·> ║                ║ ···········> ║ 2  ║         : 9           #    #   │ 9   └─> ║                ║ ···········> ║ 2  ║         : 9          #     #        distTo[s] = 0.0;                              #    #      }                                        #
     #   v         ║       7        ║              ║    ║         v             #    #   v         ║       7        ║              ║    ║         v            #     #        pq.insert(s, 0.0);                            #    # }                                             #
-    # ╔════╗  5   ║                ║              ║    ║  11   ╔════════════╗  #    # ╔════╗  5   ║                ║              ║    ║  11   ╔════════════╗ #     #        while (<=pq.isEmpty()) {                       #    #################################################
+    # ╔════╗  5   ║                ║              ║    ║  11   ╔════════════╗  #    # ╔════╗  5   ║                ║              ║    ║  11   ╔════════════╗ #     #        while (<=pq.isEmpty()) {                      #    #################################################
     # ║    ║ ···> ║                ║              ║    ║ ····> ║     6      ║  #    # ║    ║ ···> ║                ║              ║    ║ ────> ║     6      ║ #     #            int v = pq.delMin();                      #
     # ║    ║      ╚════════════════╝              ╚════╝       ╚════════════╝  #    # ║    ║      ╚════════════════╝              ╚════╝       ╚════════════╝ #     #            for (DirectedEdge e : G.adj(v))           #
     # ║    ║        :                               ^            ^      ^      #    # ║    ║        :                               ^            ^      ^     #     #                relax(e);                             #
