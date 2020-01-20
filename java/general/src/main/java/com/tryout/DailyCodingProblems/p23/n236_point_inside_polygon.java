@@ -21,7 +21,6 @@ public class n236_point_inside_polygon {
         for (int i = 0; i < sides.length; i++) {
             System.out.println(intersects(a,sides[i]));
         }
-        System.out.println("asdf");
     }
 
     private static int intersects(Point p, Side side) {
@@ -30,7 +29,7 @@ public class n236_point_inside_polygon {
 
         double dx = p2.x - p1.x;
         double dy = p2.y - p1.y;
-        if (dx==0){ if(p.x<p1.x && Math.min(p1.y, p2.y) < p.y && Math.max(p1.y, p2.y) > p.y){ return 1; } else {return 0;} }
+        if (dx==0){ if(p.x<p1.x && Math.min(p1.y, p2.y) < p.y && Math.max(p1.y, p2.y) > p.y){ return 1; } else {return 0;} }  // x should be to the left of side and between its y`s
         if (dy==0){return 0;}
 
         double slope = dy / dx;
