@@ -38,7 +38,7 @@ public class n5_5_x_multiply_y {
                 sum = add(sum, y);
             }
             x >>=1;
-            y <<= 1;
+            y <<=1;
         }
         return sum;
     }
