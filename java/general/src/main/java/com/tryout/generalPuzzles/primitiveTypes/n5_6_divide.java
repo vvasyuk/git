@@ -4,6 +4,8 @@ public class n5_6_divide {
     // 11 -> 1011
     // 2  -> 0010
     public static void main(String[] args) {
+        System.out.println("3: " + Integer.toBinaryString(3));
+        System.out.println("3<<1: " + Integer.toBinaryString(3<<1));
         System.out.println(divide(11, 2));
     }
 
