@@ -40,14 +40,16 @@
 #Exceptions
 ###########
  Throwable:
-  Error(stackOverfllow)
+  Error(stackOverfllow)(unchecked)
   Exception
-   RuntimeExceptiom
+   RuntimeExceptiom(unchecked)
     NullPointerException
     ArrayIndexOutofBound
     IllegalArgumentException
     ArithmeticException(/0)
    Other exceptions
+    IOException
+    ClassNotFound
  
  Checked exception - compile-time (SQLException, IOException, ClassNotFoundException)
  Unchecked exception - occur during the execution (RuntimeExceptiom)
