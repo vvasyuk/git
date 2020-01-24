@@ -3,7 +3,7 @@ package com.tryout.generalPuzzles.primitiveTypes;
 public class n5_9_if_int_palindrome {
 
     public static void main(String[] args) {
-        System.out.println(isPalindromeNumber(123321));
+        //System.out.println(isPalindromeNumber(123321));
     }
 
 
@@ -13,6 +13,8 @@ public class n5_9_if_int_palindrome {
     public static boolean isPalindromeNumber (int x) {
         if (x < 0) return false;
 
+        // log10(100) is 10^x which equals 100 (2)
+        // log10(10^5)=5
         final int numDigits = (int) (Math.floor(Math.log10(x))) + 1;
         int msdMask = (int) Math.pow(10, numDigits - 1);
         for (int i = 0; i < (numDigits / 2); ++i) {
