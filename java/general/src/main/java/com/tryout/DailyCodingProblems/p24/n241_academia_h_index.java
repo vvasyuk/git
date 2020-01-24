@@ -28,6 +28,7 @@ public class n241_academia_h_index {
         // for first article if its citations is 5 h is 1
         // we iterate input in desc order increasing h
         // if citations is more then h
+        // {5, 4, 3, 1, 0}
         int h = 0;
         while (h<input.length && input[h]>=h+1) h++;
 
