@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class JavaApplication {
@@ -96,7 +97,7 @@ public class JavaApplication {
 		// ### General Puzzles ###
 		// Hanoi
 		//int[] ar = new int[1]; ar[0]=0;
-		Hanoi.execute(5, 'a', 'b', 't');
+		//Hanoi.execute(5, 'a', 'b', 't');
 		// 2->3; 3->7; 4->15; 5->31
 
 		// Fibonacci
