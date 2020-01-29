@@ -8,6 +8,31 @@ import java.util.*;
 //
 //For example, the words ['chair', 'height', 'racket', touch', 'tunic'] can form the following circle: chair --> racket --> touch --> height --> tunic --> chair.
 public class n246_word_circle {
+    // normal
+    //r -> t
+    //c -> r
+    //t -> h
+    //t -> c
+    //h -> t
+    //
+    //       t -> h -> t
+    //      /
+    //r ->
+    //      \
+    //	     t -> c -> r
+    //
+    //reverse:
+    //r -> c
+    //c -> t
+    //t -> r
+    //t -> h
+    //h -> t
+    //
+    //            t -> r
+    //           /
+    //r -> c ->
+    //           \
+    //		      t -> h -> t
     public static void main(String[] args) {
         String[] input = {"chair", "height", "racket", "touch", "tunic"};
 
