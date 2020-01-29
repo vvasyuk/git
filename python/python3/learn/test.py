@@ -1,12 +1,24 @@
 from collections import defaultdict
-import heapq
 
-heap = []
-heapq.heappush(heap, (1, "a"))
-heapq.heappush(heap, (1, "a"))
-heapq.heappush(heap, (2, "a"))
+graph = defaultdict(list)
+graph["a"].append(1)
+graph["a"].append(2)
+graph["b"].append(3)
 
-print(heap)
+print(graph)
+l = list(graph)
+
+print(l[0])
+
+# from collections import defaultdict
+# import heapq
+#
+# heap = []
+# heapq.heappush(heap, (1, "a"))
+# heapq.heappush(heap, (1, "a"))
+# heapq.heappush(heap, (2, "a"))
+#
+# print(heap)
 # string="aaabbc"
 # frequencies = defaultdict(int)
 # for letter in string:
