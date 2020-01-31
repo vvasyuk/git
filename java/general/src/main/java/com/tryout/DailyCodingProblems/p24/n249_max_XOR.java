@@ -8,6 +8,11 @@ import java.util.OptionalInt;
 public class n249_max_XOR {
     public static void main(String[] args) {
         int[] input = new int[]{4, 6, 7};
+        // 4: 100   6: 110  7: 111
+        // xor with 1 will be 7 cause we have path 110
+        //         1
+        //    0       1
+        //0        0     1
 
         maxXOR(input);
     }
@@ -70,7 +75,7 @@ public class n249_max_XOR {
                 if(1-bit==0){
                     // xor will be 0 -> l
                     if(root.l!=null){
-                        //xor|=(1<<i);
+                        xor|=(1<<i);
                         root=root.l;
                     }else{
                         root=root.r;
