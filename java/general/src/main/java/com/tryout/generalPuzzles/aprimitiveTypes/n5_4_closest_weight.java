@@ -1,4 +1,4 @@
-package com.tryout.generalPuzzles.primitiveTypes;
+package com.tryout.generalPuzzles.aprimitiveTypes;
 
 // Define the weight of a nonnegative integer x to be the number of bits that are set to
 // 1 in its binary representation

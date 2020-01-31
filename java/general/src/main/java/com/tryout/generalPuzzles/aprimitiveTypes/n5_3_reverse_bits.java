@@ -1,4 +1,4 @@
-package com.tryout.generalPuzzles.primitiveTypes;
+package com.tryout.generalPuzzles.aprimitiveTypes;
 
 // a very fast way to reverse bits for 16-bit words when we are performing many reverses
 // is to build an array based lookup-table A such that for every 16-bit number

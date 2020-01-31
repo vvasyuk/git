@@ -1,8 +1,7 @@
-package com.tryout.generalPuzzles.primitiveTypes;
+package com.tryout.generalPuzzles.aarrays;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 // Write a program which takes as input an array of digits encoding a decimal number
 // D and updates the array to represent the number D + 1. For example, if the input

@@ -1,4 +1,4 @@
-package com.tryout.generalPuzzles.primitiveTypes;
+package com.tryout.generalPuzzles.aprimitiveTypes;
 
 public class n5_10_uniform_random_number {
     public static void main(String[] args) {

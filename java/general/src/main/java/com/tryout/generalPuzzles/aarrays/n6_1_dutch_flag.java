@@ -1,4 +1,4 @@
-package com.tryout.generalPuzzles.primitiveTypes;
+package com.tryout.generalPuzzles.aarrays;
 
 import java.util.ArrayList;
 import java.util.Collections;

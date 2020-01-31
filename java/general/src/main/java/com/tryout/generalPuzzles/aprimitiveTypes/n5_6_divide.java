@@ -1,4 +1,4 @@
-package com.tryout.generalPuzzles.primitiveTypes;
+package com.tryout.generalPuzzles.aprimitiveTypes;
 
 public class n5_6_divide {
     // 11 -> 1011

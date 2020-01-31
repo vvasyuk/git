@@ -27,7 +27,7 @@ public class n249_max_XOR {
 
         int maxXOR = root.findMaxXOR(1);
 
-        System.out.println("maxXOR: " + maxXOR);
+        System.out.println("1 maxXOR: " + maxXOR);
     }
 
     public static class Trie {
@@ -70,7 +70,7 @@ public class n249_max_XOR {
                 if(1-bit==0){
                     // xor will be 0 -> l
                     if(root.l!=null){
-                        xor|=(1<<i);
+                        //xor|=(1<<i);
                         root=root.l;
                     }else{
                         root=root.r;

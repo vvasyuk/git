@@ -1,4 +1,4 @@
-package com.tryout.generalPuzzles.primitiveTypes;
+package com.tryout.generalPuzzles.aprimitiveTypes;
 
 // Write a program that multiplies two nonnegative integers. The only operators you
 // are allowed to use are

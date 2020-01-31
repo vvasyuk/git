@@ -1,4 +1,4 @@
-package com.tryout.generalPuzzles.primitiveTypes;
+package com.tryout.generalPuzzles.aarrays;
 
 // Certain applications require arbitrary precision arithmetic. One way to achieve
 //this is to use arrays to represent integers

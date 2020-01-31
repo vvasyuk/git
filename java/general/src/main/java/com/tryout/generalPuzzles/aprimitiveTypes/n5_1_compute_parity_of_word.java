@@ -1,4 +1,4 @@
-package com.tryout.generalPuzzles.primitiveTypes;
+package com.tryout.generalPuzzles.aprimitiveTypes;
 
 // The parity of a binary word is 1 if the number of 1s in the word is odd
 // For example, the parity of 1011 is 1, and the parity of 10001000 is 0.
