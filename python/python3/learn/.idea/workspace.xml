@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9c0ecbc2-9e17-45fc-8f84-2ab90081b74e" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../../../coursera/algorithms2/notes.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../../../coursera/algorithms2/notes.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../java/general/src/main/java/com/tryout/DailyCodingProblems/p25/n250_letter_is_digit.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../../java/general/src/main/java/com/tryout/DailyCodingProblems/p25/n250_letter_is_digit.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -16,8 +16,14 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="220">
-              <caret line="10" column="11" lean-forward="true" selection-start-line="10" selection-start-column="11" selection-end-line="10" selection-end-column="11" />
+            <state relative-caret-position="242">
+              <caret line="11" selection-start-line="11" selection-end-line="12" selection-end-column="24" />
+              <folding>
+                <element signature="e#976#1183#0" />
+                <element signature="e#1251#1302#0" />
+                <element signature="e#1335#1648#0" />
+                <element signature="e#1240#1647#0" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -44,9 +50,9 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
-    <option name="x" value="464" />
-    <option name="y" value="-26" />
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="3285" />
+    <option name="y" value="219" />
     <option name="width" value="1400" />
     <option name="height" value="951" />
   </component>
@@ -146,9 +152,9 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="2576" height="1416" extended-state="7" />
+    <frame x="2552" y="238" width="1936" height="1176" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.178881" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.12802951" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -186,8 +192,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="220">
-          <caret line="10" column="11" lean-forward="true" selection-start-line="10" selection-start-column="11" selection-end-line="10" selection-end-column="11" />
+        <state relative-caret-position="242">
+          <caret line="11" selection-start-line="11" selection-end-line="12" selection-end-column="24" />
+          <folding>
+            <element signature="e#976#1183#0" />
+            <element signature="e#1251#1302#0" />
+            <element signature="e#1335#1648#0" />
+            <element signature="e#1240#1647#0" />
+          </folding>
         </state>
       </provider>
     </entry>

@@ -1,14 +1,83 @@
-from collections import defaultdict
+from collections import OrderedDict
 
-graph = defaultdict(list)
-graph["a"].append(1)
-graph["a"].append(2)
-graph["b"].append(3)
+def solve(letters, unassigned, nums, words):
+    if not unassigned:
+        if is_valid(letters, words):
+            return letters
+        else:
+            return None
 
-print(graph)
-l = list(graph)
+    char = unassigned[0]
+    for num in nums:
+        letters[char] = num
+        nums.remove(num)
 
-print(l[0])
+        if is_valid(letters, words):
+            solution = solve(letters, unassigned[1:], nums, words)
+            if solution:
+                return solution
+
+        nums.add(num)
+        letters[char] = None
+
+    return False
+
+def order_letters(words):
+    n = len(words[2])
+
+    letters = OrderedDict()
+    for i in range(n - 1, -1, -1):
+        for word in words:
+            if word[i] not in letters:
+                letters[word[i]] = None
+
+    return letters
+
+def normalize(word, n):
+    diff = n - len(word)
+    return ['#'] * diff + word
+
+def cryptanalyze(problem):
+    words = list(map(list, problem))
+
+    n = len(words[2])
+    words[0] = normalize(words[0], n)
+    words[1] = normalize(words[1], n)
+
+    letters = order_letters(words)
+    unassigned = [letter for letter in letters if letter != '#']
+    nums = set(range(0, 10))
+
+    return solve(letters, unassigned, nums, words)
+
+def is_valid(letters, words):
+    a, b, c = words
+    n = len(c)
+
+    carry = 0
+    for i in range(n - 1, -1, -1):
+        if any(letters[word[i]] is None for word in words):
+            return True
+        elif letters[a[i]] + letters[b[i]] + carry == letters[c[i]]:
+            carry = 0
+        elif letters[a[i]] + letters[b[i]] + carry == 10 + letters[c[i]]:
+            carry = 1
+        else:
+            return False
+
+    return True
+
+# from collections import defaultdict
+#
+# graph = defaultdict(list)
+# graph["a"].append(1)
+# graph["a"].append(2)
+# graph["b"].append(3)
+#
+# print(graph)
+# l = list(graph)
+#
+# print(l[0])
 
 # from collections import defaultdict
 # import heapq
