@@ -13,6 +13,8 @@ public class n252_egyptian_fractions {
     //
     //In addition, we can simplify the calculation of our new numerator by noting that since c = 1
     // and we have updated d, a * d - b * c can be changed to (-b) % a.
+    
+    // For example, consider 6/14, we first find ceiling of 14/6, i.e., 3. So the first unit fraction becomes 1/3, then recur for (6/14 – 1/3) i.e., 4/42.
     public static void main(String[] args) {
         fractions(4.0,13.0);
     }
