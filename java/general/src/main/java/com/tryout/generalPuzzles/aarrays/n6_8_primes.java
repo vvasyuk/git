@@ -6,7 +6,8 @@ import java.util.List;
 
 public class n6_8_primes {
     public static void main(String[] args) {
-
+        List<Integer> res = generatePrimes(10);
+        res.forEach(System.out::println);
     }
 
     // Given n, return all primes up to and including n.
