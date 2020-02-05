@@ -15,6 +15,8 @@ import java.util.List;
 
 public class n6_9_array_permutation {
 
+    // A = (a,b,c,d}
+    // (2,0,1,3}
     public static void applyPermutation(List<Integer> perm, List<Integer> A) {
         for (int i = 0; i < A.size(); ++i) {
             // Traverses the cycle to see if i is the minimum element.
