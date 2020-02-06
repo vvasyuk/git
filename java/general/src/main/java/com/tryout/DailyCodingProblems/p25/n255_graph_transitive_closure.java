@@ -11,16 +11,29 @@ public class n255_graph_transitive_closure {
     // The reach-ability matrix is called transitive closure of a graph.
     final static int V = 4; //Number of vertices in a graph
     public static void main(String[] args) {
-        ArrayList<ArrayList<Integer>> g = new ArrayList<>();
-        g.add(new ArrayList(Arrays.asList(1,2)));
-        g.add(new ArrayList(Arrays.asList(2)));
-        g.add(new ArrayList(Arrays.asList(3)));
-        g.add(new ArrayList(Arrays.asList()));
+        // 0: 1,2
+        // 1: 2
+        // 2: 0,3
+        // 3:
 
-        //transitiveClosure(g);
+//        ArrayList<ArrayList<Integer>> g = new ArrayList<>();
+//        g.add(new ArrayList(Arrays.asList(1,2)));
+//        g.add(new ArrayList(Arrays.asList(2)));
+//        g.add(new ArrayList(Arrays.asList(3)));
+//        g.add(new ArrayList(Arrays.asList()));
+
+        //The graph is given in the form of adjacency matrix say ‘graph[V][V]’ where graph[i][j] is 1 if there is an edge from vertex i to vertex j or i is equal to j, otherwise graph[i][j] is 0.
+        int graph[][] = new int[][]{
+                {1, 1, 0, 1},
+                {0, 1, 1, 0},
+                {0, 0, 1, 1},
+                {0, 0, 0, 1}
+        };
+
+        transitiveClosure(graph);
     }
 
-    void transitiveClosure(int graph[][]){
+    static void transitiveClosure(int graph[][]){
         /* reach[][] will be the output matrix that will finally
            have the shortest  distances between every pair of
            vertices */
