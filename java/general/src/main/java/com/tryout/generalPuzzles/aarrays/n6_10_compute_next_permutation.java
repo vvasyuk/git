@@ -25,6 +25,7 @@ public class n6_10_compute_next_permutation {
 
     public static List<Integer> nextPermutation(List<Integer> perm) {
         int k = perm.size() - 2;
+        //go from right to left and find first number which is not ascending
         while (k >= 0 && perm.get(k) >= perm.get(k + 1)){
             --k;
         }
@@ -32,7 +33,7 @@ public class n6_10_compute_next_permutation {
             return Collections.emptyList(); // perm is the last permutation.
         }
         // Swap the smallest entry after index k that is greater than perm[k] . We
-        // exploit the fact that perm .subList (k + 1, perm.sizeO) is decreasing so
+        // exploit the fact that perm .subList (k + 1, perm.size()) is decreasing so
         // if we search in reverse order, the first entry that is greater than
         // perm[k ] is the smallest such entry.
         for (int i = perm.size() - 1; i > k; --i) {
