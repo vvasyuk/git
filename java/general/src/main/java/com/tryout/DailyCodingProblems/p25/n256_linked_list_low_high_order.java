@@ -1,5 +1,6 @@
 package com.tryout.DailyCodingProblems.p25;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
@@ -9,6 +10,7 @@ public class n256_linked_list_low_high_order {
         in.add(1);in.add(2);in.add(3);in.add(4);in.add(5);
 
         rearrange(in);
+        in.forEach(System.out::println);
     }
 
     private static void rearrange(LinkedList<Integer> in) {
@@ -23,18 +25,14 @@ public class n256_linked_list_low_high_order {
 
             if(it.hasNext()){
                 if ( curr>in.get(it.nextIndex()) && even){
-                    in.set(it.previousIndex(), in.get(it.nextIndex()));
-                    in.set(it.nextIndex(), curr);
+                    Collections.swap(in, it.previousIndex(), it.nextIndex());
                 }
 
                 if ( curr<in.get(it.nextIndex()) && !even){
-                    in.set(it.previousIndex(), in.get(it.nextIndex()));
-                    in.set(it.nextIndex(), curr);
+                    Collections.swap(in, it.previousIndex(), it.nextIndex());
                 }
             }
-
             even = !even;
         }
-        in.forEach(System.out::println);
     }
 }
