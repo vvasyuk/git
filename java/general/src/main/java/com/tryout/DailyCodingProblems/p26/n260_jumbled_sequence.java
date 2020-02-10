@@ -12,7 +12,7 @@ public class n260_jumbled_sequence {
         // Furthermore, if we have just one run of consecutive negatives, we can reverse the corresponding entries in the original
         // sequence to produce a decreasing run of numbers. For example, given [None, +, -, -, -] we reverse the last
         // three entries of [0, 1, 2, 3, 4] to get [0, 1, 4, 3, 2].
-        String[] jumbled = new String[]{null, "+", "-", "-", "-"};
+        String[] jumbled = new String[]{null, "+", "+", "-", "-"};
         int[] original = new int[]{0, 1, 2, 3, 4};
 
         reconstruct(jumbled, original);
@@ -23,6 +23,7 @@ public class n260_jumbled_sequence {
         int n = jumbled.length-1;
         Stack<Integer> stack = new Stack<Integer>();
 
+        // when we meet - we reverse all elements using stack
         for (int i = 0; i < n ; i++) {
             if (jumbled[i+1].equals("-")){
                 stack.push(original[i]);

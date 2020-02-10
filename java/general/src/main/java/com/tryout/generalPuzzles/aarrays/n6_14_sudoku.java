@@ -35,13 +35,13 @@ public class n6_14_sudoku {
     // endCol - 1] contains any duplicates in {1, 2, ...»
     // partialAssignment.size()}; otherwise return false.
     private static boolean hasDuplicate (List<List<Integer>> partialAssignment, int startRow, int endRow, int startCol, int endCol ) {
-        List<Boolean> isPresent = new ArrayList<>(Collections.nCopies (partialAssignment . size () + 1, false));
+        List<Boolean> isPresent = new ArrayList<>(Collections.nCopies(partialAssignment.size() + 1, false));
         for (int i = startRow; i < endRow; ++i) {
             for (int j = startCol; j < endCol; ++j) {
-                if (partialAssignment . get (i) .get (j) !=0 && isPresent . get (partialAssignment . get (i) . get (j )) ) {
+                if (partialAssignment.get(i).get(j) !=0 && isPresent.get(partialAssignment.get(i).get(j))) {
                     return true ;
                 }
-                isPresent.set(partialAssignment .get(i) .get(j) , true);
+                isPresent.set(partialAssignment.get(i).get(j), true);
             }
         }
         return false;
