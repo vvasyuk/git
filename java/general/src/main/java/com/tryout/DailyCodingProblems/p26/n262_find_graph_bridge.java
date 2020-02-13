@@ -50,6 +50,11 @@ public class n262_find_graph_bridge {
         appeared.put(v, depth);
         reach.put(v, depth);
 
+        // assign reach and appeared using depth
+        // visit all childs
+        // if child was already visited - reassign smallest appeared to a reach (making a cluster)
+        // after visiting unvisited child - reassign smallest reach (between current and child)
+        // if childs appeared and reach are same - its the bridge
         for ( Integer neighbor : g.get(v)){
             if(!appeared.containsKey(neighbor)){
                 visit(g, v,neighbor, depth+1, reach, appeared, bridges);

@@ -1,8 +1,19 @@
 package com.tryout.generalPuzzles.aarrays;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class n6_18_rotate_matrix {
+    public static void main(String[] args) {
+        List<List<Integer>> squareMatrix = new ArrayList<>();
+        squareMatrix.add(new ArrayList(Arrays.asList(1,2,3,4)));
+        squareMatrix.add(new ArrayList(Arrays.asList(5,6,7,8)));
+        squareMatrix.add(new ArrayList(Arrays.asList(9,10,11,12)));
+        squareMatrix.add(new ArrayList(Arrays.asList(13,14,15,16)));
+        rotateMatrix(squareMatrix);
+    }
+
     public static void rotateMatrix(List<List<Integer>> squareMatrix) {
         final int matrixSize = squareMatrix.size() - 1;
         for (int i = 0; i < (squareMatrix.size() / 2); ++i) {
