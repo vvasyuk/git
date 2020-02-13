@@ -9,6 +9,7 @@ package com.tryout.DailyCodingProblems.p26;
 //There must be a single space between each word.
 //The sentence must end with a terminal mark immediately following a word.
 
+import java.util.ArrayList;
 import java.util.stream.Stream;
 
 public class n263_check_sentence {
@@ -30,7 +31,7 @@ public class n263_check_sentence {
             if (Character.isUpperCase(c)) {
                 state = 1;
             }    //uppercase
-            else if (!Character.isUpperCase(c) && c!=',' && c!='.' && c!=' ' && (state == 1 | state == 2 | state == 3)) {
+            else if (!Character.isUpperCase(c) && Character.isLetter(c) && (state == 1 | state == 2 | state == 3)) {
                 state = 2;
             }    //lowercase
             else if (c == ' ' && (state == 1 | state == 2 | state == 4)) {
