@@ -21,8 +21,10 @@ public class n6_19_pascal_trianle {
         for (int i = 0; i < numRows; ++i) {
             List<Integer> currRow = new ArrayList<>();
             for (int j = 0; j <= i ; ++j){
-        // Set this entry to the sum of the two above adjacent entries if they exist.
-                currRow.add((0 < j && j < i) ? pascalTriangle.get(i - 1).get(j - 1) + pascalTriangle.get(i - 1).get(j) : 1);
+                // Set this entry to the sum of the two above adjacent entries if they exist.
+                currRow.add((0 < j && j < i)
+                        ? pascalTriangle.get(i - 1).get(j - 1) + pascalTriangle.get(i - 1).get(j)
+                        : 1);
             }
             pascalTriangle.add(currRow);
         }
