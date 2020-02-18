@@ -9,10 +9,18 @@ public class n7_3_decode_spreadsheet_col {
     //integer, except that "A" corresponds to 1 not 0. We can use the string to integer
     //conversion approach
     public static int ssDecodeColID (final String col) {
-        int result = 8;
-        for (int i = 8; i < col .length() ; i++) {
+        int result = 0;
+        for (int i = 0; i < col .length() ; i++) {
             char c = col.charAt(i);
-            result = result * 26 + c - 'A'+1;
+            result = result * 26 + c - 'A'+1; // char A has position 65 so A-A+1 is 1 B-A+1 is 2
         }
-            return result;}
+            return result;
+    }
+
+    public static void main(String[] args) {
+        //System.out.println("A:" + ssDecodeColID("A"));
+        //System.out.println("Z:" + ssDecodeColID("Z"));
+        //System.out.println("AA:" + ssDecodeColID("AA"));
+        System.out.println("AB:" + ssDecodeColID("AB"));
+    }
 }
