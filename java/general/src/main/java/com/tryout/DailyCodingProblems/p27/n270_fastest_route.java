@@ -14,6 +14,11 @@ import java.util.HashMap;
 import java.util.PriorityQueue;
 
 // given n=5 fastest  0->2->3->4
+//  1:5-
+// /    \
+//0-2:3--3:4--4:?
+// \    /
+//  5:4-
 public class n270_fastest_route {
     public static void main(String[] args) {
         HashMap<Integer, ArrayList<Node>> g = new HashMap<>();
@@ -56,14 +61,15 @@ public class n270_fastest_route {
         while(!q.isEmpty()){
             Integer curr = q.poll();
             System.out.println(curr);
-            visited.put(curr,true);
-            g.get(curr).forEach(x->{
+            for(Node x : g.get(curr)){
                 if (!visited.getOrDefault(x.id,false)){
+                    times.put(x.id,  Math.min(times.getOrDefault(x.id,Integer.MAX_VALUE), times.get(curr)+x.length));
                     q.add(x.id);
                 }
-            });
-
+            }
+            visited.put(curr,true);
         }
+        System.out.println(times.entrySet().stream().max((a,b)->a.getValue()-b.getValue()));
 
     }
 
