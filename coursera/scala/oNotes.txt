@@ -1,0 +1,140 @@
+###############
+# Classes and Objects
+###############
+class ChecksumAccumulator {
+    private var sum = 0
+    def add(b: Byte): Unit = { sum += b }
+    def checksum(): Int = ~(sum & 0xFF) + 1
+}
+
+-Singleton objects
+import scala.collection.mutable
+object ChecksumAccumulator {
+    private val cache = mutable.Map.empty[String, Int]
+    def calculate(s: String): Int =
+        if (cache.contains(s))
+            cache(s)
+        else {
+            val acc = new ChecksumAccumulator
+            for (c <s)
+            acc.add(c.toByte)
+            val cs = acc.checksum()
+            cache += (s >
+            cs)
+            cs
+        }
+}
+
+-A Scala application
+import ChecksumAccumulator.calculate
+object Summer {
+    def main(args: Array[String]) = {
+        for (arg <args)
+            println(arg + ": " + calculate(arg))
+    }
+}
+
+-The App trait
+import ChecksumAccumulator.calculate
+object FallWinterSpringSummer extends App {
+    for (season <List("fall", "winter", "spring"))
+        println(season + ": " + calculate(season))
+}
+
+
+###############
+# Basic Types and Operations
+###############
+-Character literals
+val a = 'A'         // a: Char = A
+val d = '\u0041'    // d: Char = A
+val f = '\u0044'    // f: Char = D
+val B\u0041\u0044 = 1   //BAD: Int = 1
+
+-String interpolation
+val name = "reader"         // println(s"Hello, $name!")
+s"The answer is ${6 * 7}."  // res0: String = The answer is 42.
+
+infix operator                  // method between the object and the parameter ("7 + 2")
+prefix operator (only +,-,!,~)  // method before the object on which you are invoking the method (-7, !found). "-2.0" transformed into (2.0).unary_-
+postfix operator                // method after the object ("7 toLong")
+
+-Bitwise operations
+1 & 2   // 1 (0001) and 2 (0010) = 0 (0000)
+1 | 2   // 1 (0001) and 2 (0010) = 3 (0011)
+1 ˆ 3   // 1 (0001) and 2 (0010) = 2 (0010)
+~1      // inverts each bit in 1 (0001), yielding -2, which in binary looks like 11111111111111111111111111111110.
+1 << 2  // 4
+
+-Operator precedence and associativity
+* / %
++ :
+= !
+< >
+&
+ˆ
+|
+(all letters)
+(all assignment operators)
+
+
+###############
+# Functional Objects
+###############
+class Rational(n: Int, d: Int) {                    // primary constructor will be created with these two params
+    require(d != 0)                                 // class body code will be added to primary constructor (precondition of the primary constructor that d must be non-zero)
+    private val g = gcd(n.abs, d.abs)
+    val numer = n / g
+    val denom = d / g
+    def this(n: Int) = this(n, 1)                   // auxiliary constructors invokes the primary constructor
+    def + (that: Rational): Rational =              // simply that.d will not work because d is not accessible outside object where they invoked, so we added numer, denum fields
+        new Rational(numer * that.denom + 
+        that.numer * denom,denom * that.denom)
+    def + (i: Int): Rational =
+        new Rational(numer + i * denom, denom)
+    def (that: Rational): Rational =
+        new Rational(numer * that.denom that.numer* 
+        denom,denom * that.denom)
+    def (i: Int): Rational =
+        new Rational(numer i* denom, denom)
+    def * (that: Rational): Rational =
+        new Rational(numer * that.numer, denom * 
+        that.denom)
+    def * (i: Int): Rational =
+        new Rational(numer * i, denom)
+    def / (that: Rational): Rational =
+        new Rational(numer * that.denom, denom * 
+        that.numer)
+    def / (i: Int): Rational =
+        new Rational(numer, denom * i)
+    override def toString = numer + "/" + denom     // override default override
+    private def gcd(a: Int, b: Int): Int =
+        if (b == 0) a else gcd(b, a % b)
+}
+
+-Implicit conversions
+r * 2   // works
+2 * r   // does not work, 2 is Int - not method that takes Rational argument
+implicit def intToRational(x: Int) = new Rational(x)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
