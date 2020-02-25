@@ -331,3 +331,129 @@ def approximate(guess: Double): Double =
     if (isGoodEnough(guess)) guess
     else approximate(improve(guess))
 
+
+###############
+# Control Abstraction
+###############
+-Reducing code duplication
+object FileMatcher {
+    private def filesHere = (new java.io.File(".")).listFiles
+    def filesEnding(query: String) =
+        for (file <-filesHere; if file.getName.endsWith(query))
+            yield file
+    def filesContaining(query: String) =                            // function works just like filesEnding only difference is that this function uses contains instead of endsWith
+        for (file <-filesHere; if file.getName.contains(query))
+        yield file            
+            
+}
+// While you cannot pass around a method name as a value, you can get the same effect by passing around a function value
+def filesMatching(query: String, matcher: (String, String) => Boolean) = {      // uses matcher to check the file name against the query
+    for (file <-filesHere; if matcher(file.getName, query))
+        yield file
+}
+def filesEnding(query: String) = filesMatching(query, _.endsWith(_))
+
+// full simplified version
+object FileMatcher {
+    private def filesHere = (new java.io.File(".")).listFiles
+    private def filesMatching(matcher: String => Boolean) =
+        for (file <-filesHere; if matcher(file.getName))
+            yield file
+    def filesEnding(query: String) = filesMatching(_.endsWith(query))
+    def filesContaining(query: String) = filesMatching(_.contains(query))
+    def filesRegex(query: String) = filesMatching(_.matches(query))
+}
+
+-Simplifying client code
+def containsNeg(nums: List[Int]) = nums.exists(_ < 0)
+def containsOdd(nums: List[Int]) = nums.exists(_ % 2 == 1)
+
+-Currying
+def curriedSum(x: Int)(y: Int) = x + y      // curriedSum: (x: Int)(y: Int)Int
+curriedSum(1)(2)                            // res5: Int = 3; two traditional function invocations back to back; The first function invocation takes a single Int parameter named x, and returns a function value for the second function
+val onePlus = curriedSum(1)_                // placeholder for the second parameter list
+onePlus(2)                                  // res7: Int = 3
+
+-Writing new control structures
+def twice(op: Double => Double, x: Double) = op(op(x))
+twice(_ + 1, 5)                             // res9: Double = 7.0
+// Any time you find a control pattern repeated in multiple parts of your code, you should think about implementing it as a new control structure
+// Consider now a more widely used coding pattern: open a resource, operate on it, and then close the resource
+// loan pattern: (because a control-abstraction function, such as withPrintWriter, opens a resource and “loans” it to a function)
+def withPrintWriter(file: File, op: PrintWriter => Unit) = {
+    val writer = new PrintWriter(file)
+    try {
+        op(writer)
+    } finally {
+        writer.close()                      // impossible to forget to close the file
+    }
+}
+withPrintWriter(new File("date.txt"), writer => writer.println(new java.util.Date))
+
+-By-name parameters
+// you want to implement an assertion construct called myAssert
+var assertionsEnabled = true
+def myAssert(predicate: () => Boolean) =
+    if (assertionsEnabled && !predicate())
+        throw new AssertionError
+myAssert(() => 5 > 3)
+// By-name parameters exist precisely so you can remove () => part
+def byNameAssert(predicate: => Boolean) =
+    if (assertionsEnabled && !predicate)
+        throw new AssertionError
+byNameAssert(5 > 3)                         // function value will be created whose apply method will evaluate 5 > 3, and this function value will be passed to byNameAssert
+
+
+###############
+# Composition and Inheritance
+###############
+-A two-dimensional layout library
+// ibrary for building and rendering two-dimensional layout elements
+val column1 = elem("hello") above elem("***")
+val column2 = elem("***") above elem("world")
+column1 beside column2
+result:
+hello ***
+*** world
+
+-Abstract classes
+abstract class Element {
+    def contents: Array[String]     // no abstract modifier, method abstract if no implementation
+}
+
+-Defining parameterless methods
+// if function has no params - use no braces (if only this function does no side-effect)
+abstract class Element {
+    def contents: Array[String]
+    def height: Int = contents.length                               // notice no braces
+    def width: Int = if (height == 0) 0 else contents(0).length
+}
+
+-Extending classes
+class ArrayElement(conts: Array[String]) extends Element {          // inherit all non-private members from class Element
+    def contents: Array[String] = conts                             // private members of the superclass are not inherited in a subclass
+}
+// hieararchy is next ArrayElement<-Element<-AnyRef
+val ae = new ArrayElement(Array("hello", "world"))
+ae.width                                            // res0: Int = 5
+val e: Element = new ArrayElement(Array("hello"))
+
+-Overriding methods and fields
+// fields and methods belong to the same namespace - possible for a field to override a parameterless method
+class ArrayElement(conts: Array[String]) extends Element {
+    val contents: Array[String] = conts                     // val here overrides def in abstract
+}
+
+-Defining parametric fields
+// can remove const param by combining the parameter and the field in a single parametric field definition
+class ArrayElement(val contents: Array[String]) extends Element         // val defines at the same time a parameter and field with the same name (with var it can be reassignable)
+
+-Invoking superclass constructors
+-Using override modifiers
+-Polymorphism and dynamic binding
+-Declaring final members
+-Using composition and inheritance
+-Implementing above, beside, and toString
+-Defining a factory object
+-Heighten and widen
+-Putting it all together
