@@ -449,11 +449,86 @@ class ArrayElement(conts: Array[String]) extends Element {
 class ArrayElement(val contents: Array[String]) extends Element         // val defines at the same time a parameter and field with the same name (with var it can be reassignable)
 
 -Invoking superclass constructors
+// element consisting of a single line given by a string
+class LineElement(s: String) extends ArrayElement(Array(s)) {           // Array(s) passed to primary constructor of a parent class (like in java)
+    override def width = s.length
+    override def height = 1
+}
+
 -Using override modifiers
+// Scala requires override modifier for all members that override a concrete member in a parent class
+
 -Polymorphism and dynamic binding
+class UniformElement(ch: Char,override val width: Int,override val height: Int) extends Element {
+    private val line = ch.toString * width
+    def contents = Array.fill(height)(line)
+}
+val e1: Element = new ArrayElement(Array("hello", "world"))
+val ae: ArrayElement = new LineElement("hello")
+val e2: Element = ae
+val e3: Element = new UniformElement('x', 2, 3)
+// method invocations on variables and expressions are dynamically bound (determined at run time based on the class of the object)
+
 -Declaring final members
+
 -Using composition and inheritance
+// previous version, LineElement had an inheritance relationship with ArrayElement, from which it inherited contents
+// It now has a composition relationship with Array: it holds a reference to an array
+class LineElement(s: String) extends Element {
+    val contents = Array(s)
+    override def width = s.length
+    override def height = 1
+}
+
 -Implementing above, beside, and toString
+// above first version
+def above(that: Element): Element =
+    new ArrayElement(this.contents ++ that.contents)
+
+// beside
+def beside(that: Element): Element = new ArrayElement(
+    for (
+        (line1, line2) <- this.contents zip that.contents       // this.contents and that.contents, are transformed into an array of pairs (as Tuple2s are called) using the zip operator
+    ) yield line1 + line2
+)
+
+// toString
+override def toString = contents mkString "\n"
+
 -Defining a factory object
+// A straightforward solution is to create a companion object of class Element and make this the factory object for layout elements
+object Element {
+    def elem(contents: Array[String]): Element = new ArrayElement(contents)
+    def elem(chr: Char, width: Int, height: Int): Element = new UniformElement(chr, width, height)
+    def elem(line: String): Element = new LineElement(line)
+}
+
 -Heighten and widen
 -Putting it all together
+import Element.elem
+object Spiral {
+    val space = elem(" ")
+    val corner = elem("+")
+    def spiral(nEdges: Int, direction: Int): Element = {
+        if (nEdges == 1)
+            elem("+")
+        else {
+            val sp = spiral(nEdges - 1, (direction + 3) % 4)
+            def verticalBar = elem('|', 1, sp.height)
+            def horizontalBar = elem('-', sp.width, 1)
+            if (direction == 0)
+                (corner beside horizontalBar) above (sp beside space)
+            else if (direction == 1)
+                (sp above space) beside (corner above verticalBar)
+            else if (direction == 2)
+                (space beside sp) above (horizontalBar beside corner)
+            else
+                (verticalBar above corner) beside (space above sp)
+        }
+    }
+def main(args: Array[String]) = {
+    val nSides = args(0).toInt
+    println(spiral(nSides, 0))
+}
+}
+
