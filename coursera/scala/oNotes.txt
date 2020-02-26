@@ -675,3 +675,138 @@ val rect = new Rectangle(new Point(1, 1), new Point(10, 10))
 rect.left               // res2: Int = 1
 rect.right              // res3: Int = 10
 
+-The Ordered trait
+class Rational(n: Int, d: Int) extends Ordered[Rational] {
+    // ...
+    def compare(that: Rational) =                               //  define a compare method 
+        (this.numer * that.denom) - (that.numer * this.denom)   // zero - same, negative - receiver less than argument, positive - receiver greater than argument
+}
+new Rational(1, 2) < new Rational(1, 3)         // res5: Boolean = false
+
+-Traits as stackable modifications
+abstract class IntQueue {
+    def get(): Int
+    def put(x: Int)
+}
+class BasicIntQueue extends IntQueue {
+    private val buf = new ArrayBuffer[Int]
+    def get() = buf.remove(0)
+    def put(x: Int) = { buf += x }              // adds elements to the other end
+}
+val queue = new BasicIntQueue
+queue.put(10)
+queue.put(20)
+queue.get()                                     // res9: Int = 10
+queue.get()                                     // res10: Int = 20
+trait Doubling extends IntQueue {
+    abstract override def put(x: Int) = { super.put(2 * x) }        // super calls in a trait are dynamically bound, the super call in trait Doubling will work so long as the trait is mixed in after another trait or class that gives a concrete definition to the method
+}
+class MyQueue extends BasicIntQueue with Doubling
+val queue = new MyQueue
+queue.put(10)
+queue.get()                                     // res12: Int = 20
+trait Incrementing extends IntQueue {
+    abstract override def put(x: Int) = { super.put(x + 1) }
+}
+trait Filtering extends IntQueue {
+    abstract override def put(x: Int) = {if (x >= 0) super.put(x)}
+}
+val queue = (new BasicIntQueue with Incrementing with Filtering)    // method in the +trait furthest to the right is called first. If that method calls super, it invokes the method in the next trait to its left, and so on
+
+-Why not multiple inheritance?
+// When you instantiate a class with new, Scala takes the class, and all of its inherited classes and traits, and puts them in a single, linear order.
+// Then, whenever you call super inside one of those classes, the invoked method is the next one up the chain. If all of the methods but the last call super, the net result is stackable behavior.
+
+-To trait or not to trait?
+// If the behavior will not be reused, then make it a concrete class.
+// If it might be reused in multiple, unrelated classes, make it a trait
+// If you want to inherit from it in Java code, use an abstract class
+// If you plan to distribute it in compiled form, and you expect outside groups to write classes inheriting from it, you might lean towards using an abstract class
+// If you still do not know, after considering the above, then start by making it as a trait
+
+
+###############
+# Packages and Imports
+###############
+-Putting code in packages
+package bobsrockets.navigation
+class Navigator
+// C# style
+package bobsrockets.navigation {
+    class Navigator
+}
+
+-Concise access to related code
+// In file launch.scala
+package launch {
+    class Booster3
+}
+// In file bobsrockets.scala
+package bobsrockets {
+    package navigation {
+        package launch {
+            class Booster1
+        }
+        class MissionControl {
+            val booster1 = new launch.Booster1
+            val booster2 = new bobsrockets.launch.Booster2
+            val booster3 = new _root_.launch.Booster3           // gives you the top-level launch package
+        }
+    }
+    package launch {
+        class Booster2
+    }
+}
+
+-Imports
+import bobsdelights.Fruit                       // easy access to Fruit
+import bobsdelights._                           // easy access to all members of bobsdelights
+import bobsdelights.Fruits._                    // easy access to all members of Fruits
+import Fruits.{Apple, Orange}                   // selective
+import Fruits.{Apple => McIntosh, Orange}       // Apple object is renamed to McIntosh
+import Fruits.{Pear => _, _}                    // except pear
+
+package bobsdelights
+abstract class Fruit(
+    val name: String,
+    val color: String
+)
+object Fruits {
+    object Apple extends Fruit("apple", "red")
+    object Orange extends Fruit("orange", "orange")
+    object Pear extends Fruit("pear", "yellowish")
+    val menu = List(Apple, Orange, Pear)
+}
+
+-Implicit imports
+//  added to the top of every source file with extension ".scala"
+import java.lang._      // everything in the java.lang package
+import scala._          // everything in the scala package
+import Predef._         // everything in the Predef object
+
+-Access modifiers
+// Private members - visible only inside the class or object that contains the member definition (Outter class sees no private memeber of inner)
+// Protected members - accessible from subclasses of the class in which the member is defined (not packge as in java)
+// Public members - default - accessed from anywhere
+
+-Package objects
+// Any kind of definition that you can put inside a class can also be at the top level of a package (method you’d like to be in scope for an entire package)
+// Each package is allowed to have one package object. Any definitions placed in a package object are considered members of the package itself.
+// In file bobsdelights/package.scala
+package object bobsdelights {
+    def showFruit(fruit: Fruit) = {
+        import fruit._
+        println(name + "s are " + color)
+    }
+}
+// In file PrintMenu.scala
+package printmenu
+import bobsdelights.Fruits
+import bobsdelights.showFruit
+object PrintMenu {
+    def main(args: Array[String]) = {
+        for (fruit <- Fruits.menu) {
+            showFruit(fruit)
+        }
+    }
+}
