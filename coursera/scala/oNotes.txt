@@ -504,6 +504,41 @@ object Element {
 }
 
 -Heighten and widen
+import Element.elem
+abstract class Element {
+    def contents: Array[String]
+    def width: Int = contents(0).length
+    def height: Int = contents.length
+    def above(that: Element): Element = {
+        val this1 = this widen that.width
+        val that1 = that widen this.width
+        elem(this1.contents ++ that1.contents)
+    }
+    def beside(that: Element): Element = {
+        val this1 = this heighten that.height
+        val that1 = that heighten this.height
+        elem(
+            for ((line1, line2) <- this1.contents zip that1.contents)
+                yield line1 + line2)
+    }
+    def widen(w: Int): Element =
+        if (w <= width) this
+        else {
+        val left = elem(' ', (w - width) / 2, height)
+        val right = elem(' ', w - width - left.width, height)
+        left beside this beside right
+        }
+    def heighten(h: Int): Element =
+    if (h <= height) this
+    else {
+        val top = elem(' ', width, (h - height) / 2)
+        val bot = elem(' ', width, h - height - top.height)
+        top above this above bot
+    }
+    override def toString = contents mkString "\n"
+}
+
+
 -Putting it all together
 import Element.elem
 object Spiral {
@@ -516,19 +551,127 @@ object Spiral {
             val sp = spiral(nEdges - 1, (direction + 3) % 4)
             def verticalBar = elem('|', 1, sp.height)
             def horizontalBar = elem('-', sp.width, 1)
-            if (direction == 0)
+            if (direction == 0)                                         // bottom to up
                 (corner beside horizontalBar) above (sp beside space)
-            else if (direction == 1)
+            else if (direction == 1)                                    // right to left
                 (sp above space) beside (corner above verticalBar)
-            else if (direction == 2)
+            else if (direction == 2)                                    // top to bottom
                 (space beside sp) above (horizontalBar beside corner)
-            else
+            else                                                        // right to left
                 (verticalBar above corner) beside (space above sp)
         }
     }
-def main(args: Array[String]) = {
-    val nSides = args(0).toInt
-    println(spiral(nSides, 0))
+    def main(args: Array[String]) = {
+        val nSides = args(0).toInt
+        println(spiral(nSides, 0))
+    }
 }
+
+
+###############
+# Scala’s Hierarchy
+###############
+-Scala’s class hierarchy
+//top of the hierarchy is class Any, methods:
+final def ==(that: Any): Boolean
+final def !=(that: Any): Boolean
+def equals(that: Any): Boolean
+def ##: Int
+def hashCode: Int
+def toString: String
+// methods min, max, until, to, and abs are all defined in a class scala.runtime.RichInt, and there is an implicit conversion from class Int to RichInt. The conversion is applied whenever a method is invoked on an Int that is undefined in Int but defined in RichInt.
+#########################################################################################################
+#+---+                                                                                                  #
+#|any|                                                                                                  #
+#+---+                                                                                                  #
+#|    +------+                                                                                  +------+#
+#+----+anyVal+-+--------+--------+--------+--------+--------+--------+--------+--------+<-------+Nothng|#
+#|    +------+ |        |        |        |        |        |        |        |        |        +------+#
+#|             +------+ +------+ +------+ +------+ +------+ +------+ +------+ +------+ +------+         #
+#|             |Double| |Float | |Long  | |Int   | |Short | |Byte  | |Char  | |Bolean| |Unit  |         #
+#|             +------+ +------+ +------+ +------+ +------+ +------+ +------+ +------+ +------+         #
+#|                                                                                                      #
+#|                                                                                                      #
+#|    +------+                                     +------+                                             #
+#+----+anyRef+-+--------+--------+--------+<-------+Null  |                                             #
+#     +------+ |        |        |        |        +------+                                             #
+#              +------+ +------+ +------+ +------+                                                      #
+#              |Itrble+<+Seq   +<+List  | |Option|                                                      #
+#              +------+ +------+ +------+ +------+                                                      #
+#########################################################################################################
+
+-How primitives are implemented
+// class AnyRef defines an additional eq method, which cannot be overridden and is implemented as reference equality (i.e., it behaves like == in Java for reference types).
+val x = new String("abc")
+val y = new String("abc")
+x == y                      // res13: Boolean = true
+x eq y                      // res14: Boolean = false
+x ne y                      // res15: Boolean = true
+
+-Bottom types
+// Null is a subclass of every reference class
+// Nothing is a subtype of every other type
+val i: Int = null               // error: an expression of type Null is ineligible for implicit conversion
+def error(message: String): Nothing =
+    throw new RuntimeException(message)     // return type of error is Nothing
+    
+def divide(x: Int, y: Int): Int =
+    if (y != 0) x / y
+    else error("can't divide by zero")      // Because Nothing is a subtype of Int, the type of the whole conditional is Int, as required.
+
+-Defining your own value classes
+// must have exactly one parameter and it must have nothing inside it except defs
+class Dollars(val amount: Int) extends AnyVal {
+    override def toString() = "$" + amount
 }
+val money = new Dollars(1000000)        // money: Dollars = $1000000; money.amount  -> res16: Int = 1000000
+
+
+###############
+# Traits
+###############
+-How traits work
+trait Philosophical {                                   // default superclass of AnyRef
+    def philosophize() = {
+        println("I consume memory, therefore I am!")
+    }
+}
+class Frog extends Philosophical {
+    override def toString = "green"
+}
+val frog = new Frog          // frog: Frog = green
+frog.philosophize()          // I consume memory, therefore I am!
+// can mix a trait into a class that explicitly extends a superclass
+class Animal
+class Frog extends Animal with Philosophical {
+    override def toString = "green"
+    override def philosophize() = {                         // override method in trait
+        println("It ain't easy being " + toString + "!")
+    }
+}
+val phrog: Philosophical = new Frog                         // phrog: Philosophical = green
+phrog.philosophize()                                        // It ain't easy being green!
+
+-Thin versus rich interfaces
+// One major use of traits is to automatically add methods to a class
+
+-Example: Rectangular objects
+class Point(val x: Int, val y: Int)
+trait Rectangular {
+    def topLeft: Point
+    def bottomRight: Point
+    def left = topLeft.x
+    def right = bottomRight.x
+    def width = right - left
+    // and many more geometric methods...
+}
+abstract class Component extends Rectangular {
+    // other methods...
+}
+class Rectangle(val topLeft: Point, val bottomRight: Point) extends Rectangular {
+    // other methods...
+}
+val rect = new Rectangle(new Point(1, 1), new Point(10, 10))
+rect.left               // res2: Int = 1
+rect.right              // res3: Int = 10
 
