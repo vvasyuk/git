@@ -810,3 +810,225 @@ object PrintMenu {
         }
     }
 }
+
+
+###############
+# Assertions and Tests
+###############
+-Assertions
+def above(that: Element): Element = {
+    val this1 = this widen that.width
+    val that1 = that widen this.width
+    assert(this1.width == that1.width)
+    elem(this1.contents ++ that1.contents)
+}
+
+private def widen(w: Int): Element =
+    if (w <= width)
+        this
+    else {
+        val left = elem(' ', (w - width) / 2, height)
+        var right = elem(' ', w - width - left.width, height)
+        left beside this beside right
+    } ensuring (w <= _.width)                                   // underscore is a placeholder for the one argument passed to the predicate, the Element result of the widen method
+    //  If the width passed as w to widen is less than or equal to the width of the result Element, the predicate will result in true
+
+-Testing in Scala
+import org.scalatest.FunSuite
+import Element.elem
+class ElementSuite extends FunSuite {                   // central concept in ScalaTest is the suite - collection of tests
+    test("elem result should have passed width") {      // specify the name of the test as a string between the parentheses and the test code itself between curly braces
+        val ele = elem('x', 2, 3)                       // test code is a function passed as a by-name parameter to test, which registers it for later execution
+        assert(ele.width == 2)
+    }
+}
+
+-Informative failure reports
+val caught =
+    intercept[ArithmeticException] {
+        1 / 0
+    }
+assert(caught.getMessage == "/ by zero")
+
+-Tests as specifications
+import org.scalatest._
+class TVSetSpec extends FeatureSpec with GivenWhenThen {
+    feature("TV power button") {
+        scenario("User presses power button when TV is off") {
+            Given("a TV set that is switched off")
+            When("the power button is pressed")
+            Then("the TV should switch on")
+            pending
+        }
+    }
+}
+
+-Property-based testing
+import org.scalatest.WordSpec
+import org.scalatest.prop.PropertyChecks
+import org.scalatest.MustMatchers._
+import Element.elem
+class ElementSpec extends WordSpec with PropertyChecks {
+    "elem result" must {
+        "have passed width" in {
+            forAll { (w: Int) =>
+                whenever (w > 0) {
+                    elem('x', w, 3).width must equal (w)
+                }
+            }
+        }
+    }
+}
+
+-Organizing and running tests
+scalac -cp scalatest.jar TVSetSpec.scala
+
+
+###############
+# Case Classes and Pattern Matching
+###############
+-A simple example
+abstract class Expr
+case class Var(name: String) extends Expr
+case class Number(num: Double) extends Expr
+case class UnOp(operator: String, arg: Expr) extends Expr
+case class BinOp(operator: String, left: Expr, right: Expr) extends Expr
+
+-Case classes
+// can do Var("x") instead on new Var("x")
+val v = Var("x")
+val op = BinOp("+", Number(1), v)
+// all arguments in the parameter list of a case class implicitly get a val prefix, so they are maintained as fields
+v.name                      // res0: String = x
+op.left                     // res1: Expr = Number(1.0)
+// compiler adds “natural” implementations of methods toString, hashCode, and equals
+// compiler adds a copy method
+op.copy(operator = "-")     // res4: BinOp = BinOp(-,Number(1.0),Var(x))
+
+-Pattern matching
+simplifyTop(UnOp("-", UnOp("-", Var("x"))))
+// A constant pattern like "+" or 1 matches values that are equal to the constant with respect to ==
+// A variable pattern like e matches every value
+
+def simplifyTop(expr: Expr): Expr = expr match {                // A match expression is evaluated by trying each of the patterns in the order they are written
+    case UnOp("-", UnOp("-", e)) => e // Double negation        // constructor pattern looks like UnOp("-", e). This pattern matches all values of type UnOp whose first argument matches "-" and whose second argument matches e
+    case BinOp("+", e, Number(0)) => e // Adding zero           // e - a variable that is bound within the associated pattern
+    case BinOp("*", e, Number(1)) => e // Multiplying by one
+    case _ => expr                                              // wildcard pattern (_) also matches every value
+}
+
+-match compared to switch
+// match is an expression in Scala (i.e., it always results in a value)
+// Scala’s alternative expressions never “fall through” into the next case
+// Third, if none of the patterns match, an exception named MatchError is thrown
+
+-Kinds of patterns
+-Wildcard patterns
+expr match {
+    case BinOp(op, left, right) => println(expr + " is a binary operation")
+    case _ =>                                                                   // handle the default case
+}
+expr match {
+    case BinOp(_, _, _) => println(expr + " is a binary operation")             // dont care about elements of binary operation
+    case _ => println("It's something else")
+}
+
+-Constant patterns
+def describe(x: Any) = x match {
+    case 5 => "five"
+    case true => "truth"
+    case "hello" => "hi!"
+    case Nil => "the empty list"
+    case _ => "something else"
+}
+describe(5)                  // res6: String = five
+describe(true)               // res7: String = truth
+describe("hello")            // res8: String = hi!
+describe(Nil)                // res9: String = the empty list
+describe(List(1,2,3))        // res10: String = something else
+
+-Variable patterns
+expr match {
+    case 0 => "zero"
+    case somethingElse => "not zero: " + somethingElse      // default case for all other values
+}
+
+import math.{E, Pi}
+E match {
+    case Pi => "strange math? Pi = " + Pi   // name starting with a lowercase letter is taken to be a pattern variable; all other references are taken to be constants
+    case _ => "OK"
+}
+// res11: String = OK                       // As expected, E does not match Pi, so the "strange math" case is not used.
+val pi = math.Pi                            // pi: Double = 3.141592653589793
+scala> E match {
+    case pi => "strange math? Pi = " + pi   // res12: String = strange math? Pi = 2.718281828459045
+}
+// and you are not allowed to add a default case cause variable pattern is default
+E match {
+    case pi => "strange math? Pi = " + pi
+    case _ => "OK"                          // <console>:12: warning: unreachable code case _ => "OK"
+}
+// You can still use a lowercase name for a pattern constant if the constant is a field of some object, you can prefix it with a qualifier
+// 1. pi is a variable pattern, but this.pi or obj.pi are constants
+// 2. you can alternatively enclose the variable name in back ticks
+E match {
+    case `pi` => "strange math? Pi = " + pi
+    case _ => "OK"                          // res14: String = OK
+}
+
+-Constructor patterns
+// Scala patterns support deep matches
+expr match {
+    case BinOp("+", e, Number(0)) => println("a deep match")        // if BinOp is case class - first check if object is member of case class, then check constructor parameters match
+    case _ =>
+}
+
+-Sequence patterns
+expr match {
+    case List(0, _, _) => println("found it")       // three-element list starting with zero
+    case List(1, _*) => println("found it")         // matches 1 and any number of elements within a sequence
+    case _ =>
+}
+
+-Tuple patterns
+def tupleDemo(expr: Any) =
+    expr match {
+        case (a, b, c) => println("matched " + a + b + c)       // matches an arbitrary 3-tuple
+        case _ =>
+    }
+tupleDemo(("a ", 3, "-tuple"))                                  // matched a 3-tuple
+
+-Typed patterns
+def generalSize(x: Any) = x match {
+    case s: String => s.length
+    case m: Map[_, _] => m.size
+    case _ => -1
+}
+
+-Type erasure
+// no information about type arguments is maintained at runtime
+// there is no way to determine at runtime whether a given Map object has been created with two Int arguments
+def isIntIntMap(x: Any) = x match {
+    case m: Map[Int, Int] => true       // warning: non-variable type argument Int in type pattern is unchecked since it is eliminated by erasure
+    case _ => false
+}
+scala> isIntIntMap(Map(1 -> 1))                 // res19: Boolean = true
+scala> isIntIntMap(Map("abc" -> "abc"))         // res20: Boolean = true
+// exception is Array because type is stored in array
+def isStringArray(x: Any) = x match {
+    case a: Array[String] => "yes"
+    case _ => "no"
+}
+isStringArray(Array("abc"))                     // res21: String = yes
+isStringArray(Array(1, 2, 3))                   // res22: String = no
+
+-Variable binding
+// variable-binding pattern with e as the variable and UnOp("abs", _) as the pattern
+// If the entire pattern match succeeds, then the portion that matched the UnOp("abs", _) part is made available as variable e
+expr match {
+    case UnOp("abs", e @ UnOp("abs", _)) => e   // looks for the absolute value operation being applied twice in a row
+    case _ =>
+}
+
+-Pattern guards
+
