@@ -1031,4 +1031,272 @@ expr match {
 }
 
 -Pattern guards
+// pattern variable may only appear once in a pattern
+def simplifyAdd(e: Expr) = e match {
+    case BinOp("+", x, x) => BinOp("*", x, Number(2))   // error: x is already defined as value x
+    case _ => e
+}
+// reformulate
+def simplifyAdd(e: Expr) = e match {
+    case BinOp("+", x, y) if x == y => BinOp("*", x, Number(2))     // pattern guard goes after if
+    case _ => e
+}
+
+-Pattern overlaps
+// If you wrote them in the other order, then the catch-all case would be run in favor of the more specific rules
+def simplifyAll(expr: Expr): Expr = expr match {
+    case UnOp("-",UnOp("-",e))      =>simplifyAll(e) // '-'is its own inverse
+    case BinOp("+", e, Number(0))   =>simplifyAll(e) // '0' is a neutral element for ‘+'
+    case BinOp("*", e, Number(1))   =>simplifyAll(e) // '1' is a neutral element for ‘*'
+    case UnOp(op, e)                =>UnOp(op, simplifyAll(e))
+    case BinOp(op, l, r)            =>BinOp(op, simplifyAll(l), simplifyAll(r))
+    case _ => expr
+}
+
+-Sealed classes
+// How can you ever feel safe that you covered all the cases in pattern matching?
+// A sealed class cannot have any new subclasses added except the ones in the same file
+// you only need to worry about the subclasses you already know about
+sealed abstract class Expr
+case class Var(name: String) extends Expr
+case class Number(num: Double) extends Expr
+case class UnOp(operator: String, arg: Expr) extends Expr
+case class BinOp(operator: String, left: Expr, right: Expr) extends Expr
+def describe(e: Expr): String = e match {       // warning: match is not exhaustive!
+    case Number(_) => "a number"                // missing combination UnOp
+    case Var(_) => "a variable"                 // missing combination BinOp
+}
+// no warning
+def describe(e: Expr): String = (e: @unchecked) match {
+    case Number(_) => "a number"
+    case Var(_) => "a variable"
+    case _ => throw new RuntimeException        // or this
+}
+
+-The Option type
+// Option two forms: Some(x) and None object
+val capitals = Map("France" >"Paris", "Japan" >"Tokyo")
+capitals get "France"                           // res23: Option[String] = Some(Paris)
+capitals get "North Pole"                       // res24: Option[String] = None
+def show(x: Option[String]) = x match {
+    case Some(s) => s
+    case None => "?"
+}
+show(capitals get "Japan")               // res25: String = Tokyo
+show(capitals get "France")              // res26: String = Paris
+show(capitals get "North Pole")          // res27: String = ?
+
+-Patterns everywhere
+-Patterns in variable definitions
+val myTuple = (123, "abc")
+val (number, string) = myTuple          // number: Int = 123; string: String = abc
+val exp = new BinOp("*", Number(5), Number(1))
+val BinOp(op, left, right) = exp        // op: String = *; left: Expr = Number(5.0); right: Expr = Number(1.0)
+
+-Case sequences as partial functions
+val withDefault: Option[Int] => Int = { // A sequence of cases (i.e., alternatives) in curly braces can be used anywhere a function literal can be used
+    case Some(x) => x                   // case sequence is a function literal, only more general
+    case None => 0
+}
+withDefault(Some(10))            // res28: Int = 10
+withDefault(None)                // res29: Int = 0
+// Akka actors library allows its receive method to be defined as a series of cases
+var sum = 0
+def receive = {
+    case Data(byte)             =>sum += byte
+    case GetChecksum(requester) =>val checksum = ~(sum & 0xFF) + 1
+    requester ! checksum
+}
+// sequence of cases gives you a partial function If you apply such a function on a value it does not support,it will generate a run-time exception
+// warning: match is not exhaustive! missing combination Nil
+val second: List[Int] => Int = {
+    case x :: y :: _ => y       // will succeed if you pass it a three-element list
+}
+second(List(5, 6, 7))           // res24: Int = 6
+second(List())                  // scala.MatchError: List()
+
+-Patterns in for expressions
+// for expression retrieves all key/value pairs from the capitals map
+for ((country, city) <capitals)
+    println("The capital of " + country + " is " + city)
+// the second element None in the results list does not match the pattern Some(fruit); therefore it does not show up in the output.
+val results = List(Some("apple"), None, Some("orange"))
+for (Some(fruit) <results)
+    println(fruit)              // apple, orange
+
+-A larger example
+                     x
+x/(x+1)     -->     ---      
+                    x+1
+// concentrate on horizontal layout
+BinOp("+",
+    BinOp("*",
+        BinOp("+", Var("x"), Var("y")),
+        Var("z")),
+    Number(1))
+// code needs to know about the relative precedence of each operator
+Map( "|" > 0, "||" > 0, "&" > 1, "&&" > 1, ... )
+
+package org.stairwaybook.expr
+import org.stairwaybook.layout.Element.elem
+sealed abstract class Expr
+case class Var(name: String) extends Expr
+case class Number(num: Double) extends Expr
+case class UnOp(operator: String, arg: Expr) extends Expr
+case class BinOp(operator: String, left: Expr, right: Expr) extends Expr
+class ExprFormatter {
+    // Contains operators in groups of increasing precedence
+    private val opGroups =
+        Array(
+            Set("|", "||"),
+            Set("&", "&&"),
+            Set("ˆ"),
+            Set("==", "!="),
+            Set("<", "<=", ">", ">="),
+            Set("+", ""),
+            Set("*", "%")
+        )
+// A mapping from operators to their precedence
+    private val precedence = {
+        val assocs =
+            for {
+                i <- 0 until opGroups.length
+                op <- opGroups(i)
+            } yield op -> i
+        assocs.toMap
+    }
+private val unaryPrecedence = opGroups.length
+private val fractionPrecedence = 1
+import org.stairwaybook.layout.Element
+    private def format(e: Expr, enclPrec: Int): Element =
+        e match {
+            case Var(name) => elem(name)                                            // 1.If the expression is a variable, the result is an element formed from the variable’s name.
+            case Number(num) => 
+                def stripDot(s: String) =                                           // 2.cleans up the display of a floating-point number by stripping any ".0" suffix from a string
+                    if (s endsWith ".0") s.substring(0, s.length 2)
+                    else s
+                elem(stripDot(num.toString))
+            case UnOp(op, arg) => elem(op) beside format(arg, unaryPrecedence)      // 3.if arg is a binary operation (but not a fraction) it will always be displayed in parentheses
+            case BinOp("/", left, right) =>                                         // 4.If the expression is a fraction, an intermediate result frac is formed by placing the formatted 
+                val top = format(left, fractionPrecedence)                          // operands left and right on top of each other, separated by an horizontal line element
+                val bot = format(right, fractionPrecedence)                         // 
+                val line = elem('',top.width max bot.width, 1)
+                val frac = top above line above bot
+                if (enclPrec != fractionPrecedence) frac
+                else elem(" ") beside frac beside elem(" ")
+            case BinOp(op, left, right) =>                                          // applies for all other binary operations
+                val opPrec = precedence(op)
+                val l = format(left, opPrec)
+                val r = format(right, opPrec + 1)
+                val oper = l beside elem(" " + op + " ") beside r
+                if (enclPrec <= opPrec) oper
+                else elem("(") beside oper beside elem(")")
+        }
+    def format(e: Expr): Element = format(e, 0)
+}
+import org.stairwaybook.expr._
+object Express extends App {
+    val f = new ExprFormatter                                                                           1          
+    val e1 = BinOp("*", BinOp("/", Number(1), Number(2)),BinOp("+", Var("x"), Number(1)))       -->     - * (x + 1)
+    println(f.format(e1)+ "\n\n")                                                                       2          
+}
+
+
+###############
+# Working with Lists 
+###############
+-List literals
+// lists are immutable, lists have a recursive structure, whereas arrays are flat
+val fruit = List("apples", "oranges", "pears")
+val nums = List(1, 2, 3, 4)
+val empty = List()
+
+-The List type
+// The list type in Scala is covariant
+// if S is a subtype of T, then List[S] is a subtype of List[T]
+// List[String] is a subtype of List[Object]
+val fruit: List[String] = List("apples", "oranges", "pears")
+val nums: List[Int] = List(1, 2, 3,
+val empty: List[Nothing] = List()       // Because lists are covariant, it follows that List[Nothing] is a subtype of List[T]
+val xs: List[String] = List()           // List() is also of type List[String]!        
+
+-Constructing lists
+// lists are built from two fundamental building blocks, Nil and :: (pronounced "cons")
+// x :: xs represents a list whose first element is x, followed by (the elements of) list xs
+val fruit = "apples" :: ("oranges" :: ("pears" :: Nil))
+val nums = 1 :: 2 :: 3 :: 4 :: Nil
+
+-Basic operations on lists
+head    // returns the first element of a list
+tail    // returns a list consisting of all elements except the first
+isEmpty // returns true if the list is empty
+// insertion sort - sort a non-empty list x :: xs, sort the remainder xs and insert the first element x at the right position in the result
+def isort(xs: List[Int]): List[Int] =
+    if (xs.isEmpty) Nil
+    else insert(xs.head, isort(xs.tail))
+def insert(x: Int, xs: List[Int]): List[Int] =
+    if (xs.isEmpty || x <= xs.head) x :: xs
+    else xs.head :: insert(x, xs.tail)
+
+-List patterns
+val List(a, b, c) = fruit       // match on all elements of a list (a: String = apples ,b: String = oranges ,c: String = pears)
+val a :: b :: rest = fruit      // (a: String = apples, b: String = oranges, rest: List[String] = List(pears))
+// sorting
+def isort(xs: List[Int]): List[Int] = xs match {
+    case List()     => List()
+    case x :: xs1   => insert(x, isort(xs1))
+}
+def insert(x: Int, xs: List[Int]): List[Int] = xs match {
+    case List()     => List(x)
+    case y :: ys    => if (x <= y) x :: xs else y :: insert(x, ys)
+}
+
+-First-order methods on class List
+// A method is first-order if it does not take any functions as arguments
+
+-Concatenating two lists
+List(1, 2) ::: List(3, 4, 5)        // res0: List[Int] = List(1, 2, 3, 4, 5)
+
+-The Divide and Conquer principle
+// implementing concatenation
+def append[T](xs: List[T], ys: List[T]): List[T] =
+    xs match {
+        case List() => ys
+        case x :: xs1 => x :: append(xs1, ys)
+}
+
+-Taking the length of a list: length
+List(1, 2, 3).length            // res3: Int = 3 (needs to traverse the whole list)
+
+-Accessing the end of a list: init and last
+val abcde = List('a', 'b', 'c', 'd', 'e')
+abcde.last                      // res4: Char = e   (need to traverse the whole list to compute their result)
+abcde.init                      // res5: List[Char] = List(a, b, c, d)  (need to traverse the whole list to compute their result)
+
+Reversing lists: reverse
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
