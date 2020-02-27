@@ -1273,9 +1273,21 @@ val abcde = List('a', 'b', 'c', 'd', 'e')
 abcde.last                      // res4: Char = e   (need to traverse the whole list to compute their result)
 abcde.init                      // res5: List[Char] = List(a, b, c, d)  (need to traverse the whole list to compute their result)
 
-Reversing lists: reverse
+-Reversing lists: reverse
+abcde.reverse
+// Reverse could be implemented using concatenation (:::)
+// complexity is quadratic, compared to the standard reversal of a mutable, linked list, which has linear complexity
+def rev[T](xs: List[T]): List[T] = xs match {
+    case List() => xs
+    case x :: xs1 => rev(xs1) ::: List(x)
+}
 
+-Prefixes and suffixes: drop, take, and splitAt
+abcde take 2         // res8: List[Char] = List(a, b)
+abcde drop 2         // res9: List[Char] = List(c, d, e)
+abcde splitAt 2      // res10: (List[Char], List[Char]) = (List(a, b),List(c, d, e))
 
+-Element selection: apply and indices
 
 
 
