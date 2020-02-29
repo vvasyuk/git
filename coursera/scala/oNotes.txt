@@ -1774,7 +1774,7 @@ object Queue {
 def doesNotCompile(q: Queue) = {}           // <console>:8: error: class Queue takes type parameters def doesNotCompile(q: Queue) = {}
 // trait Queue enables you to specify parameterized types, such as Queue[String], Queue[Int], or Queue[AnyRef]:
 def doesCompile(q: Queue[AnyRef]) = {}      // doesCompile: (q: Queue[AnyRef])Unit
-// Queue is a trait and Queue[String] is a type Queue is also called a type constructor because you can construct a type with it by specifying a type parameter
+// Queue is a trait and Queue[String] is a type; Queue is also called a type constructor because you can construct a type with it by specifying a type parameter
 // term "generic" means you define many specific types with one generically written class or trait. For example, trait Queue defines a generic queue
 
 // covariant by putting a plus sign (+) before the type parameter; List is covariant in its type parameter, so List[String] is a subtype of List[Any]
@@ -1784,9 +1784,8 @@ def doesCompile(q: Queue[AnyRef]) = {}      // doesCompile: (q: Queue[AnyRef])Un
 
 // demand covariant
 trait Queue[+T] { ... }         // you want Queue[String], for example, to be considered a subtype of Queue[AnyRef]
-// demand covariant
-trait Queue[T]
-{ ... }
+// demand contravariant
+trait Queue[-T] { ... }
 // example
 class Cell[T](init: T) {
     private[this] var current = init
