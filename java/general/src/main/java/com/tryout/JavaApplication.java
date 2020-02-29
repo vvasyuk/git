@@ -23,6 +23,12 @@ public class JavaApplication {
 
 		System.out.println("Main started");
 
+		// this is Java
+//		String[] a1 = { "abc" };
+//		Object[] a2 = a1;
+//		a2[0] = new Integer(17);
+		//String s = a1[0];
+
 		// ### callStack ###
 //		CallStackTest cs = new CallStackTest();
 //		cs.methodA();
