@@ -1933,7 +1933,7 @@ trait AbstractTime {
 // So the usual notion of parameterizing a trait works via abstract vals that are implemented in subclasses
                             // To instantiate a concrete instance of that trait, you need to implement the  abstract val definitions
 trait RationalTrait {       new RationalTrait {         // expression yields an instance of an anonymous class
-    val numerArg: Int           val numerArg = 1
+    val numerArg: Int           val numerArg = 1        // RationalTrait inited before numerArg and denomArg
     val denomArg: Int           val denomArg = 2
 }                           }
 
@@ -1945,7 +1945,7 @@ new {
 } with RationalTrait            // create an instance of RationalTrait - res1: RationalTrait = 1/2
 // Pre-initialized fields in an object definition.
 object twoThirds extends {
-    val numerArg = 2
+    val numerArg = 2            // numerArg inited before RationalTrait is constructed
     val denomArg = 3
 } with RationalTrait
 // Pre-initialized fields in a class definition
@@ -1988,7 +1988,7 @@ trait LazyRationalTrait {
         if (b == 0) a else gcd(b, a % b)
 }
 val x = 2
-new LazyRationalTrait {
+new LazyRationalTrait {         // this one works even though we construct LazyRationalTrait before numerArg/denomArg
     val numerArg = 1 * x
     val denomArg = 2 * x        // res7: LazyRationalTrait = 1/2
 }
@@ -2114,11 +2114,41 @@ abstract class AbstractCurrency {
     def make(amount: Long): Currency    // factory method
     ... // rest of class
 }
-// this has issues
+// above has issues
 // move abstract type, factory method outside class AbstractCurrency. Create another class that contains the AbstractCurrency class, the Currency type, and the make factory method.
-// 467
-
-
+// final implementation
+abstract class CurrencyZone {
+    type Currency <: AbstractCurrency
+    def make(x: Long): Currency
+    abstract class AbstractCurrency {
+        val amount: Long
+        def designation: String
+        def + (that: Currency): Currency = make(this.amount + that.amount)
+        def * (x: Double): Currency = make((this.amount * x).toLong)
+        def from(other: CurrencyZone#AbstractCurrency): Currency = make(math.round(
+            other.amount.toDouble * Converter.exchangeRate
+            (other.designation)(this.designation)))
+        private def decimals(n: Long): Int =
+            if (n == 1) 0 else 1 + decimals(n / 10)
+        override def toString =
+            ((amount.toDouble / CurrencyUnit.amount.toDouble)
+            formatted ("%." + decimals(CurrencyUnit.amount) + "f")
+            + " " + designation)
+    }
+    val CurrencyUnit: Currency
+}
+object US extends CurrencyZone {                            // Here, US is an object that extends CurrencyZone
+    abstract class Dollar extends AbstractCurrency {        // defines a class Dollar, which is a subclass of AbstractCurrency.
+        def designation = "USD"
+    }
+    type Currency = Dollar
+    def make(cents: Long) = new Dollar {
+        val amount = cents
+    }
+    val Cent = make(1)
+    val Dollar = make(100)
+    val CurrencyUnit = Dollar
+}
 
 
 
