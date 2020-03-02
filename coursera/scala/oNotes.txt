@@ -2303,6 +2303,79 @@ implicit def intToDigits(i: Int) =i.toString.toList.map(_.toInt)    // intToDigi
 // If you are brave, try scala Xprint: typer to get an interactive shell that prints out the post-typing source code it uses internally
 
 
+###############
+# Implementing Lists
+###############
+-The List class in principle
+// abstract class List - comes with two subclasses for :: and Nil
+//            List[+T]                  // lists are covariant [+T] can assign a value of type List[Int] to a variable of type List[Any]
+//        «sealed abstract»
+//    ::[T]               Nil
+//«final case»        «case object»                
+val xs = List(1, 2, 3)
+var ys: List[Any] = xs
+// All list operations can be defined in terms of three basic methods: 
+def isEmpty: Boolean                    // defined in the subobject Nil and the subclass ::.
+def head: T
+def tail: List[T]
+
+-The Nil object
+// Nil object inherits from type List[Nothing] because of covariance, this means that Nil is compatible with every instance of the List type
+case object Nil extends List[Nothing] {
+    override def isEmpty = true
+    def head: Nothing = throw new NoSuchElementException("head of empty list")
+    def tail: List[Nothing] = throw new NoSuchElementException("tail of empty list")
+}
+
+-The :: class (pronounced "cons" for "construct")
+// x :: xs is treated as ::(x, xs) where :: is a case class
+final case class ::[T](hd: T, tl: List[T]) extends List[T] {
+    def head = hd
+    def tail = tl
+    override def isEmpty: Boolean = false
+}
+
+-Some more methods
+//
+def length: Int =
+    if (isEmpty) 0 else 1 + tail.length
+//or:
+def drop(n: Int): List[T] =
+    if (isEmpty) Nil
+    else if (n <= 0) this
+    else tail.drop(n-1)
+//or:
+def map[U](f: T => U): List[U] =
+    if (isEmpty) Nil
+    else f(head) :: tail.map(f)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
