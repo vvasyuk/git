@@ -2349,36 +2349,87 @@ def map[U](f: T => U): List[U] =
     if (isEmpty) Nil
     else f(head) :: tail.map(f)
 
+-List construction
+// methods :: and ::: - end in a colon so they bound to the right operand
+// x :: xs is treated as the method call xs.::(x), not x.::(xs).
+abstract class Fruit
+class Apple extends Fruit
+class Orange extends Fruit
+val apples = new Apple :: Nil               // apples: List[Apple] = List(Apple@e885c6a)
+val fruits = new Orange :: apples           // fruits: List[Fruit] = List(Orange@3f51b349, Apple@e885c6a)
+def ::[U >: T](x: U): List[U] = new scala.::(x, this)       // U is constrained in [U >: T] to be a supertype of the list elem T    
+
+-The ListBuffer class
+// typical access pattern for a list is recursive
+def incAll(xs: List[Int]): List[Int] = xs match {
+    case List() => List()
+    case x :: xs1 => x + 1 :: incAll(xs1)   // not tail recursive (recursive call to incAll above occurs inside a :: operation)
+}                                           // Therefore each recursive call requires a new stack frame
+// cannot apply incAll to lists of much more than about 30,000 to 50,000 elements
+// A very inefficient possibility is to use :::, the list append operator
+var result = List[Int]()                        // a very inefficient approach
+for (x <- xs) result = result ::: List(x + 1)   // Because ::: takes time proportional to the length of its first operand, the whole operation takes time proportional to the square of the length of the list
+result
+// List buffers let you accumulate the elements of a list. To do this, you use an operation such as “buf += elem”,which appends the element elem at the end of the list buffer buf
+import scala.collection.mutable.ListBuffer
+val buf = new ListBuffer[Int]
+for (x <- xs) buf += x + 1
+buf.toList
+
+-The List class in practice
+// most methods in the real implementation of class List avoid recursion and use loops with list buffers instead
+final override def map[U](f: T => U): List[U] = {
+    val b = new ListBuffer[U]
+    var these = this
+    while (!these.isEmpty) {
+        b += f(these.head)
+        these = these.tail
+    }
+    b.toList
+}
+// The definition of the :: subclass of List.
+final case class ::[U](hd: U, private[scala] var tl: List[U]) extends List[U] {
+    def head = hd
+    def tail = tl
+    override def isEmpty: Boolean = false
+}
+
+-Functional on the outside
+// lists are purely functional on the “outside” but have an imperative implementation using list buffers on the “inside.”
+val ys = 1 :: xs        // e tails of lists ys and zs are shared; they point to the same data structure.
+val zs = 2 :: xs
+// Scala’s List and ListBuffer is quite similar to what’s done in Java’s pair of classes String and StringBuffer
 
 
+###############
+# For Expressions Revisited
+###############
+case class Person(name: String,isMale: Boolean, children: Person*)
+val lara = Person("Lara", false)
+val bob = Person("Bob", true)
+val julie = Person("Julie", false, lara, bob)
+val persons = List(lara, bob, julie)
+//  say you want to find out the names of all pairs of mothers and their children in that list
+persons filter (p => !p.isMale) flatMap (p =>(p.children map (c => (p.name, c.name))))      // res0: List[(String, String)] = List((Julie,Lara), (Julie,Bob)) 
+//  Is there a simpler way?
+for (p <- persons; if !p.isMale; c <- p.children)
+    yield (p.name, c.name)              // res2: List[(String, String)] = List((Julie,Lara), (Julie,Bob))
 
+-For expressions
+for ( seq ) yield expr                  // seq is a sequence of generators, definitions, and filters, with semicolons between successive elements.
+for (p <- persons; n = p.name; if (n startsWith "To"))      // one generator, one definition, and one filter
+yield n
+// or
+for {
+    p <- persons            // a generator
+    n = p.name              // a definition
+    if (n startsWith "To")  // a filter - filter drops from the iteration all elements for which expr returns false
+} yield n
+// several generators
+for (x <- List(1, 2); y <- List("one", "two"))
+yield (x, y)                // res3: List[(Int, String)] = List((1,one), (1,two), (2,one), (2,two))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+-The n-queens problem
 
 
 
