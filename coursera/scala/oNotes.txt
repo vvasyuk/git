@@ -2924,6 +2924,162 @@ moreBits(0)                                         //res36: Boolean = false
 val map = collection.immutable.ListMap( 1 -> "one", 2 -> "two")     // 
 map(2)                                              // res37: String = "two"
 
+-Concrete mutable collection classes
+-Array buffers
+// holds an array and a size, can have data efficiently added to the end, Appending an item to an array buffer takes amortized constant time
+// good whenever the new items are always added to the end
+// useful for building arrays
+val buf = collection.mutable.ArrayBuffer.empty[Int]
+buf += 1                                        // res38: buf.type = ArrayBuffer(1)
+buf += 10                                       // res39: buf.type = ArrayBuffer(1, 10)
+buf.toArray                                     // res40: Array[Int] = Array(1, 10)
+-List buffers
+// like an array buffer except that it uses a linked list internally instead of an array
+// if need to convert the buffer to a list once it is built up, use a list buffer instead of an array buffer
+// useful for building lists
+val buf = collection.mutable.ListBuffer.empty[Int]
+buf += 1                                        // res41: buf.type = ListBuffer(1)
+buf += 10                                       // res42: buf.type = ListBuffer(1, 10)
+buf.toList                                      // res43: List[Int] = List(1, 10)
+-String builders
+// useful for building strings
+val buf = new StringBuilder
+buf += 'a'                                      // res44: buf.type = a
+buf ++= "bcdef"                                 // res45: buf.type = abcdef
+buf.toString                                    // res46: String = abcdef
+-Linked lists
+// LinkedList.empty.isEmpty
+// best operated on sequentially. In addition, linked lists make it easy to insert an element or linked list into another linked list
+-Double linked lists
+// DoubleLinkedLists
+// main benefit of that additional link is that it makes element removal very fast
+-Mutable lists
+// MutableList
+// list append a constant time operation because it avoids having to traverse the list in search for its terminal node
+// MutableList is currently the standard implementation of mutable.LinearSeq in Scala
+-Queues
+val queue = new scala.collection.mutable.Queue[String]
+queue += "a"                                    // res47: queue.type = Queue(a)
+queue ++= List("b", "c")                        // res48: queue.type = Queue(a, b, c)
+queue                                           // res49: scala.collection.mutable.Queue[String] = Queue(a, b, c)
+queue.dequeue                                   // res50: String = a
+queue                                           // res51: scala.collection.mutable.Queue[String] = Queue(b, c)
+-Array sequences
+// ArraySeq
+// if you want an array for its performance characteristics, but you also want to create generic instances of the sequence where you do not know the type of the elements and do not have a ClassTag to provide it at run-time
+-Stacks
+val stack = new scala.collection.mutable.Stack[Int]
+stack.push(1)                                   // res52: stack.type = Stack(1)
+stack                                           // res53: scala.collection.mutable.Stack[Int] = Stack(1)
+stack.push(2)                                   // res54: stack.type = Stack(2, 1)
+stack                                           // res55: scala.collection.mutable.Stack[Int] = Stack(2, 1)
+stack.top                                       // res56: Int = 2
+stack                                           // res57: scala.collection.mutable.Stack[Int] = Stack(2, 1)
+stack.pop                                       // res58: Int = 2
+stack                                           // res59: scala.collection.mutable.Stack[Int] = Stack(1)
+-Array stacks
+// gets resized as needed
+// fast indexing and is generally slightly more efficient for most operations than a normal mutable stack
+-Hash tables
+// stores its elements in an underlying array
+// To get a guaranteed iteration order, use a linked hash map or set instead of a regular one
+val map = collection.mutable.HashMap.empty[Int,String]
+map += (1 -> "make a web site")                 // res60: map.type = Map(1 > make a web site)
+map += (3 -> "profit!")                         // res61: map.type = Map(1 -> make a web site, 3 -> profit!)
+map(1)                                          // res62: String = make a web site
+map contains 2                                  // res63: Boolean = false
+-Weak hash maps
+// key and its associated value will disappear from the map if there is no other reference to that key
+// As soon as a key object becomes unreachable, it’s entry is removed from the weak hash map
+-Concurrent Maps
+// can be accessed by several threads at once
+-Mutable bit sets
+// more efficient at updating than immutable ones, because they don’t have to copy around Longs that haven’t changed.
+val bits = scala.collection.mutable.BitSet.empty
+bits += 1                                       // res64: bits.type = BitSet(1)
+bits += 3                                       // res65: bits.type = BitSet(1, 3)
+bits                                            // res66: scala.collection.mutable.BitSet = BitSet(1, 3)
+
+-Arrays
+// Scala array Array[Int] is represented as a Java int[]
+// compatible with Scala sequences—you can pass an Array[T] where a Seq[T] (thanks to implicit conversions)
+val a1 = Array(1, 2, 3)                         // a1: Array[Int] = Array(1, 2, 3)
+val a2 = a1 map (_ * 3)                         // a2: Array[Int] = Array(3, 6, 9)
+val a3 = a2 filter (_ % 2 != 0)                 // a3: Array[Int] = Array(3, 9)
+a3.reverse                                      // res1: Array[Int] = Array(9, 3)
+// whenever an array would be used as a Seq, implicitly wrap it in a subclass of Seq. The name of that subclass is scala.collection.mutable.WrappedArray
+val seq: Seq[Int] = a1                          // seq: Seq[Int] = WrappedArray(1, 2, 3)
+val a4: Array[Int] = seq.toArray                // a4: Array[Int] = Array(1, 2, 3)
+a1 eq a4                                        // res2: Boolean = true
+
+-Strings
+// operations are supported by two implicit conversions (conversion maps a String to a WrappedString, which is a subclass of immutable.IndexedSeq)
+val str = "hello"                               
+str.reverse                                     // res6: String = olleh
+str.map(_.toUpper)                              // res7: String = HELLO
+str drop 3                                      // res8: String = lo
+str slice (1, 4)                                // res9: String = ell
+val s: Seq[Char] = str                          // s: Seq[Char] = WrappedString(h, e, l, l, o)
+
+-Performance characteristics
+// Performance characteristics of sequence types
+                head    tail    apply   update  prepend     append  insert
+immutable   
+    List        C       C       L       L       C           L       -
+    Stream      C       C       L       L       C           L       -
+    Vector      eC      eC      eC      eC      eC          eC      -
+    Stack       C       C       L       L       C           L       -
+    Queue       aC      aC      L       L       L           C       -
+    Range       C       C       C       -       -           -       -
+    String      C       L       C       L       L           L       -
+mutable
+    ArrayBuffer C       L       C       C       L           aC      L
+    ListBuffer  C       L       L       L       C           C       L
+    StringBldr  C       L       C       C       L           aC      L
+    MutableList C       L       L       L       C           C       L
+    Queue       C       L       L       L       C           C       L
+    ArraySeq    C       L       C       C       -           -       -
+    Stack       C       L       L       L       C           L       L
+    ArrayStack  C       L       C       C       aC          L       L
+    Array       C       L       C       C       -           -       -
+// Performance characteristics of set and map types
+                    lookup  add     remove  min
+immutable
+    HashSet/HashMap eC      eC      eC      L
+    TreeSet/TreeMap Log     Log     Log     Log
+    BitSet          C       L       L       eCa
+    ListMap         L       L       L       L
+mutable
+    HashSet/HashMap eC      eC      eC      L
+    WeakHashMap     eC      eC      eC      L
+    BitSet          C       aC      C       eCa
+
+-Equality
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
