@@ -2825,36 +2825,108 @@ Transformation:
     ms mapValues f      // A map view resulting from applying function f to each value associated with a key in ms
 // mutable
 Additions and updates:
-ms(k) = v (or, written out, ms.update(k, v)) Adds
-mapping from key k to value v to map ms as a side
-effect, overwriting any previous mapping of k
-ms += (k -> v) Adds mapping from key k to value v to map ms as
-a side effect and returns ms itself
-ms += (k -> v, l -> w) Adds the given mappings to ms as a side effect
-and returns ms itself
-ms ++= kvs Adds all mappings in kvs to ms as a side effect
-and returns ms itself
-ms put (k, v) Adds mapping from key k to value v to ms and
-returns any value previously associated with k as
-an option
-ms getOrElseUpdate (k, d) If key k is defined in map ms, returns its
-associated value. Otherwise, updates ms with the
-mapping k -> d and returns d
+    ms(k) = v           // (or, written out, ms.update(k, v)) Adds mapping from key k to value v to map ms as a side effect, overwriting any previous mapping of k
+    ms += (k -> v)      // Adds mapping from key k to value v to map ms as a side effect and returns ms itself
+    ms += (k -> v, l -> w)  // Adds the given mappings to ms as a side effect and returns ms itself
+    ms ++= kvs          // Adds all mappings in kvs to ms as a side effect and returns ms itself
+    ms put (k, v)       // Adds mapping from key k to value v to ms and returns any value previously associated with k as an option
+    ms getOrElseUpdate (k, d)   // If key k is defined in map ms, returns its associated value. Otherwise, updates ms with the mapping k -> d and returns d
 Removals:
-ms -= k Removes mapping with key k from ms as a side
-effect and returns ms itself
-ms -= (k, l, m) Removes mappings with the given keys from ms
-as a side effect and returns ms itself
-ms --= ks Removes all keys in ks from ms as a side effect
-and returns ms itself
-ms remove k Removes any mapping with key k from ms and
-returns any value previously associated with k as
-an option
-ms retain p Keeps only those mappings in ms that have a key
-satisfying predicate p.
-ms.clear() Removes all mappings from ms
+    ms -= k             // Removes mapping with key k from ms as a side effect and returns ms itself
+    ms -= (k, l, m)     // Removes mappings with the given keys from ms as a side effect and returns ms itself
+    ms --= ks           // Removes all keys in ks from ms as a side effect and returns ms itself
+    ms remove k         // Removes any mapping with key k from ms and returns any value previously associated with k as an option
+    ms retain p         // Keeps only those mappings in ms that have a key satisfying predicate p.
+    ms.clear()          // Removes all mappings from ms
 Transformation and cloning:
-ms transform f Transforms all associated values in map ms with
-function f
-ms.clone Returns a new mutable map with the same
-mappings as ms
+    ms transform f      // Transforms all associated values in map ms with function f
+    ms.clone            //Returns a new mutable map with the same mappings as ms
+// getOrElseUpdate is useful for accessing maps that act as caches.
+val cache = collection.mutable.Map[String, String]()
+def cachedF(s: String) = cache.getOrElseUpdate(s, f(s))
+cachedF("abc")          // taking my time.  res16: String = cba
+cachedF("abc")          // res17: String = cba
+def cachedF(arg: String) = cache get arg match {
+    case Some(result) => result
+    case None =>
+        val result = f(arg)
+        cache(arg) = result
+        result
+}
+
+-Concrete immutable collection classes
+-Lists
+//constant-time access to first element, rest of the list, cons operation for adding a new element to the front of the list
+
+-Streams
+// like a list except that its elements are computed lazily, Otherwise, streams have the same performance characteristics as lists
+val str = 1 #:: 2 #:: 3 #:: Stream.empty        // str: scala.collection.immutable.Stream[Int] = Stream(1, ?)
+def fibFrom(a: Int, b: Int): Stream[Int] =      // without #:: every call to the function would result in another call
+    a #:: fibFrom(b, a + b)                     // fibFrom: (a: Int, b: Int)Stream[Int]
+val fibs = fibFrom(1, 1).take(7)                // fibs: scala.collection.immutable.Stream[Int] = Stream(1, ?)
+fibs.toList                                     // res23: List[Int] = List(1, 1, 2, 3, 5, 8, 13)
+
+-Vectors
+// efficient access to elements beyond the head
+val vec = scala.collection.immutable.Vector.empty
+val vec2 = vec :+ 1 :+ 2                        // vec2: scala.collection.immutable.Vector[Int] = Vector(1, 2)
+val vec3 = 100 +: vec2                          // vec3: scala.collection.immutable.Vector[Int] = Vector(100, 1, 2)
+vec3(0)                                         // res24: Int = 100
+// Every tree node contains up to 32 elements of the vector or contains up to 32 other tree nodes
+// ectors are immutable, so you cannot change an element of a vector in place, you can create a new vector that differs from a given vector only in a single element
+val vec = Vector(1, 2, 3)
+vec updated (2, 4)                              // res25: scala.collection.immutable.Vector[Int] = Vector(1, 2, 4)
+vec                                             // res26: scala.collection.immutable.Vector[Int] = Vector(1, 2, 3)
+// Updating an element in the middle of a vector can be done by copying the node that contains the element, and every node that points to it,
+// starting from the root of the tree. This means that a functional update creates between one and five nodes that each contain up to 32 elements or subtrees.
+// This is certainly more expensive than an in-place update in a mutable array, but still a lot cheaper than copying the whole vector.
+// they are currently the default implementation of immutable indexed sequences
+collection.immutable.IndexedSeq(1, 2, 3)        // res27: scala.collection.immutable.IndexedSeq[Int] = Vector(1, 2, 3)
+
+-Immutable stacks
+// push an element onto a stack with push, pop an element with pop
+val stack = scala.collection.immutable.Stack.empty
+val hasOne = stack.push(1)                      // hasOne: scala.collection.immutable.Stack[Int] = Stack(1)
+stack                                           // res28: scala.collection.immutable.Stack[Nothing] = Stack()
+hasOne.top                                      // res29: Int = 1
+hasOne.pop                                      // res30: scala.collection.immutable.Stack[Int] = Stack()
+// rarely in Scala programs because their functionality is subsumed by lists
+
+-Immutable queues
+val empty = scala.collection.immutable.Queue[Int]()
+val has1 = empty.enqueue(1)                     // has1: scala.collection.immutable.Queue[Int] = Queue(1)
+val has123 = has1.enqueue(List(2, 3))           // has123: scala.collection.immutable.Queue[Int] = Queue(1, 2, 3)
+val (element, has23) = has123.dequeue           // element: Int = 1; has23: scala.collection.immutable.Queue[Int] = Queue(2, 3)
+
+-Ranges
+1 to 3                                          // res31: scala.collection.immutable.Range.Inclusive = Range(1, 2, 3)
+5 to 14 by 3                                    // res32: scala.collection.immutable.Range = Range(5, 8, 11, 14)
+1 until 3                                       // res33: scala.collection.immutable.Range = Range(1, 2)
+
+-Hash tries
+// standard way to implement immutable sets and maps efficiently
+// trees where every node has 32 elements or 32 subtrees, but selection is done based on a hash code.
+// to find a given key in a map, you use the lowest five bits of the hash code of the key to select the first subtree, the next five bits the next subtree, and so on
+
+-Red-black trees
+// balanced binary trees where some nodes are designated “red” and others “black.” standard implementation of SortedSet in Scala
+val set = collection.immutable.TreeSet.empty[Int]   // set: scala.collection.immutable.TreeSet[Int] = TreeSet()
+set + 1 + 3 + 3                                     // res34: scala.collection.immutable.TreeSet[Int] = TreeSet(1, 3)
+
+-Immutable bit sets
+// bit set containing 3, 2, and 0 would be represented as the integer 1101 in binary, which is 13 in decimal
+val bits = scala.collection.immutable.BitSet.empty
+val moreBits = bits + 3 + 4 + 4                     // moreBits: scala.collection.immutable.BitSet = BitSet(3, 4)
+moreBits(3)                                         // res35: Boolean = true
+moreBits(0)                                         //res36: Boolean = false
+
+-List maps
+val map = collection.immutable.ListMap( 1 -> "one", 2 -> "two")     // 
+map(2)                                              // res37: String = "two"
+
+
+
+
+
+
+
