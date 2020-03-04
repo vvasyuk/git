@@ -3076,10 +3076,23 @@ v map (_ + 1) map (_ * 2)                           // res5: scala.collection.im
 // An iterator is not a collection, but rather a way to access the elements of a collection one by one
 
 -Buffered iterators
+// Sometimes you want an iterator that can “look ahead”
+// head on a buffered iterator will return its first element, but will not advance the iterator
+def skipEmptyWords(it: BufferedIterator[String]) =
+    while (it.head.isEmpty) { it.next() }
+// Every iterator can be converted to a buffered iterator by calling its buffered
+val it = Iterator(1, 2, 3, 4)
+val bit = it.buffered
+bit.head                        // res10: Int = 1
+bit.next()                      // res11: Int = 1
+bit.next()                      // res11: Int = 2
 
--Creating collections from scratch
 
--Conversions between Java and Scala collections
+###############
+# The Architecture of Scala Collections
+###############
+
+
 
 
 
