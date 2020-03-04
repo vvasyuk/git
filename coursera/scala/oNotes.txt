@@ -2746,4 +2746,115 @@ Cloning:
     buf.clone               // A new buffer with the same elements as buf
 
 -Sets
+// Iterables that contain no duplicate elements
+Tests:
+    xs contains x           // Tests whether x is an element of xs 
+    xs(x)                   // Same as xs contains x
+    xs subsetOf ys          // Tests whether xs is a subset of ys
+Additions:
+    xs + x                  // The set containing all elements of xs as well as x
+    xs + (x, y, z)          // The set containing all elements of xs as well as the given additional elements
+    xs ++ ys                // The set containing all elements of xs as well as all elements of ys
+Removals:
+    xs - x                  // The set containing all elements of xs except x
+    xs - (x, y, z)          // The set containing all elements of xs except the given elements
+    xs -- ys                // The set containing all elements of xs except the elements of ys
+    xs.empty                // An empty set of the same class as xs
+Binary operations:
+    xs & ys                 // The set intersection of xs and ys
+    xs intersect ys         // Same as xs & ys
+    xs | ys                 // The set union of xs and ys
+    xs union ys             // Same as xs | ys
+    xs &~ ys                // The set difference of xs and ys
+    xs diff ys              // Same as xs &~ ys
 
+// Mutable sets:
+Additions:
+    xs += x             // Adds element x to set xs as a side effect and returns xs itself
+    xs += (x, y, z)     // Adds the given elements to set xs as a side effect and returns xs itself
+    xs ++= ys           // Adds all elements in ys to set xs as a side effect and returns xs itself
+    xs add x            // Adds element x to xs and returns true if x was not previously contained in the set, false if it was previously contained
+Removals:
+    xs -= x             // Removes element x from set xs as a side effect and returns xs itself
+    xs -= (x, y, z)     // Removes the given elements from set xs as a side effect and returns xs itself
+    xs --= ys           // Removes all elements in ys from set xs as a side effect and returns xs itself
+    xs remove x         // Removes element x from xs and returns true if x was previously contained in the set, false if it was not previously contained
+    xs retain p         // Keeps only those elements in xs that satisfy
+predicate p
+    xs.clear()          // Removes all elements from xs
+Update:
+    xs(x) = b           // (or, written out, xs.update(x, b)) If boolean argument b is true, adds x to xs, otherwise removes x from xs
+Cloning:
+    xs.clone            // A new mutable set with the same elements as xs
+// example
+var s = Set(1, 2, 3)    // s: scala.collection.immutable.Set[Int] = Set(1, 2, 3)
+s += 4; s -= 2          // we used += and -= on a var of type immutable.Set. s += 4 is an abbreviation for s = s + 4. So this invokes the addition method + on the set s and then assigns the result back to the s variable
+s                       // res10: scala.collection.immutable.Set[Int] = Set(1, 3, 4)
+// mutable
+val s = collection.mutable.Set(1, 2, 3)     // s: scala.collection.mutable.Set[Int] = Set(1, 2, 3)
+s += 4                  // res11: s.type = Set(1, 2, 3, 4)
+s -= 2                  // res12: s.type = Set(1, 3, 4)
+
+-Maps
+// Iterables of pairs of keys and values
+Map("x" -> 24, "y" -> 25, "z" -> 26)        // exactly the same as Map(("x", 24), ("y", 25), ("z", 26))
+Lookups:
+    ms get k            // The value associated with key k in map ms as an option, or None if not found
+    ms(k)               // (or, written out, ms apply k) The value associated with key k in map ms, or a thrown exception if not found
+    ms getOrElse (k, d) // The value associated with key k in map ms, or the default value d if not found
+    ms contains k       // Tests whether ms contains a mapping for key k
+    ms isDefinedAt k    // Same as contains
+Additions and updates:
+    ms + (k -> v)           // The map containing all mappings of ms as well as the mapping k -> v from key k to value v
+    ms + (k -> v, l -> w)   // The map containing all mappings of ms as well as
+the given key/value pairs
+    ms ++ kvs           // The map containing all mappings of ms as well as all key/value pairs of kvs
+    ms updated (k, v)   // Same as ms + (k -> v)
+Removals:
+    ms - k              // The map containing all mappings of ms except for any mapping of key k
+    ms - (k, l, m)      // The map containing all mappings of ms except for any mapping with the given keys
+    ms -- ks            // The map containing all mappings of ms except for any mapping with a key in ks
+Subcollections:
+    ms.keys             // An iterable containing each key in ms
+    ms.keySet           // A set containing each key in ms
+    ms.keysIterator     // An iterator yielding each key in ms
+    ms.values           // An iterable containing each value associated with a key in ms
+    ms.valuesIterator   // An iterator yielding each value associated with a key in ms
+Transformation:
+    ms filterKeys p     // A map view containing only those mappings in ms where the key satisfies predicate p
+    ms mapValues f      // A map view resulting from applying function f to each value associated with a key in ms
+// mutable
+Additions and updates:
+ms(k) = v (or, written out, ms.update(k, v)) Adds
+mapping from key k to value v to map ms as a side
+effect, overwriting any previous mapping of k
+ms += (k -> v) Adds mapping from key k to value v to map ms as
+a side effect and returns ms itself
+ms += (k -> v, l -> w) Adds the given mappings to ms as a side effect
+and returns ms itself
+ms ++= kvs Adds all mappings in kvs to ms as a side effect
+and returns ms itself
+ms put (k, v) Adds mapping from key k to value v to ms and
+returns any value previously associated with k as
+an option
+ms getOrElseUpdate (k, d) If key k is defined in map ms, returns its
+associated value. Otherwise, updates ms with the
+mapping k -> d and returns d
+Removals:
+ms -= k Removes mapping with key k from ms as a side
+effect and returns ms itself
+ms -= (k, l, m) Removes mappings with the given keys from ms
+as a side effect and returns ms itself
+ms --= ks Removes all keys in ks from ms as a side effect
+and returns ms itself
+ms remove k Removes any mapping with key k from ms and
+returns any value previously associated with k as
+an option
+ms retain p Keeps only those mappings in ms that have a key
+satisfying predicate p.
+ms.clear() Removes all mappings from ms
+Transformation and cloning:
+ms transform f Transforms all associated values in map ms with
+function f
+ms.clone Returns a new mutable map with the same
+mappings as ms
