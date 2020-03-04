@@ -3055,10 +3055,31 @@ mutable
     BitSet          C       aC      C       eCa
 
 -Equality
+// List(1, 2, 3) == Vector(1, 2, 3), and HashSet(1, 2) == TreeSet(2, 1).
 
+-Views
+// map, filter, and ++ make new collections
+// non-strict transformer, consider the following implementation of a lazy map operation
+def lazyMap[T, U](coll: Iterable[T], f: T => U) =
+    new Iterable[U] {                               // constructs a new Iterable without stepping through all elements of the given collection coll
+        def iterator = coll.iterator map f
+    }
+// If xs is some collection, then xs.view is the same collection, but with all transformers implemented lazily
+v = Vector(1 to 10: _*)
+v map (_ + 1) map (_ * 2)                           // res5: scala.collection.immutable.Vector[Int] = Vector(4, 6, 8, 10, 12, 14, 16, 18, 20, 22)
+// v map (_ + 1) constructs a new vector, map (_ * 2) constructs third ( which is wastefull)
+// general way to avoid the intermediate results is by turning the vector first into a view
+(v.view map (_ + 1) map (_ * 2)).force              // res12: Seq[Int] = Vector(4, 6, 8, 10, 12, 14, 16, 18, 20, 22)
+// by switching a collection to a view the construction of intermediate results can be avoided
 
+-Iterators
+// An iterator is not a collection, but rather a way to access the elements of a collection one by one
 
+-Buffered iterators
 
+-Creating collections from scratch
+
+-Conversions between Java and Scala collections
 
 
 
