@@ -3268,9 +3268,14 @@ for (s <-Decimal findAllIn input)   // -1.0 99 3
 ###############
 # Annotations
 ###############
-
-
-
+-Syntax of annotations
+@deprecated def bigMistake() = //...
+@deprecated class QuickAndDirty {
+    //...
+}
+(e: @unchecked) match {
+    // nonexhaustive cases...
+}
 
 
 
