@@ -7,7 +7,8 @@ object RNA {
     }
 
     println(Base.fromInt(1))
-    println(Base.xyi(1))
+    println(Base.f1(1))
+    println(Base.f2(1))
   }
 }
 abstract class Base
@@ -21,9 +22,8 @@ object Base {
     val res = ar.apply(_)
     res
   }
-  val xyi: Int => Int = {
-    _+1
-  }
+  val f1: Int => Int = {_+1}
+  val f2: Int => Int = Int => 0
 }
 //trait test
 //object test {

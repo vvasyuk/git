@@ -7,5 +7,10 @@ object Test {
     val f1: Int => Boolean = { _ % 2 == 0 }
     println(f(1))
     println(f1(1))
+
+    val f2: (Int) => Boolean = i => { i % 2 == 0 }
+    val f3: Int => Boolean = i => { i % 2 == 0 }
+    val f4: Int => Boolean = i => i % 2 == 0
+    val f5: Int => Boolean = _ % 2 == 0
   }
 }
