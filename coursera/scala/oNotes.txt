@@ -3175,23 +3175,99 @@ object RNA {
 ###############
 # Extractors
 ###############
+-An example: extracting email addresses
+def isEMail(s: String): Boolean
+def domain(s: String): String
+def user(s: String): String
+// bad
+if (isEMail(s)) println(user(s) + " AT " + domain(s))
+else println("not an email address")
+// good
+s match {
+    case EMail(user, domain) => println(user + " AT " + domain)
+    case _ => println("not an email address")
+}
+
+-Extractors
+// extractor in Scala is an object that has a method called unapply (to match a value and take it apart)
+// The EMail string extractor object
+object EMail {
+    // The injection method (optional)
+    def apply(user: String, domain: String) = user + "@" + domain       // takes two strings and forms an email address string out of them
+    // The extraction method (mandatory)
+    def unapply(str: String): Option[(String, String)] = {              // takes an email address and returns potentially two strings
+        val parts = str split "@"
+        if (parts.length == 2) Some(parts(0), parts(1)) else None
+    }
+}
+unapply("John@epfl.ch") equals Some("John", "epfl.ch")
+unapply("John Doe") equals None
+
+-Patterns with zero or one variables
+// The Twice string extractor object.
+object Twice {
+    def apply(s: String): String = s + s
+    def unapply(s: String): Option[String] = {
+        val length = s.length / 2
+        val half = s.substring(0, length)
+        if (half == s.substring(length)) Some(half) else None
+    }
+}
+
+-Variable argument extractors
+dom match {
+    case Domain("org", "acm") => println("acm.org")
+    case Domain("com", "sun", "java") => println("java.sun.com")
+    case Domain("net", _*) => println("a .net domain")
+}
+// unapply methods encountered so far are not sufficient to support vararg matching
+object Domain {
+    // The injection method (optional)
+    def apply(parts: String*): String =
+        parts.reverse.mkString(".")
+    // The extraction method (mandatory)
+    def unapplySeq(whole: String): Option[Seq[String]] =
+        Some(whole.split("\\.").reverse)
+}
+def isTomInDotCom(s: String): Boolean = s match {
+    case EMail("tom", Domain("com", _*)) => true
+    case _ => false
+}
+isTomInDotCom("tom@sun.com")                        // res3: Boolean = true
+isTomInDotCom("peter@sun.com")                      // res4: Boolean = false
+isTomInDotCom("tom@acm.org")                        // res5: Boolean = false
+
+-Extractors and sequence patterns
+List()
+List(x, y, _*)
+Array(x, 0, 0, _)
+// all possible because List companion has
+package scala
+object List {
+    def apply[T](elems: T*) = elems.toList
+    def unapplySeq[T](x: List[T]): Option[Seq[T]] = Some(x)
+    ...
+}
+
+-Extractors versus case classes
+// case class pattern corresponds to the concrete representation type of the selector object
+// extractors enable patterns that have nothing to do with the data type of the object that’s selected on
+
+-Regular expressions
+// Forming regular expressions
+ab?                             // An ‘a’, possibly followed by a ‘b’.
+[a-dA-D]\w*                     // A word starting with a letter between a and d in lower or upper case, followed by a sequence of zero or more “word characters” denoted by \w. (A word character is a letter, digit, or underscore.)
+(-)?(\d+)(\.\d*)?               // A number consisting of an optional minus sign, followed by one or more digits, optionally followed by a period and zero or more digits. The number contains three groups, i.e., the minus sign, the part before the decimal point, and the fractional part including the decimal point. Groups are enclosed in parentheses.
+val Decimal = new Regex("(-)?(\\d+)(\\.\\d*)?")
+val input = "for 1.0 to 99 by 3"    // input: String = for 1.0 to 99 by 3
+for (s <-Decimal findAllIn input)   // -1.0 99 3
+    println(s)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+###############
+# Annotations
+###############
 
 
 
