@@ -2,8 +2,12 @@ package odrski
 
 object RNA {
   def main(args: Array[String]): Unit = {
-    println("asdf")
-    println(Base.fromInt(0))
+    val f: Int=>Int = {
+      Array(1,2,3).apply(_)
+    }
+
+    println(Base.fromInt(1))
+    println(Base.xyi(1))
   }
 }
 abstract class Base
@@ -12,9 +16,16 @@ case object T extends Base
 case object G extends Base
 case object U extends Base
 object Base {
-  val fromInt: Int => Base = Array(A, T, G, U)
-  val xyi: Int => Int = Rna
+  val fromInt: Int => Base = {
+    val ar = Array(A, T, G, U)
+    val res = ar.apply(_)
+    res
+  }
+  val xyi: Int => Int = {
+    _+1
+  }
 }
-object Rna {
-  def apply(i: Int): Int = 0
-}
+//trait test
+//object test {
+//  def apply(i: Int): Int=>Int = {Int=>0}
+//}
