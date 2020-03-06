@@ -3278,6 +3278,280 @@ for (s <-Decimal findAllIn input)   // -1.0 99 3
 }
 
 
+###############
+# Modular Programming Using Objects
+###############
+- A recipe application
+// A simple Food entity class.
+package org.stairwaybook.recipe
+abstract class Food(val name: String) {
+    override def toString = name
+}
+// Simple Recipe entity class
+package org.stairwaybook.recipe
+class Recipe( val name: String, val ingredients: List[Food], val instructions: String) {
+    override def toString = name
+}
+// Food and Recipe examples for use in tests.
+package org.stairwaybook.recipe
+object Apple extends Food("Apple")
+object Orange extends Food("Orange")
+object Cream extends Food("Cream")
+object Sugar extends Food("Sugar")
+object FruitSalad extends Recipe(
+    "fruit salad",
+    List(Apple, Orange, Cream, Sugar),
+    "Stir it all together."
+)
+// Mock database and browser modules
+package org.stairwaybook.recipe
+object SimpleDatabase {
+    def allFoods = List(Apple, Orange, Cream, Sugar)
+    def foodNamed(name: String): Option[Food] =
+        allFoods.find(_.name == name)
+    def allRecipes: List[Recipe] = List(FruitSalad)
+}
+object SimpleBrowser {
+    def recipesUsing(food: Food) =
+        SimpleDatabase.allRecipes.filter(recipe =>
+            recipe.ingredients.contains(food))
+}
+val apple = SimpleDatabase.foodNamed("Apple").get       // apple: Food = Apple
+SimpleBrowser.recipesUsing(apple)                       // res0: List[Recipe] = List(fruit salad)
+// Database and browser modules with categories added.
+package org.stairwaybook.recipe
+object SimpleDatabase {
+    def allFoods = List(Apple, Orange, Cream, Sugar)
+    def foodNamed(name: String): Option[Food] =
+        allFoods.find(_.name == name)
+    def allRecipes: List[Recipe] = List(FruitSalad)
+    case class FoodCategory(name: String, foods: List[Food])
+        private var categories = List(
+            FoodCategory("fruits", List(Apple, Orange)),
+            FoodCategory("misc", List(Cream, Sugar)))
+    def allCategories = categories
+}
+object SimpleBrowser {
+    def recipesUsing(food: Food) =
+        SimpleDatabase.allRecipes.filter(recipe =>
+            recipe.ingredients.contains(food))
+    def displayCategory(category: SimpleDatabase.FoodCategory) = {
+        println(category)
+    }
+}
+
+-Abstraction
+// problem is that there is essentially a “hard link” from the browser module to the database modules: 
+SimpleDatabase.allRecipes.filter(recipe => ...
+// A Browser class with an abstract database val
+abstract class Browser {
+    val database: Database
+    def recipesUsing(food: Food) =
+        database.allRecipes.filter(recipe =>
+            recipe.ingredients.contains(food))
+    def displayCategory(category: database.FoodCategory) = {
+        println(category)
+    }
+}
+// You would like to reuse the browser code for each of the instances, because the only thing different about the browsers is which database they refer to
+// A Database class with abstract methods
+abstract class Database {
+    def allFoods: List[Food]
+    def allRecipes: List[Recipe]
+    def foodNamed(name: String) =
+        allFoods.find(f => f.name == name)
+    case class FoodCategory(name: String, foods: List[Food])
+    def allCategories: List[FoodCategory]
+}
+// The SimpleDatabase object as a Database subclass
+object SimpleDatabase extends Database {
+    def allFoods = List(Apple, Orange, Cream, Sugar)
+    def allRecipes: List[Recipe] = List(FruitSalad)
+    private var categories = List(
+        FoodCategory("fruits", List(Apple, Orange)),
+        FoodCategory("misc", List(Cream, Sugar)))
+    def allCategories = categories
+}
+val apple = SimpleDatabase.foodNamed("Apple").get           // apple: Food = Apple
+// The SimpleBrowser object as a Browser subclass
+object SimpleBrowser extends Browser {
+    val database = SimpleDatabase
+}
+// you can create a second mock database - student database and browser
+object StudentDatabase extends Database {
+    object FrozenFood extends Food("FrozenFood")
+    object HeatItUp extends Recipe(
+        "heat it up",
+         List(FrozenFood),
+        "Microwave the 'food' for 10 minutes.")
+    def allFoods = List(FrozenFood)
+    def allRecipes = List(HeatItUp)
+    def allCategories = List(FoodCategory("edible", List(FrozenFood)))
+}
+    object StudentBrowser extends Browser {
+        val database = StudentDatabase
+}
+
+-Splitting modules into traits
+// A trait for food categories
+trait FoodCategories {
+    case class FoodCategory(name: String, foods: List[Food])
+    def allCategories: List[FoodCategory]
+}
+// A Database class that mixes in the FoodCategories trait
+abstract class Database extends FoodCategories {
+    def allFoods: List[Food]
+    def allRecipes: List[Recipe]
+    def foodNamed(name: String) =
+        allFoods.find(f => f.name == name)
+}
+// A SimpleFoods trait
+trait SimpleFoods {
+    object Pear extends Food("Pear")
+    def allFoods = List(Apple, Pear)
+    def allCategories = Nil
+}
+// A SimpleDatabase object composed solely of mixins
+object SimpleDatabase extends Database with SimpleFoods with SimpleRecipes
+// A SimpleRecipes trait with a self type
+trait SimpleRecipes {
+    this: SimpleFoods =>
+    object FruitSalad extends Recipe(
+        "fruit salad",
+        List(Apple, Pear), // Now Pear is in scope
+        "Mix it all together."
+    )
+    def allRecipes = List(FruitSalad)
+}
+
+-Runtime linking
+// you can decide which modules will link to which depending on runtime computations
+// An app that dynamically selects a module implementation
+object GotApples {
+    def main(args: Array[String]) = {
+        val db: Database =
+            if(args(0) == "student")
+                StudentDatabase
+            else
+                SimpleDatabase
+    object browser extends Browser {
+        val database = db
+    }
+    val apple = SimpleDatabase.foodNamed("Apple").get
+    for(recipe <-browser.recipesUsing(apple))
+        println(recipe)
+    }
+}
+
+-Tracking module instances
+// in the previous section each module has its own contents, including any nested classes
+
+
+###############
+# Object Equality
+###############
+-Equality in Scala
+// For value types, == is value comparison, just like in Java. For reference types, == is the same as equals in Scala
+final def == (that: Any): Boolean =
+    if (null eq this) {null eq that} else {this equals that}
+
+-Writing an equality method
+// Pitfall #1: Defining equals with the wrong signature
+class Point(val x: Int, val y: Int) { ... }
+// An utterly wrong definition of equals
+def equals(other: Point): Boolean =
+    this.x == other.x && this.y == other.y
+val p1, p2 = new Point(1, 2)
+p1 equals p2                                            // res0: Boolean = true
+val coll = mutable.HashSet(p1)
+coll contains p2                                        // res2: Boolean = false
+// equals method operates on generic sets, it calls the generic equals method in Object instead of the overloaded variant in Point
+// A better definition, but still not perfect
+override def equals(other: Any) = other match {
+    case that: Point => this.x == that.x && this.y == that.y
+    case _ => false
+}
+// Pitfall #2: Changing equals without also changing hashCode
+val p1, p2 = new Point(1, 2)
+collection.mutable.HashSet(p1) contains p2              // res4: Boolean = false
+class Point(val x: Int, val y: Int) {
+    override def hashCode = (x, y).##                   // invoked on a collection or a tuple, it computes a mixed hash that is sensitive to the hash codes of all the elements in the collection
+    override def equals(other: Any) = other match {
+        case that: Point => this.x == that.x && this.y == that.y
+        case _ => false
+    }
+}
+// Pitfall #3: Defining equals in terms of mutable fields
+//680
+-Defining equality for parameterized types
+-Recipes for equals and hashCode
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
