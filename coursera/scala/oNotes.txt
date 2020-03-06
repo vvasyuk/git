@@ -3482,7 +3482,42 @@ class Point(val x: Int, val y: Int) {
     }
 }
 // Pitfall #3: Defining equals in terms of mutable fields
-//680
+class Point(var x: Int, var y: Int) { // Problematic    // fields x and y are now vars instead of vals
+    override def hashCode = (x, y).##
+    override def equals(other: Any) = other match {
+        case that: Point => this.x == that.x && this.y == that.y
+        case _ => false
+    }
+}
+val p = new Point(1, 2)
+val coll = collection.mutable.HashSet(p)
+coll contains p                                         // res5: Boolean = true
+p.x += 1
+coll contains p                                         // res7: Boolean = false
+
+//Pitfall #4: Failing to define equals as an equivalence relation
+It is reflexive: For any non-null value x , the expression x.equals(x) should return true.
+• It is symmetric: For any non-null values x and y, x.equals(y) should return true if and only if y.equals(x) returns true.
+• It is transitive: For any non-null values x, y, and z, if x.equals(y) returns true and y.equals(z) returns true, then x.equals(z) should return true.
+• It is consistent: For any non-null values x and y, multiple invocations of x.equals(y) should consistently return true or consistently return false, provided no information used in equals comparisons on the objects is modified.
+• For any non-null value x, x.equals(null) should return false
+class ColoredPoint(x: Int, y: Int, val color: Color.Value) extends Point(x, y) {
+    override def hashCode = (super.hashCode, color).##
+    override def equals(other: Any) = other match {
+        case that: ColoredPoint => (that canEqual this) && super.equals(that) && this.color == that.color
+        case _ => false
+}
+    override def canEqual(other: Any) =
+        other.isInstanceOf[ColoredPoint]
+}
+val p = new Point(1, 2)
+val cp = new ColoredPoint(1, 2, Color.Indigo)
+val pAnon = new Point(1, 1) { override val y = 2 }
+val coll = List(p)
+coll contains p             // res16: Boolean = true
+coll contains cp            // res17: Boolean = false
+coll contains pAnon         // res18: Boolean = true
+
 -Defining equality for parameterized types
 -Recipes for equals and hashCode
 
