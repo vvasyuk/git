@@ -3703,16 +3703,55 @@ val folded = Future.fold(futureNums)(0) { (acc, num) => acc + num }     // If an
 // reduce method performs a fold without a zero, using the initial future result as the start value
 val reduced = Future.reduce(futureNums) { (acc, num) => acc + num }
 // Performing side-effects: foreach, onComplete, and andThen
+// you may need to perform a side effect after a future completes
+failure.foreach(ex => println(ex))                      // println is not executed in the case of a failed future
+success.foreach(res => println(res))                    // 42
+// for without yield will rewrite to an invocation of foreach
+for (res <- failure) println(res)
+for (res <- success) println(res)                       // 42
+// onComplete executed for both cases (no order)
+success onComplete {
+    case Success(res) => println(res)
+    case Failure(ex) => println(ex)
+}                                                       // 42
+scala> failure onComplete {
+    case Success(res) => println(res)
+    case Failure(ex) => println(ex)
+}                                                       // java.lang.ArithmeticException: / by zero
+// andThen
+val newFuture = success andThen {
+    case Success(res) => println(res)
+    case Failure(ex) => println(ex)
+}                                                       // 42
+newFuture.value                                         // res76: Option[scala.util.Try[Int]] = Some(Success(42))
+// Other methods added in 2.12: flatten, zipWith, and transformWith
+val nestedFuture = Future { Future { 42 } }             // nestedFuture: Future[Future[Int]] = ...
+val flattened = nestedFuture.flatten                    // flattened: scala.concurrent.Future[Int] = Future(Success(42))
+// zipWith
+val futNum = Future { 21 + 21 }
+val futStr = Future { "ans" + "wer" }
+val zipped = futNum zip futStr                          // zipped: scala.concurrent.Future[(Int, String)] = ...
+val mapped = zipped map {
+    case (num, str) => s"$num is the $str"
+}                                                       // mapped: scala.concurrent.Future[String] = ...
+scala> mapped.value                                     // res2: Option[scala.util.Try[String]] = Some(Success(42 is the answer))
+// in one line
+val fut = futNum.zipWith(futStr) { // Scala 2.12
+    case (num, str) => s"$num is the $str"
+}
 
-
-
-
-
-
-
-
-
-
+-Testing with Futures
+// Scala does allow you to block on a future result when you need to.
+import scala.concurrent.Await
+import scala.concurrent.Await
+import scala.concurrent.duration._
+import scala.concurrent.duration._
+val fut = Future { Thread.sleep(10000); 21 + 21 }
+val x = Await.result(fut, 15.seconds) // blocks         // x: Int = 42
+// place where blocking has been generally accepted is in tests of asynchronous code
+import org.scalatest.Matchers._
+import org.scalatest.Matchers._
+x should be (42)                                        // res0: org.scalatest.Assertion = Succeeded
 
 
 
