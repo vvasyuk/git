@@ -3579,30 +3579,117 @@ class Branch[T](
 }
 
 
+###############
+# Futures and Concurrency
+###############
+-Trouble in paradise
+var counter = 0
+synchronized {
+    // One thread in here at a time
+    counter = counter + 1
+}
 
+-Asynchronous execution and Trys
+// Scala method performs a computation “while you wait” and returns a result
+import scala.concurrent.ExecutionContext.Implicits.global
+val fut = Future { Thread.sleep(10000); 21 + 21 }           // asynchronously executes the block of code, using the global execution context
+fut.isCompleted                                             // res0: Boolean = false
+fut.value                                                   // res1: Option[scala.util.Try[Int]] = None
+fut.isCompleted                                             // res2: Boolean = true
+fut.value                                                   // res3: Option[scala.util.Try[Int]] = Some(Success(42))
 
+//         Try[+T]
+//     «sealed abstract»
+// Success[T]          Failure[T]
+// «final case»        «final case»    
+// when working with a Future representing an asynchronous activity, you use Try to deal with the possibility that the activity fails to yield a value and instead completes abruptly an exception
+val fut = Future { Thread.sleep(10000); 21 / 0 }
+fut.value                                                   // res4: Option[scala.util.Try[Int]] = None
+// after ten seconds
+fut.value                                                   // res5: Option[scala.util.Try[Int]] = Some(Failure(java.lang.ArithmeticException: / by zero))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+-Working with Futures
+// Transforming Futures with map
+val fut = Future { Thread.sleep(10000); 21 + 21 }
+val result = fut.map(x => x + 1)                            // yield another future
+result.value                                                // res5: Option[scala.util.Try[Int]] = None
+// after 10 sec
+result.value                                                // res6: Option[scala.util.Try[Int]] = Some(Success(43))
+// Transforming Futures with for expressions
+val fut1 = Future { Thread.sleep(10000); 21 + 21 }
+val fut2 = Future { Thread.sleep(10000); 23 + 23 }
+for {                                                       // here futures will run in parallel
+    x <-fut1
+    y <-fut2
+} yield x + y                                               // res7: scala.concurrent.Future[Int] = ...
+res7.value                                                  // res8: Option[scala.util.Try[Int]] = Some(Success(88))
+// below it will take 20 secs to run because they will run in sequence
+for {
+    x <-Future { Thread.sleep(10000); 21 + 21 }
+    y <-Future { Thread.sleep(10000); 23 + 23 }
+} yield x + y
+// Creating the Future: Future.failed, Future.successful, Future.fromTry, and Promises
+// methods for creating already-completed futures: successful, failed, and fromTry
+Future.successful { 21 + 21 }                           // res2: scala.concurrent.Future[Int] = ... future that has already succeeded
+Future.failed(new Exception("bummer!"))                 // res3: scala.concurrent.Future[Nothing] = ...
+import scala.util.{Success,Failure}
+import scala.util.{Success, Failure}
+Future.fromTry(Success { 21 + 21 })                     // res4: scala.concurrent.Future[Int] = ...
+Future.fromTry(Failure(new Exception("bummer!")))       // res5: scala.concurrent.Future[Nothing] = ...
+// using prmise
+val pro = Promise[Int]                                  // pro: scala.concurrent.Promise[Int] = ...
+val fut = pro.future                                    // fut: scala.concurrent.Future[Int] = ...
+fut.value                                               // res8: Option[scala.util.Try[Int]] = None-Testing with Futures
+pro.success(42)                                         // res9: pro.type = ...
+fut.value                                               // res10: Option[scala.util.Try[Int]] = Some(Success(42))
+// Filtering: filter and collect
+// filter method validates the future result, leaving it the same if it is valid
+val fut = Future { 42 }                                 //fut: scala.concurrent.Future[Int] = ...
+val valid = fut.filter(res => res > 0)                  // valid: scala.concurrent.Future[Int] = ...
+valid.value                                             // res0: Option[scala.util.Try[Int]] = Some(Success(42))
+val invalid = fut.filter(res => res < 0)                // invalid: scala.concurrent.Future[Int] = ...
+invalid.value                                           // res1: Option[scala.util.Try[Int]] = Some(Failure(java.util.NoSuchElementException: Future.filter predicate is not satisfied))
+// inside for
+val valid = for (res <-fut if res > 0) yield res        // valid: scala.concurrent.Future[Int] = ...
+valid.value                                             // res2: Option[scala.util.Try[Int]] = Some(Success(42))
+// collect method allows you to validate the future value and transform it in one operation
+val valid = fut collect { case res if res > 0 => res + 46 }
+valid.value                                             // res17: Option[scala.util.Try[Int]] = Some(Success(88))
+val invalid = fut collect { case res if res < 0 => res + 46 }
+invalid.value                                           // res18: Option[scala.util.Try[Int]] = Some(Failure(java.util.NoSuchElementException: Future.collect partial function is not defined at: 42))
+// Dealing with failure: failed, fallBackTo, recover, and recoverWith
+val failure = Future { 42 / 0 }
+failure.value                                           // res23: Option[scala.util.Try[Int]] = Some(Failure(java.lang.ArithmeticException: / by zero)
+val expectedFailure = failure.failed                    // expectedFailure: scala.concurrent.Future[Throwable] = ...
+expectedFailure.value                                   // res25: Option[scala.util.Try[Throwable]] = Some(Success(java.lang.ArithmeticException: / by zero))
+val success = Future { 42 / 1 }
+success.value                                           // res21: Option[scala.util.Try[Int]] = Some(Success(42))
+// future on which the failed method is called ultimately succeeds
+// Mapping both possibilities: transform
+// transform method accepts two functions with which to transform a future: one to use in case of success and the other in case of failure
+val first = success.transform(
+    res => res * 1,
+    ex => new Exception("see cause", ex)
+)
+val second = failure.transform(
+    res => res * 1,
+    ex => new Exception("see cause", ex)
+)
+second.value                                            // res43: Option[scala.util.Try[Int]] =Some(Failure(java.lang.Exception: see cause)
+val firstCase = success.transform { // Scala 2.12
+    case Success(res) => Success(res * 1)
+    case Failure(ex) => Failure(new Exception("see cause", ex))
+}
+val secondCase = failure.transform {
+    case Success(res) => Success(res * 1)
+    case Failure(ex) => Failure(new Exception("see cause", ex))
+}
+// using transform to transform a failure into success
+val nonNegative = failure.transform { // Scala 2.12
+    case Success(res) => Success(res.abs + 1)
+    case Failure(_) => Success(0)
+}
+// Combining futures: zip, Future.fold, Future.reduce, Future.sequence, and Future.traverse
 
 
 
