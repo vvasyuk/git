@@ -3690,11 +3690,19 @@ val nonNegative = failure.transform { // Scala 2.12
     case Failure(_) => Success(0)
 }
 // Combining futures: zip, Future.fold, Future.reduce, Future.sequence, and Future.traverse
-
-
-
-
-
+// zip method will transform two successful futures into a future tuple of both values
+val zippedSuccess = success zip recovered
+zippedSuccess.value                                     // res46: Option[scala.util.Try[(Int, Int)]] = Some(Success((42,1)))
+val zippedFailure = success zip failure
+zippedFailure.value                                     // res48: Option[scala.util.Try[(Int, Int)]] = Some(Failure(java.lang.ArithmeticException: / by zero))
+// fold
+val fortyTwo = Future { 21 + 21 }
+val fortySix = Future { 23 + 23 }
+val futureNums = List(fortyTwo, fortySix)
+val folded = Future.fold(futureNums)(0) { (acc, num) => acc + num }     // If any future in the collection fails, the resulting future will fail
+// reduce method performs a fold without a zero, using the initial future result as the start value
+val reduced = Future.reduce(futureNums) { (acc, num) => acc + num }
+// Performing side-effects: foreach, onComplete, and andThen
 
 
 
