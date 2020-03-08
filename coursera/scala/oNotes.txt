@@ -1385,22 +1385,22 @@ hasZeroRow(diag3)                                       // res48: Boolean = fals
 -Folding lists: /: and :\
 // fold left operation “(z /: xs) (op)” involves three objects: a start value z, a list xs, and a binary operation op
 // (z /: List(a, b, c)) (op) equals op(op(op(z, a), b), c)
-//      op
-//     /  \
-//    op   c
-//   /  \
-//  op   b
-// /  \
-//z    a
+//      op              // def foldLeft[A, B](xs: Seq[A], z: B)(op: (B, A) => B): B = {     //List(1, 2, 3).foldLeft(0)(_ + _)
+//     /  \             //   def f(xs: Seq[A], acc: B): B = xs match {                      // ((0 + 1) + 2) + 3
+//    op   c            //     case Seq()   => acc                                          // = 6
+//   /  \               //     case x +: xs => f(xs, op(acc, x))
+//  op   b              //   }
+// /  \                 //   f(xs, z)
+//z    a                // }
 ("" /: words) (_ + " " + _)                             // res49: String = " the quick brown fox"
 // (List(a, b, c) :\ z) (op) equals op(a, op(b, op(c, z)))
-//  op
-// /  \
-//a   op
-//   /  \
-//  b   op
-//     /  \
-//    c    z
+//  op                  //List(1, 2, 3).foldRight(0)(_ + _)
+// /  \                 // 1 + (2 + (3 + 0))
+//a   op                // = 6
+//   /  \               final def foldRight[B](z: B)(f: (A, B) => B): B = this match {
+//  b   op                case Nil => z
+//     /  \               case Cons(head, tail) => f(head, tail.foldRight(z)(f))
+//    c    z            }
 // concatenates all elements in a list of lists
 def flattenLeft[T](xss: List[List[T]]) = (List[T]() /: xss) (_ ::: _)
 def flattenRight[T](xss: List[List[T]]) = (xss :\ List[T]()) (_ ::: _)      // more efficient, because flattenLeft(xss) copies the first element list xss.head n􀀀1 times, where n is the length of the list xss
