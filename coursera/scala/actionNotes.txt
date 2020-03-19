@@ -1,0 +1,195 @@
+###############
+# Getting started
+###############
+-Basic types
+Byte        8 bit  (-127 +128)          val i2: Byte = 1
+Short       16 bit (32767)
+Int         32 bit (2 147 483 647)      val decimal = 11235     hex -- val hexa = 0x23      octa -- val octa = 023
+Long        64 bit                      val decimal = 11235L
+Float       32 bit                      val f = 0.0f
+Double      64 bit                      val d = 0.0
+Boolean
+Char        16 bit
+
+-CHARACTER LITERALS
+val capB = '\102'               // capB: Char = B
+val capB = 'B'                  // capB: Char = B
+val \u0061\u006e\u0073 = 42     // ans: Int = 42
+-Defining variables
+var willKnowLater:String = _    // willKnowLater: String = null (default value for String is null)
+-lazy
+lazy val forLater = someTimeConsumingOperation()    // forLater: Unit = <lazy>
+var a = 1
+lazy val b = a + 1
+a = 5
+b                               // 6
+
+-Defining functions
+def myFirstMethod():String = { "exciting times ahead" }     // myFirstMethod: ()String
+def myFirstMethod() = { "exciting times ahead" }            // myFirstMethod: ()java.lang.String
+def myFirstMethod(){ "exciting times ahead" }               // myFirstMethod: ()Unit  -  without "=" - scala wont infer return type
+def myFirstMethod() = "exciting times ahead"                // myFirstMethod: ()java.lang.String
+def myFirstMethod = "exciting times ahead"                  // myFirstMethod: java.lang.String
+myFirstMethod                                               // res17: java.lang.String = exciting times ahead
+def max(a: Int, b: Int) = if(a > b) a else b                // max: (a: Int,b: Int)Int
+def toList[A](value:A) = List(value)                        // toList: [A](value: A)List[A]
+
+-FUNCTION LITERALS
+val evenNumbers = List(2, 4, 6, 8, 10)
+evenNumbers.foldLeft(0) { (a: Int, b:Int) => a + b }        // res19: Int = 30
+evenNumbers.foldLeft(0) { (a, b) => a + b }
+evenNumbers.foldLeft(0) { _ + _ }
+val hasUpperCase = name.exists(_.isUpper)
+
+-USING SCALA CLOSURE AND FIRST-CLASS FUNCTIONS: AN EXAMPLE
+// closure will keep track of any variable changes outside the function that are being referred to inside the function
+def breakable(op: => Unit) {
+    try {
+        op
+    } catch { case _ => }
+}
+breakable {                                                 // code passed as closure
+    val env = System.getenv("SCALA_HOME")
+    if(env == null) break
+    println("found scala home lets do the real work")
+}
+// if last argument of function is of functional type - you can pass it as closure
+
+-Working with Array and List
+val array = new Array[String](3)                            // array: Array[String] = Array(null, null, null)
+scala> array(0) = "This"
+scala> array(1) = "is"
+scala> array(2) = "mutable"
+scala> array                                                // res37: Array[String] = Array(This, is, mutable)
+array.foreach(println)
+
+val myList = List("This", "is", "immutable")                // myList: List[java.lang.String] = List(This, is, immutable)
+val myList = "This" :: "is" :: "immutable" :: Nil
+val oldList = List(1, 2)
+val newList = 3 :: oldList                                  // newList: List[Int] = List(3, 1, 2)
+val newList = oldList :+ 3                                  // newList: List[Int] = List(1, 2, 3)
+val afterDelete = newList.filterNot(_ == 3)                 // afterDelete: List[Int] = List(1, 2)
+
+-Controlling flow with loops and ifs
+val configFile = if(useDefault) "custom.txt" else "default.txt"
+
+-For-comprehensions
+val files = new java.io.File(".").listFiles
+for(
+    file <- files;
+    fileName = file.getName;
+    if(fileName.endsWith(".scala"))
+) println(file)
+val aList = List(1, 2, 3)
+val bList = List(4, 5, 6)
+for { a <- aList; b <- bList } println(a + b)               // 5 6 7  6 7 8  7 8 9
+for { a <- aList; b <- bList } yield a + b                  // res27: List[Int] = List(5, 6, 7, 6, 7, 8, 7, 8, 9)
+for { a <- aList; b <- bList } yield { println(a+b)}        // res is collection of units 5 6 7  6 7 8  7 8 9
+
+-Pattern matching
+def printType(obj: AnyRef) = obj match {
+    case s: String => println("This is string")
+    case l: List[_] => println("This is List")
+    case a: Array[_] => println("This is an array")
+    case d: java.util.Date => println("This is a date")
+}
+List(1, 2, 3, 4) match {                                    // res7: List[Int] = List(1, 2)
+    case f :: s :: rest => List(f, s)
+    case _ => Nil
+}
+// guard clause
+def rangeMatcher(num:Int) = num match {
+    case within10 if within10 <= 10 => println("with in 0 to 10")
+    case within100 if within100 <= 100 => println("with in 11 to 100")
+    case beyond100 if beyond100 < Integer.MAX_VALUE => println("beyond 100")
+}
+
+-Exception handling
+def rangeMatcher(num:Int) = num match {
+    case within10 if within10 <= 10 => println("with in 0 to 10")
+    case within100 if within100 <= 100 => println("with in 11 to 100")
+    case _ => throw new IllegalArgumentException(
+                "Only values between 0 and 100 are allowed")
+}
+try {                                                       // res19: Any = Only values between 0 and 100 are allowed
+    rangeMatcher1(1000)
+} catch { case e: IllegalArgumentException => e.getMessage }    
+
+
+###############
+# OOP in Scala
+###############
+-Classes and constructors
+
+-Packaging
+
+-Scala imports
+
+-Objects and companion objects
+
+-Mixin with Scala traits
+
+-Class linearization
+
+-Stackable traits
+
+-Case class
+
+-Named and default arguments and copy constructors
+
+-Modifiers
+
+-Value classes: objects on a diet
+
+-Implicit conversion with implicit classes
+
+-Scala class hierarchy
+
+
+###############
+# Having fun with functional data structures
+###############
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
