@@ -120,46 +120,608 @@ try {                                                       // res19: Any = Only
 # OOP in Scala
 ###############
 -Classes and constructors
+class MongoClient(val host:String, val port:Int)            // constructor takes two parameters: host and port
+val client = new MongoClient("127.0.0.1", 123)
+client.port
+client.host
+class MongoClient(var host:String, var port:Int)            // with mutable
+class MongoClient(host:String, port:Int)                    // if var or val is missing - variables are private
+client.host                                                 // error: value host is not a member of MongoClient client.host
+// scala creates accessors for variables. above is rewritten by scala to
+class MongoClient(private val _host:String, private val _port:Int) {
+    def host = _host
+    def port = _port
+}
+// How do you add a setter method to a class?
+class Person(var firstName:String, var lastName:String, private var _age:Int) {
+    def age = _age
+    def age_=(newAge: Int) = _age = newAge                  // age_ is a function that gets one parame and assinges it to _age
+}
+// when scala encounters x = e - it checks whether there’s any method defined like x_= and if so, it invokes the method
+// f(args) = e is interpreted as f.update(args)
+class MongoClient(val host:String, val port:Int) {
+    def this() = this("127.0.0.1", 27017)                   // default values, zero-argument constructor
+}                                                           // first statement in the overloaded constructors has to invoke either other overloaded constructors or the primary constructor
+// how do some operation before you can invoke the other constructor? (companion objects or write code in class as below)
+class MyScript(host:String) {                               // write code inside the class like a script, which will get executed when the instance of the class is created
+    require(host != null, "Have to provide host name")      // Scala puts any inline code defined inside the class into the primary constructor of the class
+    if(host == "127.0.0.1") println("host = localhost")
+    else println("host = " + host)
+}
+val s = new MyScript("127.0.0.1")                           // host = localhost; s: MyScript = MyScript@401e9c3f
+class MongoClient(val host:String, val port:Int) {
+    require(host != null, "You have to provide a host name")// class. If you want to validate constructor parameters, you could do that inside the class (usually at the top of the class)
+    private val underlying = new Mongo(host, port)
+    def this() = this("127.0.0.1", 27017)
+}
+// you can extend
+class MongoClientV2(val host:String, val port:Int) extends Mongo(host, port){
+    require(host != null, "You have to provide a host name")
+    def this() = this("127.0.0.1", 27017)
+}
 
 -Packaging
+1.
+package com.scalainaction.mongo
+import com.mongodb.Mongo
+class MongoClient(val host:String, val port:Int) {
+    require(host != null, "You have to provide a host name")
+    private val underlying = new Mongo(host, port)
+    def this() = this("127.0.0.1", 27017)
+}
+2.
+package com.scalainaction.mongo {
+    import com.mongodb.Mongo
+    class MongoClient(val host:String, val port:Int) {
+        require(host != null, "You have to provide a host name")
+        private val underlying = new Mongo(host, port)
+        def this() = this("127.0.0.1", 27017)
+    }
+}
+3.
+package com.persistence {
+    package mongo {
+        class MongoClient
+    }
+    package riak {
+        class RiakClient
+    }
+    package hadoop {
+        class HadoopClient
+    }
+}
 
 -Scala imports
+import com.mongodb._                                        // importing all the classes under the com.mongodb package
+val randomValue = { import scala.util.Random
+    new Random().nextInt
+}
+import java.lang.System._
+nanoTime                                                    // res0: Long = 1268518636387441000
+import java.util.Date
+import java.sql.{Date => SqlDate}                           // rename
+val now = new Date
+val sqlDate = new SqlDate(now.getTime)
+import java.sql.{Date => _ }                                // Date class from the java.sql package is no longer visible for use
+// Completed MongoClient
+package com.scalainaction.mongo
+class MongoClient(val host:String, val port:Int) {
+    require(host != null, "You have to provide a host name")
+    private val underlying = new Mongo(host, port)
+    def this() = this("127.0.0.1", 27017)
+    def version = underlying.getVersion
+    def dropDB(name:String) = underlying.dropDatabase(name)
+    def createDB(name:String) = DB(underlying.getDB(name))
+    def db(name:String) = DB(underlying.getDB(name))
+}
 
 -Objects and companion objects
+object RichConsole {
+    def p(x: Any) = println(x)
+}
+RichConsole.p("rich console")
+// can import
+import RichConsole._
+p("this is cool")
+// factory to create DB instance
+object DB {
+    def apply(underlying: MongDB) = new DB(underlying)
+}
+DB(underlying.getDB(name))
+// factory pattern
+abstract class Role { def canAccess(page: String): Boolean }
+class Root extends Role {
+    override def canAccess(page:String) = true
+}
+class SuperAnalyst extends Role {
+    override def canAccess(page:String) = page != "Admin"
+}
+class Analyst extends Role {
+    override def canAccess(page:String) = false }
+object Role {
+    def apply(roleName:String) = roleName match {
+        case "root" => new Root
+        case "superAnalyst" => new SuperAnalyst
+        case "analyst" => new Analyst
+    }
+}
+val root = Role("root")
+val analyst = Role("analyst")
+// DB.scala file
+package com.scalainaction.mongo
+import com.mongodb.{DB => MongoDB}                              // Because of the name conflict, you’re remapping the DB class
+class DB private(val underlying: MongoDB) {}                    // othing other than a companion object can use it (private)
+object DB {
+    def apply(underlying: MongoDB) = new DB(underlying)
+}
+// only things you can put in a package are classes, traits, and objects
+// with package object (called package.scala) - can put any kind of definition in a package
+package object bar {                                            // will be available to all members of the package bar
+    val minimumAge = 18
+    def verifyAge = {}                                          // helper method in a package object that will be available to all members of the package
+}
+package bar
+class BarTender {
+    def serveDrinks = { verifyAge; ... }
+}
+// Completed MongoClient.scala
+package com.scalainaction.mongo
+import com.mongodb._
+class MongoClient(val host:String, val port:Int) {
+    require(host != null, "You have to provide a host name")
+    private val underlying = new Mongo(host, port)
+    def this() = this("127.0.0.1", 27017)
+    def version = underlying.getVersion
+    def dropDB(name:String) = underlying.dropDatabase(name)
+    def createDB(name:String) = DB(underlying.getDB(name))
+    def db(name:String) = DB(underlying.getDB(name))
+}
+// Completed DB.scala
+package com.scalainaction.mongo
+import com.mongodb.{DB => MongoDB}
+import scala.collection.convert.Wrappers._
+class DB private(val underlying: MongoDB) {
+    def collectionNames = for(name <- new
+        JSetWrapper(underlying.getCollectionNames)) yield name
+    }
+object DB {
+    def apply(underlying: MongoDB) = new DB(underlying)
+}
 
 -Mixin with Scala traits
+// Completed DB.scala
+package com.scalainaction.mongo
+import com.mongodb.{DB => MongoDB}
+import scala.collection.convert.Wrappers._
+class DB private(val underlying: MongoDB) {
+    private def collection(name: String) = underlying.getCollection(name)
+    def readOnlyCollection(name: String) = new DBCollection(collection(name))
+    def administrableCollection(name: String) = new
+        DBCollection(collection(name)) with Administrable
+    def updatableCollection(name: String) = new
+        DBCollection(collection(name)) with Updatable
+    def collectionNames = for(name <- new
+        JSetWrapper(underlying.getCollectionNames)) yield name
+}
+object DB {
+    def apply(underlying: MongoDB) = new DB(underlying)
+}
+// DBCollection.scala
+package com.scalainaction.mongo
+import com.mongodb.{DBCollection => MongoDBCollection }
+import com.mongodb.DBObject
+class DBCollection(override val underlying: MongoDBCollection)  // overriding the underlying abstract value with whatever value will be passed to the primary constructor
+    extends ReadOnly
+trait ReadOnly {
+    val underlying: MongoDBCollection                           // abstract value (need to be inherited by subclasses)
+    def name = underlying getName
+    def fullName = underlying getFullName
+    def find(doc: DBObject) = underlying find doc
+    def findOne(doc: DBObject) = underlying findOne doc
+    def findOne = underlying findOne
+    def getCount(doc: DBObject) = underlying getCount doc
+}
+trait Administrable extends ReadOnly {                          // If your trait extends another trait or class
+    def drop: Unit = underlying drop                            // then that trait can only be mixed into a class that also extends the same superclass or trait
+    def dropIndexes: Unit = underlying dropIndexes
+}
+trait Updatable extends ReadOnly {
+    def -=(doc: DBObject): Unit = underlying remove doc
+    def +=(doc: DBObject): Unit = underlying save doc
+}
+// Test client for driver QuickTour.scala
+import com.scalainaction.mongo._
+import com.mongodb.BasicDBObject
+def client = new MongoClient
+def db = client.db("mydb")
+for(name <- db.collectionNames) println(name)
+
+val col = db.readOnlyCollection("test")
+println(col.name)
+
+val adminCol = db.administrableCollection("test")
+adminCol.drop
+
+val updatableCol = db.updatableCollection("test")
+val doc = new BasicDBObject()
+doc.put("name", "MongoDB")
+doc.put("type", "database")
+doc.put("count", 1)
+
+val info = new BasicDBObject()
+info.put("x", 203)
+info.put("y", 102)
+doc.put("info", info)
+updatableCol += doc
+
+println(updatableCol.findOne)
+
+updatableCol -= doc
+println(updatableCol.findOne)
+
+for(i <- 1 to 100) updatableCol += new BasicDBObject("i", i)
+val query = new BasicDBObject
+query.put("i", 71);
+val cursor = col.find(query)
+while(cursor.hasNext()) {
+    println(cursor.next());
+}
+// memoization
+trait Memoizer extends ReadOnly {
+    val history = scala.collection.mutable.Map[Int, DBObject]()             // keeping track of all the resulting DBObjects
+    override def findOne = {
+        history.getOrElseUpdate(-1, { super.findOne })
+    }
+    override def findOne(doc: DBObject) = {
+        history.getOrElseUpdate(doc.hashCode, { super.findOne(doc) })
+    }
+}
+// use this memoizer trait
+def readOnlyCollection(name: String) =
+    new DBCollection(collection(name)) with Memoizer
+def administrableCollection(name: String) =
+    new DBCollection(collection(name)) with Administrable with Memoizer
+def updatableCollection(name: String) =
+    new DBCollection(collection(name)) with Updatable with Memoizer
 
 -Class linearization
+Class UpdatableCollection extends DBCollection(collection(name)) with Updatable
+// all classes in Scala extend scala.AnyRef, which in turn inherits from the scala.Any class
+// linearization of the ReadOnly trait is simple because it doesn’t involve multiple inheritance
+ReadOnly –> AnyRef –> Any
+// Similarly, Updatable and DBCollection also don’t have that issue
+Updatable –> ReadOnly –> AnyRef –> Any
+DBCollection –> ReadOnly –> AnyRef –> Any
+// After linearization, your UpdatableCollection looks like the following
+UpdatableCollection –> Updatable –> DBCollection –> ReadOnly –> AnyRef –> Any
+// if you add the Memoizer trait into the mix, it will show up before Updatable because it’s the rightmost element
+UpdatableCollection –> Memoizer –> Updatable –> DBCollection –> ReadOnly –> AnyRef –> Any
 
 -Stackable traits
+trait LocaleAware extends ReadOnly {
+    override def findOne(doc: DBObject) = {
+        doc.put("locale", java.util.Locale.getDefault.getLanguage)
+        super.findOne(doc)
+    }
+    override def find(doc: DBObject) = {
+        doc.put("locale", java.util.Locale.getDefault.getLanguage)
+        super.find(doc)
+    }
+}
+// Now when creating a new Collection, you could mix in this trait:
+new DBCollection(collection(name)) with Memoizer with LocaleAware
 
 -Case class
+case class Person(firstName:String, lastName:String)
+1. prefixes all the parameters with val
+2. adds equals, hashcode, toString, copy
+3. companion object
+4. adds unapply
+//case objects that are singleton and serializable
+trait Boolean
+case object Yes extends Boolean
+case object No extends Boolean
+//
+sealed trait QueryOption
+case object NoOption extends QueryOption
+case class Sort(sorting: DBObject, anotherOption: QueryOption) extends QueryOption
+case class Skip(number: Int, anotherOption: QueryOption) extends QueryOption
+case class Limit(limit: Int, anotherOption: QueryOption) extends QueryOption
+case class Query(q: DBObject, option: QueryOption = NoOption) {                     // default value to the parameter
+    def sort(sorting: DBObject) = Query(q, Sort(sorting, option))
+    def skip(skip: Int) = Query(q, Skip(skip, option))
+    def limit(limit: Int) = Query(q, Limit(limit, option))
+}
+var rangeQuery = new BasicDBObject("i", new BasicDBObject("$gt", 20))               // searching documents for which the i > 20 condition is true
+var richQuery = Query(rangeQuery).skip(20).limit(10)                                // From the result set you skip 20 documents and limit your result set to 10 documents
+// pattern matching
+case class Person(firstName:String, lastName: String)
+val p = Person("Matt", "vanvleet")
+p match {
+    case Person(first, last) => println(">>>> " + first + ", " + last)              // >>>> Matt, vanvleet
+}
+object Person {
+    def apply(firstName:String, lastName:String) = {
+        new Person(firstName, lastName)
+    }
+    def unapply(p:Person): Option[(String, String)] =
+        Some((p.firstName, p.lastName))
+}
+// ReadOnly trait
+trait ReadOnly {
+    val underlying: MongoDBCollection
+    def name = underlying getName
+    def fullName = underlying getFullName
+    def find(query: Query): DBCursor = {                                            // Find method takes query object
+        def applyOptions(cursor:DBCursor, option: QueryOption): DBCursor = {
+            option match {
+                case Skip(skip, next) => applyOptions(cursor.skip(skip), next)
+                case Sort(sorting, next)=> applyOptions(cursor.sort(sorting), next)
+                case Limit(limit, next) => applyOptions(cursor.limit(limit), next)
+                case NoOption => cursor
+            }
+        }
+        applyOptions(find(query.q), query.option)
+    }
+    def find(doc: DBObject): DBCursor = underlying find doc
+    def findOne(doc: DBObject) = underlying findOne doc
+    def findOne = underlying findOne
+    def getCount(doc: DBObject) = underlying getCount doc
+}
+// TestFindByQuery.scala
+import com.scalainaction.mongo._
+import com.mongodb.BasicDBObject
+def client = new MongoClient
+def db = client.db("mydb")
+val col = db.readOnlyCollection("test")
+val updatableCol = db.updatableCollection("test")
+for(i <- 1 to 100) updatableCol += new BasicDBObject("i", i)
+val rangeQuery = new BasicDBObject("i", new BasicDBObject("$gt", 20))               // Search for where i > 20
+val richQuery = Query(rangeQuery).skip(20).limit(10)                                // Skip first 20 docs, return 10 docs
+val cursor = col.find(richQuery)
+while(cursor.hasNext()) {
+    println(cursor.next());
+}
 
 -Named and default arguments and copy constructors
+case class Person(firstName:String, lastName:String)
+val p = Person("lastname", "firstname")
+val p = Person(lastName = "lastname", firstName = "firstname")
+
+//SalesPerson overriding the grade method and changing the parameter name in the process from years to yrs
+trait Person { def grade(years: Int): String }
+class SalesPerson extends Person { def grade(yrs: Int) = "Senior" }
+val s = new SalesPerson
+s.grade(yrs=1)                                                                      // res17: java.lang.String = Senior
+s.grade(years=1)                                                                    // <console>:12: error: not found: value years s.grade(years=1)
 
 -Modifiers
+package outerpkg.innerpkg
+class Outer {
+    class Inner {
+        private[Outer] def f() = "This is f"                                        // can appear anywhere within the Outer class
+        private[innerpkg] def g() = "This is g"                                     // accessible anywhere within outerpkg.innerpkg
+        private[outerpkg] def h() = "This is h"                                     // can appear anywhere within outerpkg and its subpackages
+    }
+}
 
 -Value classes: objects on a diet
+// Value classes allow you to add extension methods to a type without the runtime overhead of creating instances
+class Wrapper(val name: String) extends AnyVal {
+    def up() = name.toUpperCase
+}
+val w = new Wrapper("hey")                                                          // At runtime the expression will be optimized to the equivalent of a method class on a static object: Wrapper.up$extension("hey")
+w.up()
 
 -Implicit conversion with implicit classes
+val someInt: Int = 2.3                                                              // error: type mismatch; found : Double(2.3) required: Int val someInt: Int = 2.3
+def double2Int(d: Double): Int = d.toInt
+val someInt: Int = double2Int(2.3)
+// make it implicit
+implicit double2Int(d: Double): Int = d.toInt
+val someInt: Int = 2.3                                                              // someInt: Int = 2
+// add extension methods to existing types
+val oneTo10 = 1 to 10
+// if we want to create a range of numbers using the --> method
+val oneTo10 = 1 --> 10
+// Create a type that has a --> method defined for the Int type
+class RangeMaker(left: Int) {
+    def -->(right: Int) = left to right
+}
+val range: Range = new RangeMaker(1).-->(10)
+implicit def int2RangeMaker(left: Int): Range = new RangeMaker(left)
+// combine
+implicit class RangeMaker(left: Int) {                                              // only runtime cost comes from creating an additional instance of RangeMaker for each implicit conversion
+    def -->(right: Int): Range = left to right
+}
+implicit class RangeMaker(val left: Int) extends AnyVal {                           // avoid the runtime cost by turning our implicit classes into value classes
+    def -->(right: Int): Range = left to right
+}
 
 -Scala class hierarchy
+#########################################################################################################
+#+---+                                                                                                  #
+#|any|                                                                                                  #
+#+---+                                                                                                  #
+#|    +------+                                                                                  +------+#
+#+----+anyVal+-+--------+--------+--------+--------+--------+--------+--------+--------+<-------+Nothng|#
+#|    +------+ |        |        |        |        |        |        |        |        |        +------+#
+#|             +------+ +------+ +------+ +------+ +------+ +------+ +------+ +------+ +------+         #
+#|             |Double| |Float | |Long  | |Int   | |Short | |Byte  | |Char  | |Bolean| |Unit  |         #
+#|             +------+ +------+ +------+ +------+ +------+ +------+ +------+ +------+ +------+         #
+#|                                                                                                      #
+#|                                                                                                      #
+#|    +------+                                     +------+                                             #
+#+----+anyRef+-+--------+--------+--------+<-------+Null  |                                             #
+#     +------+ |        |        |        |        +------+                                             #
+#              +------+ +------+ +------+ +------+                                                      #
+#              |Itrble+<+Seq   +<+List  | |Option|                                                      #
+#              +------+ +------+ +------+ +------+                                                      #
+#########################################################################################################
 
 
 ###############
 # Having fun with functional data structures
 ###############
 
+-Introducing type parameterization
+def position[A](xs: List[A], value: A): Int = {
+    xs.indexOf(value)
+}
+val xs = List("one", "two", "three")
+position(xs, "two")
+val ys = List(20, 30, 40)
+position(ys, 40)
+position[Int](ys, 300)                                                              // res11: Int = -1 instead of returning the Int result, you’ll return a new type that clearly expresses the behavior of the method
+// Maybe
+def position[A](xs: List[A], value: A): Maybe[Int] = {
+    val index = xs.indexOf(value)
+    if(index != -1) Just(index) else Nil
+}
+// Version 1 of Maybe.scala
+sealed abstract class Maybe[+A] {
+    def isEmpty: Boolean
+    def get: A
+}
+final case class Just[A](value: A) extends Maybe[A] {
+    def isEmpty = false
+    def get = value
+}
+case object Nil extends Maybe[Nothing] {
+    def isEmpty = true
+    def get = throw new NoSuchElementException("Nil.get")
+}
+
+-Type variance with covariance and contravariance
+// how do two types with a subtype relationship relate in type parameterization with each other
+// + sign along with the type parameter to make it covariant
+// Covariance allows subclasses to override and use narrower types than their superclass in covariant positions such as the return value
+// Nil object is a subclass of Maybe with scala.Nothing as a type parameter. Because the A type of Maybe is covariant, you can return a narrower type from its subclasses. There’s no narrower type than Nothing
+// immutable List is covariant in its type parameter, so List[String] is a subtype of List[Any]
+// opposite of covariance is contravariance. In the case of covariance, subtyping can go downward, but in contravariance subtypes go upward. Contravariance comes in handy when you have a mutable data structure
+
+// Mutable objects need to be invariant
+val mxs: ListBuffer[String] = ListBuffer("pants")
+val everything: ListBuffer[Any] = mxs                                               // error: type mismatch; found : scala.collection.mutable.ListBuffer[String] required: scala.collection.mutable.ListBuffer[Any]
+// assume ListBuffer is covariant
+val mxs: ListBuffer[String] = ListBuffer("pants")
+val everything: ListBuffer[Any] = mxs
+everything += 1                                                                     // res4: everything.type = ListBuffer(1, pants). this is a problem same as in Java Array
+// not an issue for immutable
+val xs: List[String] = List("pants")                                                // xs: List[String] = List(pants)
+val everything: List[Any] = xs                                                      // everything: List[Any] = List(pants)
+// You can add 1 to xs List, and it will return a new List of type Any
+1 :: xs                                                                             // res5: List[Any] = List(1, pants)
+
+// in Java
+Object[] arr = new int[1];
+arr[0] = "Hello, there!";
+
+// A good example of contravariance in action is the Function1
+trait Function1[-P, +R] { ... }                                                     // Function1 is contravariant in P and covariant in R. Function1 trait is contravariant for the parameter and covariant for the return type
+// consider what will happen when the opposite is the case—for instance, covariant for parameter and contravariant for return value
+val addOne: Function1[Any, Int] = { x: Int => x + 1 }
+// Function1[-A,+B] means that a function that takes superclasses of A can be viewed as a subclass of the original function.
+// example
+class A
+class B extends A
+val printB: B => Unit = { b => println("Blah blah") }
+val printA: A => Unit = { a => println("Blah blah blah") }
+// suppose you require a function that knows how to print a B
+def needsB(f: B => Unit, b: B) = f(b)                                               // you could also pass in printA, since it also knows how to print Bs (and more!), just as if A => Unit was a subclass of B => Unit. This is exactly what contravariance means. It doesn't mean you can pass Option[Double] into printB and get anything but a compile-time error!  (Covariance is the other case: M[B] <: M[A] if B <: A.)
+// You should be able to do with a SubFoo everything that you can do with a Foo, and maybe more
+// we have Calico <: Cat <: Animal, and Husky <: Dog <: Animal
+// Suppose we have Calico <: Cat <: Animal, and Husky <: Dog <: Animal. Let's look at a Function[Cat, Dog]
+Function[Cat, Dog]                                                                  // 
+1. You can pass in any Cat (so any subclass of Cat)
+2. You can call any Dog method on the returned value
+Function[Calico, Dog] <: Function[Cat, Dog]                                         // No, statements that are true of the superclass are not true of the subclass, namely statement (1). You can't pass in any Cat to a Function that only takes Calico cats.
+Function[Animal, Dog] <: Function[Cat, Dog]                                         // Yes, all statements about the superclass are true of the subclass. I can still pass in any Cat -- in fact I can do even more than that, I can pass in any Animal -- and I can call all Dog methods on the returned value
+// So A <: B implies Function[B, _] <: Function[A, _]
+Function[Cat, Husky] <: Function[Cat, Dog]                                          // Yes, all statements about the superclass are true of the subclass; I can still pass in a Cat, and I can still call all Dog methods on the returned value -- in fact I can do even more than that, I can call all Husky methods on the returned value
+Function[Cat, Animal] <: Function[Cat, Dog]                                         // No, statements that are true of the superclass are not true of the subclass, namely statement (2). I can't call all methods available on Dog on the returned value, only the ones available on Animal.
+// So with a Function[Animal, Husky] I can do everything I can do with a Function[Cat, Dog]: I can pass in any Cat, and I can call all of the Dog methods on the returned value. 
+// And I can do even more: I can pass in other animals, and I can call of the methods available on Husky that aren't available on Dog. So it makes sense: Function[Animal, Husky] <: Function[Cat, Dog]. 
+// The first type parameter can be replaced with a superclass, the second with a subclass.
 
 
+-Lower and upper type bounds
+
+-Higher-order functions, including map, flatMap, and friends
+
+-Using foldLeft and foldRight
+
+-Building your own function objects
+
+-Scala collection hierarchy
+
+-Mutable and immutable collections
+
+-Working with List and ListBuffer
+
+-Working with Set and SortedSet
+
+-Working with Map and Tuple
+
+-Under the hood of for-comprehension
+
+-Use Option not Null
+
+-Working with lazy collections: views and streams
+
+-Convert a strict collection to a nonstrict collection with views
+
+-Working with Streams
+
+-Divide and conquer with parallel collections
+
+-Parallel collection hierarchy
+
+-Switching between sequential and parallel collections
 
 
+###############
+# Functional programming
+###############
+-What is functional programming
 
+-The benefits of referential transparency
 
+-A pure functional program
 
+-Moving from OOP to functional programming
 
+-Pure vs. impure programming
 
+-Object-oriented patterns in functional programming
 
+-Modeling purely functional programs
+
+-Functions in all shapes and forms
+
+-Methods vs. functions
+
+-Higher-order functions
+
+-Function currying
+
+-Function composition and partial functions
+
+-Recursion
+
+-Thinking recursively
+
+-Tail recursion
+
+-Algebraic data types
+
+-Why does functional programming matter
+
+-Building higher abstractions with monads
+
+-Managing state using monads
+
+-Building blocks for monads
 
 
 
