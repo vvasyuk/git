@@ -6,5 +6,7 @@ ops.push('(')
 ops.push('+')
 ops.push(')')
 
-println("xxx")
-ops.popWhile(_!='(').foreach(println(_))
+
+println("asd")
+
+//ops.popWhile(_!='(').foreach(println(_))
