@@ -644,10 +644,68 @@ Function[Cat, Animal] <: Function[Cat, Dog]                                     
 // And I can do even more: I can pass in other animals, and I can call of the methods available on Husky that aren't available on Dog. So it makes sense: Function[Animal, Husky] <: Function[Cat, Dog]. 
 // The first type parameter can be replaced with a superclass, the second with a subclass.
 
-
 -Lower and upper type bounds
+sealed abstract class Maybe[+A] {
+    def isEmpty: Boolean
+    def get: A
+    def getOrElse(default: A): A = {                                                // added method
+        if(isEmpty) default else get                                                // covariant type A occurs in contravariant position in type => A of value default
+    }
+}
+//
+def defaultToNull[A <: Maybe[_]](p: A) = {                                          // take subclasses of Maybe
+    p.getOrElse(null)
+}
+// Complete Maybe.scala
+sealed abstract class Maybe[+A] {                                                   // Maybe class defined with a covariant parameter type A
+    def isEmpty: Boolean
+    def get: A
+    def getOrElse[B >: A](default: B): B = {
+        if(isEmpty) default else get
+    }
+}
+final case class Just[A](value: A) extends Maybe[A] {                               // The Just subclass holds the success value of an operation
+    def isEmpty = false
+    def get = value
+}
+case object Nil extends Maybe[scala.Nothing] {                                      // Nil is opposite of Just and denotes an error condition
+    def isEmpty = true
+    def get = throw new NoSuchElementException("Nil.get")
+}
 
 -Higher-order functions, including map, flatMap, and friends
+def addOne(num:Int) = num + 1
+List(1, 2, 3) map addOne
+def log(m: => String) = if(logEnabled) println(m)                                   // call-by-name will pass the parameter as a function that will be evaluated every time the parameter is accessed. If the log isn’t enabled, the parameter will never be evaluated
+def ++ = (x:Int) => x + 1                                                           // $plus$plus: (Int) => Int
+// implement a function like map
+def map[A, B](xs: List[A], f: A => B): List[B] = {
+    xs match {
+        case List() => Nil
+        case head :: tail => f(head) :: map(tail, f)
+    }
+}
+// map function using a for-comprehension
+def map1[A, B](f: A => B, xs: List[A]): List[B] = for(x <- xs) yield f(x)
+
+// flatMap - appies function to all elements of list and concatenating the result
+class List[+A] { ...
+    def flatMap[B](f: A => GenTraversableOnce[B]): List[B]
+}
+List("one","two", "three", "") flatMap { _.toList }                                 // res5: List[Char] = List(o, n, e, t, w, o, t, h, r, e, e)
+// flatMap takes the result of the map and flattens it to a single list
+def flatten[B](xss: List[List[B]]): List[B] = {                                     // flatten takes a List of List and flattens it to a single List
+    xss match {
+        case List() => Nil
+        case head :: tail => head ::: flatten(tail)
+    }
+}
+def flatMap[A, B](xs: List[A])(f: A => List[B]) : List[B] = {                       // Currying allows you to chain functions one after another with a single parameter
+    flatten(map(xs, f))
+}
+// difference between a lambda and a closure?
+
+
 
 -Using foldLeft and foldRight
 
