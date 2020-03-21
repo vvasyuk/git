@@ -1,2 +1,10 @@
+import scala.collection.mutable
 
-Range(0,2).foreach(x=>println(1 + x))
+val ops = mutable.Stack[Char]()
+
+ops.push('(')
+ops.push('+')
+ops.push(')')
+
+println("xxx")
+ops.popWhile(_!='(').foreach(println(_))
