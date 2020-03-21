@@ -1098,8 +1098,63 @@ def taxIt(s: TaxStrategy)(product: String) = { s.taxIt(product) }               
 val taxFree = taxIt(new TaxFree) _                                                  // taxFree: String => Double = <function1>
 
 -Function composition and partial functions
+// partial function is a function that’s only defined for a subset of input values
+def intToChar: PartialFunction[Int, Char] = {
+    case 1 => 'a'
+    case 3 => 'c'
+}
+// will be translated to:
+new PartialFunction[Int, Char] {
+    def apply(i: Int) = i match {
+        case 1 => 'a'
+        case 3 => 'c'
+    }
+    def isDefinedAt(i: Int): Boolean = i match {
+        case 1 => true
+        case 3 => true
+        case _ => false
+    }
+}
+// example:
+sealed trait Claim { val claimId: Int }
+case class Full(val claimId: Int) extends Claim
+case class Partial(val claimId: Int, percentage: Double) extends Claim
+case class Generic(val claimId: Int) extends Claim
+
+case class Location(stateCode: Option[String], zipCode: Option[String])
+case class Req(productId: String, location: Location, claim: Claim)
+type PC = Tuple2[Req, Option[Double]]
+def handleFullClaim: PartialFunction[PC, PC] = {
+    case (c@Req(id, l, Full(claimId)), basePrice) =>
+    ...
+}
+def handlePartialClaim: PartialFunction[PC, PC] = {
+    case (c@Req(id, l, Partial(claimId, percentage)), basePrice) =>
+    ...
+}
+def handleZipCode: PartialFunction[PC, PC] = {
+    case (c@Req(id, Location(_, Some(zipCode)), _), price) =>
+    ...
+}
+def handleStateCode: PartialFunction[PC, PC] = {
+    case (c@Req(id, Location(Some(stateCode), _), _), price) =>
+    ...
+}
+def claimHandlers = handleFullClaim orElse handlePartialClaim
+def locationHandlers = handleZipCode orElse handleStateCode
+def priceCalculator: PartialFunction[PC, PC] =
+ claimHandlers andThen locationHandlers
 
 -Recursion
+// imperative solution
+var sum = 0
+for(e <- List(1,2,3)) { sum += e }
+// recursive
+def sum(xs: List[Int]): Int = xs match {
+    case Nil => 0
+    case x :: ys => x + sum(ys)
+}
+
 
 -Thinking recursively
 
