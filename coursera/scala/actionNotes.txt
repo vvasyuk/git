@@ -704,32 +704,194 @@ def flatMap[A, B](xs: List[A])(f: A => List[B]) : List[B] = {                   
     flatten(map(xs, f))
 }
 // difference between a lambda and a closure?
-
-
+// lambda is an anonymous function—a function without a name
+// Closure is any function that closes over the environment in which it’s defined
+List(100, 200, 300) map { _ * 10/100 }                                              // lambda
+var percentage = 10
+val applyPercentage = (amount: Int) => amount * percentage/100                      // closure applyPercentage: (Int) => Int = <function1>
+percentage = 20
+List(100, 200, 300) map applyPercentage                                             // res33: List[Int] = List(20, 40, 60)
+// In tail recursion you perform your calculation first and then execute the recursive call by passing the result of the current step to the next step
+def flatten3[B](xss: List[List[B]]): List[B] = {
+    def _flatten3(oldList: List[List[B]], newList: List[B]): List[B] =
+        oldList match {
+        case List() => newList
+        case head :: tail => _flatten3(tail, newList ::: head)                      // tail recursion pattern
+    }
+    _flatten3(xss, Nil)
+}
 
 -Using foldLeft and foldRight
-
+def foldLeft[B](z: B)(f: (B, A) => B): B                                            // z represents the start value, and it’s passed as the first parameter to f
+def foldRight[B](z: B)(f: (A, B) => B): B                                           // start value is passed as the second parameter
+// map with fold
+def map2[A, B](xs: List[A])(f: A => B): List[B] = {
+    val startValue = List.empty[B]
+    xs.foldRight(startValue) { f(_) :: _ }                                          // second param is a accum list and first one is list element
+}
+def flatten2[B](xss: List[List[B]]): List[B] = {
+    val startValue = List.empty[B]
+    xss.foldRight(startValue) { _ ::: _ }
+}
+// foldRight can throw stackOverflow, map using foldLeft
+def map3[A, B](xs: List[A])(f: A => B): List[B] = {
+    val startValue = List.empty[B]
+    xs.foldLeft(startValue)((a, x) => f(x) :: a).reverse                            // starting from first element - you add them to the end of accum and then reverse
+}
+List(1, 2, 3, 4).foldLeft(0) { _ + _ }                                              // list sum; res25: Int = 10
+List(1, 2, 3, 4).foldLeft(0) { (a, b) => a + 1 }                                    // length of list; res27: Int = 4
+// exists implementation
+def exists[A](xs: List[A], e: A) =
+    xs.foldLeft(false)((a, x) => a || (x == e))
+ 
 -Building your own function objects
+// function object is an object that you can use as a function
+object foldl {
+    def apply[A, B](xs: Traversable[A], defaultValue: B)(op: (B, A) => B) = (defaultValue /: xs)(op)
+}
+foldl(List("1", "2", "3"), "0") { _ + _ }
+// alt impl
+object ++ extends Function1[Int, Int]{
+    def apply(p: Int): Int = p + 1
+}
+val ++ = (x: Int) => x + 1 
+// or
+object ++ extends (Int => Int) {
+    def apply(p: Int): Int = p + 1
+}
+// compose
+val addOne: Int => Int = x => x + 1
+val addTwo: Int => Int = x => x + 2
+val addThree = addOne compose addTwo
+val addThree: Int => Int = x => addOne(addTwo(x))
 
 -Scala collection hierarchy
+###################################################################
+#               +--------+  +--------+     +--------+             #
+#               +  set   +--+sortSet +  +--+  buffer+             #
+#               +--------+  +--------+  |  +--------+             #
+#                   |                   |                         #
+#                   |                   |                         #
+#+-----------+  +--------+  +--------+  |  +--------+             #
+#|traversable|--+iterable+--+  seq   +--+--+  vector+             #
+#+-----------+  +--------+  +--------+  |  +--------+             #
+#                   |                   |                         #
+#                   |                   |                         #
+#               +--------+  +--------+  |  +---------+  +--------+#
+#               +  set   +--+sortSet +  +--+linearSeq+--+  list  +#
+#               +--------+  +--------+     +---------+  +--------+#
+###################################################################    
 
 -Mutable and immutable collections
 
 -Working with List and ListBuffer
+val languages = Seq("Scala", "Haskell", "OCaml", "ML")
+languages(1)                                                                            // res11: java.lang.String = Haskell
+val buf = ListBuffer(1.2, 3.4, 5.6)
+buf(2) = 10                                                                             // 10 as 3rd elem
+buf                                                                                     // res30: scala.collection.mutable.ListBuffer[Double] = ListBuffer(1.2, 3.4, 10.0)
 
 -Working with Set and SortedSet
+val frameworks = Set("Lift", "Akka", "Playframework", "Scalaz")
+frameworks("Lift")                                                                      // res38: Boolean = true
+val frameworks = Set() + "Akka" + "Lift" + "Scalaz"
+val mFrameworks = collection.mutable.Set[String]()
+mFrameworks += "Akka" += "Lift"
 
 -Working with Map and Tuple
+val m = Map((1, "1st"), (2, "2nd"))
+val m = Map(1 -> "1st", 2 -> "2nd")
+m(1)                                                                                    // res20: java.lang.String = 1st
+m.get(1)                                                                                // res22: Option[java.lang.String] = Some(1st)
+m filter { (t) => t._2 == "1st" }
 
 -Under the hood of for-comprehension
+case class Artist(name: String, genre: String)
+val artists = List(Artist("Pink Floyd", "Rock"),
+                   Artist("Led Zeppelin", "Rock"),
+                   Artist("Michael Jackson", "Pop"),
+                   Artist("Above & Beyond", "trance")
+                   )
+for(Artist(name, genre) <- artists; if(genre == "Rock"))
+    yield name
+// Under the hood
+artists withFilter {case Artist(name, genre) => genre == "Rock"} map { case Artist(name, genre) => name}
+// without yield
+for(Artist(name, genre) <- artists) println(name + "," + genre)
+artists withFilter {case Artist(name, genre) => true; case _ => false} foreach { case Artist(name, genre) => println(name + "," + genre)}
+// When you have multiple generators, Scala uses flatMap
+artistsWithAlbums flatMap {
+    case ArtistWithAlbums(artist, albums) => albums withFilter {
+    album => artist.genre == "Rock"
+    } map { case album => album }
+}
 
 -Use Option not Null
+// When should you use Either rather than Option?
+def throwableToLeft[T](block: => T):Either[Throwable, T] =
+    try {
+    Right(block)
+    } catch {
+    case ex Throwable => Left(ex)
+    }
+val r = throwableToLeft {new java.net.Socket("localhost", 4444)}
+r match {
+    case Left(e) => e.printStackTrace
+    case Right(e) => println(e)
+}
 
 -Working with lazy collections: views and streams
+List(1, 2, 3, 4, 5).map( _ + 1).head                                                // you’re still processing all the elements from 1 to 5 in the List
 
 -Convert a strict collection to a nonstrict collection with views
+List(1, 2, 3, 4, 5).view.map( _ + 1).head                                           // calculation is deferred until you invoke head 
+def strictProcessing = List(-2, -1, 0, 1, 2) map { 2 / _ }
+strictProcessing(0)                                                                 // java.lang.ArithmeticException: / by zero
+// fix
+def nonStrictProcessing = List(-2, -1, 0, 1, 2).view map { 2 / _ }                 // nonStrictProcessing: scala.collection.SeqView[Int,Seq[_]]
+nonStrictProcessing(0)                                                             // res50: Int = -1
+// force strict processing
+nonStrictProcessing.force                                                          // java.lang.ArithmeticException: / by zero
+
+// call-by-name functions 
+def tweets(handle: String) = {
+    println("processing tweets for " + handle)
+    val source = Source.fromURL(new java.net.URL("http://search.twitter.com/search.atom?q=" + handle))
+    val iterator = source.getLines()
+    val builder = new StringBuilder
+    for(line <- iterator) builder.append(line)
+    XML.loadString(builder.toString)
+} 
+// suppose source takes a lot of time
+val allTweets = Map("nraychaudhuri" -> tweets("nraychaudhuri"),
+                    "ManningBooks" -> tweets("ManningBooks"),
+                    "bubbl_scala" -> tweets("bubbl_scala")
+                    )
+processing tweets for nraychaudhuri
+processing tweets for ManningBooks
+processing tweets for bubbl_scala
+// while creating a map you invoke tweet function for all users
+// how to call function when you need it
+val allTweets = Map("nraychaudhuri" -> tweets _ , "ManningBooks" -> tweets _, "bubbl_scala" -> tweets _)        // map using a partial function
+// function becomes a partial function when you don’t specify all the arguments it needs
+tweets("ManningBooks")                                                              // processing tweets for ManningBooks
+tweets _                                                                            // res73: (String) => scala.xml.Elem = <function1>                    
+allTweets.view.map{ t => t._2(t._1)}.head                                           // processing tweets for nraychaudhuri
+for(t <- allTweets; if(t._1 == "ManningBooks")) t._2(t._1)
 
 -Working with Streams
+List("zero", "one", "two", "three", "four", "five").zip(Stream.from(0))             // List((zero,0), (one,1), (two,2)...
+// fib
+def fib(n: Int): Int = n match {
+    case 0 => 0
+    case 1 => 1
+    case n => fib(n - 1) + fib(n - 2)                                               // steps are computed repeatedly
+}
+// If you take a Fibonacci sequence starting from 0 (0, 1, 1, 2, 3...) and 
+// zip with its tail, you get a sequence of pairs (tuples): ((0, 1), (1,2), (2, 3)...). 
+// If you use map to sum the two parts of the pair, you get a number in the Fibonacci series
+val fib: Stream[Int] = Stream.cons(0, Stream.cons(1,
+    fib.zip(fib.tail).map(t => t._1 + t._2)))
 
 -Divide and conquer with parallel collections
 
