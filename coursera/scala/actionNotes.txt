@@ -778,7 +778,7 @@ val addThree: Int => Int = x => addOne(addTwo(x))
 #                   |                   |                         #
 #                   |                   |                         #
 #               +--------+  +--------+  |  +---------+  +--------+#
-#               +  set   +--+sortSet +  +--+linearSeq+--+  list  +#
+#               +  map   +--+sortMap +  +--+linearSeq+--+  list  +#
 #               +--------+  +--------+     +---------+  +--------+#
 ###################################################################    
 
@@ -894,36 +894,208 @@ val fib: Stream[Int] = Stream.cons(0, Stream.cons(1,
     fib.zip(fib.tail).map(t => t._1 + t._2)))
 
 -Divide and conquer with parallel collections
+ParVector(10, 20, 30, 40, 50, 60, 70, 80, 90).map {x => println(Thread.currentThread.getName); x / 2 }
+ForkJoinPool-1-worker-2
+ForkJoinPool-1-worker-2
+ForkJoinPool-1-worker-3
+ForkJoinPool-1-worker-3
+ForkJoinPool-1-worker-3
+ForkJoinPool-1-worker-3
+ForkJoinPool-1-worker-1
+ForkJoinPool-1-worker-0
+ForkJoinPool-1-worker-0                                                             // ParVector(5, 10, 15, 20, 25, 30, 35, 40, 45)
+// foldLeft is executed by a single thread
+ParVector(10, 20, 30, 40, 50, 60, 70, 80, 90).foldLeft(0) {(a,x) => println(Thread.currentThread.getName); a + x }
+Thread-14
+Thread-14
+Thread-14
+Thread-14
+Thread-14
+Thread-14
+Thread-14
+Thread-14
+Thread-14                                                                           // res3: Int = 450
 
 -Parallel collection hierarchy
 
 -Switching between sequential and parallel collections
+val vs = Vector.range(1, 100000)
+vs.par.filter(_ % 2 == 0)
+Vector.range(1, 100000).par.filter(_ % 2 == 0).seq
 
 
 ###############
 # Functional programming
 ###############
 -What is functional programming
+// A pure function where each value of X is mapped to exactly one value of Y
+// Referential transparency is a property whereby an expression could be replaced by its value without affecting the program
+val v = add(10, 10) + add(5, 5)                                                     // because add is pure function - it can be replaces with 20 and 10 respectively
 
 -The benefits of referential transparency
+// You can provide proof that your program works correctly by replacing pure functions with theirvalues and reducing a complex expression to a simpler expression
 
 -A pure functional program
-
--Moving from OOP to functional programming
+object PureFunctionalProgram {
+    def main(args: Array[String]):Unit = singleExpression(args.toList)
+        def singleExpression: List[String] => (List[Int], List[Int]) = { a =>       // function that takes a list and returns a tuple of two lists
+            a map (_.toInt) partition (_ < 30)
+        }
+}
 
 -Pure vs. impure programming
+// impure
+class Square(var side: Int) {
+    def area = side * side                                                          // side property is mutable
+}
+// pure
+class PureSquare(val side: Int) {
+    def newSide(s: Int): PureSquare = new PureSquare(s)
+    def area = side * side
+}
 
 -Object-oriented patterns in functional programming
+// Singleton, Factory, and Visitor(using pattern-matching) are already implemented as part of the language
+// Strategy pattern - allows you to select algorithm at runtime and implement using higher-order function
+def calculatePrice(product: String, taxingStrategy: String => Double) = {
+    ...
+    val tax = taxingStrategy(product)                                               // you can pass different implementations of the strategy
+    ...
+}
+// dependency injection(function currying to inject dependencies):
+trait TaxStrategy {def taxIt(product: String): Double }
+class ATaxStrategy extends TaxStrategy {                                            // 1st impl of TaxStrategy
+    def taxIt(product: String): Double = ...
+}
+class BTaxStrategy extends TaxStrategy {                                            // 2nd impl of TaxStrategy
+    def taxIt(product: String): Double = ...
+}
+def taxIt: TaxStrategy => String => Double = s => p => s.taxIt(p)                   // takes an instance of TaxStrategy and returns a function of type String => Double, which encapsulates the taxing strategy.
+def taxIt_a: String => Double = taxIt(new ATaxStrategy)
+def taxIt_b: String => Double = taxIt(new BTaxStrategy)
 
 -Modeling purely functional programs
+// The trick is to push the side effects as far down as possible.
+// A pure implementation of an HTTP server
+object Pure {
+    trait Resource {
+        def exists: Boolean
+        def contents: List[String]
+        def contentLength: Int
+    }
+    type ResourceLocator = String => Resource
+    type Request = Iterator[Char]
+    type Response = List[String]
+    
+    def get(req: Request)(implicit locator: ResourceLocator): Response = {
+        val requestedResource = req.takeWhile(x => x != '\n')                       // retrieves filename, locates the file based on given locator
+        .mkString.split(" ")(1).drop(1)                                             // _200 and _400 are partial functions - _200 is invoked if file exists
+        (_200 orElse _404)(locator(requestedResource))
+    }
 
--Functions in all shapes and forms
+    private def _200: PartialFunction[Resource, Response] = {
+        case resource if(resource.exists) => 
+            "HTTP/1.1 200 OK" :: ("Date " + new java.util.Date) :: "Content-Type: text/html" :: ("Content-Length: " + resource.contentLength) :: System.getProperty("line.separator") :: resource.contents
+    }
+    
+    private def _404: PartialFunction[Resource, Response] = {
+        case _ => List("HTTP/1.1 404 Not Found")
+    }
+}
+case class IOResource(name: String) extends Resource {
+    def exists = new File(name).exists
+    def contents = Source.fromFile(name).getLines.toList
+    def contentLength = Source.fromFile(name).count(x => true)
+}
+implicit val ioResourceLocator: ResourceLocator = name => IOResource(name)
 
 -Methods vs. functions
+class UseResource {
+    def use(r: Resource): Boolean = {...}                                           // methods don’t have any type associated with them
+}
+val succ = (x: Int) => x + 1                                                        // you can assign a function literal (anonymous function) to a value (Int => Int)
+// or
+val succFunction = new Function1[Int, Int] {
+    def apply(x:Int) : Int = x + 1
+}
+// convert methods to functions
+val use_func: Resource => Boolean = (new UseResource).use _
 
 -Higher-order functions
+val l = List(1, 2, 3, 5, 7, 10, 15)
+l.filter(_ % 2 == 0)                                                                // _ % 2 == 0 is a function literal
+// manage resources
+val r: Resource = getResource()
+try {
+    useResourceToDoUsefulStuff(r)
+} finally {
+    r.dispose()
+}
+// separate the resource-management part (tryfinally) from the use
+def use[A, B <: Resource ](r: Resource)(f: Resource => A): A = {
+    try {
+        f(r)
+    } finally {
+        r.dispose()
+    }
+}
+// usage:
+use(socketResource) { r=>sendData(r) }                                              // Loan pattern
 
+// another example: 1.create instance; 2. do side effect; 3. use that instance in other parts of code
+def tap[A](a: A)(sideEffect: A => Unit): A = {                                      // take an instance and a side-effect-inducing function
+    sideEffect(a)
+    a
+}
+// usage:
+val x = Person(firstName, lastName)
+tap(x) { p =>
+    import p._
+    setInfo(someInfo)
+    println("log: new person is created")
+    mailer.mail("new person joined " + x)
+}.firstName
+
+// more improvements: Kestrel combinator
+object Combinators {
+    implicit def kestrel[A](a: A) = new {                                           // Defines tap method for all types
+        def tap(sideEffect: A => Unit): A = {
+            sideEffect(a)
+            a
+        }
+    }
+    case class Person(firstName: String, lastName: String)
+    case class Mailer(mailAddress: String) {
+        def mail(body: String) = {println("send mail here...") }
+    }    
+}
+// usage:
+object Main {
+    import Combinators._
+    def main(args: Array[String]): Unit = {
+        Person("Nilanjan", "Raychaudhuri").tap(p => {
+            println("First name " + p.firstName)
+            Mailer("some address")
+        }).lastName
+    }
+}
 -Function currying
+trait TaxStrategy { def taxIt(product: String): Double }
+val taxIt: (TaxStrategy, String) => Double = (s, p) => s.taxIt(p)                   // takes TaxStrategy and String parameters and returns Double
+taxIt.curried                                                                       // res2: TaxStrategy => String => Double = <function1>;  takes TaxStrategy and returns a function which takes String and returns double
+class TaxFree extends TaxStrategy { override def taxIt(product: String) = 0.0 }
+val taxFree = taxIt.curried(new TaxFree)
+taxFree("someProduct")                                                              // res3: Double = 0.0
+// It allows you to turn generalized functions into specialized ones
+// turning the taxIt function to function currying allows you to create a more specialized function like taxFree
+// like DI - I injected the taxStrategy as a dependency to the curried function to create a new function that uses the dependency
+// You can also turn existing methods to curried functions using an underscore (_)
+def taxIt(s: TaxStrategy, product: String) = { s.taxIt(product) }
+val taxItF = taxIt _                                                                // taxItF: (TaxStrategy, String) => Double = <function2>
+taxItF.curried                                                                      // res4: TaxStrategy => String => Double = <function1>
+// You can also define methods in currying style using multiple parameters set
+def taxIt(s: TaxStrategy)(product: String) = { s.taxIt(product) }                   // taxIt: (s: TaxStrategy)(product: String)Double
+val taxFree = taxIt(new TaxFree) _                                                  // taxFree: String => Double = <function1>
 
 -Function composition and partial functions
 
