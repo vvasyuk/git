@@ -29,19 +29,19 @@ object n275_say_what_see {
     }
   }
 
-  def genNextRowRec(l: List[Int], cnt: Int, buf: ArrayBuffer[Int]): ArrayBuffer[Int] = l match{
+  def genNextRowRec(l: List[Int], buf: ArrayBuffer[Int]): ArrayBuffer[Int] = l match{
     case Nil => buf
     case h :: t => {
       updateBuffer(buf, h)
-      genNextRowRec(l.tail, cnt-1, buf)
+      genNextRowRec(t, buf)
     }
   }
 
   def main(args: Array[String]): Unit = {
     val in = List(1)
     //println(genNextRow(List(1,2,1,1)))
-    println(genNextRowRec(List(1,2,1,1), 5, ArrayBuffer[Int]()))
-    //println(rec(in, 5))
+    //println(genNextRowRec(List(1), ArrayBuffer[Int]()))
+    println(rec(in, 5))
   }
 
   def genNextRow(in: List[Int]):List[Int]={
