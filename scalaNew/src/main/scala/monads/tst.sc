@@ -1,0 +1,6 @@
+val f = (i: Int) => List(i - 1, i, i + 1)
+val list = List(5, 6, 7)
+println(list.flatMap(f))
+println(list.map(f))
+val f1 = (i: Int) => List("pred=" + (i - 1), "succ=" + (i + 1))
+println(list.flatMap(f1))

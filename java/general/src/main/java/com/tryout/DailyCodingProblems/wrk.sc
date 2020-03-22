@@ -1,12 +1,9 @@
-import scala.collection.mutable
+def filter[A](criteria: A => Boolean)(col: Traversable[A])=
+  col.filter(criteria)
 
-val ops = mutable.Stack[Char]()
+def even: Int => Boolean = _ % 2 == 0
 
-ops.push('(')
-ops.push('+')
-ops.push(')')
+def evenFilter = filter(even) _
+def double: Int => Int = _ * 2
 
-
-println("asd")
-
-//ops.popWhile(_!='(').foreach(println(_))
+def doubleAllEven = evenFilter.andThen(map(double))

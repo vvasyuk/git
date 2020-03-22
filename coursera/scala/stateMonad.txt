@@ -1,0 +1,82 @@
+6.
+val rng = new scala.util.Random
+rng.nextDouble                  // res1: Double = 0.9867076608154569
+rng.nextDouble                  // res2: Double = 0.8455696498024141
+rng.nextInt                     // res3: Int = -623297295
+// rng has some internal state that gets updated after each invocation
+
+def rollDie: Int = {            // how to test and reproduce?
+    val rng = new scala.util.Random
+    rng.nextInt(6)
+}
+
+// !need to pass same generator (created with the same seed, and also be in the same state)
+def rollDie(rng: scala.util.Random): Int = rng.nextInt(6)
+
+// solution
+trait RNG {
+    def nextInt: (Int, RNG)     // return the random number and the new state
+}
+
+// A purely functional random number generator
+case class SimpleRNG(seed: Long) extends RNG {
+    def nextInt: (Int, RNG) = {
+        val newSeed = (seed * 0x5DEECE66DL + 0xBL) & 0xFFFFFFFFFFFFL
+        val nextRNG = SimpleRNG(newSeed)
+        val n = (newSeed >>> 16).toInt
+        (n, nextRNG)
+    }
+}
+// usage:
+val rng = SimpleRNG(42)         // rng: SimpleRNG = SimpleRNG(42)
+val (n1, rng2) = rng.nextInt    // n1: Int = 16159453       rng2: RNG = SimpleRNG(1059025964525)
+val (n2, rng3) = rng2.nextInt   // n2: Int = -1281479697    rng3: RNG = SimpleRNG(197491923327988)
+// same pair
+def randomPair(rng: RNG): (Int,Int) = {
+  val (i1,_) = rng.nextInt
+  val (i2,_) = rng.nextInt
+  (i1,i2)
+}
+randomPair(rng)                 // res0: (Int, Int) = (16159453,16159453)
+def randomPair(rng: RNG): ((Int,Int), RNG) = {
+  val (i1,rng2) = rng.nextInt
+  val (i2,rng3) = rng2.nextInt
+  ((i1,i2), rng3)
+}
+randomPair(rng)                 // res0: ((Int, Int), RNG) = ((16159453,-1281479697),SimpleRNG(197491923327988))
+// nonNegativeInt
+def nonNegativeInt(rng: RNG): (Int, RNG) = {
+    val (i, r) = rng.nextInt
+    (if (i < 0) -(i + 1) else i, r)
+}
+// state transitions function, can be combined using combinators
+type Rand[+A] = RNG => (A, RNG) // program that depends on some RNG, uses it to generate an A
+def unit[A](a: A): Rand[A] =
+    rng => (a, rng)
+def map[A,B](s: Rand[A])(f: A => B): Rand[B] =
+    rng => {
+        val (a, rng2) = s(rng)
+        (f(a), rng2)
+    }
+def plusOne: Rand[Int] =                // plusOne is a function RNG => (A, RNG)
+  map(nonNegativeInt)(i => i + 1)
+def minusOne: Rand[Int] =               // minusOne is a function RNG => (A, RNG)
+  map(nonNegativeInt)(i => i - 1)    
+println(plusOne(rng))                   // (16159454,SimpleRNG(1059025964525))
+println(minusOne(rng))                  // (16159452,SimpleRNG(1059025964525))
+
+// flatMap
+def flatMap[A,B](f: Rand[A])(g: A => Rand[B]): Rand[B] =
+  rng => {
+    val (a, r1) = f(rng)
+    g(a)(r1) // We pass the new state along
+  }
+
+def nonNegativeLessThan(n: Int): Rand[Int] = {
+  flatMap(nonNegativeInt) { i =>
+    val mod = i % n
+    if (i + (n-1) - mod >= 0) unit(mod) else nonNegativeLessThan(n)
+  }
+}
+
+
