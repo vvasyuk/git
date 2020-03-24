@@ -1255,7 +1255,7 @@ def applyProductSpecificDiscount(ps: PriceState): Double
 def applyTax(ps: PriceState): Double
 // State monad encapsulates a transition function from an initial state to a (newState, value) pair
 trait State[S, +A] {
-    def apply(s: S): (S, A)                                                             // transition function
+    def apply(s: S): (S, A)                                                             // transition function; provided state - it takes value from it and returns it with new state
 }
 // StateMonad in Scala
 object StateMonad {
@@ -1270,9 +1270,9 @@ object StateMonad {
                 case (s, a) => f(a)(s)
             })
     }
-    object State {
-        def state[S, A](f: S => (S, A)) = new State[S, A] {
-            def apply(s: S) = f(s)
+    object State {                                                                  // implementing state trait
+        def state[S, A](f: S => (S, A)) = new State[S, A] {                         // returns instance of State with apply (that took f) that takes state applies f to it
+            def apply(s: S) = f(s)                                                  // take state, extract a value and a new state
         }
         def init[S]: State[S, S] = state[S, S](s => (s, s))
         def modify[S](f: S => S) = init[S] flatMap (s => state(_ => (f(s), ())))
