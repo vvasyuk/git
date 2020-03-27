@@ -22,8 +22,8 @@ import java.util
 object n279_friendship_groups {
 
 
-  def recCheck(idx: Int, m: Map[Int, List[Int]], group: Set[Int]) = {
-    
+  def recCheck(idx: Int, m: Map[Int, List[Int]], group: Set[Int]):Set[Int] = {
+
   }
 
   def main(args: Array[String]): Unit = {
