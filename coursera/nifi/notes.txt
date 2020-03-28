@@ -1,0 +1,4 @@
+docker run --name nifi -p 8080:8080 -d apache/nifi:latest
+http://localhost:8080/nifi/
+cd $NIFI_HOME
+mkdir data-in
