@@ -2,6 +2,9 @@ package com.tryout.DailyCodingProblems.p27
 
 import java.util
 
+import scala.collection.mutable
+import scala.collection.mutable.ArrayBuffer
+
 
 // A classroom consists of N students, whose friendships can be represented in an adjacency list. For example, the following descibes a situation where 0 is friends with 1 and 2, 3 is friends with 6, and so on.
 //
@@ -22,8 +25,18 @@ import java.util
 object n279_friendship_groups {
 
 
-  def recCheck(idx: Int, m: Map[Int, List[Int]], group: Set[Int]):Set[Int] = {
-
+  def dfs(idx: Int, m: Map[Int, List[Int]], visited: mutable.Set[Int], group: mutable.Set[Int]):(mutable.Set[Int], mutable.Set[Int]) = {
+    val g = mutable.Set[Int]()
+    val v = mutable.Set[Int]()
+    g+=idx
+    v+=idx
+    m(idx).filter(!group.contains(_)).foreach(e=>{
+      g+=e
+      val t=dfs(e, m,visited, g)
+      g++=t._2
+      v++=t._1
+    })
+    (v,g)
   }
 
   def main(args: Array[String]): Unit = {
@@ -38,7 +51,16 @@ object n279_friendship_groups {
     )
 
 
-    val group = recCheck(0, m, Set[Int]())
+    val visited = mutable.Set[Int]()
+    val groups = mutable.ArrayBuffer[mutable.Set[Int]]()
+    m.keySet.foreach(k=>{
+      if(!visited.contains(k)){
+        val t = dfs(k, m, visited ,mutable.Set[Int]())
+        visited++=t._1
+        groups+=t._2
+      }
+    })
+    groups.foreach(g=>{println(g)})
   }
 
 }
