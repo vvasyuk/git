@@ -2,3 +2,12 @@ docker run --name nifi -p 8080:8080 -d apache/nifi:latest
 http://localhost:8080/nifi/
 cd $NIFI_HOME
 mkdir data-in
+echo "1" > file3.txt
+
+docker run --name nifi-registry -p 18080:18080 -d apache/nifi-registry:latest
+http://localhost:18080/nifi-registry
+
+https://dzone.com/articles/quick-tip-using-git-with-nifi-registry-in-docker
+
+https://nifi.apache.org/docs/nifi-registry-docs/index.html
+https://nifi.apache.org/docs.html
