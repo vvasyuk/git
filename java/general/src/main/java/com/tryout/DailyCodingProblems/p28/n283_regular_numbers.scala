@@ -20,6 +20,27 @@ object n283_regular_numbers {
   //[1, 2, 3, 4, 5, 6, 0, 0] |  3  |  2  |  1
   //[1, 2, 3, 4, 5, 6, 8, 0] |  4  |  2  |  1
   //[1, 2, 3, 4, 5, 6, 8, 9] |  4  |  3  |  1
+  def main(args: Array[String]): Unit = {
+    val n = 10
+    val res = Array.fill(n+1)(1)
+    var i2 =0
+    var i3 =0
+    var i5 =0
+
+    for(
+      x <- 1 to n
+    ){
+      val m = List((2,2*res(i2)), (3,3*res(i3)), (5,5*res(i5))).minBy(_._2)
+      res(x)=m._2
+      m._1 match{
+        case 2 => i2+=1
+        case 3 => i3+=1
+        case 5 => i5+=1
+      }
+    }
+
+    res.foreach(println(_))
+  }
 }
 
 //def regular_numbers(n):
