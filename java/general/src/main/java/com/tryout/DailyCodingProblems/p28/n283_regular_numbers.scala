@@ -1,5 +1,7 @@
 package com.tryout.DailyCodingProblems.p28
 
+import scala.annotation.tailrec
+
 // A regular number in mathematics is defined as one which evenly divides some power of 60.
 // Equivalently, we can say that a regular number is one whose only prime divisors are 2, 3, and 5.
 //
@@ -40,6 +42,25 @@ object n283_regular_numbers {
     }
 
     res.foreach(println(_))
+    println("recursive")
+    rec(10).foreach(println(_))
+  }
+
+  def rec(x:Int):Array[Int]={
+    @tailrec
+    def _rec(start:Int, end:Int, i2:Int, i3: Int, i5:Int, res: Array[Int]):Array[Int]=start match{
+      case x if start==end => res
+      case _ => {
+        val m = List((2,2*res(i2)), (3,3*res(i3)), (5,5*res(i5))).minBy(_._2)
+        res(start)=m._2
+        m._1 match{
+          case 2 => _rec(start+1,end,i2+1,i3,i5,res)
+          case 3 => _rec(start+1,end,i2,i3+1,i5,res)
+          case 5 => _rec(start+1,end,i2,i3,i5+1,res)
+        }
+      }
+    }
+    _rec(1,10,0,0,0,Array.fill(10)(1))
   }
 }
 
