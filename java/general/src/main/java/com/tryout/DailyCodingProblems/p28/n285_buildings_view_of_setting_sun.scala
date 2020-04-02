@@ -1,5 +1,7 @@
 package com.tryout.DailyCodingProblems.p28
 
+import scala.collection.mutable
+
 // You are given an array representing the heights of neighboring buildings on a city street, from east to west. The city assessor would like you to write an algorithm that
 // returns how many of these buildings have a view of the setting sun, in order to properly value the street.
 //
@@ -10,12 +12,20 @@ package com.tryout.DailyCodingProblems.p28
 object n285_buildings_view_of_setting_sun {
 
   def execute(in: Array[Int]): Int = {
-
+    val s = mutable.Stack[Int]()
+    for(
+      x<-in
+    ){
+      if(s.empty){
+        
+      }
+    }
 
   }
 
   def main(args: Array[String]): Unit = {
     val in = Array(3, 7, 8, 3, 6, 1)      // res 3 , since the top floors of the buildings with heights 8, 6, and 1 all have an unobstructed view to the west.
+    val s = mutable.Stack[Int]()
     println(execute(in))
   }
 }
