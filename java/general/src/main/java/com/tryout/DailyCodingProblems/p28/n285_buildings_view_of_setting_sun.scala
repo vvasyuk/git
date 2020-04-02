@@ -16,16 +16,20 @@ object n285_buildings_view_of_setting_sun {
     for(
       x<-in
     ){
-      if(s.empty){
-        
+      if(s.isEmpty){
+        s.push(x)
+      }else {
+        while(s.nonEmpty && s.top<x)
+          s.pop()
+        s.push(x)
       }
     }
-
+    s.size
   }
 
   def main(args: Array[String]): Unit = {
     val in = Array(3, 7, 8, 3, 6, 1)      // res 3 , since the top floors of the buildings with heights 8, 6, and 1 all have an unobstructed view to the west.
-    val s = mutable.Stack[Int]()
+
     println(execute(in))
   }
 }
