@@ -1,5 +1,7 @@
 package com.tryout.DailyCodingProblems.p28
 
+import scala.collection.mutable.ArrayBuffer
+
 //The skyline of a city is composed of several buildings of various widths and heights, possibly
 // overlapping one another when viewed from a distance. We can represent the buildings using an
 // array of (left, right, height) tuples, which tell us where on an imaginary x-axis a building
@@ -18,9 +20,48 @@ package com.tryout.DailyCodingProblems.p28
 //|   |      |   |   |   |
 //------------------------
 //As a result, your function should return [(0, 3), (4, 5), (11, 3), (15, 0), (19, 4), (23, 0)].
-object т286_city_skyline {
-  def main(args: Array[String]): Unit = {
+object n286_city_skyline {
 
+  def execute(in: ArrayBuffer[(Int, Int, Int)]): Unit = {
+    in ++= in.map(t=>(t._2,t._2,0))
+    //in.foreach(println(_))
+    //sort
+    val sorted = in.sortBy(t=>(t._1, -t._3))
+    sorted.foreach(println(_))
+    //create heap
+    val skyline = ArrayBuffer[(Int,Int)]()
+    val pq = collection.mutable.PriorityQueue((0, Int.MaxValue))(Ordering[((Int,Int))].on(x => (-x._1,-x._2)))
+    println(pq.clone.dequeueAll)
+
+    //go through buildings
+    for(
+      (l,r,h)<-sorted
+    ){
+      while(pq.nonEmpty && l>=pq.head._2)
+        pq.dequeue()
+
+      pq.enqueue((-h,r))
+
+      if(skyline.isEmpty || skyline.last._2 != -pq.head._1){
+        skyline+=((l, -pq.head._1))
+      }
+    }
+    skyline.foreach(println(_))
+  }
+
+  def main(args: Array[String]): Unit = {
+    val in = ArrayBuffer((0, 15, 3), (4, 11, 5), (19, 23, 4))   // (begin,end,height)
+
+    //val pq = collection.mutable.PriorityQueue(1, 2, 5, 3, 7)(Ordering[(Int)].on(x => -x))
+//    val pq = collection.mutable.PriorityQueue((1, 15, 4), (1, 15, 3), (2, 15, 3))(Ordering[((Int,Int,Int))].on(x => (-x._1,-x._2,-x._3)))
+//
+//    println(pq.head)
+//    println(pq.clone.dequeueAll)
+
+//    val skyline = ArrayBuffer(1,2,3)
+//    println(skyline.last)
+
+    execute(in)
   }
 
 }

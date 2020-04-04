@@ -1,21 +1,19 @@
-def reconstruct(array):
-    answer = []
-    n = len(array) - 1
-    stack = []
+import heapq
+heap = [(0,0)]
 
-    for i in range(n):
-        if array[i + 1] == '-':
-            stack.append(i)
-        else:
-            answer.append(i)
-            while stack:
-                answer.append(stack.pop())
+print(heapq.heappop(heap))
 
-    stack.append(n)
 
-    while stack:
-        answer.append(stack.pop())
+heapq.heappush(heap, (2,0))
+heapq.heappush(heap, (1,0))
+heapq.heappush(heap, (5,2))
+heapq.heappush(heap, (5,6))
+while heap:
+    print(heapq.heappop(heap))
 
-    return answer
+skyline = [(0, 3), (4, 5)]
 
-print(reconstruct([None, "+", "-", "-", "-"]))
+print(skyline[-1][1])
+
+# if not skyline:
+#     print("not skyline")
