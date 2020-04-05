@@ -12,18 +12,23 @@ package com.tryout.DailyCodingProblems.p28
 //Write a function that returns how many steps this will take for a given input N.
 object n288_Kaprekars_contant {
   def main(args: Array[String]): Unit = {
-
+//    val x = 3087
+//    val digits = x.toString
+//    val num = digits.sorted.toInt
+//    println(num)
+    println(kaprekarSteps(1234,0))
   }
 
-  def getDigits(num: Int): Int = {
-    1234
-  }
+//  def getDigits(num: Int): Int = {
+//    1234
+//  }
 
   def kaprekarSteps(num:Int, steps:Int = 0): Int = num match{
     case 6174 => steps
     case x => {
-      val digits = getDigits(x)
-      val num = 1234
+      //val digits = getDigits(x)
+      val digits = x.toString
+      val num = digits.sorted.reverse.toInt - digits.sorted.toInt
       kaprekarSteps(num, steps + 1)
     }
   }
