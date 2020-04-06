@@ -1,19 +1,23 @@
-import heapq
-heap = [(0,0)]
+def update(heaps, pile, items):
+    heaps = list(heaps)
+    heaps[pile] -= items
+    return tuple(heaps)
 
-print(heapq.heappop(heap))
+def get_moves(heaps):
+    moves = []
 
+    for pile, count in enumerate(heaps):
+        for i in range(1, count + 1):
+            moves.append(update(heaps, pile, i))
 
-heapq.heappush(heap, (2,0))
-heapq.heappush(heap, (1,0))
-heapq.heappush(heap, (5,2))
-heapq.heappush(heap, (5,6))
-while heap:
-    print(heapq.heappop(heap))
+    return set(moves)
 
-skyline = [(0, 3), (4, 5)]
+def nim(heaps):
+    if heaps == (0, 0, 0):
+        return True
 
-print(skyline[-1][1])
+    moves = get_moves(heaps)
 
-# if not skyline:
-#     print("not skyline")
+    return any([not nim(move) for move in moves])
+
+print(nim((3,4,5)))
