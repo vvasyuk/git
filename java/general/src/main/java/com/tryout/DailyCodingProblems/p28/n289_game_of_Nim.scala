@@ -21,10 +21,12 @@ import scala.collection.mutable.ArrayBuffer
 //Given a list of non-zero starting values [a, b, c], and assuming optimal play, determine whether the first player has a forced win.
 object n289_game_of_Nim {
   def main(args: Array[String]): Unit = {
-    val in = (3,4,5)
-    //getMoves(in)
+    //val in = (3,4,5)
+    val in = (2,0,0)
     val results = mutable.Map[(Int, Int, Int),Int]()
     print(nim(in, results))
+    println(results)
+    println("end")
   }
 
   def update(heap: (Int, Int, Int), idx: Int, pr: Int): (Int, Int, Int) = {
@@ -53,6 +55,8 @@ object n289_game_of_Nim {
     case x if results.contains(x) => {results(x)}
     case t => {
       val moves = getMoves(t)
+      println("moves")
+      println(moves)
       val res = for (
         m <- moves
         ) yield 1-nim(m, results)
