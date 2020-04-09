@@ -1,23 +1,9 @@
-def update(heaps, pile, items):
-    heaps = list(heaps)
-    heaps[pile] -= items
-    return tuple(heaps)
+from collections import deque
 
-def get_moves(heaps):
-    moves = []
+t1 = (13, 0)
+t2 = (12, 0)
 
-    for pile, count in enumerate(heaps):
-        for i in range(1, count + 1):
-            moves.append(update(heaps, pile, i))
+queue = deque([t1])
+queue.append(t2)
 
-    return set(moves)
-
-def nim(heaps):
-    if heaps == (0, 0, 0):
-        return True
-
-    moves = get_moves(heaps)
-
-    return any([not nim(move) for move in moves])
-
-print(nim((3,4,5)))
+print(queue.pop(12))
