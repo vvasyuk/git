@@ -29,36 +29,34 @@ import scala.collection.mutable.ArrayBuffer
 //}
 object p292_divide_students {
 
-
-  def assign(kids: Map[Int, List[Int]], teams: Map[Int, ArrayBuffer[Int]], student: Int, visited: mutable.Set[Int]) = {
+  def assign(kids: Map[Int, List[Int]], teams: Map[Int, mutable.Set[Int]], student: Int, visited: mutable.Set[Int]) = {
     val q = mutable.Queue((student,0))
 
-    q.dequeueWhile(_ => q.nonEmpty).foreach(x=>{
-      teams(x._2)+=x._1
-      val enemies = kids(x._1)
-      enemies.foreach(e=>{
-        //println(s"${x._1}:$e")
-        if(teams(x._2).contains(e)){
+    while(q.nonEmpty){
+      val (kid, team) = q.dequeue()
+      teams(team)+=kid
+
+      kids(kid).foreach(e=>{
+        if(teams(team).contains(e)){
           println("false")
         }else if (!visited.contains(e)){
-          q.enqueue((e, 1-x._2))
+          q.enqueue((e, 1-team))
         }
       })
-      visited+=x._1
-    })
-    true
+      visited+=kid
+    }
   }
 
   def makeTeams(kids: Map[Int, List[Int]]) = {
-    val teams = Map(0->ArrayBuffer[Int](), 1->ArrayBuffer[Int]())
+    val teams = Map(0->mutable.Set[Int](), 1->mutable.Set[Int]())
     val visited = mutable.Set[Int]()
 
     for(student<-kids){
-      if(!assign(kids, teams, student._1, visited)){
-        println("no can do")
+      if(!visited.contains((student._1))){
+        assign(kids, teams, student._1, visited)
       }
     }
-    teams.foreach(x=>x._2.foreach(println(_)))
+    teams.foreach(x=>x._2.foreach(y=>println(x._1 + ":" +y)))
     ()
   }
 
