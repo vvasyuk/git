@@ -1,0 +1,36 @@
+@startuml
+'skinparam linestyle ortho
+'rectangle "A" as one
+'rectangle "B" as two
+'rectangle "C" as three
+'rectangle "D" as four
+
+'one -right-> two: message 1-->2
+'two -right-> three: message 2-->3
+'two --> four: message 2-->4
+'three -[hidden]- four
+
+rectangle ftp{
+    file f1
+}
+rectangle hdfs
+rectangle application{
+    rectangle app1{
+        rectangle df
+        rectangle df2
+    }
+    rectangle common{
+        rectangle readFtp
+        rectangle writeHdfs
+    }
+
+}
+df --> readFtp: call 1
+df -right-> df2: call 2
+readFtp --> f1: call 1.1
+df2 --> writeHdfs: call 3
+writeHdfs --> hdfs: call 3.1
+@enduml
+
+'diff objects
+'https://plantuml.com/ru/deployment-diagram
