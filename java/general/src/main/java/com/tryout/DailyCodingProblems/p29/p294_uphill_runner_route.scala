@@ -41,8 +41,38 @@ import scala.collection.mutable.ArrayBuffer
 //| 2  | ------------------------------------+
 //+----+
 object p294_uphill_runner_route {
+// 1. create three collections
+  // uphill
+  // (0,List((3,15), (2,8), (1,10)))
+  // downhill
+  // (0,List((4,10), (3,17))), (3,List((1,12))), (4,List((3,5), (2,10)))
+  // g
+  //0 =  "(0,List((3,15), (2,8), (1,10)))"
+  //1 =  "(1,List((3,12)))"
+  //2 =  "(2,List((4,10)))"
+  //3 =  "(3,List((4,5), (0,17)))"
+  //4 =  "(4,List((0,10)))"
+// 2. sort graph topologically using stack
+  // take start node, visit all its neighbors, add it to stack, soo all its neighbors will already be on stack
+  // stack
+  // 0, 2, 1, 3, 4
+// 3. cal distances for uphill and downhill
+  // go through nodes in topological order
+  // if topologocal node is in graph - calculate optimal distances to all its neighbors
+  // uphill distances to 0
+  //0 = 0
+  //1 = 10
+  //2 = 8
+  //3 = 15
+  //4 = 2147483647
+  // downhill distances to 0
+  //0 = 0
+  //1 = 29
+  //2 = 20
+  //3 = 15
+  //4 = 10
 
-  def helper(v: Int, visited: mutable.Set[Int], g:  Map[Int,List[(Int, Int)]], stack: mutable.Stack[Int]):Unit = {
+  def helper(v: Int, visited: mutable.Set[Int], g:  Map[Int,ArrayBuffer[(Int, Int)]], stack: mutable.Stack[Int]):Unit = {
     visited+=v
     for(neighbor <- g(v) if !visited.contains(neighbor._1)){
       helper(neighbor._1, visited, g, stack)
@@ -50,7 +80,7 @@ object p294_uphill_runner_route {
     stack.push(v)
   }
 
-  def topologicalSort(g:  Map[Int,List[(Int, Int)]]): mutable.Stack[Int] = {
+  def topologicalSort(g:  Map[Int,ArrayBuffer[(Int, Int)]]): mutable.Stack[Int] = {
     val visited = mutable.Set[Int]()
     val stack = mutable.Stack[Int]()
 
@@ -60,7 +90,7 @@ object p294_uphill_runner_route {
     stack
   }
 
-  def getDistances(g: mutable.Map[Int, List[(Int, Int)]], topo: mutable.Stack[Int]) = {
+  def getDistances(g: mutable.Map[Int, ArrayBuffer[(Int, Int)]], topo: mutable.Stack[Int]) = {
 
     val dist = ArrayBuffer.fill(topo.size)(Int.MaxValue)
     dist(0) = 0
@@ -68,8 +98,8 @@ object p294_uphill_runner_route {
     for (
       v<-topo.popAll().reverse if g.contains(v);
       neighbor<-g(v)){
-      println(s"topo: $v")
-      println(neighbor)
+//      println(s"topo: $v")
+//      println(neighbor)
       if (dist(neighbor._1)>dist(v)+neighbor._2){
         dist(neighbor._1)=dist(v)+neighbor._2
       }
@@ -90,58 +120,31 @@ object p294_uphill_runner_route {
       (4,0)->10
     )
 
-    val uphill = mutable.Map[Int,List[(Int, Int)]]()
-    val downhill = mutable.Map[Int,List[(Int, Int)]]()
-    val g = mutable.Map[Int,List[(Int, Int)]]()
+    val uphill = mutable.Map[Int,ArrayBuffer[(Int, Int)]]()
+    val downhill = mutable.Map[Int,ArrayBuffer[(Int, Int)]]()
+    val g = mutable.Map[Int,ArrayBuffer[(Int, Int)]]()
 
     paths.toList.sorted.foreach(p =>{
-      val from = p._1._1
-      val to = p._1._2
-      val dist = p._2
-      if(g.contains(from)){
-        g.update(from, (to, dist) :: g(from))
-      }else{
-        g.put(from,List((to, dist)))
-      }
+      val (from, to, dist) = (p._1._1, p._1._2, p._2)
+      g.getOrElseUpdate(from, ArrayBuffer[(Int, Int)]())+=((to, dist))
       if (elevations(from) < elevations(to)){
-        if(uphill.contains(from)){
-          uphill.update(from, (to, dist) :: uphill(from))
-        }else{
-          uphill.put(from,List((to, dist)))
-        }
+        uphill.getOrElseUpdate(from, ArrayBuffer[(Int, Int)]())+=((to, dist))
       }else{
-        if(downhill.contains(to)){
-          downhill.update(to, (from, dist) :: downhill(to))
-        }else{
-          downhill.put(to,List((from, dist)))
-        }
+        downhill.getOrElseUpdate(to, ArrayBuffer[(Int, Int)]())+=((from, dist))
       }
-
     })
-
-//    val g = paths.foldLeft(mutable.Map[Int,List[(Int, Int)]]()){(a,b)=>{
-//      val from = b._1._1
-//      val to = b._1._2
-//      val dist = b._2
-//      if(a.contains(from)){
-//        a.update(from, (to, dist) :: a(from))
-//      }else{
-//        a.put(from,List((to, dist)))
-//      }
-//      a
-//    }}
 
     val topo = topologicalSort(g.toMap)
     val topo2 = topologicalSort(g.toMap)
-
-    //val dist = getDistances(g,topo)
-
+//
+//    //val dist = getDistances(g,topo)
+//
     val uphillDist = getDistances(uphill,topo)
     val downhillDist = getDistances(downhill,topo2)
 
-    val res = for((x,y)<-uphillDist.zip(downhillDist))yield{
-      x+y
+    val res = for((x,y)<-uphillDist.tail.zip(downhillDist.tail))yield{
+      x.toLong+y.toLong
     }
-    println("res: " + res(2))
+    println("res: " + res.min)
   }
 }
