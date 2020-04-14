@@ -58,18 +58,3 @@ object p297_min_drink_recipes {
     println("res: " + res)
   }
 }
-
-//from itertools import combinations
-//
-//def satisfies(option, preferences):
-//    return all(set(c).intersection(option) for c in preferences.values())
-//
-//def make_drinks(preferences):
-//    customers = preferences.keys()
-//    drinks = set([x for y in preferences.values() for x in y])
-//
-//    for i in range(1, len(customers) + 1):
-//        options = combinations(drinks, i)
-//        for option in options:
-//            if satisfies(option, preferences):
-//                return i
