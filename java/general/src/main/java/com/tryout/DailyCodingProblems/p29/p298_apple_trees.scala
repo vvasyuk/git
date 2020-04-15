@@ -8,13 +8,34 @@ package com.tryout.DailyCodingProblems.p29
 object p298_apple_trees {
 
   def execute(in: Array[Int]): Int = {
-    val (a,b) = (in(0), in(1))
-    val last_picked = b
-    val last_picked_count =
+    var (a,b) = (in(0), in(1))
+    var last_picked = b
+    var last_picked_count = if(a==b) 1 else 0
+    var max_length_path = 1
+    var curr = 1
+
+    for (tree <- in.tail) {
+      if (List(a, b).contains(tree)) {
+        curr += 1
+        if (last_picked == tree) {
+          last_picked_count += 1
+        } else {
+          last_picked = tree
+          last_picked_count = 1
+        }
+      } else {
+        a = last_picked
+        b = tree
+        last_picked = tree
+        curr = last_picked_count + 1
+      }
+      max_length_path = Math.max(curr, max_length_path)
+    }
+    max_length_path
   }
 
   def main(args: Array[String]): Unit = {
     val in = Array(2, 1, 2, 3, 3, 1, 3, 5)
-    execute(in)
+    println(execute(in))
   }
 }
