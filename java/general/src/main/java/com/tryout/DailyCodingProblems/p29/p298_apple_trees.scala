@@ -8,7 +8,9 @@ package com.tryout.DailyCodingProblems.p29
 object p298_apple_trees {
 
   def execute(in: Array[Int]): Int = {
-
+    val (a,b) = (in(0), in(1))
+    val last_picked = b
+    val last_picked_count =
   }
 
   def main(args: Array[String]): Unit = {
