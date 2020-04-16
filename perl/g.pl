@@ -2,15 +2,24 @@ use Graph::Easy;
 
 #p294
 my $graph = Graph::Easy->new();
-my ($first,$second,$edge) = $graph->add_edge('0','1','10');
-my ($first,$second,$edge) = $graph->add_edge('0','2','8');
-my ($first,$second,$edge) = $graph->add_edge('0','3','15');
-my ($first,$second,$edge) = $graph->add_edge('1','3','12');
-my ($first,$second,$edge) = $graph->add_edge('2','4','10');
-my ($first,$second,$edge) = $graph->add_edge('3','4','5');
-my ($first,$second,$edge) = $graph->add_edge('3','0','17');
-my ($first,$second,$edge) = $graph->add_edge('4','0','10'); 
+my ($first,$second,$edge) = $graph->add_edge('plant','A','1');
+my ($first,$second,$edge) = $graph->add_edge('plant','B','5');
+my ($first,$second,$edge) = $graph->add_edge('plant','C','20');
+my ($first,$second,$edge) = $graph->add_edge('A','C','15');
+my ($first,$second,$edge) = $graph->add_edge('B','C','10');
 print $graph->as_ascii( );
+
+#p294
+#my $graph = Graph::Easy->new();
+#my ($first,$second,$edge) = $graph->add_edge('0','1','10');
+#my ($first,$second,$edge) = $graph->add_edge('0','2','8');
+#my ($first,$second,$edge) = $graph->add_edge('0','3','15');
+#my ($first,$second,$edge) = $graph->add_edge('1','3','12');
+#my ($first,$second,$edge) = $graph->add_edge('2','4','10');
+#my ($first,$second,$edge) = $graph->add_edge('3','4','5');
+#my ($first,$second,$edge) = $graph->add_edge('3','0','17');
+#my ($first,$second,$edge) = $graph->add_edge('4','0','10'); 
+#print $graph->as_ascii( );
  
 # my $graph = Graph::Easy->new('[A]-- {label: "21"; } [B]--[C]--[D]');
 # $graph->set_attribute('border', 'solid 1px black');
