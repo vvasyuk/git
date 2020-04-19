@@ -1,25 +1,30 @@
-def pick_fruit(trees):
-    a, b = trees[0], trees[1]
+import hashlib
 
-    last_picked = b
-    last_picked_count = (a == b)
-    max_length_path = curr = 1
+array = [False] * 1000
 
-    for tree in trees[1:]:
-        if tree not in (a, b):
-            a, b = last_picked, tree
-            last_picked = tree
-            curr = last_picked_count + 1
-        else:
-            curr += 1
-            if last_picked == tree:
-                last_picked_count += 1
-            else:
-                last_picked = tree
-                last_picked_count = 1
+def get_hash(f):
+    def hash_function(value):
+        h = f(str(value).encode('utf-8')).hexdigest()
+        return int(h, 16) % len(array)
 
-        max_length_path = max(curr, max_length_path)
+    return hash_function
 
-    return max_length_path
+hash_algorithms = [
+            hashlib.md5,
+            hashlib.sha1,
+            hashlib.sha256,
+            hashlib.sha384,
+            hashlib.sha512
+        ]
+hashes = [get_hash(f) for f in hash_algorithms[:3]]
 
-print(pick_fruit([2, 1, 2, 3, 3, 1, 3, 5]))
+
+value=13
+for h in hashes:
+    v = h(value)
+    array[v] = True
+
+for h in hashes:
+    v = h(value)
+    if not array[v]:
+        print(False)
