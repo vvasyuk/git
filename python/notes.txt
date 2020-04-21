@@ -1,5 +1,8 @@
-for i in range(3):                  # 0, 1, 2
+for i in range(3):                                  # 0, 1, 2
   print(i)
   
-for i in range(3,5):                # 3, 4
+for i in range(3,5):                                # 3, 4
   print(i)
+  
+# multidimensional array
+T = [[0 for _ in range(n)] for _ in range(n)]       # T = [[0 for _ in range(n)] for _ in range(n)]

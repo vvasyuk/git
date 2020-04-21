@@ -1,4 +1,4 @@
-package com.tryout.DailyCodingProblems.P19
+package com.tryout.DailyCodingProblems.p19
 
 object n196_subtree_max {
   val m = scala.collection.mutable.Map[Int,Int]()

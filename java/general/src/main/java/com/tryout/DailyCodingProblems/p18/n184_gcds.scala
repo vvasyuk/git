@@ -1,4 +1,4 @@
-package com.tryout.DailyCodingProblems.P18
+package com.tryout.DailyCodingProblems.p18
 
 object n184_gcds {
 

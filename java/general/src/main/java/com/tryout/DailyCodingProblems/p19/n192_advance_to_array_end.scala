@@ -1,4 +1,4 @@
-package com.tryout.DailyCodingProblems.P19
+package com.tryout.DailyCodingProblems.p19
 
 object n192_advance_to_array_end {
   var res:Boolean=false

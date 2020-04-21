@@ -1,4 +1,4 @@
-package com.tryout.DailyCodingProblems.P18
+package com.tryout.DailyCodingProblems.p18
 
 object rectangle_intersection_185 {
   def execute(rec1: rect, rec2: rect): Unit = {

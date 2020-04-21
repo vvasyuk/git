@@ -1,4 +1,4 @@
-package com.tryout.DailyCodingProblems.P19
+package com.tryout.DailyCodingProblems.p19
 
 object loop{
   def main(args: Array[String]):Unit={

@@ -10,15 +10,15 @@ import resource._
 object SparkTest {
   def main(args: Array[String]): Unit = {
     println("SparkTest")
-    getListOfFiles("D:\\work\\tryout\\sbt\\data\\in").foreach(println(_))
-    val dirs = new File("D:\\work\\tryout\\sbt\\data").listFiles().filter(_.isDirectory)
-    val files = dirs.flatMap(x=>{
-      if(x.isFile){
-        println(x.getName)
-        x.getName
-      }
-      ""
-    })
+//    getListOfFiles("D:\\work\\tryout\\sbt\\data\\in").foreach(println(_))
+//    val dirs = new File("D:\\work\\tryout\\sbt\\data").listFiles().filter(_.isDirectory)
+//    val files = dirs.flatMap(x=>{
+//      if(x.isFile){
+//        println(x.getName)
+//        x.getName
+//      }
+//      ""
+//    })
 
 //    spark.catalog.listDatabases.show(false)
 //    spark.catalog.listTables.show(false)
@@ -26,7 +26,7 @@ object SparkTest {
     //val spark = getSession
     //dummyJob1(spark)
 
-    //managed(getSession).acquireAndGet(spark => dummyJob3(spark))
+    managed(getSession).acquireAndGet(spark => dummyJob3Alt(spark))
 //    for {
 //      spark <- managed(getSession)
 //    } {
@@ -87,6 +87,22 @@ object SparkTest {
     df1.show(15)
     df2.show(15)
     df3.show(15)
+  }
+
+  def dummyJob3Alt(spark: SparkSession):Unit={
+    val paths = List("D:\\work\\tryout\\sbt\\data\\in\\a.csv", "D:\\work\\tryout\\sbt\\data\\in\\b.csv", "D:\\work\\tryout\\sbt\\data\\in\\c.csv")
+    val df = spark.read.option("header", "true").csv(paths: _*)
+      .withColumn("file", substring_index(input_file_name(), "/", -1))
+    import spark.implicits._
+    val df2 = List(("c.csv",0)).toDF("file", "cnt")
+
+    val dfGrouped = df.groupBy("file").agg(count(lit(1)) as "cnt")
+
+    val unioned = dfGrouped.select("file", "cnt").union(df2)
+
+    unioned.show(15)
+    //df2.show(2)
+
   }
 
   def getListOfFiles(dir: String):List[File] = {
