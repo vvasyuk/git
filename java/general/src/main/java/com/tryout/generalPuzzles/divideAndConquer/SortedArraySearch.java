@@ -1,11 +1,5 @@
 package com.tryout.generalPuzzles.divideAndConquer;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 public class SortedArraySearch {
 
     //binary search

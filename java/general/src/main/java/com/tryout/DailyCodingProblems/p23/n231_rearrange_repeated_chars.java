@@ -1,9 +1,6 @@
 package com.tryout.DailyCodingProblems.p23;
 
-import sun.util.resources.hr.CalendarData_hr;
-
 import java.util.*;
-import java.util.stream.Collectors;
 
 // Given a string with repeated characters, rearrange the string so that no two adjacent characters are the same.
 // If this is not possible, return None.
