@@ -25,25 +25,70 @@ object p308_bool_expression {
     (operands.toArray, operators.toArray)
   }
 
-  def execute(in: Array[String]): Boolean = {
+  def execute(in: Array[String]): Int = {
     val(operands, operators) = split(in)
 
     val n = operands.size
-    val T = ArrayBuffer.fill(n,n)(false)
-    val F = ArrayBuffer.fill(n,n)(false)
+    val T = ArrayBuffer.fill(n,n)(0)
+    val F = ArrayBuffer.fill(n,n)(0)
 
     for(i<-0 until n){
       operands(i) match{
-        case "T" => T(i)(i)=true
-        case _ =>
+        case "T" => {T(i)(i)=1; F(i)(i)=0}
+        case _ => {T(i)(i)=0; F(i)(i)=1}
       }
     }
 
-    true
+    for(gap <- 1 until n;
+        i <- 0 until n-gap;
+        j = i + gap;
+        k <- i until j
+      // first 3 lines  if n = 5
+      //0:1
+      //1:2
+      //2:3
+      //3:4
+      //0:2
+      //1:3
+      //2:4
+      //0:3
+      //1:4
+      //0:4
+        ){
+      val allOptions = (T(i)(k) + F(i)(k))*(T(k+1)(j) + F(k+1)(j))
+
+      ////        A   B   A|B A&B A^B ~A
+      ////        0   0   0   0   0   1
+      ////        1   0   1   0   1   0
+      ////        0   1   1   0   1   1
+      ////        1   1   1   1   0   0
+
+      //T       F
+      //1 0 0   1 0 0
+      //0 1 0   0 0 0
+      //0 0 1   0 0 0
+      operators(k) match {
+        case "&" =>{
+          T(i)(j)=T(i)(j)+(T(i)(k)*T(k+1)(j))
+          F(i)(j)=F(i)(j)+(allOptions - T(i)(j))
+        }
+        case "|" =>{
+          F(i)(j)=F(i)(j)+(F(i)(k) * F(k+1)(j))
+          T(i)(j)=T(i)(j)+(allOptions - F(i)(j))
+        }
+        case "^" =>{
+          T(i)(j)=T(i)(j)+(F(i)(k) * T(k+1)(j) + T(i)(k) * F(k+1)(j))
+          F(i)(j)=F(i)(j)+(T(i)(k) * T(k+1)(j) + F(i)(k) * F(k+1)(j))
+        }
+      }
+    }
+
+    T(0)(n-1)
   }
 
   def main(args: Array[String]): Unit = {
     val in = Array("F", "|", "T", "&", "T")
-    execute(in)
+    println(execute(in))
+
   }
 }
