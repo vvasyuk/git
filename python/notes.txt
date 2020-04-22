@@ -6,3 +6,9 @@ for i in range(3,5):                                # 3, 4
   
 # multidimensional array
 T = [[0 for _ in range(n)] for _ in range(n)]       # T = [[0 for _ in range(n)] for _ in range(n)]
+
+for i, c in enumerate("hello"):                     i: 0 c: h, i: 1 c: e, i: 2 c: l, i: 3 c: l, i: 4 c: o
+    print("i: " + str(i) + " c: " + c)
+
+s = "hello"
+print(s[:0] + s[:1])                                # h
