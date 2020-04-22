@@ -6,7 +6,9 @@ scalaVersion := "2.12.11"
 libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-core" % "2.4.5",
   "org.apache.spark" %% "spark-sql" % "2.4.5",
-  "com.jsuereth" %% "scala-arm" % "2.0"
+  "com.jsuereth" %% "scala-arm" % "2.0",
+  "org.scalatest" %% "scalatest" % "3.0.8" % Test,
+  "org.scalamock" %% "scalamock" % "4.4.0" % Test
 )
 
 // Do not include Scala in the assembled JAR

@@ -1,6 +1,6 @@
 package mixin
 
-class C2Abstract {
+trait C2Abstract {
   def bye(): Unit = {
     println("bye")
   }

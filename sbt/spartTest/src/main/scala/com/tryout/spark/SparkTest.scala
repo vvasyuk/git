@@ -25,8 +25,8 @@ object SparkTest {
 
     //val spark = getSession
     //dummyJob1(spark)
-
-    managed(getSession).acquireAndGet(spark => dummyJob3Alt(spark))
+    val files = List("D:\\work\\tryout\\sbt\\data\\in\\a.csv", "D:\\work\\tryout\\sbt\\data\\in\\b.csv", "D:\\work\\tryout\\sbt\\data\\in\\c.csv")
+    managed(getSession).acquireAndGet(implicit spark => dummyJob3Alt(files))
 //    for {
 //      spark <- managed(getSession)
 //    } {
@@ -89,8 +89,10 @@ object SparkTest {
     df3.show(15)
   }
 
-  def dummyJob3Alt(spark: SparkSession):Unit={
-    val paths = List("D:\\work\\tryout\\sbt\\data\\in\\a.csv", "D:\\work\\tryout\\sbt\\data\\in\\b.csv", "D:\\work\\tryout\\sbt\\data\\in\\c.csv")
+  def dummyJob3Alt(cfg: List[String], s: String = "xyi")(implicit spark: SparkSession):Unit={
+    println(s)
+    def _getFiles = Utility.getFiles(cfg)
+    val paths = _getFiles
     val df = spark.read.option("header", "true").csv(paths: _*)
       .withColumn("file", substring_index(input_file_name(), "/", -1))
     import spark.implicits._
@@ -105,6 +107,8 @@ object SparkTest {
 
   }
 
+
+
   def getListOfFiles(dir: String):List[File] = {
     val d = new File(dir)
     if (d.exists && d.isDirectory) {
@@ -115,14 +119,8 @@ object SparkTest {
   }
 }
 
-
-
-// ok-input dir
-//ok-output dir (enriched files)
-//ok-processed dir (from input)
-//ok-get files from directory input
-//ok-read csv from input - res dataset
-//-enrich (df.withColumn)
-//
-//-df.write.orc(stagePath)
-//-move files to processed
+object Utility{
+  def getFiles(l: List[String]): List[String] = {
+    l
+  }
+}
