@@ -9,6 +9,8 @@ class SparkTestTest extends FlatSpec with BeforeAndAfterEach {
   implicit var sparkSession: SparkSession = _
 
   override def beforeEach(): Unit = {
+    import org.apache.log4j.{Level,Logger}
+    Logger.getLogger("org").setLevel(Level.ERROR)
     sparkSession = SparkSession
         .builder()
         .appName("SparkTestTest")

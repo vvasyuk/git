@@ -96,12 +96,15 @@ object SparkTest {
     val df = spark.read.option("header", "true").csv(paths: _*)
       .withColumn("file", substring_index(input_file_name(), "/", -1))
     import spark.implicits._
-    val df2 = List(("c.csv",0)).toDF("file", "cnt")
-
+    val df2 = List(("a.csv",0),("b.csv",0),("c.csv",0)).toDF("file", "cnt")
     val dfGrouped = df.groupBy("file").agg(count(lit(1)) as "cnt")
 
-    val unioned = dfGrouped.select("file", "cnt").union(df2)
+    val unioned = dfGrouped.select("file", "cnt")
+      .join(df2, dfGrouped("file") ===  df2("file"), "full")
+      .select(coalesce(dfGrouped("file"),df2("file")).as("file"), coalesce(dfGrouped("cnt"),df2("cnt")).as("cnt"))
 
+
+    //unioned.write.format("csv").save("myFile.csv")
     unioned.show(15)
     //df2.show(2)
 

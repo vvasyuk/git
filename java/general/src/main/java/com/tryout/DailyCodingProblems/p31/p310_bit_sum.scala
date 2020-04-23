@@ -1,8 +1,8 @@
-package com.tryout.DailyCodingProblems.p30
+package com.tryout.DailyCodingProblems.p31
 
 // Write an algorithm that finds the total number of set bits in all integers between 1 and N.
 // TODO: investigate p309_bit_sum
-object p309_bit_sum {
+object p310_bit_sum {
   def main(args: Array[String]): Unit = {
     var N = 5 // 0101, 0100, 0011, 0010, 0001 = 7
     var ans = 0
