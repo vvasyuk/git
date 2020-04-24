@@ -102,6 +102,16 @@ object SparkTest {
     val unioned = dfGrouped.select("file", "cnt")
       .join(df2, dfGrouped("file") ===  df2("file"), "full")
       .select(coalesce(dfGrouped("file"),df2("file")).as("file"), coalesce(dfGrouped("cnt"),df2("cnt")).as("cnt"))
+      .withColumn("nonEmpty", when(col("cnt")=== 0,0).otherwise(1))
+
+    val cnts = unioned.select(count(col("cnt")).as("nonZeroCnt")
+      ,count(when(col("cnt")===0,true)).as("zeroCnt"))
+
+    val res = cnts.collect().map(row=>(row(0), row(1)))
+    println(res(0)._1 + "-" + res(0)._2)
+
+
+
 
 
     //unioned.write.format("csv").save("myFile.csv")
