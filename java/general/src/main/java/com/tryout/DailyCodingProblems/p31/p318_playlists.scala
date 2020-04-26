@@ -8,17 +8,22 @@ import scala.collection.mutable.ArrayBuffer
 //Given N, M, and B, determine the number of valid playlists.
 object p318_playlists {
   def main(args: Array[String]): Unit = {
-    val m = 10
-    val n = 15
+    val m = 2
+    val n = 2
     val b = 3
 
-    execute(m,n,b)
+    println(execute(m,n,b))
+
   }
 
   def execute(m: Int, n: Int, b: Int): Int = {
-    val ways = ArrayBuffer.fill(m,n)(0)
+    val ways = ArrayBuffer.fill(n+1,m+1)(0)
     ways(0)(0) = 1
-    
+    for(i<-1 to n;
+        j<-1 to m){
+      ways(i)(j) = ways(i-1)(j-1) * (m - (j-1)) + ways(i-1)(j) * j
+    }
+    ways(n)(m)
   }
 }
 // def valid_playlists(n, m, b):
@@ -30,3 +35,5 @@ object p318_playlists {
 //            ways[i][j] = ways[i - 1][j - 1] * (m - (j - 1)) + ways[i - 1][j] * j
 //
 //    return ways[n][m]
+
+// ways[i][j] = ways[i - 1][j - 1] * (m - (j - 1)) + ways[i - 1][j] * max(j - b, 0)
