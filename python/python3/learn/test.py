@@ -1,4 +1,10 @@
-print("abc")
-seats = [1, 0, 0, 0, 1, 0, 0, 0, 1]
-people = [i for i, x in enumerate(seats) if x == 1]
-print(people)
+def and_product(m, n):
+    res = m
+
+    for i in range(m + 1, n + 1):
+        res &= i
+
+    return res
+m=1
+n=5
+print(and_product(m,n))
