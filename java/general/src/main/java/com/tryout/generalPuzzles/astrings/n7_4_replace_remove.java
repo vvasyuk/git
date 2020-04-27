@@ -5,7 +5,7 @@ package com.tryout.generalPuzzles.astrings;
 //• Delete each entry containing a 'b'.
 //For example, applying these rules to the array (a,c,d,b,b,c,a) results in the array
 //(d, d, c, d, c, d, d)
-public class т7_4_replace_remove {
+public class n7_4_replace_remove {
     // First, we delete 'b's and compute the final number of valid characters of the string, with a
     //forward iteration through the string. Then we replace each 'a' by two 'd's, iterating
     //backwards from the end of the resulting string. If there are more 'b's than 'a's, the
