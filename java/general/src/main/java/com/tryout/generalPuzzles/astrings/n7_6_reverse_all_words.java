@@ -32,7 +32,7 @@ public class n7_6_reverse_all_words {
             if (array[i] == c) {
                 return i;
             }
-            return -1;
         }
+        return -1;
     }
 }
