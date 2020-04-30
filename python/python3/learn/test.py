@@ -1,10 +1,3 @@
-def and_product(m, n):
-    res = m
-
-    for i in range(m + 1, n + 1):
-        res &= i
-
-    return res
-m=1
-n=5
-print(and_product(m,n))
+n = 100
+for i in range(int(n ** 0.5), 1, -1):
+    print(i)

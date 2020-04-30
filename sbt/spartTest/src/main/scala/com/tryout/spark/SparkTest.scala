@@ -26,7 +26,8 @@ object SparkTest {
     //val spark = getSession
     //dummyJob1(spark)
     val files = List("D:\\work\\tryout\\sbt\\data\\in\\a.csv", "D:\\work\\tryout\\sbt\\data\\in\\b.csv", "D:\\work\\tryout\\sbt\\data\\in\\c.csv")
-    managed(getSession).acquireAndGet(implicit spark => dummyJob3Alt(files))
+    //managed(getSession).acquireAndGet(implicit spark => dummyJob3Alt(files))
+    managed(getSession).acquireAndGet(implicit spark => dummyJobDecimal)
 //    for {
 //      spark <- managed(getSession)
 //    } {
@@ -110,17 +111,10 @@ object SparkTest {
     val res = cnts.collect().map(row=>(row(0), row(1)))
     println(res(0)._1 + "-" + res(0)._2)
 
-
-
-
-
     //unioned.write.format("csv").save("myFile.csv")
     unioned.show(15)
     //df2.show(2)
-
   }
-
-
 
   def getListOfFiles(dir: String):List[File] = {
     val d = new File(dir)
@@ -129,6 +123,12 @@ object SparkTest {
     } else {
       List[File]()
     }
+  }
+
+  def dummyJobDecimal()(implicit spark: SparkSession):Unit={
+    import spark.implicits._
+    val df = spark.sparkContext.parallelize(Seq(0.43)).toDF("num")
+    df.show(10,false)
   }
 }
 
