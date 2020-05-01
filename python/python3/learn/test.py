@@ -1,3 +1,9 @@
-n = 100
-for i in range(int(n ** 0.5), 1, -1):
-    print(i)
+def helper(root, seq, left, right):
+    if root is None:
+        return
+
+    node = Node(seq[root])
+    node.left = helper(left[root], seq, left, right)
+    node.right = helper(right[root], seq, left, right)
+
+    return node
