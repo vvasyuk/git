@@ -16,11 +16,11 @@ import scala.runtime.Nothing$
 //Given a sequence S, construct the corresponding Cartesian tree.
 object p326_Cartesian_tree {
 
-  def buildTree(in: Array[Int]): Unit = {
+  def buildTree(in: Array[Int]) = {
     val n = in.size
     val (parent, left, right) = (Array.fill[Option[Int]](n)(None), Array.fill[Option[Int]](n)(None), Array.fill[Option[Int]](n)(None))
 
-    var root = Some(0)
+    var root = 0
     for(i<-1 until n){
       var prev = i-1
 
@@ -28,33 +28,34 @@ object p326_Cartesian_tree {
         prev = parent(prev).get
 
       if(in(i) < in(prev)){
-        left(i) = root
-        parent(root.get) = Some(i)
-        root = Some(i)
+        left(i) = Some(root)
+        parent(root) = Some(i)
+        root = i
       }else{
-        if (right(prev).isEmpty){
+        if (!right(prev).isEmpty){
           parent(right(prev).get) = Some(i)
           left(i) = right(prev)
         }
         parent(i) = Some(prev)
         right(prev) = Some(i)
       }
-      helper(root, in, left,right)
     }
-
+    helper(Some(root), in, left,right)
   }
 
   def helper(root: Option[Int], in: Array[Int], left: Array[Option[Int]], right: Array[Option[Int]]):Node = {
     if(root.isEmpty){
       return null
     }
-    val node = Node(in(root.get), helper(left(root.get), in, left, right), helper(right(root.get), in, left, right))
+    val x = root.get
+    val node = Node(in(x), helper(left(x), in, left, right), helper(right(x), in, left, right))
     node
   }
 
   def main(args: Array[String]): Unit = {
     val in = Array(3, 2, 6, 1, 9)
-    buildTree(in)
+    val tree = buildTree(in)
+    print()
   }
 }
 case class Node(v: Int, l:Node=null, r:Node=null)
