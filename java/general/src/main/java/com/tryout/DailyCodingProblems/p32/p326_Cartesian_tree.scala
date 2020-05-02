@@ -21,10 +21,10 @@ object p326_Cartesian_tree {
     val (parent, left, right) = (Array.fill[Option[Int]](n)(None), Array.fill[Option[Int]](n)(None), Array.fill[Option[Int]](n)(None))
 
     var root = 0
-    for(i<-1 until n){
-      var prev = i-1
-
-      while(in(i)<in(prev) && prev != root)
+    for(i<-1 until n){      // for first 3 elements arrays will be (parent(0->1; 2->1)) meaning that parent of o and 2 idx is 1
+      var prev = i-1        // left(1->0) meaning left of 1 is 0 idx
+                            // right(1->2) meaning right of 1 is 2 idx
+      while(in(i)<in(prev) && prev != root)   // knowing the root (1) we can check its left and right nodes from left and right arraya
         prev = parent(prev).get
 
       if(in(i) < in(prev)){
