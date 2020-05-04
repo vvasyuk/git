@@ -1,37 +1,20 @@
-def helper(root, seq, left, right):
-    if root is None:
-        return
+guy_preferences = {
+    'andrew': ['caroline', 'abigail', 'betty'],
+    'bill': ['caroline', 'betty', 'abigail'],
+    'chester': ['betty', 'caroline', 'abigail'],
+}
 
-    node = Node(seq[root])
-    node.left = helper(left[root], seq, left, right)
-    node.right = helper(right[root], seq, left, right)
+gal_preferences = {
+    'abigail': ['andrew', 'bill', 'chester'],
+    'betty': ['bill', 'andrew', 'chester'],
+    'caroline': ['bill', 'chester', 'andrew']
+}
+print(guy_preferences)
+print(gal_preferences)
+guy_preferences = {guy: list(reversed(pref)) for guy, pref in guy_preferences.items()}
 
-    return node
+for gal, pref in gal_preferences.items():
+    gal_preferences.update({gal: {guy: i for i, guy in enumerate(pref)}})
 
-def build_tree(seq):
-    n = len(seq)
-    parent, left, right = [None] * n, [None] * n, [None] * n
-
-    root = 0
-    for i in range(1, n):
-        prev = i - 1
-
-        while seq[i] < seq[prev] and prev != root:
-            prev = parent[prev]
-
-        if seq[i] < seq[prev]:
-            left[i] = root
-            parent[root] = i
-            root = i
-
-        else:
-            if right[prev] is not None:
-                parent[right[prev]] = i
-                left[i] = right[prev]
-
-            parent[i] = prev
-            right[prev] = i
-
-    return helper(root, seq, left, right)
-
-build_tree([3, 2, 6, 1, 9])
+print(guy_preferences)
+print(gal_preferences)
