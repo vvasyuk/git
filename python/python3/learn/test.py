@@ -1,20 +1,24 @@
-guy_preferences = {
-    'andrew': ['caroline', 'abigail', 'betty'],
-    'bill': ['caroline', 'betty', 'abigail'],
-    'chester': ['betty', 'caroline', 'abigail'],
+from collections import defaultdict
+
+transpose = {
+    'A': ['¬C'],
+    '¬C': ['B', '¬B'],
+    'B': ['C'],
+    '¬B': ['¬C', 'C'],
+    'C': ['B', '¬A'],
 }
 
-gal_preferences = {
-    'abigail': ['andrew', 'bill', 'chester'],
-    'betty': ['bill', 'andrew', 'chester'],
-    'caroline': ['bill', 'chester', 'andrew']
-}
-print(guy_preferences)
-print(gal_preferences)
-guy_preferences = {guy: list(reversed(pref)) for guy, pref in guy_preferences.items()}
+def get_transpose(graph):
+    transpose = defaultdict(list)
 
-for gal, pref in gal_preferences.items():
-    gal_preferences.update({gal: {guy: i for i, guy in enumerate(pref)}})
+    for key, values in graph.items():
+        for v in values:
+            transpose[v].append(key)
 
-print(guy_preferences)
-print(gal_preferences)
+    return transpose
+
+res = get_transpose(transpose)
+print(res)
+
+x = res.get('C')
+print(x)

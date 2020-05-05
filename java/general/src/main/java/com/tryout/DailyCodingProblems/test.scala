@@ -4,6 +4,6 @@ object test {
   def main(args: Array[String]): Unit = {
     val a = "string"
 
-    println(a(0))
+    println(a.substring(1))
   }
 }
