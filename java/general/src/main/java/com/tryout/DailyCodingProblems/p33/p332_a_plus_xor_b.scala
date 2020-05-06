@@ -11,7 +11,8 @@ object p332_a_plus_xor_b {
   //0	1	1
   //1	1	0
   def main(args: Array[String]): Unit = {
-
+    val a = 5
+    println(a.toBinaryString)
   }
 }
 
