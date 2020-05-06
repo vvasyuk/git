@@ -1,24 +1,8 @@
-from collections import defaultdict
+x = [0,0,0,1,1,1]
+y = [2,2,2,3,3,3]
 
-transpose = {
-    'A': ['¬C'],
-    '¬C': ['B', '¬B'],
-    'B': ['C'],
-    '¬B': ['¬C', 'C'],
-    'C': ['B', '¬A'],
-}
+test = (sum(pair) for pair in zip(x, y))
+print(test)
 
-def get_transpose(graph):
-    transpose = defaultdict(list)
-
-    for key, values in graph.items():
-        for v in values:
-            transpose[v].append(key)
-
-    return transpose
-
-res = get_transpose(transpose)
-print(res)
-
-x = res.get('C')
-print(x)
+for char in test:
+    print(char)
