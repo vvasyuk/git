@@ -1,8 +1,7 @@
-x = [0,0,0,1,1,1]
-y = [2,2,2,3,3,3]
+def apply_ops(a, b):
+    return [a + b, a - b, a * b, a / b]
 
-test = (sum(pair) for pair in zip(x, y))
-print(test)
-
-for char in test:
-    print(char)
+x = [5, 2, 7, 8]
+for i in range(len(x) - 2):
+    for x in apply_ops(*x[i : i + 2]):
+        print(x)

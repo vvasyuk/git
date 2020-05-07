@@ -7,31 +7,28 @@ package com.tryout.DailyCodingProblems.p33
 // Write a function that plays the 24 game.
 object p334_game_24 {
   def main(args: Array[String]): Unit = {
-    val in = Array(5, 2, 7, 8)
-    execute(in)
+    val in = Array(5.0, 2.0, 7.0, 8.0)
+    println(execute(in))
+
+//    for(i<-0 until in.size-2;
+//        x<-apply_opps(in(i), in(i+1))){
+//      println(s"$i : $x before: ${in.slice(0,i).mkString(",")} after: ${in.slice(i+2,in.size).mkString(",")}")
+//    }
   }
-  def apply_opps(a:Int,b:Int) ={
+  def apply_opps(a:Double,b:Double) ={
     Array(a+b, a-b, a/b, a*b)
   }
-  def execute(in: Array[Int]):Boolean={
+  def execute(in: Array[Double]):Boolean={
     if(in.size==1){
       in(0)==24
     }else if(in.size==2){
       (for(i<-apply_opps(in(0),in(1)))yield{execute(Array(i))}).exists(_==true)
     }else{
-
+      (for(i<-0 until in.size-2;
+          x<-apply_opps(in(i), in(i+1)))yield{
+        import Array._
+        execute(concat(in.slice(0,i), Array(x), in.slice(i+2,in.size)))
+      }).exists(_==true)
     }
   }
 }
-
-// def play(nums):
-//    if len(nums) == 1:
-//        return nums[0] == 24
-//    elif len(nums) == 2:
-//        return any(play([x]) for x in apply_ops(*nums))
-//    else:
-//        for i in range(len(nums) - 2):
-//            for x in apply_ops(*nums[i : i + 2]):
-//                if play(nums[:i] + [x] + nums[i + 2:]):
-//                    return True
-//        return False
