@@ -1,7 +1,7 @@
 package com.tryout.generalPuzzles.a4linkedList;
 
 // lists may each or both have a cycle
-public class n8_4_overlapping_lists_with_cycle {
+public class n8_5_overlapping_lists_with_cycle {
     // If one list is cyclic, and the other is not, they cannot overlap,so we are done.
     //This leaves us with the case that both lists are cyclic. In this case, if they overlap,
     //the cycles must be identical.
