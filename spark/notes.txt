@@ -1,0 +1,41 @@
+SELECTING DATA
+postsDf.select("id", "body")
+postsDf.select(postsDf.col("id"), postsDf.col("body"))
+postsDf.select(Symbol("id"), Symbol("body"))
+postsDf.select('id, 'body)
+postsDf.select($"id", $"body")
+postsIdBody.drop("body")
+
+FILTERING DATA
+postsIdBody.filter('body contains "Italiano").count
+postsDf.filter(('postTypeId === 1) and ('acceptedAnswerId isNull))
+postsDf.filter('postTypeId === 1).limit(10)
+
+ADDING AND RENAMING COLUMNS
+firstTenQs.withColumnRenamed("ownerUserId", "owner")
+postsDf.filter('postTypeId === 1).withColumn("ratio", 'viewCount / 'score).where('ratio < 35).show()
+
+USING BUILT-IN SCALAR AND AGGREGATE FUNCTIONS
+import org.apache.spark.sql.functions._
+postsDf.select(avg('score), max('score), count('score)).show
+
+WINDOW FUNCTIONS
+import org.apache.spark.sql.expressions.Window
+postsDf.filter('postTypeId === 1).
+    select('ownerUserId, 'acceptedAnswerId, 'score, max('score).
+        over(Window.partitionBy('ownerUserId)) as "maxPerUser").
+        withColumn("toMax", 'maxPerUser - 'score).show(10)
+postsDf.filter('postTypeId === 1).
+    select('ownerUserId, 'id, 'creationDate,
+    lag('id, 1).over(
+    Window.partitionBy('ownerUserId).orderBy('creationDate)) as "prev",
+    lead('id, 1).over(
+    Window.partitionBy('ownerUserId).orderBy('creationDate)) as "next").
+    orderBy('ownerUserId, 'id).show(10)
+
+USER-DEFINED FUNCTIONS
+val countTags = udf((tags: String) => "&lt;".r.findAllMatchIn(tags).length)
+val countTags = spark.udf.register("countTags", (tags: String) => "&lt;".r.findAllMatchIn(tags).length)
+postsDf.filter('postTypeId === 1).select('tags, countTags('tags) as "tagCnt").show(10, false)
+
+
