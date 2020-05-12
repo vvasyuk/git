@@ -38,4 +38,23 @@ val countTags = udf((tags: String) => "&lt;".r.findAllMatchIn(tags).length)
 val countTags = spark.udf.register("countTags", (tags: String) => "&lt;".r.findAllMatchIn(tags).length)
 postsDf.filter('postTypeId === 1).select('tags, countTags('tags) as "tagCnt").show(10, false)
 
-
+USER-DEFINED FUNCTIONS WITH CURRYING
+import org.apache.spark.sql.functions._
+def uDF(strList: List[String]) = udf[String, Int, String, String]((value1: Int, value2: String, value3: String) => value1.toString + "_" + value2 + "_" + value3 + "_" + strList.mkString("_"))
+val df = spark.sparkContext.parallelize(Seq((1,"r1c1","r1c2"),(2,"r2c1","r2c2"))).toDF("id","str1","str2")
+scala> df.show
++---+----+----+
+| id|str1|str2|
++---+----+----+
+|  1|r1c1|r1c2|
+|  2|r2c1|r2c2|
++---+----+----+
+val dummyList = List("dummy1","dummy2")
+val result = df.withColumn("new_col", uDF(dummyList)(df("id"),df("str1"),df("str2")))
+   scala> result.show(2, false)
++---+----+----+-------------------------+
+|id |str1|str2|new_col                  |
++---+----+----+-------------------------+
+|1  |r1c1|r1c2|1_r1c1_r1c2_dummy1_dummy2|
+|2  |r2c1|r2c2|2_r2c1_r2c2_dummy1_dummy2|
++---+----+----+-------------------------+

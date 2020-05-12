@@ -30,12 +30,14 @@ object CsvTest {
     })
     dfMap.show(10,false)
 
-//    import org.apache.spark.sql.functions.udf
-//    val addUtcUdf = udf{ x: String => x + " UTC" }
-//    val formatDateUdf = udf{ x: String => ZonedDateTime.parse(x + " UTC", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z")).toString}
-//    val dfUDF = df.withColumn("col1", addUtcUdf('col1))
-//      .withColumn("col2", formatDateUdf('col2))
-//    dfUDF.show(10,false)
+    import org.apache.spark.sql.functions.udf
+    val addUtcUdf = udf{ x: String => x + " UTC" }
+    val formatDateUdf = udf{ x: String => ZonedDateTime.parse(x + " UTC", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z")).toString}
+
+    val dfUDF = df
+      .withColumn("col1", addUtcUdf('col1))
+      .withColumn("col2", formatDateUdf('col2))
+    dfUDF.show(10,false)
 
 //    import org.apache.spark.sql.functions._
 //    val dfWhen = df.withColumn("col1", when(col("col1") === "name1", col("col1").toString()+"UTC").otherwise(col("col1")));
