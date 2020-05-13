@@ -5,11 +5,14 @@ import java.io.File
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions._
 import resource._
+import org.apache.hadoop.fs.Path
 
 
 object SparkTest {
   def main(args: Array[String]): Unit = {
     println("SparkTest")
+    val p = new Path("src\\main\\resources\\testCsv.csv")
+    println(p)
 //    getListOfFiles("D:\\work\\tryout\\sbt\\data\\in").foreach(println(_))
 //    val dirs = new File("D:\\work\\tryout\\sbt\\data").listFiles().filter(_.isDirectory)
 //    val files = dirs.flatMap(x=>{
@@ -25,9 +28,9 @@ object SparkTest {
 
     //val spark = getSession
     //dummyJob1(spark)
-    val files = List("D:\\work\\tryout\\sbt\\data\\in\\a.csv", "D:\\work\\tryout\\sbt\\data\\in\\b.csv", "D:\\work\\tryout\\sbt\\data\\in\\c.csv")
+    //val files = List("D:\\work\\tryout\\sbt\\data\\in\\a.csv", "D:\\work\\tryout\\sbt\\data\\in\\b.csv", "D:\\work\\tryout\\sbt\\data\\in\\c.csv")
     //managed(getSession).acquireAndGet(implicit spark => dummyJob3Alt(files))
-    managed(getSession).acquireAndGet(implicit spark => dummyJobDecimal)
+    //managed(getSession).acquireAndGet(implicit spark => dummyJobDecimal)
 //    for {
 //      spark <- managed(getSession)
 //    } {
