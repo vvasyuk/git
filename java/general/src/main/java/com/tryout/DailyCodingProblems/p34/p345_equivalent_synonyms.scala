@@ -1,6 +1,7 @@
 package com.tryout.DailyCodingProblems.p34
 
-// You are given a set of synonyms, such as (big, large) and (eat, consume). Using this set, determine if two sentences with the same number of words are equivalent.
+// You are given a set of synonyms, such as (big, large) and (eat, consume). Using this set, determine if two
+// sentences with the same number of words are equivalent.
 //
 //For example, the following two sentences are equivalent:
 //
@@ -10,7 +11,8 @@ package com.tryout.DailyCodingProblems.p34
 //
 //Follow-up: what if we can assume that (a, b) and (a, c) do in fact imply (b, c)?
 object p345_equivalent_synonyms {
-  // split each sentence into words and iterate over each pair. If for every pair, either the words are identical, or one word can be found as a value corresponding to the other's key, then the two sentences are equivalent.
+  // split each sentence into words and iterate over each pair. If for every pair, either the words are identical,
+  // or one word can be found as a value corresponding to the other's key, then the two sentences are equivalent.
 
   //from collections import defaultdict
   //

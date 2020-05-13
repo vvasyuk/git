@@ -15,8 +15,11 @@ package com.tryout.DailyCodingProblems.p34
 //
 //Write a function that returns the maximum number of edges you can remove while still satisfying this requirement.
 object p344_even_subtrees {
-  // First note that if a node has an odd number of descendants, we can cut off the link between that node and its parent in order to create an even-sized subtree. Each time we do this, we are left with another even-sized group, to which we can apply the same procedure.
-  // For example, let's take the example tree above. The lowest edge we can cut is that connecting nodes 3 and 4. Once this is cut, we are left with the following tree:
+  // First note that if a node has an odd number of descendants, we can cut off the link between that node and its parent
+  // in order to create an even-sized subtree. Each time we do this, we are left with another even-sized group,
+  // to which we can apply the same procedure.
+  // For example, let's take the example tree above. The lowest edge we can cut is that connecting nodes 3 and 4.
+  // Once this is cut, we are left with the following tree:
   //
   //  1
   // / \
