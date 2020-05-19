@@ -3,7 +3,7 @@ package com.tryout.DailyCodingProblems
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
-object maps {
+object amaps {
   def main(args: Array[String]): Unit = {
 
     var prev_to_next = mutable.Map[Int, ListBuffer[Int]]()
