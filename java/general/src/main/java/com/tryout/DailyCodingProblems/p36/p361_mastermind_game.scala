@@ -43,6 +43,7 @@ object p361_mastermind_game {
           digits.append(x)
         }
       }
+      
 
     }
 
@@ -59,7 +60,30 @@ object p361_mastermind_game {
       293416 -> 3, 175286 -> 2, 654321 -> 0
     )
 
-    isPossible(in)
+    //isPossible(in)
+
+  }
+  def cartesianProduct[T](lst: List[T]*): List[List[T]] = {
+    def pel(e: T,
+            ll: List[List[T]],
+            a: List[List[T]] = Nil): List[List[T]] =
+      ll match {
+        case Nil => a.reverse
+        case x :: xs => pel(e, xs, (e :: x) :: a )
+      }
+
+    lst.toList match {
+      case Nil => Nil
+      case x :: Nil => List(x)
+      case x :: _ =>
+        x match {
+          case Nil => Nil
+          case _ =>
+            lst.foldRight(List(x))( (l, a) =>
+              l.flatMap(pel(_, a))
+            ).map(_.dropRight(x.size))
+        }
+    }
   }
 }
 

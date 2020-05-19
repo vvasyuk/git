@@ -1,3 +1,4 @@
 from itertools import combinations, permutations, product
-
-print(list(product([1,2,3])))
+l = [[2,3,4],[5,6,7],[1],[2]]
+for i in product(*l):
+    print(i)
