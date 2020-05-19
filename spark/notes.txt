@@ -1,3 +1,7 @@
+FROM CONSOLE
+spark-shell --master local
+val df = spark.read.csv('/file.csv')
+
 SELECTING DATA
 postsDf.select("id", "body")
 postsDf.select(postsDf.col("id"), postsDf.col("body"))

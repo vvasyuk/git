@@ -8,8 +8,19 @@ import java.time.format.DateTimeFormatter
 
 object CsvTest {
   def main(args: Array[String]): Unit = {
-    managed(getSession).acquireAndGet(implicit spark => readCsv)
+    //managed(getSession).acquireAndGet(implicit spark => readCsv)
+    managed(getSession).acquireAndGet(implicit spark => readCsvNoHeader)
   }
+
+  def readCsvNoHeader()(implicit spark: SparkSession):Unit={
+    import spark.implicits._
+    val df = spark.read
+      .schema(implicitly[Encoder[myRow]].schema)
+      .csv("src\\main\\resources\\testCsvNoHeader.csv").cache()
+    df.show(10,false)
+    df.printSchema()
+  }
+
   def readCsv()(implicit spark: SparkSession):Unit={
     import spark.implicits._
     val df = spark.read.format("csv")
