@@ -23,6 +23,8 @@ def generate_codes(guess, score):
                 continue
             else:
                 digits.append([x for x in range(10) if x != str(guess)[index]])
+        for i in product(*digits):
+            print(i)
         codes.extend([''.join(map(str, num)) for num in product(*digits)])
     return [code for code in codes if len(set(code)) == 6]
 
