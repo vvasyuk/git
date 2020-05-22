@@ -1,0 +1,1 @@
+hadoop fs -ls /path/to/files | grep part | awk '{print $8}' | head -n47 | xargs hadoop fs -rm
