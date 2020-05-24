@@ -1,4 +1,4 @@
-package com.tryout.generalPuzzles.aStacksAndQueues;
+package com.tryout.generalPuzzles.astacksAndQueues;
 
 // A postings list is a singly linked list with an additional "jump" field at each node.
 //The jump field points to any other node. Figure 9.3 illustrates a postings list with

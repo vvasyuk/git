@@ -1,4 +1,4 @@
-package com.tryout.generalPuzzles.aStacksAndQueues;
+package com.tryout.generalPuzzles.astacksAndQueues;
 
 import java.util.Deque;
 import java.util.LinkedList;
