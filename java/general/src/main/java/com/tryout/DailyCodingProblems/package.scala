@@ -27,11 +27,13 @@ package object DailyCodingProblems {
     val res = Array.fill(maxDepth)(ArrayBuffer[String]())
 
     def _buildArray(root: Node, level: Int, col: Int, res: Array[ArrayBuffer[String]]): Unit = {
-      if (root==null) return
+      if (level == 0 ) return
       val prefix = if (col==0) math.pow(2,level-1)-1 else math.pow(2,level)-1
-      res(level-1)+=" " * prefix.toInt + root.v.toString
-      _buildArray(root.l,level-1,col,res)
-      _buildArray(root.r,level-1,col+1,res)
+      res(level-1)+=" " * prefix.toInt + (if(root==null) "#" else root.v.toString)
+      if (root!=null) {
+        _buildArray(root.l,level-1,col,res)
+        _buildArray(root.r,level-1,col+1,res)
+      }
     }
     _buildArray(root,maxDepth,0,res)
     res.reverse.foreach(x=>println(x.mkString("")))
