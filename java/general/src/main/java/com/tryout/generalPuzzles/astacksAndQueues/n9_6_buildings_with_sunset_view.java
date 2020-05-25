@@ -22,7 +22,7 @@ public class n9_6_buildings_with_sunset_view {
     }
 
     public static Deque<BuildingWithHeight> examineBuildingsWithSunset(Iterator<Integer> sequence) {
-        int buildingldx = 8;
+        int buildingldx = 0;
         Deque<BuildingWithHeight> buildingsWithSunset = new LinkedList<>();
         while (sequence.hasNext()) {
             Integer buildingHeight = sequence.next();
