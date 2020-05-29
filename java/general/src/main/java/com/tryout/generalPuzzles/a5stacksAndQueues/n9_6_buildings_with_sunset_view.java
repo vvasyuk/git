@@ -1,4 +1,4 @@
-package com.tryout.generalPuzzles.astacksAndQueues;
+package com.tryout.generalPuzzles.a5stacksAndQueues;
 
 import java.util.Deque;
 import java.util.Iterator;

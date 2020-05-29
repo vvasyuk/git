@@ -15,6 +15,8 @@ object alist {
   }
 
   def pMatch(l: List[Int]):Unit = l match{
+    case 1::2::rest => println(s"one"); pMatch(2::rest)
+    case 1::rest => println(s"one"); pMatch(rest)
     case e::rest => println(e); pMatch(rest)
     case _ =>
   }
