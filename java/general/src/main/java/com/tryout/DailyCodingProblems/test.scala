@@ -5,9 +5,9 @@ import scala.collection.mutable.ArrayBuffer
 
 object test {
   def main(args: Array[String]): Unit = {
-    var b = true
-    println(b)
-    b = !b
-    println(b)
+    val a="1"
+    val b="1"
+    val c = (a+b).toInt
+    println(c)
   }
 }
