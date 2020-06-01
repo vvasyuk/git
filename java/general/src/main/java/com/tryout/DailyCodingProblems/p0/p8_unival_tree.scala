@@ -1,4 +1,4 @@
-package com.tryout.DailyCodingProblems.p1
+package com.tryout.DailyCodingProblems.p0
 
 import com.tryout.DailyCodingProblems._
 
@@ -15,7 +15,7 @@ import com.tryout.DailyCodingProblems._
 //   1   0
 //  / \
 // 1   1
-object p7_unival_tree {
+object p8_unival_tree {
 
   def main(args: Array[String]): Unit = {
     val root = Node(0,
