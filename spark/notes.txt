@@ -1,3 +1,6 @@
+val dirs = List("/123/123/123")
+spark.read.csv(dirs: _*).filter(col("col1").like("ERROR") && 'col2 === 2).agg(sum(col("col3"))).show.false
+
 FROM CONSOLE
 spark-shell --master local
 val df = spark.read.csv('/file.csv')
@@ -14,6 +17,10 @@ FILTERING DATA
 postsIdBody.filter('body contains "Italiano").count
 postsDf.filter(('postTypeId === 1) and ('acceptedAnswerId isNull))
 postsDf.filter('postTypeId === 1).limit(10)
+postsDf.filter(col("col1").like("ERROR") && 'col2 === 2).limit(10)
+
+SORTING
+df.orderBy(desc("col1"))
 
 ADDING AND RENAMING COLUMNS
 firstTenQs.withColumnRenamed("ownerUserId", "owner")
