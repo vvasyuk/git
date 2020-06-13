@@ -10,7 +10,8 @@ libraryDependencies ++= Seq(
 //  "org.apache.spark" %% "spark-sql" % "2.3.3",
   "com.jsuereth" %% "scala-arm" % "2.0",
   "org.scalatest" %% "scalatest" % "3.0.8" % Test,
-  "org.scalamock" %% "scalamock" % "4.4.0" % Test
+  "org.scalamock" %% "scalamock" % "4.4.0" % Test,
+  "com.h2database" % "h2" % "1.4.200" % Test
 )
 
 // Do not include Scala in the assembled JAR
