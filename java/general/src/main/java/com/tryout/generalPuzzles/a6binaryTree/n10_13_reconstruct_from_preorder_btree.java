@@ -6,7 +6,7 @@ import java.util.List;
 
 //Design an algorithm for reconstructing a binary tree from a preorder traversal visit
 //sequence that uses null to mark empty children.
-public class n_10_13_reconstruct_from_preorder_btree {
+public class n10_13_reconstruct_from_preorder_btree {
     //The intuition for a better algorithm is the recognition that the first node in the
     //sequence is the root, and the sequence for the root's left subtree appears before all the
     //nodes in the root's right subtree. It is not easy to see where the left subtree sequence
