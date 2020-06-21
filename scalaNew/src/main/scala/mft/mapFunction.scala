@@ -29,5 +29,7 @@ object mapFunction {
     println(f1(0))
     println(f1Map(0))
 
+    val rMap = divide(2,0).map(x=>x)
+    val rFlatMap = divide(2,1).flatMap(x=>divide(x,2))
   }
 }
