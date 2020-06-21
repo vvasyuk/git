@@ -32,4 +32,29 @@ object mapFunction {
     val rMap = divide(2,0).map(x=>x)
     val rFlatMap = divide(2,1).flatMap(x=>divide(x,2))
   }
+
+
+
+
+  case class Person(name: String, age: Int, drivingLicense: Option[String])
+  case class Car(model: String, owner: Option[Person], registrationPlate: Option[String])
+
+  def ownerName(car: Car): Option[String] = car.owner.map(p => p.name)
+
+//  The function map on Option
+//  def map[B](f: A => B): Option[B] =
+//    this match {   //#A
+//      case Some(a) => Some(f(a))
+//      case None => None
+//    }
+//
+// Some(a) -> map(f) => Some(f(a)) = Some(b)
+
+// The function flatMap on Option
+//  def flatMap[B](f: A => Option[B]): Option[B] =
+//    this match {
+//      case Some(a) => f(a)
+//      case None => None
+//    }
+// Some(a) -> flatMap(f) => f(a) = optB
 }
