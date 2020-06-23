@@ -10,7 +10,10 @@ object functionalDI {
   case class Account(id: Option[Int], ownerId: Int, balance: Double)
 
   case class Reader[A, B](f: A => B) {
-    def apply(a: A): B = f(a)
+    def apply(a: A): B = {
+      println("inside")
+      f(a)
+    }
     def flatMap[C](f2: B => Reader[A, C]): Reader[A, C] =
       Reader { a => f2(f(a))(a) }
   }
@@ -30,5 +33,8 @@ object functionalDI {
 //  val accId = createAccountFunc(Account(None, uid, 0))(c)
 //  accId
 //}
-
+  def main(args: Array[String]): Unit = {
+    val r: Reader[Int, Int] = Reader { x => x+1 }
+    r(1)
+  }
 }
