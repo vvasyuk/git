@@ -14,10 +14,10 @@ public class n11_1_merge_sorted_files {
     //quences
     private static class ArrayEntry {
         public Integer value ;
-        public Integer arrayld;
+        public Integer arrayId;
         public ArrayEntry(Integer value, Integer arrayld) {
             this.value = value;
-            this.arrayld = arrayld;
+            this.arrayId = arrayld;
         }
     }
     public static List<Integer> mergeSortedArrays(List<List<Integer>> sortedArrays) {
@@ -40,9 +40,9 @@ public class n11_1_merge_sorted_files {
         while (!minHeap.isEmpty()) {
             ArrayEntry headEntry = minHeap.poll();
             result.add(headEntry.value);
-            if (iters.get(headEntry.arrayld).hasNext()) {
-                minHeap.add(new ArrayEntry(iters.get(headEntry.arrayld).next(),
-                        headEntry.arrayld));
+            if (iters.get(headEntry.arrayId).hasNext()) {
+                minHeap.add(new ArrayEntry(iters.get(headEntry.arrayId).next(),
+                        headEntry.arrayId));
             }
         }
         return result;
