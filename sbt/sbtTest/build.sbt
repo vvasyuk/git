@@ -5,13 +5,22 @@ val scalaTest = "org.scalatest" %% "scalatest" % "3.0.5"
 val gigahorse = "com.eed3si9n" %% "gigahorse-okhttp" % "0.3.1"
 val playJson  = "com.typesafe.play" %% "play-json" % "2.6.9"
 
+lazy val tt = taskKey[Unit]("An example task")
+lazy val ts = settingKey[String]("An example task")
+
+lazy val commonSettings = Seq(
+  name := "Hello"
+)
+
 lazy val hello = (project in file("."))
   .aggregate(helloCore)
   .dependsOn(helloCore)
   .enablePlugins(JavaAppPackaging)
   .settings(
-    name := "Hello",
+    commonSettings,
     libraryDependencies += scalaTest % Test,
+    tt := { println("Hello")},
+    ts := "someSetting"
   )
 
 lazy val helloCore = (project in file("core"))

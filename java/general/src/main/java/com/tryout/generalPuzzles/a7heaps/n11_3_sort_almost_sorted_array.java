@@ -16,9 +16,9 @@ public class n11_3_sort_almost_sorted_array {
     //after we have read k +1numbers, the smallest number in that group must be smaller
     //than all following numbers. For the given example, after we have read the first 3
     //numbers, 3,-1, 2, the smallest, -1, must be globally the smallest. This is because the
-    //sequence was specified to have the property that every number is at most 2 away
-    //from its final sorted location and the smallest number is at index 0 in sorted order.
-    //After we read in the 4, the second smallest number must be the minimum of 3, 2, 4,
+    //sequence was specified to have the property that number is at index 0 in sorted order.
+    //    //After we read in the 4, the second s every number is at most 2 away
+    //from its final sorted location and the smallestmallest number must be the minimum of 3, 2, 4,
     //i.e., 2.
     //To solve this problem in the general setting, we need to store k +1 numbers and
     //want to be able to efficiently extract the minimum number and add a new number. A

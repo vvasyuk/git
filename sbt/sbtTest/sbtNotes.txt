@@ -1,11 +1,12 @@
 ### general
     compile
-    ~compile (executes when source is changed)
-    run (will create a jat and run)
-    reload (build.sbt file to be re-read, and its settings applied.)
+    ~compile            (executes when source is changed)
+    run                 (will create a jat and run)
+    reload              (build.sbt file to be re-read, and its settings applied.)
     test
     console
-    :paste (paste mode Ctrl-D to exit)
-    projects (lists projects)
+    :paste              (paste mode Ctrl-D to exit)
+    projects            (lists projects)
     helloCore/compile
-    dist (use JavaPackaginf plugin; create hello-0.1.0-SNAPSHOT.zip with all libs and a bat)
+    dist                (use JavaPackaginf plugin; create hello-0.1.0-SNAPSHOT.zip with all libs and a bat)
+    package
