@@ -1,4 +1,4 @@
-package mft
+package abook_mft
 
 object functionalDI {
 //  create methods return function which needs connection and returns what is needed

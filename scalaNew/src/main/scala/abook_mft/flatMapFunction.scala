@@ -1,4 +1,4 @@
-package mft
+package abook_mft
 
 import scala.util.control.NonFatal
 import scala.util.{Failure, Success, Try}
