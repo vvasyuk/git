@@ -2,7 +2,7 @@ package abook_fp
 
 import scala.util.Try
 
-object handleErrors {
+object a04_handle_Errors {
   def main(args: Array[String]): Unit = {
     println(strToIntOption("123"))
     println(strToIntEither("123"))
