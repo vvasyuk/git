@@ -9,7 +9,7 @@ lazy val tt = taskKey[Unit]("An example task")
 lazy val ts = settingKey[String]("An example task")
 
 lazy val commonSettings = Seq(
-  name := "Hello"
+  name := "sbtTest"
 )
 
 lazy val hello = (project in file("."))

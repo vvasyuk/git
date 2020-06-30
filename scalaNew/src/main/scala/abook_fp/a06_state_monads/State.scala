@@ -1,7 +1,5 @@
 package abook_fp.a06_state_monads
 
-import State._
-
 case class State[S, +A](run: S => (A, S)) {
   def map[B](f: A => B): State[S, B] = State((s: S) => {
     val (a, ss) = run(s)
@@ -34,4 +32,17 @@ object State {
     s <- get
     _ <- set(f(s))
   } yield ()
+}
+
+object testState{
+  import State._
+  def main(args: Array[String]): Unit = {
+    val x = unit[Int,Int](1)
+    val x1 = x.map(_ + 1).map(_ + 1)
+    val x2 = x1.run
+    val x3 = x2(5)
+    println(x3)
+
+
+  }
 }
