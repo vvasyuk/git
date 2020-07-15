@@ -11,8 +11,8 @@ object caseTest {
 }
 
 case class one(one: String) extends caseClassTrait {
-  override val three: String = _
-  override val four: String = _
+  override val three: String = "a"
+  override val four: String = "b"
 }
 case class two(two: String)
 

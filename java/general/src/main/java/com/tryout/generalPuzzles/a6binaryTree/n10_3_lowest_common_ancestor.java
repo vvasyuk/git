@@ -30,7 +30,7 @@ public class n10_3_lowest_common_ancestor {
         return LCAHelper(tree , node0, node1).ancestor ;
     }
     // Returns an object consisting of an int and a node. The int field is
-    // 0, 1, or 2 depending on how many of {node® , nodel} are present in
+    // 0, 1, or 2 depending on how many of {node0 , nodel} are present in
     // the tree. If both are present in the tree, when ancestor is
     // assigned to a non-null value, it is the LCA.
     private static Status LCAHelper(BinaryTreeNode <Integer> tree, BinaryTreeNode <Integer> node0, BinaryTreeNode <Integer> node1) {
