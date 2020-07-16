@@ -18,23 +18,23 @@ public class n13_2_is_anon_letter_constructible {
     //false—each of the characters remaining in the hash occurs more times in the letter
     //than the magazine
 
-    public static boolean isLetterConstructibleFromMagazine (String letterText ,
-                                                             String magazineText ) {
-        Map<Character , Integer> charFrequencyForLetter = new HashMap<>() ;
+    public static boolean isLetterConstructibleFromMagazine(String letterText,
+                                                            String magazineText) {
+        Map<Character, Integer> charFrequencyForLetter = new HashMap<>();
         // Compute the frequencies for all chars in letterText.
-        for (int i = 0; i < letterText.length () ; i++) {
-            char c = letterText.charAt (i) ;
-            if ( ! charFrequencyForLetter.containsKey (c)) {
-                charFrequencyForLetter.put (c , 1) ;
+        for (int i = 0; i < letterText.length(); i++) {
+            char c = letterText.charAt(i);
+            if (!charFrequencyForLetter.containsKey(c)) {
+                charFrequencyForLetter.put(c, 1);
             } else {
-                charFrequencyForLetter.put (c , charFrequencyForLetter.get (c) + 1);
+                charFrequencyForLetter.put(c, charFrequencyForLetter.get(c) + 1);
             }
         }
         // Check if the characters in magazineText can cover characters in letterText.
-        for (char c : magazineText . toCharArray () ) {
+        for (char c : magazineText.toCharArray()) {
             if (charFrequencyForLetter.containsKey(c)) {
                 charFrequencyForLetter.put(c, charFrequencyForLetter.get(c) - 1);
-                if (charFrequencyForLetter.get(c) == 0){
+                if (charFrequencyForLetter.get(c) == 0) {
                     charFrequencyForLetter.remove(c);
                     // All characters for letterText are matched.
                     if (charFrequencyForLetter.isEmpty()) {
@@ -46,4 +46,5 @@ public class n13_2_is_anon_letter_constructible {
         // Empty charFrequencyForLetter means every char in letterText can be
         // covered by a character in magazineText.
         return charFrequencyForLetter.isEmpty();
+    }
 }
