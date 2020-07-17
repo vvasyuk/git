@@ -17,7 +17,6 @@ case class State[S, +A](run: S => (A, S)) {
 }
 
 object State {
-  type Rand[A] = State[RNG, A]
 
   def unit[S, A](a: A): State[S, A] = State((s: S) => (a, s))
 
@@ -37,12 +36,19 @@ object State {
 object testState{
   import State._
   def main(args: Array[String]): Unit = {
-    val x = unit[Int,Int](1)
-    val x1 = x.map(_ + 1).map(_ + 1)
-    val x2 = x1.run
-    val x3 = x2(5)
-    println(x3)
 
+    // pass a function to State that
+    // accept state as parameter to generate new value and new state
+    val s = State( (state:Int) => {
+      val value = state*10
+      val newState = state+1
+      (value, newState)})
+
+    println(s.run(1))
+    println(s.run(1))
+
+    val s1 = s.map(_ + 1).map(_ + 1).map(_ + 1)
+    println(s1.run(1))
 
   }
 }
