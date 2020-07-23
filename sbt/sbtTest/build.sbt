@@ -20,7 +20,7 @@ lazy val hello = (project in file("."))
     commonSettings,
     libraryDependencies += scalaTest % Test,
     tt := { println("Hello")},
-    ts := "someSetting"
+    ts := "someSetting",
   )
 
 lazy val helloCore = (project in file("core"))
