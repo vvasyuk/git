@@ -1,0 +1,1 @@
+addSbtPlugin("io.kpritam.sbt" % "sbt-zip" % "0.1-SNAPSHOT")

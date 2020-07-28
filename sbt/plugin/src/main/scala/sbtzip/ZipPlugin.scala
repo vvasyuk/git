@@ -18,11 +18,29 @@ object ZipPlugin extends AutoPlugin {
   // the files from sourceZipDir at location targetZipDir.value
   private def zipTask =  Def.task {
     val log = sLog.value
-    lazy val zip = new File(targetZipDir.value,
-      sourceZipDir.value.getName + ".zip")
-    log.info("Zipping file...")
+    lazy val zip = new File(targetZipDir.value, sourceZipDir.value.getName + ".zip")
+
+    log.info(s"Zipping file...")
     IO.zip(Path.allSubpaths(sourceZipDir.value), zip)
+
+//    Thread.sleep(5000)
+
+    val currentDirectory = new java.io.File("./target").getCanonicalPath
+    val files = getListOfFiles(currentDirectory).mkString(",")
+    log.info(s"Zipping file...$currentDirectory - with files $files")
+
+//    Thread.sleep(35000)
+
     zip
+  }
+
+  import java.io.File
+
+  def getListOfFiles(dir: String): List[String] = {
+    val file = new File(dir)
+    file.listFiles.map(_.getName).toList
   }
 }
 //compile publishLocal
+
+// scripted

@@ -3,7 +3,7 @@ import scala.collection.mutable.ListBuffer
 import org.junit.Assert._
 import org.junit.Test
 import org.junit.Before
-
+import packageFuncToOverride._
 import scala.collection.mutable.ListBuffer
 
 class SimpleScalaTest {
@@ -27,6 +27,11 @@ class SimpleScalaTest {
     catch {
       case e: StringIndexOutOfBoundsException => // Expected
     }
+  }
+
+  @Test def packageFuncToOverride() { // Uses JUnit-style assertions
+    f = (s: String) => println(s"Riders $s")
+    Pack4Test.toTest()
   }
 
 //  @Test def verifyFun() { // Uses ScalaTest assertions
