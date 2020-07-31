@@ -69,3 +69,44 @@ val result = df.withColumn("new_col", uDF(dummyList)(df("id"),df("str1"),df("str
 |1  |r1c1|r1c2|1_r1c1_r1c2_dummy1_dummy2|
 |2  |r2c1|r2c2|2_r2c1_r2c2_dummy1_dummy2|
 +---+----+----+-------------------------+
+
+# add column
+    .withColumn("newCol", lit("123"))
+    .withColumn("newCol", col("salary")*100)
+    
+# regex
+    .withColumn("newCol", regex_replace(col("newCol"), "[:,.]", ""))
+    
+# read csv
+    spark.read.option("header", "true").csv("path")
+    //.option("ignoreLeadingWhiteSpace", "true")
+    //.option("ignoreTraiolingWhiteSpace", "true")
+    //.schema(caseClass.getSchema).csv(files: _*).as[caseClass].where("col is not null")
+    
+# write csv
+    df.write.csv("path.csv")
+    
+# write orc
+    import org.apache.spark.sql.SaveMode
+    df.write
+    //.partitionBy("newCol")
+    .mode(SaveMode.Append)
+    .orc("path")
+
+# join
+    df1.join(df2, df("col1") === df2("col1"), "left")
+    
+# aggr
+    agg(sum(col("col1") as "sum"))
+    
+# like
+    .filter(col("col1").like("pattern"))
+    
+# count
+    df.groupBy("grpCol").agg(sum("col1"), count("id"))
+    df.agg(count(lit(1)).alias("cnt"))
+    
+# filter
+    .filter(col("col1") === ("pattern"))
+    
+    
