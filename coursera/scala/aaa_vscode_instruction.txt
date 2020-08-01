@@ -1,0 +1,17 @@
+Run In Terminal
+install command runner extension
+go to File -> Preferences -> Settings -> Extensions -> Run Command configurtation -> edit in settings.json
+
+use shortcut Ctrl+Shift+R to select custom command
+use shortcut Ctrl+Alt+R to run selected content as shell command
+or press F1 and then select/type Run Command or Run In Terminal,
+or right click the Text Editor and then click Run Command to select custom command in editor context menu
+or right click the Text Editor and then click Run In Terminal to run selected content as shell command in editor context menu
+
+Ctrl-Shift-P -> Run Command -> echo
+
+    "command-runner.commands": {
+
+        //"wrap": "echo '${selectedTextList}'"
+        "wrap": "perl D:\\work\\tryout\\perl\\vsCodeBoxWrap.pl '${selectedTextList}'" 
+    }

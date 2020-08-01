@@ -1,0 +1,23 @@
+###############
+# pure functions
+###############
+    #rules
+    -returns one value
+    -calculates the return value based only on the arguments
+    -doesn’t mutate any existing values
+    
+    #referential transparency
+    you could substitute the function call, f(20), with its result, 19, without changing the program’s behavior
+    
+    #ShoppingCart
+    ################################################################
+    # object ShoppingCartDiscounts {                               #
+    #     def getDiscountPercentage(items: List[String]): Int = {  #
+    #         if (items.contains("Book")) {                        #
+    #             5                                                #
+    #         } else {                                             #
+    #             0                                                #
+    #         }                                                    #
+    #     }                                                        #
+    # }                                                            #
+    ################################################################
