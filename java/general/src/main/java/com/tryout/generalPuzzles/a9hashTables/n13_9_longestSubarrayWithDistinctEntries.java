@@ -8,7 +8,7 @@ import java.util.Map;
 //with the property that all its elements are distinct. For example, if the array is
 //(/,s, /,e,t,w,e,n,w,e) then a longest subarray all of whose elements are distinct is
 //(s,f,e,t,w).
-public class n_13_9_longestSubarrayWithDistinctEntries {
+public class n13_9_longestSubarrayWithDistinctEntries {
 
     //For the given example, (/,s, /,e,t,w,e,n,w,e), when we process the element at
     //index 2, the longest duplicate-free subarray ending at index1is from 0 to 1. The hash
