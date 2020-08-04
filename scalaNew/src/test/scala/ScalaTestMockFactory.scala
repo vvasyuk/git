@@ -1,3 +1,5 @@
+import java.util.function.Supplier
+
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.FlatSpec
 
@@ -20,7 +22,9 @@ class ScalaTestMock extends FlatSpec with MockFactory {
     class MockablePlayer extends Player(0, null, null)
     val m = mock[MockablePlayer]
     (m.meth _).expects() returning ("meth")
+    (m.meth2(_: String)).when(*)
     assert(m.meth == "meth")
+    m.meth2("meth")
   }
 
   "Mock object method" should "Player1" in {
@@ -31,6 +35,8 @@ class ScalaTestMock extends FlatSpec with MockFactory {
 }
 case class Player(id: Int, nickname: String, country: String){
   def meth() = "qaz"
+  def meth2(s: =>String): Unit = s
+  def meth2(s1: String, s2: String) = s"${s1}${s2}"
 }
 trait PlayerBase{
   def id
