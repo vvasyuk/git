@@ -1,11 +1,11 @@
 package com.tryout.spark
 
 import com.tryout.spark.SparkTest.{dummyJob3Alt, getSession}
-import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.{Row, SparkSession}
 import org.scalatest._
 import resource.managed
 
-class SparkTestTest extends FlatSpec with BeforeAndAfterEach {
+class SparkTestTest extends FlatSpec with BeforeAndAfterEach with Matchers {
   implicit var sparkSession: SparkSession = _
 
   override def beforeEach(): Unit = {
@@ -27,6 +27,15 @@ class SparkTestTest extends FlatSpec with BeforeAndAfterEach {
 //    val m = mock[PlayerTrait]
 //    (m.methodA _).expects() returning ("meth")
     managed(getSession).acquireAndGet(spark => dummyJob3Alt(files))
+  }
+
+  "A df comparison test" should "should be ok" in {
+    val spark = getSession
+    import spark.implicits._
+    val df = Seq((1, "bat"), (2, "mouse"), (3, "horse")).toDF("number", "word").collect()
+    val correct = List( Row(1,"bat"),Row(2,"mouse"),Row(3,"horse"))
+
+    df shouldBe(correct)
   }
 
 }

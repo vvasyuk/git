@@ -18,6 +18,7 @@ postsIdBody.filter('body contains "Italiano").count
 postsDf.filter(('postTypeId === 1) and ('acceptedAnswerId isNull))
 postsDf.filter('postTypeId === 1).limit(10)
 postsDf.filter(col("col1").like("ERROR") && 'col2 === 2).limit(10)
+df.filter(col("a").isin("1", "2"))
 
 SORTING
 df.orderBy(desc("col1"))
@@ -25,6 +26,7 @@ df.orderBy(desc("col1"))
 ADDING AND RENAMING COLUMNS
 firstTenQs.withColumnRenamed("ownerUserId", "owner")
 postsDf.filter('postTypeId === 1).withColumn("ratio", 'viewCount / 'score).where('ratio < 35).show()
+df.withColumn("aa", substring(col(a), 1, 8))
 
 USING BUILT-IN SCALAR AND AGGREGATE FUNCTIONS
 import org.apache.spark.sql.functions._
@@ -108,5 +110,11 @@ val result = df.withColumn("new_col", uDF(dummyList)(df("id"),df("str1"),df("str
     
 # filter
     .filter(col("col1") === ("pattern"))
+    
+# compare
+    extends Matchers
+    val nums = df.select("a", "b").collect
+    val correctNums = List ( Row("1", "2"), Row("1", "2"))
+    nums shouldBe(correctNums)
     
     
