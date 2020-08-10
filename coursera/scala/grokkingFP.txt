@@ -9,34 +9,356 @@
     #referential transparency
     you could substitute the function call, f(20), with its result, 19, without changing the program’s behavior
     
-    #ShoppingCart
-    ################################################################
-    # object ShoppingCartDiscounts {                               #
-    #     def getDiscountPercentage(items: List[String]): Int = {  #
-    #         if (items.contains("Book")) {                        #
-    #             5                                                #
-    #         } else {                                             #
-    #             0                                                #
-    #         }                                                    #
-    #     }                                                        #
-    # }                                                            #
-    ################################################################
+    # ShoppingCart
+    +--------------------------------------------------------------+
+    | object ShoppingCartDiscounts {                               |
+    |     def getDiscountPercentage(items: List[String]): Int = {  |
+    |         if (items.contains(Book)) {                        |
+    |             5                                                |
+    |         } else {                                             |
+    |             0                                                |
+    |         }                                                    |
+    |     }                                                        |
+    | }                                                            |
+    +--------------------------------------------------------------+
 
 ####################
 # immutable values
 ####################
     -fight mutability by working with copies
     -pure function can mutate internal state
-    #replan
-    #######################################################################################
-    # def replan(plan: List[String], newCity: String,beforeCity: String): List[String] = {#
-    #      val beforeCityIndex = plan.indexOf(beforeCity)                                 #
-    #      val citiesBefore = plan.slice(0, beforeCityIndex)                              #
-    #      val citiesAfter = plan.slice(beforeCityIndex, plan.size)                       #
-    #      citiesBefore.appended(newCity).appendedAll(citiesAfter)                        #
-    #  }                                                                                  #
-    #######################################################################################
+    # replan
+    +-------------------------------------------------------------------------------------+
+    | def replan(plan: List[String], newCity: String,beforeCity: String): List[String] = {|
+    |      val beforeCityIndex = plan.indexOf(beforeCity)                                 |
+    |      val citiesBefore = plan.slice(0, beforeCityIndex)                              |
+    |      val citiesAfter = plan.slice(beforeCityIndex, plan.size)                       |
+    |      citiesBefore.appended(newCity).appendedAll(citiesAfter)                        |
+    |  }                                                                                  |
+    +-------------------------------------------------------------------------------------+
 
 ####################
 # functions as values
 ####################
+    # rankedWords -  rank the words by the number of letters different than a
+    +----------------------------------------------------------------------------------+
+    | def rankedWords(wordScore: String => Int, words: List[String]): List[String] = { |
+    |     words.sortBy(wordScore).reverse                                              |
+    | }                                                                                |
+    | def score(word: String): Int = word.replaceAll(a, ).length                   |
+    | rankedWords(score, words)                                                        |
+    | List(haskell, rust, scala, java, ada)                                  |
+    +----------------------------------------------------------------------------------+
+
+    # additionaly if contains c - gets 5 points bonus
+    +----------------------------------------------+
+    | def scoreWithBonus(word: String): Int = {    |
+    |     val base = score(word)                   |    // problem is that it uses score inside so it does more than one thing
+    |     if (word.contains(c)) base + 5 else base |
+    | }                                            |
+    | rankedWords(scoreWithBonus, words);          |
+    | List(scala, haskell, rust, java, ada)        |
+    +----------------------------------------------+
+
+    - passing functions inline
+    +-----------------------------------------------+
+    | def score(word: String): Int =                |
+    |     word.replaceAll(a, ).length           |
+    | def bonus(word: String): Int =                |
+    |     if (word.contains(c)) 5 else 0          |
+    | rankedWords(w => score(w) + bonus(w), words); |
+    | List(scala, haskell, rust, java, ada)         |
+    +-----------------------------------------------+
+
+    ----------
+    - map
+    ----------
+    List[A].map(f: A => B): List[B]
+    # wordScores using map
+    +------------------------------------------------------------------------------+    +--------------------------------------+
+    | def wordScores(wordScore: String => Int, words: List[String]): List[Int] = { |    |     def penalty(word: String): Int = |
+    |     words.map(wordScore)                                                     |    |         if (word.contains(s)) 7      |
+    | }                                                                            |    |     else 0                           |
+    | wordScores(w => score(w) + bonus(w) - penalty(w), words)                     |    +--------------------------------------+
+    +------------------------------------------------------------------------------+    
+
+    ----------
+    - filter
+    ----------
+    +---------------------------------------------------------------------------------------+
+    | def highScoringWords(wordScore: String => Int, words: List[String]): List[String] = { |   // returning only elements that satisfied this condition
+    |     words.filter(word => wordScore(word) > 1)                                         |   // how do we parametrize 1 ?
+    | }                                                                                     |
+    +---------------------------------------------------------------------------------------+
+
+    ----------
+    - return functions
+    ----------
+    +----------------------------------------------------------------------------------------------+
+    | def highScoringWords(wordScore: String => Int, words: List[String]): Int => List[String] = { |
+    |     higherThan => words.filter(word => wordScore(word) > higherThan)                         |
+    | }                                                                                            |
+    +----------------------------------------------------------------------------------------------+
+    - using return function
+    +--------------------------------------------------------------------------------------------------------------------+
+    | val wordsWithScoreHigherThan: Int => List[String] = highScoringWords(w => score(w) + bonus(w) - penalty(w), words) |
+    | wordsWithScoreHigherThan(1)                                                                                        |
+    |   List(java)                                                                                                       |
+    | wordsWithScoreHigherThan(0)                                                                                        |
+    |   List(ada, scala, java                                                                                            |
+    +--------------------------------------------------------------------------------------------------------------------+
+
+    ----------
+    - return functions from returned functions
+    ----------
+
+    we can replace def 3 param function
+        +------------------------------------------------------------------------------------------------+
+        | highScoringWords(wordScore: String => Int, words: List[String], higherThan: Int): List[String] |
+        +------------------------------------------------------------------------------------------------+
+    with 2 param function that returns 1 param function
+        +------------------------------------------------------------------------------------------+
+        | def highScoringWords(wordScore: String => Int words: List[String]): Int => List[String]  |
+        +------------------------------------------------------------------------------------------+    
+    then
+    we can replace 2 param function
+        +------------------------------------------------------------------------------------------+
+        | def highScoringWords(wordScore: String => Int words: List[String]): Int => List[String]  |
+        +------------------------------------------------------------------------------------------+    
+    with 1 param function
+        +-----------------------------------------------------------------------------------------+
+        | def highScoringWords(wordScore: String => Int): Int => List[String] => List[String] = { | // reutns a function which takes Int and returns a function which takes List[String] and returns List[String]
+        |     higherThan => words => words.filter(word => wordScore(word) > higherThan)           |
+        | }                                                                                       |
+        +-----------------------------------------------------------------------------------------+
+    usage:
+        +-----------------------------------------------------------------------------------------------------------------------------+
+        | val wordsWithScoreHigherThan: Int => List[String] => List[String] = highScoringWords(w => score(w) + bonus(w) - penalty(w)) |
+        | wordsWithScoreHigherThan(1)(words)                                                                                          |
+        |   List(java)                                                                                                                |
+        | wordsWithScoreHigherThan(0)(words2)                                                                                         |
+        |   List(football, f1, hockey, basketball)                                                                                    |
+        | wordsWithScoreHigherThan(5)(words2)                                                                                         |
+        |   List(football, hockey)                                                                                                    |
+        +-----------------------------------------------------------------------------------------------------------------------------+
+
+    ----------
+    - Currying
+    ----------
+    Transforming multiple-parameter functions into a series of 1-parameter functions returned from each other is called currying.
+    +----------------------------+
+    | def f(a: A, b: B, c: C): D |
+    | def f(a: A): B => C => D   |
+    | def f(a: A)(b: B)(c: C): D |
+    +----------------------------+
+
+    ----------
+    - foldLeft
+    ----------
+    List[A].foldLeft(z: B)(f: (B, A) => B): B
+    foldLeft accumulates a value by going through all elements of the list and calling the provided function
+    +-----------------------------------------------------------------+
+    | words.foldLeft(0)((total, word) => total + wordScore(word))     |
+    +-----------------------------------------------------------------+
+
+--------------------
+| sequential programs
+--------------------
+
+    +---------------------------------------------------------------+
+    | case class Book(title: String, authors: List[String])         |
+    |                                                               |
+    | val books = List(                                             |
+    |     Book(FP in Scala, List(Chiusano, Bjarnason)),       |
+    |     Book(The Hobbit, List(Tolkien)),                      |
+    |     Book(Java 8 in Action, List(Urma, Fusco, Mycroft) |
+    | )                                                             |
+    +---------------------------------------------------------------+
+
+    - how many have word Scala
+        +-----------------------------------------------------------------------------+
+        | books.map(book => book.title).filter(title => title.contains(⌠Scala÷)).size |
+        +-----------------------------------------------------------------------------+
+
+    # book adaptations
+        1. for each book take author
+        2. for each author run bookAdaptations returning movies
+        3. for each movie construct a recommendation feed string
+        +-------------------------------------------------------+
+        | case class Book(title: String, authors: List[String]) |
+        | case class Movie(title: String)                       |
+        |                                                       |
+        | val books = List(                                     |
+        |     Book(FP in Scala, List(Chiusano, Bjarnason)),     |
+        |     Book(The Hobbit, List(Tolkien)))                  |
+        |                                                       |
+        | def bookAdaptations(author: String): List[Movie] =    |
+        |     if (author == Tolkien)                            |
+        |         List(Movie(An Unexpected Journey),            |
+        |             Movie(The Desolation of Smaug))           |
+        | else List.empty                                       |
+        +-------------------------------------------------------+
+
+        +---------
+        | foldLeft
+        +---------
+            flatMap not only can change the type of the list (e.g. from Book to String), but also can change the size of the resulting list, which isn’t possible with map
+        1. for each book take author
+            +----------------------------------------------------+
+            | books.map(book => book.authors)                    |
+            |     List(List(Chiusano, Bjarnason), List(Tolkien)) |  // need to fix
+            +----------------------------------------------------+
+            - flatten goes through the list of lists and takes all elements from the first list, then second, and so on...
+
+            +----------------------------------------------------+
+            | books.map(book => book.authors).flatten            |  // fix
+            |     List(List(Chiusano, Bjarnason), List(Tolkien)) |
+            +----------------------------------------------------+
+            or
+            +----------------------------------------------------+
+            | books.flatMap(book => book.authors)                |
+            |     List(List(Chiusano, Bjarnason), List(Tolkien)) |
+            +----------------------------------------------------+
+
+        2. for each author run bookAdaptations returning movies
+            +---------------------------------------------+
+            | books.flatMap(book => book.authors)         |
+            | .flatMap(author => bookAdaptations(author)) |
+            |                                             |
+            | List(Movie(An Unexpected Journey),          |
+            |      Movie(The Desolation of Smaug))        |
+            +---------------------------------------------+
+
+    - List signatures:
+        +----------------------------------------------+
+        | def map(f: A => B): List[B]                  |
+        | def flatten: List[B] // A needs to be a List |
+        | def flatMap(f: A => List[B]): List[B]        |
+        +----------------------------------------------+
+
+    +---------
+    | Chained flatMaps & maps
+    +---------
+        3. for each movie construct a recommendation feed string
+        - use nested flatMap
+        - flatMap always returns a List
+        - we wouldn’t be able to transform chained maps into nested maps, because we don’t have the guarantee that it returns a List, no matter what function we pass.
+        +------------------------------------------------+
+        | books.flatMap(book => {                        |
+        |     book.authors.flatMap(author => {           |
+        |         bookAdaptations(author).map(movie => { |
+        |             // access to book, author, movie   |
+        |         }                                      |
+        |     }                                          |
+        | }                                              |
+        +------------------------------------------------+
+
+    +---------
+    | for comprehension
+    +---------
+        - or each element x in xs and for each element y in ys, call the function doSomething(x, y)
+            +-------------------------------------------------+
+            | for {                                           |
+            |     x <- xs                                     |
+            |     y <- ys                                     |
+            | } yield doSomething(x, y)                       |
+            | transormed into                                 |
+            | xs.flatMap(x => ys.map(y => doSomething(x, y))) |
+            +-------------------------------------------------+
+
+        - full solution
+            +-------------------------------------------------+
+            | for {                                           |
+            |     book <- books                               |
+            |     author <- book.authors                      |
+            |     movie <- bookAdaptations(author)            |
+            | } yield sYou may like ${movie.title},  +        |
+            | sbecause you liked $authors ${book.title}       |
+            |     -> List(You may like An Unexpected Journey, |
+            |     because you liked Tolkiens The Hobbit,      |
+            |     You may like The Desolation of Smaug,       |
+            |     because you liked Tolkiens The Hobbit))     |
+            +-------------------------------------------------+
+
+        - for gurad expressions
+            +-------------------------------------------+
+            | for {                                     |
+            |     r <- radiuses                         |
+            |     point <- points if isInside(point, r) |
+            | } yield s$point is within a radius of $r  |
+            +-------------------------------------------+
+
+    +---------
+    | Comparing map, foldLeft and flatMap
+    +---------
+        +-------------------------------------------+
+        | List[A].map(f: A => B): List[B]           |   // applies function passed as f to each element of the original list, producing a new list with modified elements        
+        | List[A].foldLeft(z: B)(f: (B, A) => B): B |   // accumulates a value of type B by applying the function passed as f to each element of the original list (A) and current accumulator value (B).
+        | List[A].flatMap(f: A => List[B]): List[B] |   // applies the function passed as f to each element of the original list—producing n lists which are joined in the same order as the elements they originated from.
+        +-------------------------------------------+
+
+--------------------
+| error handling
+--------------------
+    Pure functions should not throw exceptions
+    - If any step returns None, the whole for comprehension will be None
+    +----------------------------------------------------+  +----------------------------------------------------+  +---------------------------------------------------------------+
+    | def parseShow(rawShow: String): Option[TvShow] = { |  | def extractName(rawShow: String): Option[String]   |  | def extractYearStart(rawShow: String): Option[Int] = {        |
+    |     for {                                          |  | def extractYearStart(rawShow: String): Option[Int] |  |     val bracketOpen = rawShow.indexOf(()                    |
+    |         name <- extractName(rawShow)               |  | def extractYearEnd(rawShow: String): Option[Int]   |  |     val dash = rawShow.indexOf(-)                             |
+    |         yearStart <- extractYearStart(rawShow)     |  +----------------------------------------------------+  |     if (bracketOpen != -1 && dash > bracketOpen + 1)          |
+    |         yearEnd <- extractYearEnd(rawShow)         |                                                          |         Some(rawShow.substring(bracketOpen + 1, dash))        |
+    |     }                                              |  Each functions need to return an Option                 |     else None                                                 |
+    |     yield TvShow(name, yearStart, yearEnd)         |                                                          | }                                                             |
+    | }                                                  |                                                          | extractYearStart(rawShow).orElse(extractSingleYear(rawShow))  |
+    +----------------------------------------------------+                                                          +---------------------------------------------------------------+
+                                                                
+    +---------
+    | Either
+    +---------    
+
+    +----------------------------------------------------+  +-----------------------------------------------------------------------------------+
+    | def f(rawShow: String): Either[String, String] = { |  | def parseShow(rawShow: String): Either[String, TvShow] = {                        |
+    |     val bracket = rawShow.indexOf( ( )             |  |     for {                                                                         |
+    |     if (bracketOpen > 0) {                         |  |         name <- extractName(rawShow)                                              |
+    |         Right(rawShow.substring(0, bracket).trim)) |  |         yearStart <- extractYearStart(rawShow).orElse(extractSingleYear(rawShow)) |
+    |     else {                                         |  |         yearEnd <- extractYearEnd(rawShow).orElse(extractSingleYear(rawShow))     |
+    |         Left(s  Cant extract name from $rawShow )  |  |     }                                                                             |
+    |     }                                              |  |     yield TvShow(name, yearStart, yearEnd)                                        |
+    | }                                                  |  | }                                                                                 |
+    +----------------------------------------------------+  +-----------------------------------------------------------------------------------+
+
+
+    - working with Options                   working with Either
+    val year: Option[Int] = Some(996)
+    val noYear: Option[Int] = None
+    +----------------------------------+    +---------------------------------------------+
+    | year.map(_ * 2))                 |    | year.map(_ * 2)                             |
+    |     Some(1992)                   |    |     Right(1992)                             |
+    | noYear.map(_ * 2)                |    | noYear.map(_ * 2)                           |
+    |     None                         |    |     Left( no year )                         |
+    | Some(year).flatten               |    | Right(year).flatten                         |
+    |     Some(996)                    |    |     Right(996)                              |
+    | Some(noYear).flatten             |    | Right(noYear).flatten                       |
+    |     None                         |    |     Left( no year )                         |
+    | year.flatMap(y => Some(y * 2))   |    | year.flatMap(y => Right(y * 2))             |
+    |     Some(1992)                   |    |     Right(1992)                             |
+    | noYear.flatMap(y => Some(y * 2)) |    | noYear.flatMap(y => Right(y * 2))           |
+    |     None                         |    |     Left( no year )                         |
+    | year.flatMap(y => None)          |    | year.flatMap(y => Left( can t progress ))   |
+    |     None                         |    |     Left( can t progress )                  |
+    | noYear.flatMap(y => None)        |    | noYear.flatMap(y => Left( can t progress )) |
+    |     None                         |    |     Left( no year )                         |
+    | year.orElse(Some(2020))          |    | year.orElse(Right(2020))                    |
+    |     Some(996)                    |    |     Right(996)                              |
+    | noYear.orElse(Some(2020))        |    | noYear.orElse(Right(2020))                  |
+    |     Some(2020)                   |    |     Right(2020)                             |
+    | year.orElse(None)                |    | year.orElse(Left( cant recover ))           |
+    |     Some(996)                    |    |     Right(996)                              |
+    | noYear.orElse(None)              |    | noYear.orElse(Left( can t recover ))        |
+    |     None                         |    |     Left( can t recover )                   |
+    | year.toRight(no year given)      |    | year.toOption                               |
+    |     Right(996)                   |    |     Some(996)                               |
+    | noYear.toRight(no year given)    |    | noYear.toOption                             |
+    |     Left(no year given)          |    |     None                                    |
+    +----------------------------------+    +---------------------------------------------+
