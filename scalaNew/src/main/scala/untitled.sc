@@ -1,4 +1,7 @@
-def addOne(num: Int) = {
-  def ++ = (x:Int) => x + 1
-  ++(num)
+val a = "123"
+val b = "123"
+
+if (a!=b){
+  println("equal")
 }
+

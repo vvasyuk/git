@@ -21,7 +21,23 @@ object xmlTest {
         <month>March</month>
         <test>Test</test>
       </year>
+      <one cnt2="3">
+        <two cnt2="3">
+          <three cnt2="3">3</three>
+        </two>
+      </one>
     </calendar>
+
+    // find text by path
+    val three = xml \ "one" \ "two" \ "three"
+    println(three.text)
+    println("##############################")
+
+    // check if path exists
+    val pathExists = xml \ "aaa" \ "aaa" \ "aaa"
+    println(pathExists.text)
+    if (pathExists.text=="") println("path dpes not exist")
+    println("##############################")
 
 
     // find elements - one level search and not deep inside our XML
