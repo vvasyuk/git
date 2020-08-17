@@ -12,6 +12,7 @@ postsDf.select(Symbol("id"), Symbol("body"))
 postsDf.select('id, 'body)
 postsDf.select($"id", $"body")
 postsIdBody.drop("body")
+df.select(length('col1))
 
 FILTERING DATA
 postsIdBody.filter('body contains "Italiano").count
