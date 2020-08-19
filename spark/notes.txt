@@ -28,6 +28,7 @@ ADDING AND RENAMING COLUMNS
 firstTenQs.withColumnRenamed("ownerUserId", "owner")
 postsDf.filter('postTypeId === 1).withColumn("ratio", 'viewCount / 'score).where('ratio < 35).show()
 df.withColumn("aa", substring(col(a), 1, 8))
+df.withColumn("aa", when(col(a)==="",0).otherwise(1))
 
 USING BUILT-IN SCALAR AND AGGREGATE FUNCTIONS
 import org.apache.spark.sql.functions._
