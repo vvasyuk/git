@@ -1,0 +1,121 @@
+
+
+When creating views, there is no MapReduce job triggered at all since this is only a metadata change. However, a proper MapReduce job will be triggered when querying the view.
+
+###############
+# SELECT
+###############
+    SELECT DISTINCT name FROM employee LIMIT 2
+
+    WITH t1 AS (
+    SELECT * FROM employee
+    WHERE sex_age.sex = 'Male')
+    SELECT name, sex_age.sex AS sex FROM t1;
+    
+    SELECT name, sex_age.sex AS sex
+    FROM
+    (
+      SELECT * FROM employee
+      WHERE sex_age.sex = 'Male'
+    ) t1;
+
+    --Nested SELECT using CTE can be implemented as follows:
+        WHERE a.name IN
+        (SELECT name FROM employee
+        WHERE sex_age.sex = 'Male'
+        );
+
+    --The IN and NOT IN statement supports only one column
+
+    --INNER JOIN statement
+        Hive only supports equal JOIN instead of unequal JOIN, because unequal JOIN is difficult to be converted to MapReduce jobs.
+        The INNER JOIN in Hive uses JOIN keywords, which return rows meeting the JOIN conditions from both left and right tables. The INNER JOIN keyw
+
+
+    --Self-join is a special JOIN where one table joins itself. When doing such joins, a different alias should be given to distinguish the same table:jdbc:hive2://> SELECT emp.name
+        FROM employee emp
+        JOIN employee emp_b
+        ON emp.name = emp_b.name;
+
+        SELECT emp.name, emph.sin_number
+        FROM employee emp, employee_hr emph
+
+        WHERE emp.name = emph.name;
+
+
+    --Usually, it is suggested for JOIN statements to put the big table right at the end for better performance as well as avoiding Out Of Memory (OOM) exceptions, because the last table in the sequence is streamed through the reducers where the others are buffered in the reducer by default
+
+    --The following examples demonstrate OUTER JOIN:
+        SELECT emp.name, emph.sin_number
+        FROM employee emp
+        LEFT JOIN employee_hr emph ON emp.name = emph.name;
+
+    --JOIN always happens before WHERE. If possible, push conditions such as the JOIN conditions rather than WHERE conditions to filter the result set after JOIN immediately. What's more, JOIN is NOT commutative! It is always left associative no result set of UNION ALL keeps duplicates if any
+
+    --Use UNION on the name column from both tables, including duplications:jdbc:hive2://> SELECT a.name 
+        FROM employee a
+        UNION ALL
+        SELECT b.name 
+        FROM employee_hr b;
+
+###############
+# LOAD DATA LOCAL INPATH
+###############
+    '/home/dayongd/Downloads/employee_hr.txt' 
+    OVERWRITE INTO TABLE employee_hr;
+
+    --LOAD DATA LOCAL INPATH 
+        '/home/dayongd/Downloads/employee.txt'
+        OVERWRITE INTO TABLE employee_partitioned
+        PARTITION (year=2014, month=12);
+
+    --INSERT OVERWRITE statement will replace the data in the target table/partition while INSERT INTO will append data.
+
+    --Hive INSERT to files statement is the opposite operation for LOAD. It extracts the data from SELECT statements to local or HDFS files
+
+    SELECT name FROM employee ORDER BY NAME DESC
+
+    --SORT BY statement does not perform a global sort and only makes sure data is locally sorted in each reducer unless we set mapred.reduce.tasks=1. In this case, it is equal to the result of ORDER BY
+    --FROM_UNIXTIME(UNIX_TIMESTAMP()) statement performs the same function as SYSDATE in Oracle
+        SELECT (UNIX_TIMESTAMP ('2015-01-21 18:00:00') 
+        - UNIX_TIMESTAMP('2015-01-10 11:00:00'))/60/60/24 
+        AS daydiff FROM employee LIMIT 1;
+
+    --TO_DATE statement removes the hours, minutes, and seconds from a date
+        SELECT TO_DATE(FROM_UNIXTIME(UNIX_TIMESTAMP()))
+
+    --CASE
+    SELECT CASE WHEN 1 IS NULL THEN 'TRUE' ELSE 0 END
+
+    reverse(split(reverse('/home/user/employee.txt'),'/')[0])
+
+    --filename
+        AS linux_file_name FROM employee LIMIT 1;
+
+    SELECT sex_age.sex, count(*) AS row_cnt 
+    FROM employee 
+    GROUP BY sex_age.sex;
+
+    SELECT sex_age.sex, count(*) AS row_cnt 
+    FROM employee 
+    GROUP BY sex_age.sex;
+
+    SELECT sum(CASE WHEN sex_age.sex = 'Male' 
+    THEN sex_age.age ELSE 0 END)/
+    count(CASE WHEN sex_age.sex = 'Male' THEN 1 
+    ELSE NULL END) AS male_age_avg FROM employee;
+
+    sum(coalesce(sex_age.age,0)) AS age_sum,
+
+    sum(if(sex_age.sex = 'Female',sex_age.age,0))
+
+    SELECT count(DISTINCT sex_age.sex) AS sex_uni_cnt,
+    count(DISTINCT name) AS name_uni_cnt 
+    FROM employee;
+
+    SELECT sex_age.age FROM employee 
+    GROUP BY sex_age.age HAVING count(*)<=1;
+
+    COUNT(*) OVER (PARTITION BY dept_num) AS row_cnt,
+
+    SUM(salary) OVER(ORDER BY dept_num)
