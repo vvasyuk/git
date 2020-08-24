@@ -70,9 +70,11 @@ When creating views, there is no MapReduce job triggered at all since this is on
         PARTITION (year=2014, month=12);
 
     --INSERT OVERWRITE statement will replace the data in the target table/partition while INSERT INTO will append data.
-
     --Hive INSERT to files statement is the opposite operation for LOAD. It extracts the data from SELECT statements to local or HDFS files
 
+###############
+# Functions
+###############
     SELECT name FROM employee ORDER BY NAME DESC
 
     --SORT BY statement does not perform a global sort and only makes sure data is locally sorted in each reducer unless we set mapred.reduce.tasks=1. In this case, it is equal to the result of ORDER BY
