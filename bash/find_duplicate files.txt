@@ -1,0 +1,10 @@
+--skip first 72 char when comparing
+hdfs dfs ls -R /path/to | grep "^-" | sort -rn | uniq -d 72
+
+--only compare filenames
+hdfs dfs ls -R /path/to | grep "^-" | sort -rn | awk -F "/" '{print $NF}' | uniq -d
+
+grep "^-"                   - take only files
+awk -F "/" '{print $NF}'    - take string after last "/"
+uniq -d                     - leave only duplicates
+
