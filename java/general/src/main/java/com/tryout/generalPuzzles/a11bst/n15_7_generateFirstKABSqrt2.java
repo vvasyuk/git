@@ -7,7 +7,7 @@ import java.util.TreeSet;
 
 // Design an algorithm for efficiently computing the k smallest numbers of the form
 //a + b sqrt(2) for nonnegative integers a and b.
-public class n_15_7_generateFirstKABSqrt2 {
+public class n15_7_generateFirstKABSqrt2 {
     // fact about sqrt(2) is that it is irrational
     // We know the smallest number is 0+ 0 sqrt(2).
     // next smallest number are 1 + 0 sqrt(2) and 0 + 1 sqrt(2)
