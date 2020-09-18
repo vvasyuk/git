@@ -20,6 +20,7 @@ postsDf.filter(('postTypeId === 1) and ('acceptedAnswerId isNull))
 postsDf.filter('postTypeId === 1).limit(10)
 postsDf.filter(col("col1").like("ERROR") && 'col2 === 2).limit(10)
 df.filter(col("a").isin("1", "2"))
+df.filter(df("col1") === "value")
 
 SORTING
 df.orderBy(desc("col1"))
