@@ -1,0 +1,19 @@
+vscode-command-runner
+
+    "command-runner.commands": {
+        //"wrap": "echo '${selectedTextList}'"
+        "wrap": "perl D:\\work\\tryout\\perl\\vsCodeBoxWrap.pl '${selectedTextList}'" 
+    },
+    
+    // with replace "
+    "command-runner.commands": {
+    
+
+        //"wrap": "echo '${selectedTextList}'"
+        //"wrap": "perl D:\\work\\tryout\\perl\\vsCodeBoxWrap.pl '${selectedTextList}'" 
+        //works
+        //"wrap": "$cmdOutput = ('${selectedTextList}' -replace '\"', '\\\"')| Out-String; echo $cmdOutput"
+        "wrap": "$cmdOutput = ('${selectedTextList}\n' -replace '\"', '\\\"')| Out-String; perl D:\\work\\tryout\\perl\\vsCodeBoxWrap.pl $cmdOutput\n"
+        //"wrap": "$cmdOutput = ('${selectedTextList}' -replace '\"', '\\\"')| Out-String; echo $cmdOutput\n"
+        
+    },    

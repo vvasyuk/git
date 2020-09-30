@@ -1,0 +1,1891 @@
++--------------+
+| architecture |
++--------------+
+    When you create SparkContext, each worker starts an executor. This is a separate process (JVM), and it loads your jar, too. The executors connect back to your driver program. Now the driver can send them commands, like flatMap, map and reduceByKey. When the driver quits, the executors shut down.
+
+    A new process is not started for each step. A new process is started on each worker when the SparkContext is constructed.
+
+    The executor deserializes the command (this is possible because it has loaded your jar), and executes it on a partition.
+
+    Shortly speaking, an application in Spark is executed in three steps:
+
+    Create RDD graph, i.e. DAG (directed acyclic graph) of RDDs to represent entire computation.
+
+    Create stage graph, i.e. a DAG of stages that is a logical execution plan based on the RDD graph. Stages are created by breaking the RDD graph at shuffle boundaries.
+
+    Based on the plan, schedule and execute tasks on workers.
+    In the WordCount example, the narrow transformation finishes at per-word count. Therefore, you get two stages:
+
+    file → lines → words → per-word count
+
+    global word count → output
+
+    Once stages are defined, Spark will generate tasks from stages. The first stage will create ShuffleMapTasks with the last stage creating ResultTasks because in the last stage, one action operation is included to produce results.
+    Therefore, you should not map your steps to tasks directly. A task belongs to a stage, and is related to a partition.
+
+    The number of tasks being generated in each stage will be equal to the number of partitions.
+    When a Spark application starts (using spark-submit script or as a standalone application), it connects to Spark master as described by master URL. 
+
+    The Spark class is the driver hence all the code you see is executed on driver, hence all object instantiation happens on driver. The serialized objects are sent to Executors to work as Task.
+    All Lambda/Anonymous/Static class used with the transformation are instantiated on Driver , serialized and sent to the driver.
+    Any anonymous class defined inside a outer class has reference to the outer class.
+
+    If the anonymous class needs to be serialized it will compel you to make the outer class serialized.
+
+    Inside the lambda function if one uses a method of the enclosing class , the class needs to be serialized , if the lambda function is being serialized.
+    Any lambda, Anonymous Class used with the spark Transformation function (map, mapPartitions, keyBy , redudeByKey …) will be instantiated on driver, serialized and sent to the executor.
+    Avoid using anonymous class , instead use static classes as anonymous class will force you to have the outer class serialized.
+
+Spark_in_Action_Second_Edition
+
+The four steps of a typical Spark (big data) scenario performed by data engineering are as follows:
+    1 Ingestion 2 Improvement of data quality (DQ) 3 Transformation 4 Publication
+
+    SparkSession spark = SparkSession.builder().appName("CSV to Dataset").master("local").getOrCreate()
+    Dataset<Row> df = spark.read().format("csv").option("header", "true").load("data/books.csv");
+    df = df.withColumn("name",concat(df.col("lname"), lit(", "), df.col("fname")));
+    df.write().mode(SaveMode.Overwrite).jdbc(dbConnectionUrl, "ch02", prop);
+
+any worker could be on the same physical node as the master. Each worker has memory (of course!), which it will use via partitions.
+Spark will ingest the CSV file in a distrib-uted way. The file must be on a shared drive, distributed filesystem
+workers will create tasks to read the file
+Each worker has access to the node’s memory and will assign a memory partition to the task
+each task will continue by reading a part of the CSV file
+As the task is ingesting its rows, it stores them in a dedicated partition.
+tasks are being created based on available resources. The worker may create several tasks and will assign a memory partition to each task
+As the ingestion is taking place, each task loads records into its own memory partition
+Spark adds the transformation step to your flow. Each task will continue to perform its work, getting all first and last names from the memory partition to create the new name
+Adding the save operation to your workflow, as you copy the data in the partition (P) to the database (D) at t6, as indicated by the P > D boxes. Each task will open a connection to the database.
+The whole dataset never hits our application (driver). The dataset is split between the partitions on the workers, not on the driver.
+The entire processing takes place in the workers.
+The workers save the data in their partition to the database
+application is the driver
+driver connects to a master and gets a session. Data will be attached to this session; the session defines the life cycle of the data on the worker’s nodes.
+Data is partitioned and processed within the partition. Partitions are in memory.
+The majestic  role of the dataframe
+dataframe is both a data structure and an API
+
+
+
+dataframe is a set of records organized into named columns.
+
+
+
+equivalent to a table
+
+
+
+dataframe is implemented as a dataset of rows (Dataset<Row>)
+
+
+
+data itself is in partitions.
+
+
+
+Spark stores the initial state of the data, in an immutable way, and then keeps the recipe (a list of the transformations).
+
+
+
+withColumn() method—Creates a new column from an expression or a column.
+- withColumnRenamed() method—Renames a column.
+- col() method—Gets a column from its name. Some methods will take the col-umn name as an argument, and some require a Column object.
+- drop() method—Drops a column from the dataframe. This method accepts an instance of a Column object or a column name.
+- lit() functions—Creates a column with a value; literally, a literal value.
+- concat() function—Concatenates the values in a set of columns.
+
+
+
+df = df.withColumn("county", lit("Wake")).withColumnRenamed("HSISID", "datasetId").withColumnRenamed("NAME", "name").withColumnRenamed("ADDRESS1", "address1").withColumnRenamed("ADDRESS2", "address2").withColumnRenamed("CITY", "city").withColumnRenamed("STATE", "state").withColumnRenamed("POSTALCODE", "zip").withColumnRenamed("PHONENUMBER", "tel").withColumnRenamed("RESTAURANTOPENDATE", "dateStart").withColumnRenamed("FACILITYTYPE", "type").withColumnRenamed("X", "geoX").withColumnRenamed("Y", "geoY").drop("OBJECTID").drop("PERMITID").drop("GEOCODESTATUS");
+
+
+
+Data is not stored physically in the dataframe, but in partitions,
+
+
+
+Partitions are created, and data is assigned to each partition automatically based on your infrastructure (number of nodes and size of the dataset)
+
+
+
+Partition[] partitions = df.rdd().partitions();
+ int partitionCount = partitions.length;
+
+
+
+repartition the dataframe to use four partitions by using the repartition()
+
+
+
+df = df.repartition(4);
+ System.out.println("Partition count after repartition: " +  df.rdd().partitions().length);
+
+
+
+Extracts the schema
+
+
+
+StructType schema = df.schema();
+
+
+
+String schemaAsString = schema.mkString();
+
+
+
+Dataset<Row> df = spark.read().format("json").load("data/Restaurants_in_Durham_County_NC.json");
+
+
+
+Nested fields can be accessed via the dot (.) symbol.
+
+
+
+Combining two dataframes
+
+
+
+There are two ways of combin-ing two dataframes in a SQL-like union: you can use the union() or unionByName()
+
+
+
+union() method does not care about the names of the columns
+
+
+
+unionByName() matches columns by names, which is safer.
+
+
+
+Dataset<Row> df = df1.unionByName(df2);
+
+
+
+Two datasets in two distinct dataframes result in at least two partitions (at least one for each dataset). Joining them will create a unique dataframe, but it will rely on the two original partitions (or more).
+
+
+
+You can have datasets of almost any Plain Old Java Object (POJO), but only the dataset of rows (Dataset<Row>) is called a dataframe.
+
+
+
+How-ever, beware that some operations will lose the strong typing of your POJO and will return a Row: an example of that is joining two datasets or performing aggregation on a dataset.
+
+
+
+Dataset<T>
+
+
+
+four-character string, such as Java in Java (8 and below) will take 48 bytes
+
+
+
+this string should take only 4 bytes when using UTF-8/ASCII
+
+
+
+JVM) native String implementation stores this differently by encoding each character using 2 bytes with UTF-16 encoding, and each String object also contains a 12-byte header and 8-byte hash code.
+
+
+
+Tungsten directly manages blocks of memory, com-presses data, and has new data containers that use low-level interaction with the operating system and offer performance enhancements from 16 times to 100 times
+
+
+
+Creating a dataset of strings
+
+
+
+String[] stringList =  new String[] { "Jean", "Liz", "Pierre", "Lauric" };
+
+
+
+List<String> data = Arrays.asList(stringList);  Dataset<String> ds = spark.createDataset(data, Encoders.STRING());
+
+
+
+Dataset<Row> df = ds.toDF();
+
+
+
+now you have a dataframe!
+
+
+
+Converting back and forth
+
+
+
+You have an existing bookProcessor()
+
+
+
+takes a Book POJO and publishes it
+
+
+
+do not want to rewrite this method
+
+
+
+You can load thousands of books, store them in a dataset of books,
+
+
+
+you can use distributed processing to call your existing bookProcessor() method without modification.
+
+
+
+CREATE THE DATASET
+
+
+
+String filename = "data/books.csv";  Dataset<Row> df = spark.read().format("csv").option("inferSchema", "true").option("header", "true").load(filename);
+
+
+
+Dataset<Book> bookDs = df.map(  new BookMapper(),Encoders.bean(Book.class));
+
+
+
+Converts the dataframe into a dataset by using a map() function
+
+
+
+map() method will
+
+
+
+Go through every record of the dataframe.
+
+
+
+Call an instance of a class implementing MapFunction<Row, Book>; in your case, BookMapper. Note that it is instantiated only once, whatever the number of records you have to process.
+ Return a Dataset<Book> (your goal).
+
+
+
+class BookMapper implements MapFunction<Row, Book> {  private static final long serialVersionUID = -2L;
+ @Override  public Book call(Row value) throws Exception {  Book b = new Book();  b.setId(value.getAs("id"));  b.setAuthorId(value.getAs("authorId"));  b.setLink(value.getAs("link"));  b.setTitle(value.getAs("title"));   String dateAsString = value.getAs("releaseDate");
+ if (dateAsStr
+ing != null) { Listing 3.3 BookMapper Make sure your method signature is right.
+As previously stated, you are building a new book instance for every record; 
+these objects will not benefit from Tungsten’s optimization.
+Simple extraction from the row object to the POJO, similar to manipulating a JDBC ResultSet As always, dates are a little trickier; you will have to convert the string to a date.
+
+
+
+SimpleDateFormat parser = new SimpleDateFormat("M/d/yy"); 
+ b.setReleaseDate(parser.parse(dateAsString));
+ }  return b;
+
+
+
+public class Book {  int id;
+ int authorId;
+ String title;
+ Date releaseDate;
+ String link;
+…  public String getTitle() {  return title;
+ }  public void setTitle(String title) {  this.title = title;
+
+
+
+CREATE THE DATAFRAME
+
+
+
+Dataset<Row> df2 = bookDs.toDF();
+
+
+
+However, you still have this strange date format, so let’s correct that.
+
+
+
+transform
+
+
+
+transform
+
+
+
+df2 = df2.withColumn(  "releaseDateAsString",concat(  expr("releaseDate.year + 1900"), lit("-"),expr("releaseDate.month + 1"), lit("-"),df2.col("releaseDate.date")));
+
+
+
+expr() static function will compute an SQL-like expression and return a column.
+
+
+
+df2 = df2.withColumn(  "releaseDateAsDate",to_date(df2.col("releaseDateAsString"), "yyyy-MM-dd")).drop("releaseDateAsString");
+
+
+
+You should consider RDDs when
+
+
+
+You do not need a schema.
+
+
+
+You are developing lower-level transformation and actions.
+ You have legacy code.
+
+
+
+A dataframe is an immutable distributed collection of data, organized into named columns. Basically, a dataframe is an RDD with a schema.
+ A dataframe is implemented as a dataset of rows—or in code: Dataset<Row>.
+ A dataset is implemented as a dataset of anything except rows—or in code:
+Dataset<String>, Dataset<Book>, or Dataset<SomePojo>.
+ Dataframes can store columnar information, like a CSV file, and nested fields and arrays, like a JSON file. Whether you are working with CSV files, JSON files, or other formats, the dataframe API remains the same.
+ In a JSON document, you can access nested fields by using a dot (.).
+
+
+
+If you do not care about column names when you union two dataframes, use union().
+ If you care about column names when you union two dataframes, use unionBy-Name().
+
+
+
+You can reuse your POJOs directly in a dataset in Spark.
+
+
+
+An object must be serializable if you want to have it as part of a dataset.
+
+
+
+Tungsten storage relies on dataframes.
+
+
+
+Fundamentally lazy
+
+
+
+Spark is efficiently lazy: it will build the list of transformations as a directed acyclic graph (DAG), which it will optimize using Catalyst, Spark’s built-in optimizer.
+
+
+
+When you apply a transformation on a dataframe, the data is not modified.
+
+
+
+When you apply an action on a dataframe, all the transformations are executed, and, if it needs to be, the data will be modified.
+
+
+
+Building a simple  app for deployment
+
+
+
+Uses all the possible threads on this system
+
+
+
+master("local[*]")
+
+
+
+Dataset<Row> incrementalDf = spark.createDataset(l, Encoders.INT()).toDF();
+
+
+
+Dataset<Integer> dartsDs = incrementalDf.map(new DartMapper(), Encoders.INT());
+
+
+
+int dartsInCircle = dartsDs.reduce(new DartReducer());
+
+
+
+private final class DartMapper  implements MapFunction<Row, Integer> {  private static final long serialVersionUID = 38446L;
+ @Override  public Integer call(Row r) throws Exception {  double x = Math.random() * 2 - 1;  double y = Math.random() * 2 - 1;  counter++; #C  if (counter % 100000 == 0) {  System.out.println("" + counter + " darts thrown so far");  } #C  return (x * x + y * y <= 1) ? 1 : 0;
+
+
+
+private final class DartReducer implements ReduceFunction<Integer> {  private static final long serialVersionUID = 12859L;
+ @Override  public Integer call(Integer x, Integer y) throws Exception {  return x + y;
+
+
+
+To be used, the mapper needs to implement a MapFunction<Row, Integer>, which means that the mapping function, call(), will get a Row and return an Integer.
+
+
+Dataset<Integer> dartsDs = incrementalDf.map(new DartMapper(), Encoders.INT());
+
+
+
+private final class DartMapper  implements MapFunction<Row, Integer> { …  public Integer call(Row r) throws Exception {…}
+
+
+
+When you call the reducer, in listing 5.2, you use the following:
+ int dartsInCircle = dartsDs.reduce(new DartReducer());
+
+
+
+private final class DartReducer implements ReduceFunction<Integer> { …  public Integer call(Integer x, Integer y) throws Exception {…}
+
+
+
+Approximating π by using lambda functions
+
+
+
+Dataset<Integer> dotsDs = incrementalDf.map((MapFunction<Row, Integer>) status -> {  double x = Math.random() * 2 - 1;
+
+
+
+double y = Math.random() * 2 - 1;
+ counter++;
+ if (counter % 100000 == 0) {  System.out.println("" + counter + " darts thrown so far");
+ }  return (x * x + y * y <= 1) ? 1 : 0;
+ }, Encoders.INT());
+
+
+
+int dartsInCircle =  dotsDs.reduce((ReduceFunction<Integer>) (x, y) -> x + y);
+
+
+
+Interacting with Spark
+
+
+
+Local mode, which is certainly the developers’ preferred way, as everything runs on the same computer and does not need any configuration  Cluster mode, through a resource manager, which deploys your applications in a cluster  Interactive mode, either directly or via a computer-based notebook, which is prob-ably the preferred way for data scientists and data experimenters Beginning of the lambda function in a block Reduce as a lambda function
+
+
+
+Cluster mode
+
+
+
+application node. It con-tains your application code, which is called the driver program, as it drives Spark
+
+
+
+The appli-cation will open a session on Spark by using the Spark libraries.
+
+
+
+master node, in the center of the diagram, contains the Spark libraries, which include the code to run as a master.
+
+
+
+workers, on the right, have the application JARs and the Spark libraries to exe-cute the code. The workers also have the binaries to connect to the master: the worker scripts.
+
+
+
+The application node, the master node, and a worker node could be the same physical node.
+
+
+
+There are two ways to run an application on a cluster:
+ You submit a job by using the spark-submit shell and a JAR of your application.
+ You specify the master in your application and then run your code.
+
+
+
+SUBMITTING A JOB TO SPARK
+
+
+
+You build a JAR with your application.
+ All the JARs that your application depends on are on each node or in the uber JAR.
+
+
+
+SETTING THE CLUSTER’S MASTER IN YOUR APPLICATION
+
+
+
+You build a JAR with your application.
+ All the JARs that your application depends on are on each node or in the uber JAR (assuming you submit the uber JAR).
+
+
+
+Interactive mode in Scala and Python
+
+
+
+SCALA SHELL
+
+
+
+$ ./spark-shell
+
+
+
+--master <Master’s URL>
+
+
+
+import scala.math.random val slices = 100 val n = (100000L * slices).toInt val count = spark.sparkContext.parallelize(1 until n, slices).map { i =>  val x = random * 2 - 1  val y = random * 2 - 1
+
+
+
+if (x*x + y*y <= 1) 1 else 0 }.reduce(_ + _) println(s"Pi is roughly ${4.0 * count / (n - 1)}")
+
+
+
+Get Programming with Scala by Dan-iela Sfregola
+
+
+
+Summary
+
+
+
+The driver application is where your main() method is.
+
+
+
+The master node knows about all the workers.
+
+
+
+The execution takes place on the workers.
+
+
+
+Sparks handles the distribution of your application JAR in cluster mode, to each worker node.
+
+
+
+Deploying  your simple app
+
+
+
+Quick overview of the components and their interactions
+
+
+
+1 Driver Cluster manager/master You do care about this link; your application connects to the master or cluster manager this way.
+
+
+
+2 Cluster manager/master Executor This link establishes a connection between the work-ers and the master. The workers initiate the connec-tion, but data is passed from the master to the workers. If this link is broken, your cluster manager will not be able to communicate with the executors.
+
+
+
+3 Executor Executor Internal link between the executors; as developers, we do not care that much about i
+t.
+
+
+
+Executor Driver The executor needs to be able to get back to the driver, which means the driver cannot be behind a firewall (which is a rookie mistake when your first application tries to connect to a cluster in the cloud). 
+If the executors cannot communicate with the driver, they will not be able to send data back.
+
+
+
+code will run on your driver node, but it will con-trol and generate activities on other nodes.
+
+
+
+public class PiComputeClusterApp implements Serializable { …  private final class DartMapper  implements MapFunction<Row, Integer> { …  }  private final class DartReducer implements ReduceFunction<Integer> { …  }  public static void main(String[] args) {  PiComputeClusterApp app = new PiComputeClusterApp();
+ app.start(10);
+ }  private void start(int slices) {  int numberOfThrows = 100000 * slices;
+…  SparkSession spark = SparkSession.builder().appName("JavaSparkPi on a cluster").master("spark://un:7077").config("spark.executor.memory", "4g").getOrCreate(); …  List<Integer> l = new ArrayList<>(numberOfThrows);
+ for (int i = 0; i < numberOfThrows; i++) {  l.add(i);
+4 Executor Driver The executor needs to be able to get back to the driver, which means the driver cannot be behind a firewall (which is a rookie mistake when your first application tries to connect to a cluster in the cloud). 
+If the executors cannot communicate with the driver, they will not be able to send data back.
+Listing 6.1 Calculating an approximation of π Table 6.1 Links between Spark components (continued) Link Origin Destination Care level Link 1: The session resides on the cluster manager.
+
+
+
+Dataset<Row> incrementalDf = spark.createDataset(l, Encoders.INT()).toDF(); …  Dataset<Integer> dartsDs = incrementalDf.map(new DartMapper(), Encoders.INT()); …  int dartsInCircle = dartsDs.reduce(new DartReducer());
+…  System.out.println("Pi is roughly " + ➥ 4.0 * dartsInCircle / numberOfThrows);
+ spark.stop();
+
+
+
+Link 2: The first dataframe is created in the executor.
+
+
+
+Link 4: The result of the reduce operation is brought back to the application.
+
+
+
+Spark applications run as independent processes on a cluster.
+
+
+
+The SparkSession object in your application (also called the driver) coordinates the processes
+
+
+
+Basically, the cluster manager allocates resources across applications.
+
+
+
+cluster manager options, including YARN, Mesos, and Kubernetes.
+
+
+
+Once connected, Spark acquires executors on nodes in the cluster, which are JVM processes that run computations and store data for your application.
+
+
+
+Next, the cluster manager sends your application code to the executors.
+
+
+
+Finally, SparkSession sends tasks to the executors to run.
+Link 2: The first dataframe is created in the executor.
+This step is added to the DAG, which sits in the cluster manager.
+Link 4: The result of the reduce operation is brought back to the application.
+
+
+
+Troubleshooting tips for the Spark architecture
+
+
+
+Each application gets its own executor processes, which stay up for the duration of the entire application and run tasks in multiple threads.
+
+
+
+means that data cannot be shared across different Spark applications
+
+
+
+As the driver schedules tasks on the cluster, it should run physically close to the worker nodes, preferably on the same local area network.
+
+
+
+Building a cluster
+
+
+
+Building a cluster that works for you
+
+
+
+Setting up the environment
+
+
+
+You need to install Spark on each node
+
+
+
+You do not have to install your application on every node.
+
+
+
+On the master node (in this case, un) go to /opt/apache-spark/sbin.
+ Run the master:
+$ ./start-master.sh
+
+
+
+master does not do much, but it will always require workers. To run your first worker, type this:
+
+
+
+start-slave.sh spark://un:7077
+
+
+
+worker is running on the same physical node as the master.
+
+
+
+To check that everything is okay, open a browser and go to http://un:8080/
+
+
+
+master node has a single worker.
+
+
+
+Building your application to run on the clust
+er
+
+
+
+To deploy your application, you have several options:
+ Build an uber JAR with your code and all your dependencies.
+ Build a JAR with your app and make sure all the dependencies are on every worker node (not recommended).
+ Clone/pull from your source control repository.
+
+
+
+SPARK DEPLOYS YOUR CODE TO THE WORKERS
+
+
+
+Building your application’s uber JAR
+
+
+
+Because Spark comes with more than 220 libraries, you don’t need to bring, in your uber JAR, the dependencies that are already available on the target system.
+
+
+
+Running your application on the cluster
+
+
+
+Submitting the uber JAR
+
+
+
+run the uber JAR you built via spark-submit.
+
+
+
+spark-submit \  --class net.jgp.books. spark.ch05.lab210.
+➥ piComputeClusterSubmitJob.PiComputeClusterSubmitJobApp \  --master "spark://un:7077" \  <path to>/spark-chapter05-1.0.0-SNAPSHOT.JAR
+
+
+
+Spark makes your JAR available for download by the workers.
+
+
+
+The executor has been successfully created.
+
+
+
+Pi is roughly 3.14448
+
+
+
+Analyzing the Spark user interface
+
+
+
+Summary
+
+
+
+You can submit a job to Spark or connect to the master.
+ The driver application is where your main() method is.
+ The master node knows about all the workers.
+ The execution takes place on the workers.
+ Spark handles the distribution of your application JAR in cluster mode to each worker node.
+
+
+
+Ingestion from files
+
+
+
+data in Spark is transient, meaning that when you shut down Spark, it’s all gone
+
+
+
+Complex ingestion from CSV
+
+
+
+Dataset<Row> df = spark.read().format("csv").option("header", "true").option("multiline", true)
+
+
+
+.option("sep", ";").option("quote", "*").option("dateFormat", "M/d/y").option("inferSchema", true).load("data/books.csv");
+
+
+
+SSpark will infer (guess) the schema.
+
+
+
+Ingesting a CSV with a known schema
+
+
+
+StructType schema = DataTypes.createStructType(new StructField[] {  DataTypes.createStructField(  "id",DataTypes.IntegerType,false),DataTypes.createStructField(  "authordId",DataTypes.IntegerType,true),DataTypes.createStructField(  "bookTitle",DataTypes.StringType,false),DataTypes.createStructField(  "releaseDate",DataTypes.DateType,true),DataTypes.createStructField(  "url",DataTypes.StringType,false) });
+
+
+
+Dataset<Row> df = spark.read().format("csv").option("header", "true").option("multiline", true).option("sep", ";").option("dateFormat", "MM/dd/yyyy").option("quote", "*").schema(schema).load("data/books.csv");
+
+
+
+File formats for big data
+
+
+
+JSON and XML (and in some measure CSV) are not easy to split. When you want your nodes to read a part of the file, it’s easier if you can split it. Node 1 will read the first 5,000 records, node 2 the second 5,000, and so on. Because of its root element, XML will need rework, which may break the document. Big data files need to be splittable.
+
+
+
+Avro is a schema-based serialization format
+
+
+
+Apache Avro is a data serialization system, which provides rich data structures in a compact, fast, and binary data format.
+
+
+
+Avro supports dynamic modification of the schema. Avro offers a schema, written in JSON. Because an Avro file is row-based, the file is easier to split, like CSV.
+
+
+
+ORC is a columnar storage format
+
+
+
+ORC is ACID-compliant (atomicity, consistency, isolation, durability).
+
+
+
+ORC supports compression, which reduces file size and net-work transfer time (always a bonus for big data).
+
+
+
+Parquet is also a columnar storage format
+
+
+
+Parquet supports compression, and you can add columns at the end of the schema
+
+
+
+Comparing Avro, ORC, and Parquet
+
+
+
+ORC, Parquet, and Avro share:
+ They are binary formats.
+ They embed their schema. Avro’s use of JSON for its schema gives the most flex-ibility.
+ They compress their data. Parquet and ORC are better at compression than Avro.
+
+
+
+Ingesting Avro, ORC, and Parquet files
+
+
+
+Ingesting Avro
+
+
+
+need to add a library to your project, as Avro is not natively supp
+orted by Spark.
+
+
+
+Dataset<Row> df = spark.read().format("avro").load("data/weather.avro");
+
+
+
+Ingesting ORC
+
+
+
+Use the native implementation to access the ORC file, not the Hive implementation.
+
+
+
+config("spark.sql.orc.impl", "native")
+
+
+
+Dataset<Row> df = spark.read().format("orc").load("data/demo-11-zlib.orc");
+
+
+
+Ingesting Parquet
+
+
+
+Dataset<Row> df = spark.read().format("parquet").load("data/alltypes_plain.parquet");
+
+
+
+Ingestion from databases
+
+
+
+Ingestion from relational databases
+
+
+
+Properties props = new Properties();
+ props.put("user", "root");  props.put("password", "Spark<3Java"); 
+ props.put("useSSL", "false");
+
+
+
+Dataset<Row> df = spark.read().jdbc(  "jdbc:mysql://localhost:3306/sakila?serverTimezone=EST","actor",props);  df = df.orderBy(df.col("last_name"));
+
+
+
+JDBC dialects provided with Spark
+
+
+
+IBM Db2  Apache Derby  MySQL  Microsoft SQL Server  Oracle  PostgreSQL  Teradata Database
+
+
+
+Filtering by using a WHERE clause
+
+
+
+String sqlQuery = "select * from film where "  + "(title like \"%ALIEN%\" or title like \"%victory%\" "  + "or title like \"%agent%\" or description like \"%action%\") "  + "and rental_rate>1 "  + "and (rating=\"G\" or rating=\"PG\")";
+
+
+
+Dataset<Row> df = spark.read().jdbc(  "jdbc:mysql://localhost:3306/sakila","(" + sqlQuery + ") film_alias",props);
+
+
+
+Performing Ingestion and partitioning
+
+
+
+Properties props = new Properties();  props.put("user", "root");
+ props.put("password", "Spark<3Java");
+ props.put("useSSL", "false");
+ props.put("serverTimezone", "EST");
+ props.put("partitionColumn", "film_id"); 
+ props.put("lowerBound", "1");  props.put("upperBound", "1000"); 
+ props.put("numPartitions", "10");
+
+
+
+Dataset<Row> df = spark.read().jdbc(  "jdbc:mysql://localhost:3306/sakila","film",props);
+
+
+
+In this scenario, the data is split into 10 partitions
+
+
+
+Code to ingest the restaurant dataset from Elasticsearch
+
+
+
+Dataset<Row> df = spark.read().format("org.elasticsearch.spark.sql")
+
+
+
+option("es.nodes", "localhost").option("es.port", "9200").option("es.query", "?q=*").option("es.read.field.as.array.include", "Inspection_Date").load("nyc_restaurants");
+
+
+
+Advanced ingestion:
+ finding data sources  and building your own
+
+
+
+What is a data source?
+
+
+
+Spark will store the data and schema in the dataframe. The “guy” in charge of reading and creating the dataframe is the dataframe reader.
+
+
+
+reader needs to have a way to communicate with the data source
+
+
+
+Ingestion through  structured streaming
+
+
+
+Streams are usually available in two forms: files and network streams.
+
+
+
+file stream-ing scenario, files are dropped in a directory (sometimes called a landing zone or stag-ing area; see chapter 1) and Spark takes the files from this directory as they come in. In the second scenario, data is sent over the network.
+
+
+
+way Apache Spark handles streaming is by regrouping operations over a small window of time. This is called microbatching.
+
+
+
+Consuming the records
+
+
+
+Once you have your session, you can ask the session to read from a stream by using the readStream() method.
+
+
+
+in a stream, data may or may not be there and may or may not come. Therefore, the application needs to wait for data to come, a bit like a server waiting for requests. Writing your data is done through the dataframe’s writeStream() method and the StreamingQuery object.
+
+
+
+define your streaming query object from the dataframe you use as your stream. The query will start to fill a result table, as illustrated in figure 10.5. The result table grows with the data coming in.
+
+
+
+As the data stream receives data, the data is added to the result table. The result table is an unbound table, which can grow as much as a dataframe can grow (based on your cluster’s physical capacity, of course).
+
+
+
+now, your application needs to wait for data to come in. It does so through the awaitTermination() method on the query.
+
+*
+****
+
+Dataset<Row> df = spark.readStream().format("text").load(StreamingUtils.getInputDirectory());
+
+
+
+StreamingQuery query = df.writeStream().outputMode(OutputMode.Append()).format("console").option("truncate", false).option("numRows", 3).start();
+
+
+
+Getting records, not lines
+
+
+
+StructType recordSchema = new StructType().add("fname", "string").add("mname", "string")
+
+
+
+Dataset<Row> df = spark.readStream().format("csv").schema(recordSchema).load(StreamingUtils.getInputDirectory());
+
+
+
+StreamingQuery query = df.writeStream().outputMode(OutputMode.Append()).format("console").start();
+
+
+
+You define a stream on a dataframe by using the readStream() method fol-lowed by the start() method.
+
+
+
+Transforming  your data
+
+
+
+Working with SQL
+
+
+
+when you want to use SQL with Spark is that you need to define a view,
+
+
+
+StructType schema = DataTypes.createStructType(new StructField[] {  DataTypes.createStructField(  "geo",DataTypes.StringType,true),DataTypes.createStructField(  "yr1980",DataTypes.DoubleType,false) });
+
+
+
+Dataset<Row> df = spark.read().format("csv").option("header", true).schema(schema).load("data/populationbycountry19802010millions.csv");
+ df.createOrReplaceTempView("geodata");
+
+
+
+Dataset<Row> smallCountries =  spark.sql(  "SELECT * FROM geodata WHERE yr1980 < 1 ORDER BY 2 LIMIT 5");
+
+
+
+Creating a local temporary view is fairly simple: use the createOrReplaceTempView() dataframe’s method.
+
+
+
+The difference between local and global views
+
+
+
+views are only temp
+
+
+
+When the session ends, the local views are removed; when all sessions end, the global views are removed.
+
+
+
+As you create a new session, your data is still available in both sessions, and this is where you can use global views.
+
+
+
+Mixing the dataframe API and Spark SQL
+
+
+
+Don’t DELETE it!
+
+
+
+create a new dataframe that does not include the data you do not want.
+
+
+
+Dataset<Row> cleanedDf =  spark.sql(  "select * from geodata where geo is not null "  + "and geo != 'Africa' "  + "and geo != 'North America' "  + "and geo != 'World' "  + "and geo != 'Asia & Oceania' "  + "and geo != 'Central & South America' "  + "and geo != 'Europe' "  + "and geo != 'Eurasia' "  + "and geo != 'Middle East' "  + "order by yr2010 desc");  log.debug("Territories in cleaned dataset: {}",cleanedDf.count());
+
+
+
+Spark’s SQL is based on Apache Hive’s SQL (HiveQL), which is based on SQL-92.
+
+
+
+Data is manipulated through views on top of a dataframe.
+
+
+
+Views can be local to the session, or global/shared among sessions in the same application. Views are never shared between applications.
+
+
+
+Because data is immutable, you cannot drop or modify records; you will have to re-create a new dataset.
+
+
+
+To drop records from the dataframe, however, you can build a new dataframe based on a filtered dataframe.
+
+
+
+Transforming your data
+
+
+
+Performance is not affected negatively by using an intermediate dataframe. Perfor-mance can be boosted if you cache or checkpoint the data.
+
+
+
+What’s the point of caching when everything is in memory?
+
+
+
+Spark is lazy and does not perform all the operations (the transforma-tions), unless you ask it explicitly (through an action).
+
+
+
+If you plan on reusing a dataframe for different analyses, it is a good idea to cache your data by using the cache() method. It will increase performance.
+
+
+
+Writing the transformation code
+
+
+
+intermediateDf = intermediateDf.drop("GEO.id").withColumnRenamed("GEO.id2", "id").withColumnRenamed("GEO.display-label", "label").withColumnRenamed("rescen42010", "real2010").drop("resbase42010").withColumnRenamed("respop72010", "est2010").withColumnRenamed("respop72011", "est2011").withColumnRenamed("respop72012", "est2012").withColumnRenamed("respop72013", "est2013").withColumnRenamed("respop72014", "est2014").withColumnRenamed("respop72015", "est2015").withColumnRenamed("respop72016", "est2016").withColu
+mnRenamed("respop72017", "est2017");
+
+
+
+intermediateDf = intermediateDf.withColumn(  "countyState",split(intermediateDf.col("label"), ", ")).withColumn("stateId", expr("int(id/1000)")).withColumn("countyId", expr("id%1000"));
+
+
+
+intermediateDf = intermediateDf.withColumn(  "state",intermediateDf.col("countyState").getItem(1)).withColumn(  "county",intermediateDf.col("countyState").getItem(0)).drop("countyState")
+
+
+
+Dataset<Row> statDf = intermediateDf.withColumn("diff", expr("est2010-real2010")).withColumn("growth", expr("est2017-est2010"))
+
+
+
+statDf = statDf.sort(statDf.col("growth").desc());
+
+
+
+statDf = statDf.sort(statDf.col("growth"));
+
+
+
+Joining datasets
+
+
+
+Dataset<Row> censusDf = spark.read().format("csv").option("header", "true").option("inferSchema", "true").option("encoding", "cp1252").load("data/census/PEP_2017_PEPANNRES.csv");
+
+
+
+censusDf = censusDf.drop("GEO.id").drop("rescen42010").drop("resbase42010").drop("respop72010") ….drop("respop72016").withColumnRenamed("respop72017", "pop2017").withColumnRenamed("GEO.id2", "countyId").withColumnRenamed("GEO.display-label", "county");
+
+
+
+Dataset<Row> higherEdDf = spark.read().format("csv").option("header", "true").option("inferSchema", "true").load("data/dapip/InstitutionCampus.csv");
+ higherEdDf = higherEdDf.filter("LocationType = 'Institution'").withColumn(  "addressElements",split(higherEdDf.col("Address"), " ")); 
+ higherEdDf = higherEdDf.withColumn(  "addressElementCount",size(higherEdDf.col("addressElements")));
+
+
+
+higherEdDf = higherEdDf.withColumn(  "zip9",element_at(  higherEdDf.col("addressElements"),higherEdDf.col("addressElementCount")));
+
+
+
+higherEdDf = higherEdDf.withColumn(  "splitZipCode",split(higherEdDf.col("zip9"), "-"));  higherEdDf = higherEdDf.withColumn("zip", higherEdDf.col("splitZipCode").getItem(0)).withColumnRenamed("LocationName", "location").drop("DapipId") ….drop("zip9").drop("addressElements").drop("addressElementCount").drop("splitZipCode");
+
+
+
+Dataset<Row> countyZipDf = spark.read().format("csv").option("header", "true").option("inferSchema", "true").load("data/hud/COUNTY_ZIP_092018.csv");
+ countyZipDf = countyZipDf.drop("res_ratio").drop("bus_ratio").drop("oth_ratio").drop("tot_ratio");
+
+
+
+Performing the joins
+
+
+
+Dataset<Row> institPerCountyDf = higherEdDf.join(  countyZipDf,higherEdDf.col("zip").equalTo(countyZipDf.col("zip")),"inner");
+
+
+
+Performing more transformations
+
+
+
+expr() is a convenient function that allows you to compute an SQL-like state-ment when you are transforming the data.
+
+
+
+Spark supports the following kinds of joins: inner, outer, left, right, left-semi, left-anti, and cross (Cartesian).
+
+
+
+Transforming  entire documents
+
+
+
+Transforming entire documents and their structure
+
+
+
+To flatten a JSON document containing structures and arrays, you will use withColumn() and explode().
+
+
+
+Dataset<Row> df = spark.read().format("json").option("multiline", true).load("data/json/shipment.json");
+
+
+
+df = df.withColumn("supplier_name", df.col("supplier.name")).withColumn("supplier_city", df.col("supplier.city")).withColumn("supplier_state", df.col("supplier.state")).withColumn("supplier_country", df.col("supplier.country")).drop("supplier").withColumn("customer_name", df.col("customer.name")).withColumn("customer_city", df.col("customer.city")).withColumn("customer_state", df.col("customer.state")).withColumn("customer_country", df.col("customer.country")).drop("customer").withColumn("items", explode(df.col("books")));
+
+
+
+df = df.withColumn("qty", df.col("items.qty")).withColumn("title", df.col("items.title")).drop("items").drop("books");
+
+
+
+df.createOrReplaceTempView("shipment_detail");
+ Dataset<Row> bookCountDf =  spark.sql("SELECT COUNT(*) AS titleCount FROM shipment_detail");
+ bookCountDf.show(false);
+
+
+
+Note that explode() is a useful method: it create
+s a new row for each element in the given array or map column, which is really the easiest way to manipulate nested fields in a dataframe.
+
+
+
+Building nested documents for transfer and storage
+
+
+
+Dataset<Row> businessDf = spark.read().format("csv").option("header", true).load("data/orangecounty_restaurants/businesses.CSV");
+
+
+
+Dataset<Row> inspectionDf = spark.read().format("csv").option("header", true).load("data/orangecounty_restaurants/inspections.CSV");
+
+
+
+Dataset<Row> factSheetDf = nestedJoin(  businessDf,inspectionDf,"business_id","business_id","inner","inspections");
+
+
+
+Let’s study the nestedJoin() method. Spark will do the following:
+ Perform a join between the two dataframes  Create a nested structure for each inspection  Group the rows from the restaurant together
+
+
+
+private static Column[] getColumns(Dataset<Row> df) {  String[] fieldnames = df.columns();  Column[] columns = new Column[fieldnames.length]; 
+ int i = 0;
+ for (String fieldname : fieldnames) {  columns[i++] = df.col(fieldname);
+ }  return columns;
+
+
+
+You will use a few static functions:
+ struct(Column... cols) creates a Column whose datatype is a structure built from the columns passed as parameters.
+ collect_list(Column col), as an aggregate function, returns a list of objects.
+It will contain duplicates.
+ col(String name) returns columns based on the name, equivalent to the data-frame’s col() method.
+
+
+
+Building the nested dataset
+
+
+
+Dataset<Row> resDf = leftDf.join(  rightDf,rightDf.col(rightJoinCol).equalTo(leftDf.col(leftJoinCol)),joinType);
+
+
+
+Column[] leftColumns = getColumns(leftDf);
+
+
+
+Column[] allColumns =  Arrays.copyOf(leftColumns, leftColumns.length + 1); 
+ allColumns[leftColumns.length] =  struct(getColumns(rightDf)).alias(TEMP_COL);
+
+
+
+resDf = resDf.select(allColumns);
+ resDf = resDf.groupBy(leftColumns).agg(  collect_list(col(TEMP_COL)).as(nestedCol));  return resDf;
+
+
+
+Extending  transformations with  user-defined functions
+
+
+
+Extending Apache Spark
+
+
+
+code is executed on the worker nodes.
+
+
+
+UDF code must be serializable (to be transported to the node)
+
+
+
+UDF requiring external libraries, you must make sure that they are deployed on the worker nodes
+
+
+
+UDF’s internals are not visible to Catalyst, the UDF is treated as a black box for the optimizer. Spark won’t be able to optimize the UDF.
+
+
+
+Registering and calling a UDF
+
+
+
+Building the timestamp dataset
+
+
+
+private static Dataset<Row> createDataframe(SparkSession spark) {  StructType schema = DataTypes.createStructType(new StructField[] {  DataTypes.createStructField(  "date_str",DataTypes.StringType,false) });
+
+
+
+List<Row>rows = new ArrayList<>();
+ rows.add(RowFactory.create("2019-03-11 14:30:00")); 
+ rows.add(RowFactory.create("2019-04-27 16:00:00")); 
+ rows.add(RowFactory.create("2020-01-26 05:00:00"));
+
+
+
+return spark.createDataFrame(rows, schema).withColumn("date", to_timestamp(col("date_str"))).drop("date_str");
+
+
+
+Registering the UDF with Spark
+
+
+
+You first need to access the UDF registration functions by calling the udf() method from the Spark session.
+
+
+
+Then you register() by using the name of the function, an instance of the class implementing the UDF, and the return type. Upon calling the UDF, any new column that needs to be created will have this datatype. The name should be a valid Java method name.
+
+
+
+spark.udf().register("isOpen", new IsOpenUdf(), DataTypes. BooleanType);
+
+
+
+Registration of the UDF
+
+
+
+spark.udf().register(  "isOpen",new IsOpenUdf(),DataTypes.BooleanType);
+
+
+
+Using the UDF with the dataframe API
+
+
+
+Using the UDF
+
+
+
+Dataset<Row> librariesDf = spark.read().format("csv").option("header", true).option("inferSchema", true).option("encoding", "cp1252").load("data/south_dublin_libraries/sdlibraries.csv").drop("Administrative_Authority").drop("Address1").drop("Address2").drop("Town").drop("Postcode").drop("County").drop("Pho
+ne").drop("Email").drop("Website").drop("Image").drop("WGS84_Latitude").drop("WGS84_Longitude");
+
+
+
+Dataset<Row> dateTimeDf = createDataframe(spark);
+
+
+
+Dataset<Row> df = librariesDf.crossJoin(dateTimeDf);
+
+
+
+Dataset<Row> finalDf = df.withColumn(  "open",callUDF(  "isOpen",col("Opening_Hours_Monday"),col("Opening_Hours_Tuesday"),col("Opening_Hours_Wednesday"),col("Opening_Hours_Thursday"),col("Opening_Hours_Friday"),col("Opening_Hours_Saturday"),lit("Closed"),col("date")))
+
+
+
+drop("Opening_Hours_Monday").drop("Opening_Hours_Tuesday").drop("Opening_Hours_Wednesday").drop("Opening_Hours_Thursday").drop("Opening_Hours_Friday").drop("Opening_Hours_Saturday");
+
+
+
+Manipulating UDFs with SQL
+
+
+
+Using a UDF in SQL
+
+
+
+spark.udf().register(  "isOpen",new IsOpenUdf(),DataTypes.BooleanType);
+
+
+
+Dataset<Row>df = librariesDf.crossJoin(dateTimeDf);
+
+
+
+Dataset<Row>finalDf = spark.sql(  "SELECT Council_ID, Name, date, "  + "isOpen("  + "Opening_Hours_Monday, Opening_Hours_Tuesday, "
+
+
+
++ "Opening_Hours_Wednesday, Opening_Hours_Thursday, "  + "Opening_Hours_Friday, Opening_Hours_Saturday, "  + "'closed', date) AS open FROM libraries ");
+
+
+
+Implementing the UDF
+
+
+
+IsOpenUdf UDF code
+
+
+
+public class IsOpenUdf implements
+
+
+
+UDF8<String, String, String, String, String, String, String, Timestamp,Boolean> {  private static final long serialVersionUID = -216751L;
+
+
+
+@Override  public Boolean call(  String hoursMon, String hoursTue,String hoursWed, String hoursThu,String hoursFri, String hoursSat,String hoursSun,Timestamp dateTime) throws Exception {  return IsOpenService.isOpen(hoursMon, hoursTue, hoursWed, hoursThu,hoursFri, hoursSat, hoursSun, dateTime); 
+ } }
+
+
+
+Aggregating your data
+
+
+
+Performing basic aggregations with Spark
+
+
+
+PERFORMING AN AGGREGATION USING THE DATAFRAME API
+
+
+
+Dataset<Row> apiDf = df.groupBy(col("firstName"), col("lastName"), col("state")).agg(  sum("quantity"),sum("revenue"),avg("revenue"));
+
+
+
+PERFORMING AN AGGREGATION USING SPARK SQL
+
+
+
+df.createOrReplaceTempView("orders");  String sqlStatement = "SELECT " +  " firstName, " +  " lastName, " +  " state, " +  " SUM(quantity), " +  " SUM(revenue), " +  " AVG(revenue) " +  " FROM orders " +  " GROUP BY firstName, lastName, state"; 
+ Dataset<Row> sqlDf = spark.sql(sqlStatement);
+
+
+
+Code to compute the average enrollment for each NYC school
+
+
+
+Dataset<Row> averageEnrollmentDf = masterDf.groupBy(col("schoolId"), col("schoolYear")).avg("enrolled", "present", "absent").orderBy("schoolId", "schoolYear");
+
+
+
+Dataset<Row> studentCountPerYearDf = averageEnrollmentDf.withColumnRenamed("avg(enrolled)", "enrolled").groupBy(col("schoolYear")).agg(sum("enrolled").as("enrolled")).withColumn(  "enrolled",floor("enrolled").cast(DataTypes.LongType)).orderBy("schoolYear");
+
+
+
+Dataset<Row> maxEnrolledPerSchooldf = masterDf.groupBy(col("schoolId"), col("schoolYear")).max("enrolled").orderBy("schoolId", "schoolYear");
+
+
+
+Dataset<Row> minAbsenteeDf = masterDf.groupBy(col("schoolId"), col("schoolYear")).min("absent").orderBy("schoolId", "schoolYear");
+
+
+
+Code to compute the five schools with the least and most absenteeism
+
+
+
+Dataset<Row> absenteeRatioDf = masterDf.groupBy(col("schoolId"), col("schoolYear")).agg(  max("enrolled").alias("enrolled"),avg("absent").as("absent"));
+ absenteeRatioDf = absenteeRatioDf.groupBy(col("schoolId")).agg(  avg("enrolled").as("avg_enrolled"),avg("absent").as("avg_absent")).withColumn("%", expr("avg_absent / avg_enrolled * 100")).filter(col("avg_enrolled").$greater(10)).orderBy("%");
+
+
+
+Building custom aggregations with UDAFs
+
+
+
+Going further
+
+
+
+Cache and checkpoint:
+Enhancing Spark’s  performances
+
+
+
+Caching and checkpointing can increase performance
+
+
+
+Apache Spark offers two distinct techniques for increasing performance:
+ Caching, via cache() or persist(), which can save your data and
+the data lineage  Checkpointing, via checkpoint(), to save your data, without the lineage
+
+
+
+The usefulness of Spark caching
+
+
+
+Caching will persist the dataframe in memory, or disk, or a combination of memory and disk.
+
+
+
+cache() is a synonym for persist(StorageLevel.MEMORY_ONLY)
+
+
+
+Available storage levels with the persist() method are as follows:
+ MEMORY_ONLY—This is the default level. It will store the RDD composing the dataframe as deserialized Java objects in the JVM. If the RDD does not fit in memory, Spark will not cache the partitions;
+
+
+
+MEMORY_AND_DISK—Similar to MEMORY_ONLY, except that when Spark runs out of memory, it will serialize the RDD on disk.
+
+
+
+MEMORY_ONLY_SER—Similar to MEMORY_ONLY, but the Java objects are serialized.
+This should take less space, but reading will consume more CPU.
+
+
+
+MEMORY_AND_DISK_SER—Similar to MEMORY_AND_DISK with serialization.
+ DISK_ONLY—Stores the partitions of the RDD composing the dataframe to disk.
+ OFF_HEAP—Similar behavior to MEMORY_ONLY_SER, but it uses off-heap memory.
+
+
+
+unpersist() method will clear the cache whether you created it via cache() or persist()
+
+
+
+effectiveness of Spark checkpointing
+
+
+
+checkpoint() method will truncate the DAG (or logical plan) and save the content of the dataframe to disk.
+
+
+
+dataframe is saved in the checkpoint directory.
+
+
+
+Using caching and checkpointing
+
+
+
+CacheCheckpointApp
+
+
+
+Specifies that the executor memory is 70 GB.
+(You can run this on a machine with less.)
+
+
+
+Specifies that the driver memory is 50 GB; if you run this app in local mode, you’re already running the driver, so you can’t change its memory
+
+
+
+spark = SparkSession.builder().appName("Lab around cache and checkpoint").master("local[*]").config("spark.executor.memory", "70g").config("spark.driver.memory", "50g").config("spark.memory.offHeap.enabled", true).config("spark.memory.offHeap.size", "16g").getOrCreate();
+ SparkContext sc = spark.sparkContext();
+
+
+
+long t0 = processDataframe(recordCount, Mode.NO_CACHE_NO_CHECKPOINT);
+ long t1 = processDataframe(recordCount, Mode.CACHE);  long t2 = processDataframe(recordCount, Mode.CHECKPOINT);  long t3 = processDataframe(recordCount, Mode.CHECKPOINT_NON_EAGER);
+
+
+
+Even if you set values of memory higher than the available memory, the JVM will simply not be able to use it.
+
+
+
+When you are running in local mode, you are executing the driver: you will not be able to change the memory allocated to the driver after it is started. That’s just how the JVM works. However, when you spark-submit a job to a cluster, Spark will spawn the JVM and then will use the provided parameters.
+
+
+
+data resides in the worker nodes. The collect() method will bring back the dataframe’s content from all the executors to the driver. If you have 100 executors (on 100 worker nodes), and your dataframe contains 50 GB, your network will endure 100 transfers of 50 GB, and your driver will need 5 TB of memory, as the collect operation will bring a list of objects in the heap memory of the driver’s JVM.
+
+
+
+CacheCheckpointApp
+
+
+
+private long processDataframe(int recordCount, Mode mode) {  Dataset<Row> df =  RecordGeneratorUtils.createDataframe(this.spark, recordCount);
+
+
+
+Dataset<Row> topDf = df.filter(col("rating").equalTo(5));
+
+
+
+switch (mode) {  case CACHE:
+ topDf = topDf.cache();  break;
+
+
+
+case CHECKPOINT:
+ topDf = topDf.checkpoint();  break;
+
+
+
+List<Row> langDf =  topDf.groupBy("lang").count().orderBy("lang").collectAsList(); 
+ List<Row> yearDf =  topDf.groupBy("year").count().orderBy(col("year").desc()).collectAsList();
+
+
+
+Cache uses memory. Checkpoints are saved in files.
+
+
+
+checkpoints are never clean and will stay on disk
+
+
+
+Caching in action
+
+
+
+Dataset<Row> df = spark.read().format("csv").option("header", true).option("sep", ";").option("enforceSchema", true).option("nullValue", "null").option("inferSchema", true).load("data/brazil/BRAZIL_CITIES.csv");
+
+
+
+long t0 =
+process(df, Mode.NO_CACHE_NO_CHECKPOINT); 
+ long t1 = process(df, Mode.CACHE);  long t2 = process(df, Mode.CHECKPOINT);  long t3 = process(df, Mode.CHECKPOINT_NON_EAGER);
+
+
+
+long process(Dataset<Row> df, Mode mode) {  long t0 = System.currentTimeMillis();
+
+
+
+df = df.orderBy(col("CAPITAL").desc()).withColumn("WAL-MART",when(col("WAL-MART").isNull(), 0).otherwise(col("WAL-MART"))).withColumn("MAC",when(col("MAC").isNull(), 0).otherwise(col("MAC"))).withColumn("GDP", regexp_replace(col("GDP"), ",", ".")).withColumn("GDP", col("GDP").cast("float")).withColumn("area", regexp_replace(col("area"), ",", "")) Listing 16.5 Processing of the dataset in various modes Reads a CSV file with header; 
+stores it in a dataframe Creates and processes the records without cache or checkpoint Creates and processes the records with cache Creates and processes the records with a checkpoint Creates and processes the records with a non-eager checkpoint Replaces null values with 0 Replaces commas with periods in a string, so the field can be converted to a float
+
+
+
+.withColumn("area", col("area").cast("float")).groupBy("STATE").agg(  first("CITY").alias("capital"),sum("IBGE_RES_POP_BRAS").alias("pop_brazil"),sum("IBGE_RES_POP_ESTR").alias("pop_foreign"),sum("POP_GDP").alias("pop_2016"),sum("GDP").alias("gdp_2016"),sum("POST_OFFICES").alias("post_offices_ct"),sum("WAL-MART").alias("wal_mart_ct"),sum("MAC").alias("mc_donalds_ct"),sum("Cars").alias("cars_ct"),sum("Motorcycles").alias("moto_ct"),sum("AREA").alias("area"),sum("IBGE_PLANTED_AREA").alias("agr_area"),sum("IBGE_CROP_PRODUCTION_$").alias("agr_prod"),sum("HOTELS").alias("hotels_ct"),sum("BEDS").alias("beds_ct")).withColumn("agr_area", expr("agr_area / 100")).orderBy(col("STATE")).withColumn("gdp_capita", expr("gdp_2016 / pop_2016 * 1000"));
+
+
+
+switch (mode) {  case CACHE:  df = df.cache();
+ break;
+ case CHECKPOINT:  df = df.checkpoint();
+ break;
+ case CHECKPOINT_NON_EAGER:  df = df.checkpoint(false);
+ break;
+
+
+
+Analytics
+
+
+
+Dataset<Row> popDf = df.drop(  "area", "pop_brazil", "pop_foreign", "post_offices_ct","cars_ct", "moto_ct", "mc_donalds_ct", "agr_area", "agr_prod","wal_mart_ct", "hotels_ct", "beds_ct", "gdp_capita", "agr_area","gdp_2016").orderBy(col("pop_2016").desc());
+
+
+
+Dataset<Row> walmartPopDf = df.withColumn("walmart_1m_inh",expr("int(wal_mart_ct / pop_2016 * 100000000) / 100")).drop(  "pop_brazil", "pop_foreign", "post_offices_ct", "cars_ct","moto_ct", "area", "agr_area", "agr_prod", "mc_donalds_ct","hotels_ct", "beds_ct", "gdp_capita", "agr_area", "gdp_2016").orderBy(col("walmart_1m_inh").desc());
+
+
+
+Dataset<Row> postOfficeDf = df.withColumn("post_office_1m_inh",expr("int(post_offices_ct / pop_2016 * 100000000) / 100")).withColumn("post_office_100k_km2",expr("int(post_offices_ct / area * 10000000) / 100")).drop(  "gdp_capita", "pop_foreign", "gdp_2016", "gdp_capita","cars_ct", "moto_ct", "agr_area", "agr_prod", "mc_donalds_ct","hotels_ct", "beds_ct", "wal_mart_ct", "agr_area", "pop_brazil").orderBy(col("post_office_1m_inh").desc());
+
+
+
+Without cache: the preparation/ purif i cation phase is done over and over. 
+With cache/checkpoint: the data purif i cation phase is done once. 
+Data preparation is composed of 26 operations, which can be cached. Each square represents an operation, regardless of its complexity. 
+Cache/checkpoint
+
+
+
+Going further in performance optimization
+
+
+
+lot of the issues can come from key skewing (or data skewing): the data is so frag-mented among partitions that a join operation becomes very long. In this situation, you may want to investigate repartitioning the data by using coalesce(), reparti-tion(), or repartitionByRange(). Repartitioning is most likely to be an expensive operation but it will increase the performance for the join afterward. Data skewing is not a Spark-specific problem; it can arise from any distributed dataset.
+
+
+
+Summary
+
+
+
+when you use collect(), as you are bringing back data
+from the executors to the driver.
+
+
+
+Data lineage is your data transformation timeline; it identifies the source, the destination, and all the steps in between. This is part of the fundamental con-cepts of data governance.
+
+
+
+Exporting data and  building full data  pipelines
+
+
+
+Transforming columns to datetime
+
+
+
+Extract the hour from the time field, by keeping the integer part of the division by 100 of the dataset’s time:
+ .withColumn("acq_time_hr", expr("int(acq_time / 100)")) 2 Extract the minute as the modulo of a division by 100 of the dataset’s time:
+ .withColumn("acq_time_min", expr("acq_time % 100")) 3 Convert the dataset’s date to a UNIX timestamp:
+ .withColumn("acq_time2", unix_timestamp(col("acq_date"))) 4 Add the seconds to the timestamp:
+ .withColumn(  "acq_time3",expr("acq_time2 + acq_time_min * 60 + acq_time_hr * 3600")) 5 Convert the timestamp back to a date:
+ .withColumn("acq_datetime", from_unixtime(col("acq_time3")))
+
+
+
+Exporting the data
+
+
+
+Dataset<Row> viirsDf = spark.read().format("csv").option("header", true).option("inferSchema", true).load(K.TMP_STORAGE + "/" + K.VIIRS_FILE) ….withColumnRenamed("confidence", "confidence_level").withColumn("brightness", lit(null)).withColumn("bright_t31", lit(null));
+
+
+
+int low = 40;
+ int high = 100;
+ Dataset<Row> modisDf = spark.read().format("csv").option("header", true).option("inferSchema", true).load(K.TMP_STORAGE + "/" + K.MODIS_FILE) … ….withColumn("bright_ti4", lit(null)).withColumn("bright_ti5", lit(null));
+
+
+
+Dataset<Row> wildfireDf = viirsDf.unionByName(modisDf);
+
+
+
+wildfireDf.write().format("parquet").mode(SaveMode.Overwrite).save("/tmp/fires_parquet");
+
+
+
+Dataset<Row> outputDf = wildfireDf.filter("confidence_level = 'high'").repartition(1);
+
+
+
+outputDf.write().format("csv").option("header", true).mode(SaveMode.Overwrite).save("/tmp/high_confidence_fires_csv");
+
+
+
+You can use the coalesce() method or the repartition() method to reduce the number of partitions.
+
+
+
+Exploring  deployment constraints:
+Understanding the  ecosystem
+
+
+
+built-in standalone mode manages resources
+
+
+
+This is the cluster manager, whose mission is to distribute the tasks to each worker;
+
+
+
+physically, this node can also be a worker.
+
+
+
+worker nodes are managed by the master, which sends the tasks to each executor; the binary code of the application is also being shared.
+physically, this node can also be a worker.
+
+
+
+YARN manages resources in a Hadoop environment
+
+
+
+YARN
+
+
+
+is a resource manager that has been fully integrated with Apache Hadoop since Hadoop version 2
+
+
+
+YARN offers more features than running Spark in standalone mode, in terms of pro-cess isolation and prioritization
+
+
+
+YARN resource manager works with the YARN node manager to manage the executors.
+
+
+
+Accessing the data contained in files
+
+
+
+Each worker needs to access the data. Each needs to access the same file.
+
+
+
+You can make the same file available to all nodes by using a distributed filesystem, a file-sharing service, or shared drives.
+
+
+
+A distributed filesystem shares the files (or part of the files) on the different nodes to ensure both access and data replication.
+
+
+
+HDFS is designed to store large files with a write-once, read-many paradigm.
+
+
+
+consequence, HDFS is slower at writing or updating, but optimized for read access. It is not designed for low-latency write access, unlike what you would expect from an analytics system, which needs to access data quickly.
+
+
+
+HDFS uses blocks to store information.
+
+
+
+default size is 128 MB.
+
+
+
+Blocks are spawned over several servers in several racks, which requires you to be aware of the physical implementation.
+
+
+
+size of 128 MB also means that if you have a bunch of 32 KB files, performance and physical storage will be impacted: for every 32 KB file, 128 MB will be used on your disks.

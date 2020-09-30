@@ -21,7 +21,7 @@ object IngestNonSerialized {
       .withColumn("newCol2", Holder.fString(col("col2")))
       .withColumn("newCol3", Holder.fString2()(col("col2")))
       .withColumn("newCol4", Holder.fDate(col("col2")))
-      .withColumn("newCol5", HolderBase.fDate(HolderImpl.in, HolderImpl.out)(col("col2")))
+      //.withColumn("newCol5", HolderBase.fDate(HolderImpl.in, HolderImpl.out)(col("col2")))
       .show(false)
   }
 }
