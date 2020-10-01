@@ -267,7 +267,7 @@ Approximating π by using lambda functions
     +------------------------------------------------------------------------------------------------------------------------+
 
 Interacting with Spark
-Local mode, which is certainly the developers’ preferred way, as everything runs on the same computer and does not need any configuration  Cluster mode, through a resource manager, which deploys your applications in a cluster  Interactive mode, either directly or via a computer-based notebook, which is prob-ably the preferred way for data scientists and data experimenters Beginning of the lambda function in a block Reduce as a lambda function
+Local mode, which is certainly the developers’ preferred way, as everything runs on the same computer and does not need any configuration - Cluster mode, through a resource manager, which deploys your applications in a cluster - Interactive mode, either directly or via a computer-based notebook, which is prob-ably the preferred way for data scientists and data experimenters Beginning of the lambda function in a block Reduce as a lambda function
 Cluster mode
 application node. It con-tains your application code, which is called the driver program, as it drives Spark
 The appli-cation will open a session on Spark by using the Spark libraries.
@@ -473,7 +473,7 @@ Ingestion from relational databases
     +---------------------------------------------------------------------------------------------------------------+
 
 JDBC dialects provided with Spark
-IBM Db2  Apache Derby  MySQL  Microsoft SQL Server  Oracle  PostgreSQL  Teradata Database
+IBM Db2 - Apache Derby - MySQL - Microsoft SQL Server - Oracle - PostgreSQL - Teradata Database
 Filtering by using a WHERE clause
 
 String sqlQuery = "select * from film where "  + "(title like \"%ALIEN%\" or title like \"%victory%\" "  + "or title like \"%agent%\" or description like \"%action%\") "  + "and rental_rate>1 "  + "and (rating=\"G\" or rating=\"PG\")";
@@ -503,771 +503,381 @@ Code to ingest the restaurant dataset from Elasticsearch
 Advanced ingestion:
  finding data sources  and building your own
 What is a data source?
-
-
-
 Spark will store the data and schema in the dataframe. The “guy” in charge of reading and creating the dataframe is the dataframe reader.
-
-
-
 reader needs to have a way to communicate with the data source
-
-
-
 Ingestion through  structured streaming
-
-
-
 Streams are usually available in two forms: files and network streams.
-
-
-
 file stream-ing scenario, files are dropped in a directory (sometimes called a landing zone or stag-ing area; see chapter 1) and Spark takes the files from this directory as they come in. In the second scenario, data is sent over the network.
-
-
-
 way Apache Spark handles streaming is by regrouping operations over a small window of time. This is called microbatching.
-
-
-
 Consuming the records
-
-
-
 Once you have your session, you can ask the session to read from a stream by using the readStream() method.
-
-
-
 in a stream, data may or may not be there and may or may not come. Therefore, the application needs to wait for data to come, a bit like a server waiting for requests. Writing your data is done through the dataframe’s writeStream() method and the StreamingQuery object.
-
-
-
 define your streaming query object from the dataframe you use as your stream. The query will start to fill a result table, as illustrated in figure 10.5. The result table grows with the data coming in.
-
-
-
 As the data stream receives data, the data is added to the result table. The result table is an unbound table, which can grow as much as a dataframe can grow (based on your cluster’s physical capacity, of course).
-
-
-
 now, your application needs to wait for data to come in. It does so through the awaitTermination() method on the query.
 
-*
-****
-
-Dataset<Row> df = spark.readStream().format("text").load(StreamingUtils.getInputDirectory());
-
-
-
-StreamingQuery query = df.writeStream().outputMode(OutputMode.Append()).format("console").option("truncate", false).option("numRows", 3).start();
-
-
+    +---------------------------------------------------------------------------------------------------------------------------------------------------+
+    | Dataset<Row> df = spark.readStream().format("text").load(StreamingUtils.getInputDirectory());                                                     |
+    | StreamingQuery query = df.writeStream().outputMode(OutputMode.Append()).format("console").option("truncate", false).option("numRows", 3).start(); |
+    +---------------------------------------------------------------------------------------------------------------------------------------------------+
 
 Getting records, not lines
 
-
-
-StructType recordSchema = new StructType().add("fname", "string").add("mname", "string")
-
-
-
-Dataset<Row> df = spark.readStream().format("csv").schema(recordSchema).load(StreamingUtils.getInputDirectory());
-
-
-
-StreamingQuery query = df.writeStream().outputMode(OutputMode.Append()).format("console").start();
-
-
+    +-------------------------------------------------------------------------------------------------------------------+
+    | StructType recordSchema = new StructType().add("fname", "string").add("mname", "string")                          |
+    | Dataset<Row> df = spark.readStream().format("csv").schema(recordSchema).load(StreamingUtils.getInputDirectory()); |
+    | StreamingQuery query = df.writeStream().outputMode(OutputMode.Append()).format("console").start();                |
+    +-------------------------------------------------------------------------------------------------------------------+
 
 You define a stream on a dataframe by using the readStream() method fol-lowed by the start() method.
-
-
-
 Transforming  your data
-
-
-
 Working with SQL
-
-
-
 when you want to use SQL with Spark is that you need to define a view,
 
-
-
-StructType schema = DataTypes.createStructType(new StructField[] {  DataTypes.createStructField(  "geo",DataTypes.StringType,true),DataTypes.createStructField(  "yr1980",DataTypes.DoubleType,false) });
-
-
-
-Dataset<Row> df = spark.read().format("csv").option("header", true).schema(schema).load("data/populationbycountry19802010millions.csv");
- df.createOrReplaceTempView("geodata");
-
-
-
-Dataset<Row> smallCountries =  spark.sql(  "SELECT * FROM geodata WHERE yr1980 < 1 ORDER BY 2 LIMIT 5");
-
-
+    +-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+    | StructType schema = DataTypes.createStructType(new StructField[] {  DataTypes.createStructField(  "geo",DataTypes.StringType,true),DataTypes.createStructField(  "yr1980",DataTypes.DoubleType,false) }); |
+    | Dataset<Row> df = spark.read().format("csv").option("header", true).schema(schema).load("populationbycountry19802010millions.csv");                                                                       |
+    |  df.createOrReplaceTempView("geodata");                                                                                                                                                                   |
+    | Dataset<Row> smallCountries =  spark.sql(  "SELECT * FROM geodata WHERE yr1980 < 1 ORDER BY 2 LIMIT 5");                                                                                                  |
+    +-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 Creating a local temporary view is fairly simple: use the createOrReplaceTempView() dataframe’s method.
-
-
-
 The difference between local and global views
-
-
-
 views are only temp
-
-
-
 When the session ends, the local views are removed; when all sessions end, the global views are removed.
-
-
-
 As you create a new session, your data is still available in both sessions, and this is where you can use global views.
-
-
-
 Mixing the dataframe API and Spark SQL
 
-
-
 Don’t DELETE it!
-
-
-
 create a new dataframe that does not include the data you do not want.
 
-
-
-Dataset<Row> cleanedDf =  spark.sql(  "select * from geodata where geo is not null "  + "and geo != 'Africa' "  + "and geo != 'North America' "  + "and geo != 'World' "  + "and geo != 'Asia & Oceania' "  + "and geo != 'Central & South America' "  + "and geo != 'Europe' "  + "and geo != 'Eurasia' "  + "and geo != 'Middle East' "  + "order by yr2010 desc");  log.debug("Territories in cleaned dataset: {}",cleanedDf.count());
-
-
+    +---------------------------------------------------------------------------------------------------------------------------------+
+    | Dataset<Row> cleanedDf =  spark.sql("select * from geodata where geo is not null "  + "and geo != Africa "  +                   |
+    | "and geo != North America "  + "and geo != World "  + "and geo != Asia & Oceania "  + "and geo != Central & South America "  +  |
+    | "and geo != Europe "  + "and geo != Eurasia "  + "and geo != Middle East "  + "order by yr2010 desc");                          |
+    | log.debug("Territories in cleaned dataset: {}",cleanedDf.count());                                                              |
+    +---------------------------------------------------------------------------------------------------------------------------------+
 
 Spark’s SQL is based on Apache Hive’s SQL (HiveQL), which is based on SQL-92.
-
-
-
 Data is manipulated through views on top of a dataframe.
-
-
-
 Views can be local to the session, or global/shared among sessions in the same application. Views are never shared between applications.
-
-
-
 Because data is immutable, you cannot drop or modify records; you will have to re-create a new dataset.
-
-
-
 To drop records from the dataframe, however, you can build a new dataframe based on a filtered dataframe.
-
-
-
 Transforming your data
-
-
-
 Performance is not affected negatively by using an intermediate dataframe. Perfor-mance can be boosted if you cache or checkpoint the data.
-
-
-
 What’s the point of caching when everything is in memory?
-
-
-
 Spark is lazy and does not perform all the operations (the transforma-tions), unless you ask it explicitly (through an action).
-
-
-
 If you plan on reusing a dataframe for different analyses, it is a good idea to cache your data by using the cache() method. It will increase performance.
-
-
-
 Writing the transformation code
 
+    +--------------------------------------------------+
+    | intermediateDf = intermediateDf.drop("GEO.id")   |
+    | .withColumnRenamed("GEO.id2", "id")              |
+    | .withColumnRenamed("GEO.display-label", "label") |
+    | .withColumnRenamed("rescen42010", "real2010")    |
+    | .drop("resbase42010")                            |
+    | .withColumnRenamed("respop72010", "est2010");    |
+    +--------------------------------------------------+
 
-
-intermediateDf = intermediateDf.drop("GEO.id").withColumnRenamed("GEO.id2", "id").withColumnRenamed("GEO.display-label", "label").withColumnRenamed("rescen42010", "real2010").drop("resbase42010").withColumnRenamed("respop72010", "est2010").withColumnRenamed("respop72011", "est2011").withColumnRenamed("respop72012", "est2012").withColumnRenamed("respop72013", "est2013").withColumnRenamed("respop72014", "est2014").withColumnRenamed("respop72015", "est2015").withColumnRenamed("respop72016", "est2016").withColu
-mnRenamed("respop72017", "est2017");
-
-
-
-intermediateDf = intermediateDf.withColumn(  "countyState",split(intermediateDf.col("label"), ", ")).withColumn("stateId", expr("int(id/1000)")).withColumn("countyId", expr("id%1000"));
-
-
-
-intermediateDf = intermediateDf.withColumn(  "state",intermediateDf.col("countyState").getItem(1)).withColumn(  "county",intermediateDf.col("countyState").getItem(0)).drop("countyState")
-
-
-
-Dataset<Row> statDf = intermediateDf.withColumn("diff", expr("est2010-real2010")).withColumn("growth", expr("est2017-est2010"))
-
-
-
-statDf = statDf.sort(statDf.col("growth").desc());
-
-
-
-statDf = statDf.sort(statDf.col("growth"));
-
-
+    +----------------------------------------------------------------------------------------------------+
+    | intermediateDf = intermediateDf.withColumn("countyState",split(intermediateDf.col("label"), ", ")) |
+    | .withColumn("stateId", expr("int(id/1000)")).withColumn("countyId", expr("id%1000"));              |
+    | intermediateDf = intermediateDf.withColumn("state",intermediateDf.col("countyState").getItem(1))   |
+    | .withColumn(  "county",intermediateDf.col("countyState").getItem(0)).drop("countyState")           |
+    | Dataset<Row> statDf = intermediateDf.withColumn("diff", expr("est2010-real2010"))                  |
+    | .withColumn("growth", expr("est2017-est2010"))                                                     |
+    | statDf = statDf.sort(statDf.col("growth").desc());                                                 |
+    | statDf = statDf.sort(statDf.col("growth"));                                                        |
+    +----------------------------------------------------------------------------------------------------+
 
 Joining datasets
 
 
 
-Dataset<Row> censusDf = spark.read().format("csv").option("header", "true").option("inferSchema", "true").option("encoding", "cp1252").load("data/census/PEP_2017_PEPANNRES.csv");
+    +------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+    | Dataset<Row> censusDf = spark.read().format("csv").option("header", "true").option("inferSchema", "true").option("encoding", "cp1252").load("PEP_2017_PEPANNRES.csv"); |
+    | censusDf = censusDf.drop("GEO.id").drop("rescen42010").drop("resbase42010").drop("respop72010")                                                                        |
+    | .drop("respop72016").withColumnRenamed("respop72017", "pop2017").withColumnRenamed("GEO.id2", "countyId").withColumnRenamed("GEO.display-label", "county");            |
+    +------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
-
-
-censusDf = censusDf.drop("GEO.id").drop("rescen42010").drop("resbase42010").drop("respop72010") ….drop("respop72016").withColumnRenamed("respop72017", "pop2017").withColumnRenamed("GEO.id2", "countyId").withColumnRenamed("GEO.display-label", "county");
-
-
-
-Dataset<Row> higherEdDf = spark.read().format("csv").option("header", "true").option("inferSchema", "true").load("data/dapip/InstitutionCampus.csv");
- higherEdDf = higherEdDf.filter("LocationType = 'Institution'").withColumn(  "addressElements",split(higherEdDf.col("Address"), " ")); 
- higherEdDf = higherEdDf.withColumn(  "addressElementCount",size(higherEdDf.col("addressElements")));
-
-
-
-higherEdDf = higherEdDf.withColumn(  "zip9",element_at(  higherEdDf.col("addressElements"),higherEdDf.col("addressElementCount")));
-
-
-
-higherEdDf = higherEdDf.withColumn(  "splitZipCode",split(higherEdDf.col("zip9"), "-"));  higherEdDf = higherEdDf.withColumn("zip", higherEdDf.col("splitZipCode").getItem(0)).withColumnRenamed("LocationName", "location").drop("DapipId") ….drop("zip9").drop("addressElements").drop("addressElementCount").drop("splitZipCode");
-
-
-
-Dataset<Row> countyZipDf = spark.read().format("csv").option("header", "true").option("inferSchema", "true").load("data/hud/COUNTY_ZIP_092018.csv");
- countyZipDf = countyZipDf.drop("res_ratio").drop("bus_ratio").drop("oth_ratio").drop("tot_ratio");
-
-
+    +----------------------------------------------------------------------------------------------------------------------------------------------------+
+    | Dataset<Row> higherEdDf = spark.read().format("csv").option("header", "true").option("inferSchema", "true").load("InstitutionCampus.csv");         |
+    |  higherEdDf = higherEdDf.filter("LocationType = Institution").withColumn("addressElements",split(higherEdDf.col("Address"), " "));                 |
+    |  higherEdDf = higherEdDf.withColumn("addressElementCount",size(higherEdDf.col("addressElements")));                                                |
+    |                                                                                                                                                    |
+    | higherEdDf = higherEdDf.withColumn("zip9",element_at(  higherEdDf.col("addressElements"),higherEdDf.col("addressElementCount")));                  |
+    | higherEdDf = higherEdDf.withColumn("splitZipCode",split(higherEdDf.col("zip9"), "-"));                                                             |
+    | higherEdDf = higherEdDf.withColumn("zip", higherEdDf.col("splitZipCode").getItem(0)).withColumnRenamed("LocationName", "location").drop("DapipId") |
+    | .drop("zip9").drop("addressElements").drop("addressElementCount").drop("splitZipCode");                                                            |
+    |                                                                                                                                                    |
+    | Dataset<Row> countyZipDf = spark.read().format("csv").option("header", "true").option("inferSchema", "true").load("COUNTY_ZIP_092018.csv");        |
+    |  countyZipDf = countyZipDf.drop("res_ratio").drop("bus_ratio").drop("oth_ratio").drop("tot_ratio");                                                |
+    +----------------------------------------------------------------------------------------------------------------------------------------------------+
 
 Performing the joins
 
-
-
-Dataset<Row> institPerCountyDf = higherEdDf.join(  countyZipDf,higherEdDf.col("zip").equalTo(countyZipDf.col("zip")),"inner");
-
-
+    +------------------------------------------------------------------------------------------------------------------------------+
+    | Dataset<Row> institPerCountyDf = higherEdDf.join(countyZipDf,higherEdDf.col("zip").equalTo(countyZipDf.col("zip")),"inner"); |
+    +------------------------------------------------------------------------------------------------------------------------------+
 
 Performing more transformations
-
-
-
 expr() is a convenient function that allows you to compute an SQL-like state-ment when you are transforming the data.
-
-
-
 Spark supports the following kinds of joins: inner, outer, left, right, left-semi, left-anti, and cross (Cartesian).
-
-
-
 Transforming  entire documents
-
-
-
 Transforming entire documents and their structure
-
-
-
 To flatten a JSON document containing structures and arrays, you will use withColumn() and explode().
 
+    +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+    | Dataset<Row> df = spark.read().format("json").option("multiline", true).load("data/json/shipment.json");                                                                           |
+    | df = df.withColumn("supplier_name", df.col("supplier.name")).withColumn("supplier_city", df.col("supplier.city"))                                                                  |
+    | .withColumn("supplier_state", df.col("supplier.state")).withColumn("supplier_country", df.col("supplier.country")).drop("supplier")                                                |
+    | .withColumn("customer_name", df.col("customer.name")).withColumn("customer_city", df.col("customer.city"))                                                                         |
+    | .withColumn("customer_state", df.col("customer.state")).withColumn("customer_country", df.col("customer.country")).drop("customer").withColumn("items", explode(df.col("books"))); |
+    | df = df.withColumn("qty", df.col("items.qty")).withColumn("title", df.col("items.title")).drop("items").drop("books");                                                             |
+    | df.createOrReplaceTempView("shipment_detail");                                                                                                                                     |
+    |  Dataset<Row> bookCountDf =  spark.sql("SELECT COUNT(*) AS titleCount FROM shipment_detail");                                                                                      |
+    |  bookCountDf.show(false);                                                                                                                                                          |
+    +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
-
-Dataset<Row> df = spark.read().format("json").option("multiline", true).load("data/json/shipment.json");
-
-
-
-df = df.withColumn("supplier_name", df.col("supplier.name")).withColumn("supplier_city", df.col("supplier.city")).withColumn("supplier_state", df.col("supplier.state")).withColumn("supplier_country", df.col("supplier.country")).drop("supplier").withColumn("customer_name", df.col("customer.name")).withColumn("customer_city", df.col("customer.city")).withColumn("customer_state", df.col("customer.state")).withColumn("customer_country", df.col("customer.country")).drop("customer").withColumn("items", explode(df.col("books")));
-
-
-
-df = df.withColumn("qty", df.col("items.qty")).withColumn("title", df.col("items.title")).drop("items").drop("books");
-
-
-
-df.createOrReplaceTempView("shipment_detail");
- Dataset<Row> bookCountDf =  spark.sql("SELECT COUNT(*) AS titleCount FROM shipment_detail");
- bookCountDf.show(false);
-
-
-
-Note that explode() is a useful method: it create
-s a new row for each element in the given array or map column, which is really the easiest way to manipulate nested fields in a dataframe.
-
-
-
+Note that explode() is a useful method: it creates a new row for each element in the given array or map column, which is really the easiest way to manipulate nested fields in a dataframe.
 Building nested documents for transfer and storage
 
-
-
-Dataset<Row> businessDf = spark.read().format("csv").option("header", true).load("data/orangecounty_restaurants/businesses.CSV");
-
-
-
-Dataset<Row> inspectionDf = spark.read().format("csv").option("header", true).load("data/orangecounty_restaurants/inspections.CSV");
-
-
-
-Dataset<Row> factSheetDf = nestedJoin(  businessDf,inspectionDf,"business_id","business_id","inner","inspections");
-
-
+    +---------------------------------------------------------------------------------------------------------------------------------+
+    | Dataset<Row> businessDf = spark.read().format("csv").option("header", true).load("orangecounty_restaurants/businesses.CSV");    |
+    | Dataset<Row> inspectionDf = spark.read().format("csv").option("header", true).load("orangecounty_restaurants/inspections.CSV"); |
+    | Dataset<Row> factSheetDf = nestedJoin(  businessDf,inspectionDf,"business_id","business_id","inner","inspections");             |
+    +---------------------------------------------------------------------------------------------------------------------------------+
 
 Let’s study the nestedJoin() method. Spark will do the following:
- Perform a join between the two dataframes  Create a nested structure for each inspection  Group the rows from the restaurant together
+- Perform a join between the two dataframes - Create a nested structure for each inspection - Group the rows from the restaurant together
 
-
-
-private static Column[] getColumns(Dataset<Row> df) {  String[] fieldnames = df.columns();  Column[] columns = new Column[fieldnames.length]; 
- int i = 0;
- for (String fieldname : fieldnames) {  columns[i++] = df.col(fieldname);
- }  return columns;
-
-
+    +---------------------------------------------------------+
+    | private static Column[] getColumns(Dataset<Row> df) {   |
+    |     String[] fieldnames = df.columns();                 |
+    |     Column[] columns = new Column[fieldnames.length];   |
+    |     int i = 0;                                          |
+    |     for (String fieldname : fieldnames) {               |
+    |         columns[i++] = df.col(fieldname);               |
+    |     }                                                   |
+    |     return columns;                                     |
+    | }                                                       |
+    +---------------------------------------------------------+
 
 You will use a few static functions:
- struct(Column... cols) creates a Column whose datatype is a structure built from the columns passed as parameters.
- collect_list(Column col), as an aggregate function, returns a list of objects.
-It will contain duplicates.
- col(String name) returns columns based on the name, equivalent to the data-frame’s col() method.
-
-
+- struct(Column... cols) creates a Column whose datatype is a structure built from the columns passed as parameters.
+- collect_list(Column col), as an aggregate function, returns a list of objects.
+    It will contain duplicates.
+- col(String name) returns columns based on the name, equivalent to the data-frame’s col() method.
 
 Building the nested dataset
 
-
-
-Dataset<Row> resDf = leftDf.join(  rightDf,rightDf.col(rightJoinCol).equalTo(leftDf.col(leftJoinCol)),joinType);
-
-
-
-Column[] leftColumns = getColumns(leftDf);
-
-
-
-Column[] allColumns =  Arrays.copyOf(leftColumns, leftColumns.length + 1); 
- allColumns[leftColumns.length] =  struct(getColumns(rightDf)).alias(TEMP_COL);
-
-
-
-resDf = resDf.select(allColumns);
- resDf = resDf.groupBy(leftColumns).agg(  collect_list(col(TEMP_COL)).as(nestedCol));  return resDf;
-
-
+    +------------------------------------------------------------------------------------------------------------------+
+    | Dataset<Row> resDf = leftDf.join(  rightDf,rightDf.col(rightJoinCol).equalTo(leftDf.col(leftJoinCol)),joinType); |
+    | Column[] leftColumns = getColumns(leftDf);                                                                       |
+    | Column[] allColumns =  Arrays.copyOf(leftColumns, leftColumns.length + 1);                                       |
+    |  allColumns[leftColumns.length] =  struct(getColumns(rightDf)).alias(TEMP_COL);                                  |
+    | resDf = resDf.select(allColumns);                                                                                |
+    |  resDf = resDf.groupBy(leftColumns).agg(  collect_list(col(TEMP_COL)).as(nestedCol));  return resDf;             |
+    +------------------------------------------------------------------------------------------------------------------+
 
 Extending  transformations with  user-defined functions
-
-
-
 Extending Apache Spark
-
-
-
 code is executed on the worker nodes.
-
-
-
 UDF code must be serializable (to be transported to the node)
-
-
-
 UDF requiring external libraries, you must make sure that they are deployed on the worker nodes
-
-
-
 UDF’s internals are not visible to Catalyst, the UDF is treated as a black box for the optimizer. Spark won’t be able to optimize the UDF.
-
-
-
 Registering and calling a UDF
-
-
-
 Building the timestamp dataset
 
-
-
-private static Dataset<Row> createDataframe(SparkSession spark) {  StructType schema = DataTypes.createStructType(new StructField[] {  DataTypes.createStructField(  "date_str",DataTypes.StringType,false) });
-
-
-
-List<Row>rows = new ArrayList<>();
- rows.add(RowFactory.create("2019-03-11 14:30:00")); 
- rows.add(RowFactory.create("2019-04-27 16:00:00")); 
- rows.add(RowFactory.create("2020-01-26 05:00:00"));
-
-
-
-return spark.createDataFrame(rows, schema).withColumn("date", to_timestamp(col("date_str"))).drop("date_str");
-
-
+    +----------------------------------------------------------------------------------------------------------------+
+    | private static Dataset<Row> createDataframe(SparkSession spark) {                                              |
+    |     StructType schema = DataTypes.createStructType(new StructField[] {                                         |
+    |         DataTypes.createStructField("date_str",DataTypes.StringType,false)});                                  |
+    |                                                                                                                |
+    | List<Row>rows = new ArrayList<>();                                                                             |
+    |  rows.add(RowFactory.create("2019-03-11 14:30:00"));                                                           |
+    |  rows.add(RowFactory.create("2019-04-27 16:00:00"));                                                           |
+    |  rows.add(RowFactory.create("2020-01-26 05:00:00"))                                                            |
+    |                                                                                                                |
+    | return spark.createDataFrame(rows, schema).withColumn("date", to_timestamp(col("date_str"))).drop("date_str"); |
+    +----------------------------------------------------------------------------------------------------------------+
 
 Registering the UDF with Spark
-
-
-
 You first need to access the UDF registration functions by calling the udf() method from the Spark session.
-
-
-
 Then you register() by using the name of the function, an instance of the class implementing the UDF, and the return type. Upon calling the UDF, any new column that needs to be created will have this datatype. The name should be a valid Java method name.
 
-
-
-spark.udf().register("isOpen", new IsOpenUdf(), DataTypes. BooleanType);
-
-
-
+    +--------------------------------------------------------------------------+
+    | spark.udf().register("isOpen", new IsOpenUdf(), DataTypes. BooleanType); |
+    +--------------------------------------------------------------------------+
 Registration of the UDF
 
-
-
-spark.udf().register(  "isOpen",new IsOpenUdf(),DataTypes.BooleanType);
-
-
-
+    +-----------------------------------------------------------------------+
+    | spark.udf().register("isOpen",new IsOpenUdf(),DataTypes.BooleanType); |
+    +-----------------------------------------------------------------------+
 Using the UDF with the dataframe API
-
-
-
 Using the UDF
 
+    Dataset<Row> librariesDf = spark.read().format("csv").option("header", true)
+    .option("inferSchema", true).option("encoding", "cp1252")
+    .load("sdlibraries.csv")
+    .drop("Administrative_Authority").drop("Address1")
 
-
-Dataset<Row> librariesDf = spark.read().format("csv").option("header", true).option("inferSchema", true).option("encoding", "cp1252").load("data/south_dublin_libraries/sdlibraries.csv").drop("Administrative_Authority").drop("Address1").drop("Address2").drop("Town").drop("Postcode").drop("County").drop("Pho
-ne").drop("Email").drop("Website").drop("Image").drop("WGS84_Latitude").drop("WGS84_Longitude");
-
-
-
-Dataset<Row> dateTimeDf = createDataframe(spark);
-
-
-
-Dataset<Row> df = librariesDf.crossJoin(dateTimeDf);
-
-
-
-Dataset<Row> finalDf = df.withColumn(  "open",callUDF(  "isOpen",col("Opening_Hours_Monday"),col("Opening_Hours_Tuesday"),col("Opening_Hours_Wednesday"),col("Opening_Hours_Thursday"),col("Opening_Hours_Friday"),col("Opening_Hours_Saturday"),lit("Closed"),col("date")))
-
-
-
-drop("Opening_Hours_Monday").drop("Opening_Hours_Tuesday").drop("Opening_Hours_Wednesday").drop("Opening_Hours_Thursday").drop("Opening_Hours_Friday").drop("Opening_Hours_Saturday");
-
-
+    Dataset<Row> dateTimeDf = createDataframe(spark);
+    Dataset<Row> df = librariesDf.crossJoin(dateTimeDf);
+    Dataset<Row> finalDf = df.withColumn("open",callUDF("isOpen",col("Opening_Hours_Monday"),col("Opening_Hours_Tuesday"),col("Opening_Hours_Wednesday"),col("Opening_Hours_Thursday"),col("Opening_Hours_Friday"),col("Opening_Hours_Saturday"),lit("Closed"),col("date")))
+    drop("Opening_Hours_Monday").drop("Opening_Hours_Tuesday").drop("Opening_Hours_Wednesday").drop("Opening_Hours_Thursday").drop("Opening_Hours_Friday").drop("Opening_Hours_Saturday");
 
 Manipulating UDFs with SQL
-
-
-
 Using a UDF in SQL
 
-
-
-spark.udf().register(  "isOpen",new IsOpenUdf(),DataTypes.BooleanType);
-
-
-
-Dataset<Row>df = librariesDf.crossJoin(dateTimeDf);
-
-
-
-Dataset<Row>finalDf = spark.sql(  "SELECT Council_ID, Name, date, "  + "isOpen("  + "Opening_Hours_Monday, Opening_Hours_Tuesday, "
-
-
-
-+ "Opening_Hours_Wednesday, Opening_Hours_Thursday, "  + "Opening_Hours_Friday, Opening_Hours_Saturday, "  + "'closed', date) AS open FROM libraries ");
-
-
+    +-------------------------------------------------------------------------------------------------------------------------------------------------------+
+    | spark.udf().register("isOpen",new IsOpenUdf(),DataTypes.BooleanType);                                                                                 |
+    | Dataset<Row>df = librariesDf.crossJoin(dateTimeDf);                                                                                                   |
+    | Dataset<Row>finalDf = spark.sql("SELECT Council_ID, Name, date, "  + "isOpen("  + "Opening_Hours_Monday, Opening_Hours_Tuesday, "                     |
+    | + "Opening_Hours_Wednesday, Opening_Hours_Thursday, "  + "Opening_Hours_Friday, Opening_Hours_Saturday, "  + "closed, date) AS open FROM libraries"); |
+    +-------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 Implementing the UDF
-
-
-
 IsOpenUdf UDF code
 
-
-
-public class IsOpenUdf implements
-
-
-
-UDF8<String, String, String, String, String, String, String, Timestamp,Boolean> {  private static final long serialVersionUID = -216751L;
-
-
-
-@Override  public Boolean call(  String hoursMon, String hoursTue,String hoursWed, String hoursThu,String hoursFri, String hoursSat,String hoursSun,Timestamp dateTime) throws Exception {  return IsOpenService.isOpen(hoursMon, hoursTue, hoursWed, hoursThu,hoursFri, hoursSat, hoursSun, dateTime); 
- } }
-
-
+    +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+    | public class IsOpenUdf implementsUDF8<String, String, String, String, String, String, String, Timestamp,Boolean> {                                                                           |
+    |     private static final long serialVersionUID = -216751L;                                                                                                                                   |
+    | @Override  public Boolean call(String hoursMon, String hoursTue, String hoursWed, String hoursThu, String hoursFri, String hoursSat,String hoursSun,Timestamp dateTime) throws Exception {   |
+    |         return IsOpenService.isOpen(hoursMon, hoursTue, hoursWed, hoursThu,hoursFri, hoursSat, hoursSun, dateTime); } }                                                                      |
+    +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 Aggregating your data
-
-
-
 Performing basic aggregations with Spark
-
-
-
 PERFORMING AN AGGREGATION USING THE DATAFRAME API
 
-
-
-Dataset<Row> apiDf = df.groupBy(col("firstName"), col("lastName"), col("state")).agg(  sum("quantity"),sum("revenue"),avg("revenue"));
-
-
+    +-----------------------------------------------------------+
+    | Dataset<Row> apiDf = df                                   |
+    | .groupBy(col("firstName"), col("lastName"), col("state")) |
+    | .agg(sum("quantity"),sum("revenue"),avg("revenue"));      |
+    +-----------------------------------------------------------+
 
 PERFORMING AN AGGREGATION USING SPARK SQL
 
-
-
-df.createOrReplaceTempView("orders");  String sqlStatement = "SELECT " +  " firstName, " +  " lastName, " +  " state, " +  " SUM(quantity), " +  " SUM(revenue), " +  " AVG(revenue) " +  " FROM orders " +  " GROUP BY firstName, lastName, state"; 
- Dataset<Row> sqlDf = spark.sql(sqlStatement);
-
-
+    +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+    | df.createOrReplaceTempView("orders");                                                                                                                                                                          |
+    | String sqlStatement = "SELECT " +  " firstName, " +  " lastName, " +  " state, " +  " SUM(quantity), " +  " SUM(revenue), " +  " AVG(revenue) " +  " FROM orders " +  " GROUP BY firstName, lastName, state";  |
+    |  Dataset<Row> sqlDf = spark.sql(sqlStatement);                                                                                                                                                                 |
+    +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 Code to compute the average enrollment for each NYC school
 
-
-
-Dataset<Row> averageEnrollmentDf = masterDf.groupBy(col("schoolId"), col("schoolYear")).avg("enrolled", "present", "absent").orderBy("schoolId", "schoolYear");
-
-
-
-Dataset<Row> studentCountPerYearDf = averageEnrollmentDf.withColumnRenamed("avg(enrolled)", "enrolled").groupBy(col("schoolYear")).agg(sum("enrolled").as("enrolled")).withColumn(  "enrolled",floor("enrolled").cast(DataTypes.LongType)).orderBy("schoolYear");
-
-
-
-Dataset<Row> maxEnrolledPerSchooldf = masterDf.groupBy(col("schoolId"), col("schoolYear")).max("enrolled").orderBy("schoolId", "schoolYear");
-
-
-
-Dataset<Row> minAbsenteeDf = masterDf.groupBy(col("schoolId"), col("schoolYear")).min("absent").orderBy("schoolId", "schoolYear");
-
-
+    +-----------------------------------------------------------------------------------------------------------------------------------------------------------------+
+    | Dataset<Row> averageEnrollmentDf = masterDf.groupBy(col("schoolId"), col("schoolYear")).avg("enrolled", "present", "absent").orderBy("schoolId", "schoolYear"); |
+    | Dataset<Row> studentCountPerYearDf = averageEnrollmentDf.withColumnRenamed("avg(enrolled)", "enrolled").groupBy(col("schoolYear"))                              |
+    | .agg(sum("enrolled").as("enrolled")).withColumn("enrolled",floor("enrolled").cast(DataTypes.LongType)).orderBy("schoolYear");                                   |
+    | Dataset<Row> maxEnrolledPerSchooldf = masterDf.groupBy(col("schoolId"), col("schoolYear")).max("enrolled").orderBy("schoolId", "schoolYear");                   |
+    | Dataset<Row> minAbsenteeDf = masterDf.groupBy(col("schoolId"), col("schoolYear")).min("absent").orderBy("schoolId", "schoolYear");                              |
+    +-----------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 Code to compute the five schools with the least and most absenteeism
 
-
-
-Dataset<Row> absenteeRatioDf = masterDf.groupBy(col("schoolId"), col("schoolYear")).agg(  max("enrolled").alias("enrolled"),avg("absent").as("absent"));
- absenteeRatioDf = absenteeRatioDf.groupBy(col("schoolId")).agg(  avg("enrolled").as("avg_enrolled"),avg("absent").as("avg_absent")).withColumn("%", expr("avg_absent / avg_enrolled * 100")).filter(col("avg_enrolled").$greater(10)).orderBy("%");
-
-
+    +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+    | Dataset<Row> absenteeRatioDf = masterDf                                                                                                                                                  |
+    | .groupBy(col("schoolId"), col("schoolYear"))                                                                                                                                             |
+    | .agg(max("enrolled").alias("enrolled"),avg("absent").as("absent"));                                                                                                                      |
+    |  absenteeRatioDf = absenteeRatioDf                                                                                                                                                       |
+    |  .groupBy(col("schoolId"))                                                                                                                                                               |
+    |  .agg(avg("enrolled").as("avg_enrolled"),avg("absent").as("avg_absent")).withColumn("%", expr("avg_absent / avg_enrolled * 100")).filter(col("avg_enrolled").$greater(10)).orderBy("%"); |
+    +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 Building custom aggregations with UDAFs
-
-
-
 Going further
-
-
-
 Cache and checkpoint:
 Enhancing Spark’s  performances
-
-
-
 Caching and checkpointing can increase performance
-
-
-
 Apache Spark offers two distinct techniques for increasing performance:
- Caching, via cache() or persist(), which can save your data and
-the data lineage  Checkpointing, via checkpoint(), to save your data, without the lineage
-
-
-
+- Caching, via cache() or persist(), which can save your data and
+the data lineage - Checkpointing, via checkpoint(), to save your data, without the lineage
 The usefulness of Spark caching
-
-
-
 Caching will persist the dataframe in memory, or disk, or a combination of memory and disk.
-
-
-
 cache() is a synonym for persist(StorageLevel.MEMORY_ONLY)
-
-
-
 Available storage levels with the persist() method are as follows:
- MEMORY_ONLY—This is the default level. It will store the RDD composing the dataframe as deserialized Java objects in the JVM. If the RDD does not fit in memory, Spark will not cache the partitions;
-
-
-
+- MEMORY_ONLY—This is the default level. It will store the RDD composing the dataframe as deserialized Java objects in the JVM. If the RDD does not fit in memory, Spark will not cache the partitions;
 MEMORY_AND_DISK—Similar to MEMORY_ONLY, except that when Spark runs out of memory, it will serialize the RDD on disk.
-
-
-
 MEMORY_ONLY_SER—Similar to MEMORY_ONLY, but the Java objects are serialized.
 This should take less space, but reading will consume more CPU.
-
-
-
 MEMORY_AND_DISK_SER—Similar to MEMORY_AND_DISK with serialization.
- DISK_ONLY—Stores the partitions of the RDD composing the dataframe to disk.
- OFF_HEAP—Similar behavior to MEMORY_ONLY_SER, but it uses off-heap memory.
-
-
-
+- DISK_ONLY—Stores the partitions of the RDD composing the dataframe to disk.
+- OFF_HEAP—Similar behavior to MEMORY_ONLY_SER, but it uses off-heap memory.
 unpersist() method will clear the cache whether you created it via cache() or persist()
-
-
-
 effectiveness of Spark checkpointing
-
-
-
 checkpoint() method will truncate the DAG (or logical plan) and save the content of the dataframe to disk.
-
-
-
 dataframe is saved in the checkpoint directory.
-
-
-
 Using caching and checkpointing
-
-
-
 CacheCheckpointApp
-
-
-
 Specifies that the executor memory is 70 GB.
 (You can run this on a machine with less.)
-
-
-
 Specifies that the driver memory is 50 GB; if you run this app in local mode, you’re already running the driver, so you can’t change its memory
 
-
-
-spark = SparkSession.builder().appName("Lab around cache and checkpoint").master("local[*]").config("spark.executor.memory", "70g").config("spark.driver.memory", "50g").config("spark.memory.offHeap.enabled", true).config("spark.memory.offHeap.size", "16g").getOrCreate();
- SparkContext sc = spark.sparkContext();
-
-
-
-long t0 = processDataframe(recordCount, Mode.NO_CACHE_NO_CHECKPOINT);
- long t1 = processDataframe(recordCount, Mode.CACHE);  long t2 = processDataframe(recordCount, Mode.CHECKPOINT);  long t3 = processDataframe(recordCount, Mode.CHECKPOINT_NON_EAGER);
-
-
+    +----------------------------------------------------------------------------------------------------------------------------------------------+
+    | spark = SparkSession.builder().appName("Lab around cache and checkpoint").master("local[*]").config("spark.executor.memory", "70g")          |
+    | .config("spark.driver.memory", "50g").config("spark.memory.offHeap.enabled", true).config("spark.memory.offHeap.size", "16g").getOrCreate(); |
+    |  SparkContext sc = spark.sparkContext();                                                                                                     |
+    | long t0 = processDataframe(recordCount, Mode.NO_CACHE_NO_CHECKPOINT);                                                                        |
+    |  long t1 = processDataframe(recordCount, Mode.CACHE);  long t2 = processDataframe(recordCount, Mode.CHECKPOINT);                             |
+    |  long t3 = processDataframe(recordCount, Mode.CHECKPOINT_NON_EAGER);                                                                         |
+    +----------------------------------------------------------------------------------------------------------------------------------------------+
 
 Even if you set values of memory higher than the available memory, the JVM will simply not be able to use it.
-
-
-
 When you are running in local mode, you are executing the driver: you will not be able to change the memory allocated to the driver after it is started. That’s just how the JVM works. However, when you spark-submit a job to a cluster, Spark will spawn the JVM and then will use the provided parameters.
-
-
-
 data resides in the worker nodes. The collect() method will bring back the dataframe’s content from all the executors to the driver. If you have 100 executors (on 100 worker nodes), and your dataframe contains 50 GB, your network will endure 100 transfers of 50 GB, and your driver will need 5 TB of memory, as the collect operation will bring a list of objects in the heap memory of the driver’s JVM.
-
-
-
 CacheCheckpointApp
 
-
-
-private long processDataframe(int recordCount, Mode mode) {  Dataset<Row> df =  RecordGeneratorUtils.createDataframe(this.spark, recordCount);
-
-
-
-Dataset<Row> topDf = df.filter(col("rating").equalTo(5));
-
-
-
-switch (mode) {  case CACHE:
- topDf = topDf.cache();  break;
-
-
-
-case CHECKPOINT:
- topDf = topDf.checkpoint();  break;
-
-
-
-List<Row> langDf =  topDf.groupBy("lang").count().orderBy("lang").collectAsList(); 
- List<Row> yearDf =  topDf.groupBy("year").count().orderBy(col("year").desc()).collectAsList();
-
-
+    +-------------------------------------------------------------------------------------------------+
+    | private long processDataframe(int recordCount, Mode mode) {                                     |
+    |     Dataset<Row> df =  RecordGeneratorUtils.createDataframe(this.spark, recordCount);           |
+    | Dataset<Row> topDf = df.filter(col("rating").equalTo(5));                                       |
+    | switch (mode) {  case CACHE:                                                                    |
+    |  topDf = topDf.cache();  break;                                                                 |
+    | case CHECKPOINT:                                                                                |
+    |  topDf = topDf.checkpoint();  break;                                                            |
+    | List<Row> langDf =  topDf.groupBy("lang").count().orderBy("lang").collectAsList();              |
+    |  List<Row> yearDf =  topDf.groupBy("year").count().orderBy(col("year").desc()).collectAsList(); |
+    +-------------------------------------------------------------------------------------------------+
 
 Cache uses memory. Checkpoints are saved in files.
-
-
-
 checkpoints are never clean and will stay on disk
-
-
-
 Caching in action
 
+    Dataset<Row> df = spark.read().format("csv").option("header", true).option("sep", ";").option("enforceSchema", true)
+    .option("nullValue", "null").option("inferSchema", true).load("BRAZIL_CITIES.csv");
 
+    long t0 = process(df, Mode.NO_CACHE_NO_CHECKPOINT); 
+     long t1 = process(df, Mode.CACHE);  long t2 = process(df, Mode.CHECKPOINT);  long t3 = process(df, Mode.CHECKPOINT_NON_EAGER);
+    long process(Dataset<Row> df, Mode mode) {  long t0 = System.currentTimeMillis();
 
-Dataset<Row> df = spark.read().format("csv").option("header", true).option("sep", ";").option("enforceSchema", true).option("nullValue", "null").option("inferSchema", true).load("data/brazil/BRAZIL_CITIES.csv");
+    df = df.orderBy(col("CAPITAL").desc()).withColumn("WAL-MART",when(col("WAL-MART").isNull(), 0).otherwise(col("WAL-MART")))
+    .withColumn("MAC",when(col("MAC").isNull(), 0).otherwise(col("MAC"))).withColumn("GDP", regexp_replace(col("GDP"), ",", "."))
+    .withColumn("GDP", col("GDP").cast("float")).withColumn("area", regexp_replace(col("area"), ",", "")) 
+    .withColumn("area", col("area").cast("float")).groupBy("STATE").agg(  first("CITY").alias("capital"),sum("IBGE_RES_POP_BRAS").alias("pop_brazil"),sum("IBGE_RES_POP_ESTR").alias("pop_foreign"),sum("POP_GDP").alias("pop_2016"),sum("GDP").alias("gdp_2016"),sum("POST_OFFICES").alias("post_offices_ct"),sum("WAL-MART").alias("wal_mart_ct"),sum("MAC").alias("mc_donalds_ct"),sum("Cars").alias("cars_ct"),sum("Motorcycles").alias("moto_ct"),sum("AREA").alias("area"),sum("IBGE_PLANTED_AREA").alias("agr_area"),sum("IBGE_CROP_PRODUCTION_$").alias("agr_prod"),sum("HOTELS").alias("hotels_ct"),sum("BEDS").alias("beds_ct")).withColumn("agr_area", expr("agr_area / 100")).orderBy(col("STATE")).withColumn("gdp_capita", expr("gdp_2016 / pop_2016 * 1000"));
 
-
-
-long t0 =
-process(df, Mode.NO_CACHE_NO_CHECKPOINT); 
- long t1 = process(df, Mode.CACHE);  long t2 = process(df, Mode.CHECKPOINT);  long t3 = process(df, Mode.CHECKPOINT_NON_EAGER);
-
-
-
-long process(Dataset<Row> df, Mode mode) {  long t0 = System.currentTimeMillis();
-
-
-
-df = df.orderBy(col("CAPITAL").desc()).withColumn("WAL-MART",when(col("WAL-MART").isNull(), 0).otherwise(col("WAL-MART"))).withColumn("MAC",when(col("MAC").isNull(), 0).otherwise(col("MAC"))).withColumn("GDP", regexp_replace(col("GDP"), ",", ".")).withColumn("GDP", col("GDP").cast("float")).withColumn("area", regexp_replace(col("area"), ",", "")) Listing 16.5 Processing of the dataset in various modes Reads a CSV file with header; 
-stores it in a dataframe Creates and processes the records without cache or checkpoint Creates and processes the records with cache Creates and processes the records with a checkpoint Creates and processes the records with a non-eager checkpoint Replaces null values with 0 Replaces commas with periods in a string, so the field can be converted to a float
-
-
-
-.withColumn("area", col("area").cast("float")).groupBy("STATE").agg(  first("CITY").alias("capital"),sum("IBGE_RES_POP_BRAS").alias("pop_brazil"),sum("IBGE_RES_POP_ESTR").alias("pop_foreign"),sum("POP_GDP").alias("pop_2016"),sum("GDP").alias("gdp_2016"),sum("POST_OFFICES").alias("post_offices_ct"),sum("WAL-MART").alias("wal_mart_ct"),sum("MAC").alias("mc_donalds_ct"),sum("Cars").alias("cars_ct"),sum("Motorcycles").alias("moto_ct"),sum("AREA").alias("area"),sum("IBGE_PLANTED_AREA").alias("agr_area"),sum("IBGE_CROP_PRODUCTION_$").alias("agr_prod"),sum("HOTELS").alias("hotels_ct"),sum("BEDS").alias("beds_ct")).withColumn("agr_area", expr("agr_area / 100")).orderBy(col("STATE")).withColumn("gdp_capita", expr("gdp_2016 / pop_2016 * 1000"));
-
-
-
-switch (mode) {  case CACHE:  df = df.cache();
- break;
- case CHECKPOINT:  df = df.checkpoint();
- break;
- case CHECKPOINT_NON_EAGER:  df = df.checkpoint(false);
- break;
+    switch (mode) {  case CACHE:  df = df.cache();
+     break;
+     case CHECKPOINT:  df = df.checkpoint();
+     break;
+     case CHECKPOINT_NON_EAGER:  df = df.checkpoint(false);
+     break;
 
 
 
 Analytics
 
-
-
-Dataset<Row> popDf = df.drop(  "area", "pop_brazil", "pop_foreign", "post_offices_ct","cars_ct", "moto_ct", "mc_donalds_ct", "agr_area", "agr_prod","wal_mart_ct", "hotels_ct", "beds_ct", "gdp_capita", "agr_area","gdp_2016").orderBy(col("pop_2016").desc());
-
-
-
-Dataset<Row> walmartPopDf = df.withColumn("walmart_1m_inh",expr("int(wal_mart_ct / pop_2016 * 100000000) / 100")).drop(  "pop_brazil", "pop_foreign", "post_offices_ct", "cars_ct","moto_ct", "area", "agr_area", "agr_prod", "mc_donalds_ct","hotels_ct", "beds_ct", "gdp_capita", "agr_area", "gdp_2016").orderBy(col("walmart_1m_inh").desc());
-
-
-
-Dataset<Row> postOfficeDf = df.withColumn("post_office_1m_inh",expr("int(post_offices_ct / pop_2016 * 100000000) / 100")).withColumn("post_office_100k_km2",expr("int(post_offices_ct / area * 10000000) / 100")).drop(  "gdp_capita", "pop_foreign", "gdp_2016", "gdp_capita","cars_ct", "moto_ct", "agr_area", "agr_prod", "mc_donalds_ct","hotels_ct", "beds_ct", "wal_mart_ct", "agr_area", "pop_brazil").orderBy(col("post_office_1m_inh").desc());
-
-
+    Dataset<Row> popDf = df.drop(  "area", "pop_brazil", "pop_foreign", "post_offices_ct","cars_ct", "moto_ct", "mc_donalds_ct", "agr_area", "agr_prod","wal_mart_ct", "hotels_ct", "beds_ct", "gdp_capita", "agr_area","gdp_2016").orderBy(col("pop_2016").desc());
+    Dataset<Row> walmartPopDf = df.withColumn("walmart_1m_inh",expr("int(wal_mart_ct / pop_2016 * 100000000) / 100")).drop(  "pop_brazil", "pop_foreign", "post_offices_ct", "cars_ct","moto_ct", "area", "agr_area", "agr_prod", "mc_donalds_ct","hotels_ct", "beds_ct", "gdp_capita", "agr_area", "gdp_2016").orderBy(col("walmart_1m_inh").desc());
+    Dataset<Row> postOfficeDf = df.withColumn("post_office_1m_inh",expr("int(post_offices_ct / pop_2016 * 100000000) / 100")).withColumn("post_office_100k_km2",expr("int(post_offices_ct / area * 10000000) / 100")).drop(  "gdp_capita", "pop_foreign", "gdp_2016", "gdp_capita","cars_ct", "moto_ct", "agr_area", "agr_prod", "mc_donalds_ct","hotels_ct", "beds_ct", "wal_mart_ct", "agr_area", "pop_brazil").orderBy(col("post_office_1m_inh").desc());
 
 Without cache: the preparation/ purif i cation phase is done over and over. 
 With cache/checkpoint: the data purif i cation phase is done once. 
 Data preparation is composed of 26 operations, which can be cached. Each square represents an operation, regardless of its complexity. 
 Cache/checkpoint
-
-
-
 Going further in performance optimization
-
-
-
 lot of the issues can come from key skewing (or data skewing): the data is so frag-mented among partitions that a join operation becomes very long. In this situation, you may want to investigate repartitioning the data by using coalesce(), reparti-tion(), or repartitionByRange(). Repartitioning is most likely to be an expensive operation but it will increase the performance for the join afterward. Data skewing is not a Spark-specific problem; it can arise from any distributed dataset.
-
-
-
 Summary
 when you use collect(), as you are bringing back data
 from the executors to the driver.
