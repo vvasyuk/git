@@ -7,6 +7,11 @@ object optionTest {
 //    o.foreach(println(_))
 //    o1.foreach(println(_))
     optionMapTest
+
+    println(Some(996).forall(_ == 996))
+
+    assert(Some(996).forall(_ == 996))
+    assert(None.forall(_ == 996))
   }
 
   def optionMapTest()={
@@ -15,4 +20,6 @@ object optionTest {
     val m1 = o.map(x=>x+1).map(x=>x+1)
     println(m1.get)
   }
+
+
 }

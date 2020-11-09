@@ -1,0 +1,133 @@
+--------------------
+| functional programming
+--------------------
+    - removing side effect
+      +------------------------------------------------------+    +--------------------------------------------------------------------+  +-----------------------------------------------------------------------+
+      | class Cafe {                                         |    | case class Charge(cc: CreditCard, amount: Double) {                |  | def buyCoffees(cc: CreditCard, n: Int): (List[Coffee], Charge) = {    |
+      |   def buyCoffee(cc: CreditCard): (Coffee, Charge) = {|    |   def combine(other: Charge): Charge =                             |  |   val purchases: List[(Coffee, Charge)] = List.fill(n)(buyCoffee(cc)) |
+      |     val cup = new Coffee(                            |    |     if (cc == other.cc)                                            |  |   val (coffees, charges) = purchases.unzip                            |
+      |     (cup, Charge(cc, cup.price)                      |    |       Charge(cc, amount plus other.amount)                         |  |   (coffees, charges.reduce((c1,c2) => c1.combine(c2)))                |
+      |   }                                                  |    |     else                                                           |  | }                                                                     |
+      | }                                                    |    |       throw new Exception(Cant combine charges to different cards) |  +-----------------------------------------------------------------------+
+      +------------------------------------------------------+    | }                                                                  |
+                                                                  +--------------------------------------------------------------------+
+
+    - functional programming in Scala
+      - writing loops functionally                - higher-order function
+      +-------------------------------------+     +-----------------------------------------------------------+
+      |   def factorial(n: Int): Int = {    |     | def formatResult(name: String, n: Int, f: Int => Int) = { |
+      |     def go(n: Int, acc: Int): Int = |     |   val msg = "The %s of %d is %d."                         |
+      |       if (n <= 0) acc               |     |   msg.format(name, n, f(n))                               |
+      |       else go(n-1, n*acc)           |     | }                                                         |
+      |     go(n, 1)                        |     +-----------------------------------------------------------+
+      |   }                                 |
+      +-------------------------------------+
+    - polymorphic functions: abstracting over types
+      +----------------------------------------------------------+
+      | def findFirst[A](as: Array[A], p: A => Boolean): Int = { |
+      |   @annotation.tailrec                                    |
+      |   def loop(n: Int): Int =                                |
+      |     if (n >= as.length) -1                               |
+      |     else if (p(as(n))) n                                 |
+      |     else loop(n + 1)                                     |
+      |   loop(0)                                                |
+      | }                                                        |
+      +----------------------------------------------------------+
+    - isSorted
+      +-----------------------------------------------------------------------+
+      | def isSorted[A](as: Array[A], ordered: (A,A) => Boolean): Boolean = { |
+      |   def loop(a: Int, b: Int, as: Array[A]): Boolean = {                 |
+      |     b match {                                                         |
+      |       case i if i == as.size => true                                  |
+      |       case i if ordered(as(a), as(b)) => loop(b, b+1, as)             |
+      |       case _ => false                                                 |
+      |     }                                                                 |
+      |   }                                                                   |
+      |   loop(0, 1, as)                                                      |
+      | }                                                                     |
+      +-----------------------------------------------------------------------+
+    - partial function
+      +----------------------------------------------------+
+      | def partial1[A,B,C](a: A, f: (A,B) => C): B => C = |  // value returned by partial1 will be a function, of type B => C
+      |   (b: B) => f(a, b)                                |  // B = we have it; to return C = we need to call teh function
+      +----------------------------------------------------+
+    - curry                                                     - example usage
+      +-----------------------------------------------------+   +----------------------------------+
+      | def curry[A,B,C](f: (A, B) => C): A => (B => C) = { |   | val fSum = (a:Int, b:Int) => a+b |
+      |   (a:A) => (b:B) => f(a,b)                          |   | val partial1 = curry(fSum)       |
+      | }                                                   |   | assert(fSum(1,1) == 2)           |
+      +-----------------------------------------------------+   | assert(partial1(1)(1) == 2)      |
+                                                                | val partial2 = partial1(1)       |
+                                                                | assert(partial2(1) == 2)         |
+                                                                +----------------------------------+
+    - uncurry                                                   - example usage
+      +----------------------------------------------------+    +-----------------------------------------+
+      | def uncurry[A,B,C](f: A => B => C): (A, B) => C ={ |    |   val fSum = (a:Int) => (b:Int) => a+b  |
+      |   (a: A, b: B) => f(a)(b)                          |    |   assert(fSum(1)(1)==2)                 |   
+      | }                                                  |    |   val fSumUncurry = uncurry(fSum)       |
+      +----------------------------------------------------+    |   assert(fSumUncurry(1, 1)==2)          |
+                                                                +-----------------------------------------+
+    - compose                                                   - example usage
+      +-----------------------------------------------------+   +-------------------------------+
+      | def compose[A,B,C](f: B => C, g: A => B): A => C ={ |   | val f1 = (a:Int) => a+1       |
+      |   (a: A) => f(g(a))                                 |   | val f2 = (b:Int) => b+2       |
+      | }                                                   |   | val composed = compose(f1,f2) |
+      +-----------------------------------------------------+   | assert(composed(1)==4)        |
+                                                                +-------------------------------+
+
+--------------------
+| functional data structures
+--------------------
+  -singly linked lists
+    +-------------------------------------------------------------+
+    | sealed trait List[+A]                                       |   // sealed means that all implementations of the trait must be declared in this file
+    | case object Nil extends List[Nothing]                       |   // [+A] - covariant or positive (List[Dog] subtype of List[Animal] if Dog subtype of Animal)
+    | case class Cons[+A](head: A, tail: List[A]) extends List[A] |   // Nil extends List[Nothing]. Nothing subtype of all types Nil can be considered a List[Int], a List[Double]
+    | object List {                                               |   
+    |   def sum(ints: List[Int]): Int = ints match {              |   List("a","b")   
+    |     case Nil => 0                                           |   Cons(a,cons(b,Nil))
+    |     case Cons(x,xs) => x + sum(xs)                          |   cons    cons
+    |   }                                                         |   +---+   +---+
+    |   def product(ds: List[Double]): Double = ds match {        |   |a|.+-->+b|.|
+    |     case Nil => 1.0                                         |   +---+   +---+
+    |     case Cons(0.0, _) => 0.0                                |
+    |     case Cons(x,xs) => x * product(xs)                      |
+    |   }                                                         |
+    |   def apply[A](as: A*): List[A] =                           |   // Variadic function syntax.
+    |     if (as.isEmpty) Nil                                     |
+    |     else Cons(as.head, apply(as.tail: _*))                  |
+    | }                                                           |
+    +-------------------------------------------------------------+
+
+  -pattern matching
+    List(1,2,3) match { case _ => 42 }          // _ matches any expression
+    List(1,2,3) match { case Cons(h,_) => h }   // 1
+    List(1,2,3) match { case Cons(_,t) => t }   // 2,3
+    List(1,2,3) match { case Nil => 42 }        // MatchError
+
+  - data sharing in functional data structures
+    - when we add element to fron of list - we return new list - initial list is unharmed
+      we do not copy elements - we reuse them as they are immutable
+    +--------------------------------------------------+    +------------------------------------------------------------------+
+    | def tail[A](l: myList[A]): myList[A] = l match { |    | def setHeader[A](l: myList[A], header: A): myList[A] = l match { |
+    |     case Nil => sys.error("tail of empty list")  |    |   case Nil => Cons(header, Nil)                                  |
+    |     case Cons(_,t) => t                          |    |   case Cons(_,t) => Cons(header, t)                              |
+    | }                                                |    | }                                                                |
+    +--------------------------------------------------+    +------------------------------------------------------------------+
+
+  - efficiency of data sharing
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+

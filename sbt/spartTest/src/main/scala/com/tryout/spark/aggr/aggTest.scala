@@ -36,12 +36,16 @@ object aggTest {
       ("14", "id3", "4", "10"),
       ("15", "id4", "4", "10")
     ).toDF("id1", "id2", "id3", "number")
-
-    dfCnt.groupBy("id1", "id2", "id3")
+    dfCnt.printSchema()
+    val res = dfCnt.groupBy("id1", "id2", "id3")
       .agg(sum("number"))
       .withColumn("windowCnt", count(lit(1)).over(Window.partitionBy("id1", "id2")))
       .filter(col("windowCnt") === "1")
-      .show(false)
+      //.show(false)
+    res.printSchema()
+    res.show(false)
+
+
 
 //    val dfDouble = df.withColumn("number", 'number.cast(DoubleType))
 //    val df0Double = df0.withColumn("number", 'number.cast(DoubleType))
