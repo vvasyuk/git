@@ -1,0 +1,47 @@
+products:
+   D:\work\tryout\scalaNew\src\test\scala\rest\WiremockTest.scala -> D:\work\tryout\scalaNew\build\classes\scala\test\rest\WiremockTest.class
+   D:\work\tryout\scalaNew\src\test\scala\ScalaTestMockFactory.scala -> D:\work\tryout\scalaNew\build\classes\scala\test\Player$.class
+   D:\work\tryout\scalaNew\src\test\scala\ScalaTestMockFactory.scala -> D:\work\tryout\scalaNew\build\classes\scala\test\Player.class
+   D:\work\tryout\scalaNew\src\test\scala\ScalaTestMockFactory.scala -> D:\work\tryout\scalaNew\build\classes\scala\test\PlayerBase.class
+   D:\work\tryout\scalaNew\src\test\scala\ScalaTestMockFactory.scala -> D:\work\tryout\scalaNew\build\classes\scala\test\PlayerObj$.class
+   D:\work\tryout\scalaNew\src\test\scala\ScalaTestMockFactory.scala -> D:\work\tryout\scalaNew\build\classes\scala\test\PlayerObj.class
+   D:\work\tryout\scalaNew\src\test\scala\ScalaTestMockFactory.scala -> D:\work\tryout\scalaNew\build\classes\scala\test\PlayerTrait.class
+   D:\work\tryout\scalaNew\src\test\scala\ScalaTestMockFactory.scala -> D:\work\tryout\scalaNew\build\classes\scala\test\ScalaTestMock$$anon$1.class
+   D:\work\tryout\scalaNew\src\test\scala\ScalaTestMockFactory.scala -> D:\work\tryout\scalaNew\build\classes\scala\test\ScalaTestMock$$anon$2.class
+   D:\work\tryout\scalaNew\src\test\scala\ScalaTestMockFactory.scala -> D:\work\tryout\scalaNew\build\classes\scala\test\ScalaTestMock$$anon$3.class
+   D:\work\tryout\scalaNew\src\test\scala\ScalaTestMockFactory.scala -> D:\work\tryout\scalaNew\build\classes\scala\test\ScalaTestMock$MockablePlayer$1.class
+   D:\work\tryout\scalaNew\src\test\scala\ScalaTestMockFactory.scala -> D:\work\tryout\scalaNew\build\classes\scala\test\ScalaTestMock.class
+   D:\work\tryout\scalaNew\src\test\scala\SimpleScalaTest.scala -> D:\work\tryout\scalaNew\build\classes\scala\test\SimpleScalaTest.class
+binary dependencies:
+   D:\work\tryout\scalaNew\src\test\scala\rest\WiremockTest.scala -> C:\Users\Jopa\.gradle\caches\modules-2\files-2.1\com.github.tomakehurst\wiremock\1.18\6585963a8b4d636ac4d2d1aad0b4b80f13851835\wiremock-1.18.jar
+   D:\work\tryout\scalaNew\src\test\scala\rest\WiremockTest.scala -> C:\Users\Jopa\.gradle\caches\modules-2\files-2.1\org.scala-lang\scala-library\2.12.8\36b234834d8f842cdde963c8591efae6cf413e3f\scala-library-2.12.8.jar
+   D:\work\tryout\scalaNew\src\test\scala\rest\WiremockTest.scala -> C:\Users\Jopa\.gradle\caches\modules-2\files-2.1\org.scalactic\scalactic_2.12\3.2.0-SNAP9\89ecad119bb02d3f2e78392e9c2c590ff562c9e1\scalactic_2.12-3.2.0-SNAP9.jar
+   D:\work\tryout\scalaNew\src\test\scala\rest\WiremockTest.scala -> C:\Users\Jopa\.gradle\caches\modules-2\files-2.1\org.scalaj\scalaj-http_2.12\2.3.0\76523a7b8462768e81d7b4b94dee596b4e418cc1\scalaj-http_2.12-2.3.0.jar
+   D:\work\tryout\scalaNew\src\test\scala\rest\WiremockTest.scala -> C:\Users\Jopa\.gradle\caches\modules-2\files-2.1\org.scalatest\scalatest_2.12\3.2.0-SNAP9\4582542363cfb2dd1004684efbe8a928b53fcb7\scalatest_2.12-3.2.0-SNAP9.jar
+   D:\work\tryout\scalaNew\src\test\scala\rest\WiremockTest.scala -> D:\work\installed\java\jre\lib\rt.jar
+   D:\work\tryout\scalaNew\src\test\scala\ScalaTestMockFactory.scala -> C:\Users\Jopa\.gradle\caches\modules-2\files-2.1\org.scala-lang\scala-library\2.12.8\36b234834d8f842cdde963c8591efae6cf413e3f\scala-library-2.12.8.jar
+   D:\work\tryout\scalaNew\src\test\scala\ScalaTestMockFactory.scala -> C:\Users\Jopa\.gradle\caches\modules-2\files-2.1\org.scalactic\scalactic_2.12\3.2.0-SNAP9\89ecad119bb02d3f2e78392e9c2c590ff562c9e1\scalactic_2.12-3.2.0-SNAP9.jar
+   D:\work\tryout\scalaNew\src\test\scala\ScalaTestMockFactory.scala -> C:\Users\Jopa\.gradle\caches\modules-2\files-2.1\org.scalamock\scalamock-core_2.12\3.6.0\429057c556b51ad7c3d4d28e90484422e617628d\scalamock-core_2.12-3.6.0.jar
+   D:\work\tryout\scalaNew\src\test\scala\ScalaTestMockFactory.scala -> C:\Users\Jopa\.gradle\caches\modules-2\files-2.1\org.scalamock\scalamock-scalatest-support_2.12\3.6.0\44cf2468ef74699a73d40e5084115bfdd39cad2b\scalamock-scalatest-support_2.12-3.6.0.jar
+   D:\work\tryout\scalaNew\src\test\scala\ScalaTestMockFactory.scala -> C:\Users\Jopa\.gradle\caches\modules-2\files-2.1\org.scalatest\scalatest_2.12\3.2.0-SNAP9\4582542363cfb2dd1004684efbe8a928b53fcb7\scalatest_2.12-3.2.0-SNAP9.jar
+   D:\work\tryout\scalaNew\src\test\scala\ScalaTestMockFactory.scala -> D:\work\installed\java\jre\lib\rt.jar
+   D:\work\tryout\scalaNew\src\test\scala\SimpleScalaTest.scala -> C:\Users\Jopa\.gradle\caches\modules-2\files-2.1\junit\junit\4.12\2973d150c0dc1fefe998f834810d68f278ea58ec\junit-4.12.jar
+   D:\work\tryout\scalaNew\src\test\scala\SimpleScalaTest.scala -> C:\Users\Jopa\.gradle\caches\modules-2\files-2.1\org.scala-lang\scala-library\2.12.8\36b234834d8f842cdde963c8591efae6cf413e3f\scala-library-2.12.8.jar
+   D:\work\tryout\scalaNew\src\test\scala\SimpleScalaTest.scala -> D:\work\installed\java\jre\lib\rt.jar
+   D:\work\tryout\scalaNew\src\test\scala\SimpleScalaTest.scala -> D:\work\tryout\scalaNew\build\classes\scala\main\packageFuncToOverride\Pack4Test$.class
+source dependencies:
+external dependencies:
+class names:
+   D:\work\tryout\scalaNew\src\test\scala\rest\WiremockTest.scala -> rest.WiremockTest
+   D:\work\tryout\scalaNew\src\test\scala\ScalaTestMockFactory.scala -> Player
+   D:\work\tryout\scalaNew\src\test\scala\ScalaTestMockFactory.scala -> Player$
+   D:\work\tryout\scalaNew\src\test\scala\ScalaTestMockFactory.scala -> PlayerBase
+   D:\work\tryout\scalaNew\src\test\scala\ScalaTestMockFactory.scala -> PlayerObj
+   D:\work\tryout\scalaNew\src\test\scala\ScalaTestMockFactory.scala -> PlayerObj$
+   D:\work\tryout\scalaNew\src\test\scala\ScalaTestMockFactory.scala -> PlayerTrait
+   D:\work\tryout\scalaNew\src\test\scala\ScalaTestMockFactory.scala -> ScalaTestMock
+   D:\work\tryout\scalaNew\src\test\scala\ScalaTestMockFactory.scala -> ScalaTestMock$$anon$1
+   D:\work\tryout\scalaNew\src\test\scala\ScalaTestMockFactory.scala -> ScalaTestMock$$anon$2
+   D:\work\tryout\scalaNew\src\test\scala\ScalaTestMockFactory.scala -> ScalaTestMock$$anon$3
+   D:\work\tryout\scalaNew\src\test\scala\ScalaTestMockFactory.scala -> ScalaTestMock$MockablePlayer$1
+   D:\work\tryout\scalaNew\src\test\scala\SimpleScalaTest.scala -> SimpleScalaTest

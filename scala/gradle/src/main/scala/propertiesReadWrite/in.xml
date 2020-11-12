@@ -1,0 +1,19 @@
+<root type="norm">
+    <action>
+        <workflow>
+            <configuration>
+                <property>
+                    <name>DayCurrent1</name>
+                    <value>Day Current 1 Value</value>
+                </property>
+                <property>
+                    <name>DayCurrent2</name>
+                    <value>Day Current 2 Value</value>
+                </property>
+            </configuration>
+        </workflow>
+    </action>
+    <contents>
+        <version>1</version>
+    </contents>
+</root>

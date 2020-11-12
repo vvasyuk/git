@@ -116,6 +116,53 @@
     +--------------------------------------------------+    +------------------------------------------------------------------+
 
   - efficiency of data sharing
+    +--------------------------------------------------+  +------------------------------------------------------------------------+
+    | def drop[A](l: myList[A], n: Int): myList[A] = { |  | def dropWhile[A](l: myList[A], f: A => Boolean): myList[A] = l match { |
+    |   if (n <= 0) l                                  |  |   case Cons(h,t) if f(h) => dropWhile(t, f)                            |
+    |   else l match {                                 |  |   case _ => l                                                          |
+    |     case Nil => Nil                              |  | }                                                                      |
+    |     case Cons(_,t) => drop(t, n-1)               |  +------------------------------------------------------------------------+
+    |   }                                              |
+    | }                                                |
+    +--------------------------------------------------+
+
+    +---------------------------------------------------------------------+
+    | def append[A](a1: myList[A], a2: myList[A]): myList[A] = a1 match { |
+    |   case Nil => a2                                                    |
+    |   case Cons(h,t) => Cons(h, append(t, a2))                          |
+    | }                                                                   |
+    +---------------------------------------------------------------------+
+  - bad performance
+    +-------------------------------------------------+   +--------------------------------------------------+
+    | def init2[A](l: List[A]): List[A] = {           |   | def init[A](l: myList[A]): myList[A] = l match { |
+    |   import collection.mutable.ListBuffer          |   |   case Nil => sys.error("init of empty list")    |
+    |   val buf = new ListBuffer[A]                   |   |   case Cons(_,Nil) => Nil                        |
+    |   @annotation.tailrec                           |   |   case Cons(h,t) => Cons(h,init(t))              |
+    |   def go(cur: List[A]): List[A] = cur match {   |   | }                                                |
+    |     case Nil => sys.error("init of empty list") |   +--------------------------------------------------+
+    |     case Cons(_,Nil) => List(buf.toList: _*)    |
+    |     case Cons(h,t) => buf += h; go(t)           |
+    |   }                                             |
+    |   go(l)                                         |
+    | }                                               |
+    +-------------------------------------------------+
+  - Vector - purely functional sequence structure, supports constant time access, head,tail,init,addition to front or rear.
+
+  - Recursion over lists and generalizing to higher-order functions
+    +----------------------------------------------------------------------+  +------------------------------------------------------------+
+    | def foldRight[A,B](as: List[A], z: B)(f: (A, B) => B): B =as match { |  | def sum2(ns: List[Int]) = foldRight(ns, 0)((x,y) => x + y) |
+    |   case Nil => z                                                      |  +------------------------------------------------------------+
+    |   case Cons(x, xs) => f(x, foldRight(xs, z)(f))                      |  +------------------------------------------------------------+
+    | }                                                                    |  | def product2(ns: List[Double]) = foldRight(ns, 1.0)(_ * _) |
+    +----------------------------------------------------------------------+  +------------------------------------------------------------+
+    - trace foldRight foldRight must traverse all the way to the end of the list (pushing frames onto the call)
+      foldRight(Cons(1, Cons(2, Cons(3, Nil))), 0)((x,y) => x + y)
+      1 + foldRight(Cons(2, Cons(3, Nil)), 0)((x,y) => x + y)
+      1 + (2 + foldRight(Cons(3, Nil), 0)((x,y) => x + y))
+      1 + (2 + (3 + (foldRight(Nil, 0)((x,y) => x + y))))
+      1 + (2 + (3 + (0)))
+      6
+
 
 
 
