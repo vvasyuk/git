@@ -63,5 +63,21 @@ object myList {
     if (as.isEmpty) Nil
     else Cons(as.head, apply(as.tail: _*))
 
+  def foldRight[A,B](as: myList[A], z: B)(f: (A, B) => B): B =as match {
+    case Nil => z
+    case Cons(x, xs) => f(x, foldRight(xs, z)(f))
+  }
 
+  def length(as: myList[Int]): Int = {
+    myList.foldRight(as, 0)((x,y) => 1 + y)
+  }
+
+  def foldLeft[A,B](l: myList[A], z: B)(f: (B, A) => B): B = l match {
+    case Nil => z
+    case Cons(h,t) => foldLeft(t, f(z,h))(f)
+  }
+
+  def reverse[A](l: myList[A]): myList[A] = myList.foldLeft(l, myList[A]())((acc,h) => Cons(h,acc))
+
+  def appendViaFoldRight[A](l: myList[A], r: myList[A]): myList[A] = foldRight(l, r)(Cons(_,_))
 }
