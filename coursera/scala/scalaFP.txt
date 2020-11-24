@@ -190,13 +190,37 @@
     +-----------------------------------------------------------------------------------------------+
     | def appendViaFoldRight[A](l: myList[A], r: myList[A]): myList[A] = foldRight(l, r)(Cons(_,_)) |
     +-----------------------------------------------------------------------------------------------+
-  - concat
+  - concat (3.15)
     +---------------------------------------------+
     | def concat[A](l: List[List[A]]): List[A] =  |
     |   foldRight(l, Nil:List[A])(append)         |
     +---------------------------------------------+
+  - transform list (3.16)                                               - with foldRight
+    +---------------------------------------------------------------+   +---------------------------------------------------------------+
+    | def addOne(l: myList[Int], res: myList[Int]): myList[Int] = { |   | myList.foldRight(list, myList[Int]())((l,acc)=>Cons(l+1,acc)) |
+    |   l match{                                                    |   +---------------------------------------------------------------+
+    |     case Nil => res                                           |
+    |     case Cons(a, _) => addOne(l.tail, Cons(a+1, res))         |
+    |   }                                                           |
+    | }                                                             |
+    +---------------------------------------------------------------+
+  = convert to list os strings
+    +-------------------------------------------------------------------------+
+    | myList.foldRight(list, myList[String]())((l,acc)=>Cons(l.toString,acc)) |
+    +-------------------------------------------------------------------------+
 
-
+  - map function                                                - not stack-safe with foldRight
+    +------------------------------------------------------+      +------------------------------------------------------------+
+    | def map_2[A,B](l: myList[A])(f: A => B): List[B] = { |      | myList.foldRight(as, myList[B]())((l,acc)=>Cons(f(l),acc)) |
+    |   val buf = new collection.mutable.ListBuffer[B]     |      +------------------------------------------------------------+
+    |   def go(l: myList[A]): Unit = l match {             |
+    |     case Nil => ()                                   |
+    |     case Cons(h,t) => buf += f(h); go(t)             |
+    |   }                                                  |
+    |   go(l)                                              |
+    |   List(buf.toList: _*)                               |
+    | }                                                    |
+    +------------------------------------------------------+
 
 
 

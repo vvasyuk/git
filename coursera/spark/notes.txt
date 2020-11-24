@@ -120,4 +120,16 @@ val result = df.withColumn("new_col", uDF(dummyList)(df("id"),df("str1"),df("str
     val correctNums = List ( Row("1", "2"), Row("1", "2"))
     nums shouldBe(correctNums)
     
+# generate data in hive table
+    case class Record(f1: String, f2: String, f3: String)
+    import org.apache.spark.sql.SaveMode
+    import spark.implicits._
+    val all = spark.read.orc("path/old/*")
+    val r = spark.read.orc("path/old/*").filter(col("id") === "theOne")
+    val m = r.as[Record].flatMap{case Record(x1,x2,z3) => (0 to 1000000).map(x=>Record(x1+1, x2,x3))}.toDF
+    val all = all.union(m)
+    spark.sql("set hive.exec.dynamic.partition.mode=nonstrict")
+    val headers = spark.sql(show columns in myTable).select("col_name").collect.map(x=> x.getAs[String("col_name")]).toSeq
+    res.select(headers.map(col): _*).write.mode(SaveMode.Overwrite).insertInto("myTable")
+    
     
