@@ -80,4 +80,21 @@ object myList {
   def reverse[A](l: myList[A]): myList[A] = myList.foldLeft(l, myList[A]())((acc,h) => Cons(h,acc))
 
   def appendViaFoldRight[A](l: myList[A], r: myList[A]): myList[A] = foldRight(l, r)(Cons(_,_))
+
+  def map[A,B](l: myList[A])(f: A => B): myList[B] = {
+    val buf = new collection.mutable.ListBuffer[B]
+    def go(l: myList[A]): Unit = l match {
+      case Nil => ()
+      case Cons(h,t) => buf += f(h); go(t)
+    }
+    go(l)
+    myList(buf.toList: _*) // converting from the standard Scala list to the list we've defined here
+  }
+
+  def concat[A](l: myList[myList[A]]): myList[A] =
+    foldRight(l, Nil:myList[A])(append)
+
+  def flatMap[A,B](as: myList[A])(f: A => myList[B]): myList[B] = {
+    myList.concat(myList.map(as)(f))
+  }
 }

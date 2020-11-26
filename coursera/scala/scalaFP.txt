@@ -221,16 +221,32 @@
     |   List(buf.toList: _*)                               |
     | }                                                    |
     +------------------------------------------------------+
-
-
-
-
-
-
-
-
-
-
+  -filter                                                               - filter with flatMap
+    +----------------------------------------------------------------+  +--------------------------------------------------------------+
+    | def filter[A](as: myList[A])(f: A => Boolean): myList[A] = {   |  | def filter[A](as: myList[A])(f: A => Boolean): myList[A] = { |
+    |   val buf = new collection.mutable.ListBuffer[A]               |  |   myList.flatMap(as)(x=>if (f(x)) myList(x) else Nil)        |
+    |   def go(l: myList[A]): Unit = l match {                       |  | }                                                            |
+    |     case Nil => ()                                             |  +--------------------------------------------------------------+
+    |     case Cons(h,t) => {if (f(h)) {buf += h; go(t)} else go(t)} |
+    |   }                                                            |
+    |   go(as)                                                       |
+    |   myList(buf.toList: _*)                                       |
+    | }                                                              |
+    +----------------------------------------------------------------+
+  - flatMap
+    +-------------------------------------------------------------------+
+    | def flatMap[A,B](as: myList[A])(f: A => myList[B]): myList[B] = { |
+    |   myList.concat(myList.map(as)(f))                                |
+    | }                                                                 |
+    +-------------------------------------------------------------------+
+  - zipWith                                                                               - zipWith general
+    +----------------------------------------------------------------------------------+  +----------------------------------------------------------------------------------------------+
+    | def addPairwise(l1: myList[Int], l2: myList[Int]): myList[Int] = (l1,l2) match { |  | def zipWith[A,B,C](l1: myList[A], l2: myList[B])(f: (A,B) => C): myList[C] = (l1,l2) match { |
+    |   case (Nil, _) => Nil                                                           |  |   case (Nil, _) => Nil                                                                       |
+    |   case (_, Nil) => Nil                                                           |  |   case (_, Nil) => Nil                                                                       |
+    |   case (Cons(h1,t1), Cons(h2,t2)) => Cons(h1+h2, addPairwise(t1,t2))             |  |   case (Cons(h1,t1), Cons(h2,t2)) => Cons(f(h1,h2), zipWith(t1,t2)(f))                       |
+    | }                                                                                |  | }                                                                                            |
+    +----------------------------------------------------------------------------------+  +----------------------------------------------------------------------------------------------+
 
 
 
