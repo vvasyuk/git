@@ -248,5 +248,61 @@
     | }                                                                                |  | }                                                                                            |
     +----------------------------------------------------------------------------------+  +----------------------------------------------------------------------------------------------+
 
+  - trees
+    List is and ADT - data type defined by one or more data constructors, each of which may contain zero or more arguments
 
+    - tuple
+      tuple is an ADT as well
+      +-----------------------------------+
+      | val p = ("Bob", 42)               |
+      | p._1                              |
+      | p._2                              |
+      | p match { case (a,b) => b }       |
+      +-----------------------------------+
 
+    - binary tree
+      bTree is an ADT as well
+      +---------------------------------------------------------------------+
+      | sealed trait Tree[+A]                                               |
+      | case class Leaf[A](value: A) extends Tree[A]                        |
+      | case class Branch[A](left: Tree[A], right: Tree[A]) extends Tree[A] |
+      +---------------------------------------------------------------------+
+    -size
+      +----------------------------------------------+
+      |   def size[A](t: myTree[A]): Int = t match { |
+      |     case Leaf(_) => 1                        |
+      |     case Branch(l,r) => 1+size(l)+size(r)    |
+      |   }                                          |
+      +----------------------------------------------+
+    -max
+      +---------------------------------------------+
+      |   def maxi(t: myTree[Int]): Int = t match { |
+      |     case Leaf(n) => n                       |
+      |     case Branch(l,r) => maxi(l) max maxi(r) |
+      |   }                                         |
+      +---------------------------------------------+
+    -depth
+      +-------------------------------------------------------------------------------+
+      |   def depth[A](t: myTree[A], currentDepth: Int): Int = t match {              |
+      |     case Leaf(_) => currentDepth+1                                            |
+      |     case Branch(l,r) => depth(l, currentDepth+1) max depth(r, currentDepth+1) |
+      |   }                                                                           |
+      +-------------------------------------------------------------------------------+
+    -map
+      +----------------------------------------------------------------+
+      |   def map[A,B](t: myTree[A])(f: A => B): myTree[B] = t match { |
+      |     case Leaf(n) => Leaf(f(n))                                 |
+      |     case Branch(l,r) => Branch(map(l)(f), map(r)(f))           |
+      |   }                                                            |
+      +----------------------------------------------------------------+
+    -fold                                                                         - size,max,depth with fold
+      +------------------------------------------------------------------------+  +------------------------------------------------------------------------------------------+
+      |   def fold[A,B](t: myTree[A])(f: A => B)(g: (B,B) => B): B = t match { |  |   def sizeViaFold[A](t: myTree[A]): Int = fold(t)(a => 1)(1 + _ + _)                     |
+      |     case Leaf(a) => f(a)                                               |  |   def maximumViaFold(t: myTree[Int]): Int = fold(t)(a => a)(_ max _)                     |
+      |     case Branch(l,r) => g(fold(l)(f)(g), fold(r)(f)(g))                |  |   def depthViaFold[A](t: myTree[A]): Int = fold(t)(a => 0)((d1,d2) => 1 + (d1 max d2))   |
+      |   }                                                                    |  +------------------------------------------------------------------------------------------+
+      +------------------------------------------------------------------------+
+
+--------------------
+| Handling errors without exceptions
+--------------------
