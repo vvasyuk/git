@@ -306,3 +306,7 @@
 --------------------
 | Handling errors without exceptions
 --------------------
+  Referential transparency - an expression is said to be referentially transparent if it can be replaced by its value and not change the program’s behaviour.
+  Meaning of the expression throw new Exception("fail") is very context-dependent—as we just demonstrated, it takes on different meanings depending on which try block (if any) it’s nested within
+
+  -Option
