@@ -310,3 +310,220 @@
   Meaning of the expression throw new Exception("fail") is very context-dependent—as we just demonstrated, it takes on different meanings depending on which try block (if any) it’s nested within
 
   -Option
+    -map - think of it as proceeding with a computation on the assumption that an error hasn’t occurred
+    +---------------------------------------------------+
+    | def map[B](f: A => B): myOption[B] = this match { |
+    |   case None => None                               |
+    |   case Some(x) => Some(f(x))                      |
+    | }                                                 |
+    +---------------------------------------------------+
+    -getOrElse
+    +--------------------------------------------------------+
+    | def getOrElse[B >: A](default: => B): B = this match { |    to convert option back to exception
+    |   case None => default                                 |    o.getOrElse(throw new Exception("FAIL"))
+    |   case Some(x) => x                                    |
+    | }                                                      |
+    +--------------------------------------------------------+
+    -flatMap                                                                  - map vs flatMap 
+    +-------------------------------------------------------------------+     +-------------------------------------------------------------------------------------------------------------------------------+
+    | def flatMap[B](f: A => myOption[B]): myOption[B] = {              |     |     val o1:myOption[Int] = Some(1)                                                                                            |
+    |   map(f).getOrElse(None)                                          |     |     val o2:myOption[Int] = Some(3)                                                                                            |
+    | }                                                                 |     |                                                                                                                               |
+    | def flatMap_1[B](f: A => myOption[B]): myOption[B] = this match { |     |     val res = for{                                                                                                            |
+    |   case None => None                                               |     |       a <- o1                                                                                                                 |
+    |   case Some(a) => f(a)                                            |     |       b <- o2                                                                                                                 |
+    | }                                                                 |     |       c <- o3                                                                                                                 |
+    +-------------------------------------------------------------------+     |     } yield (a,b,c)                                                                                                           |
+    if you nest flatMaps and last call is map - it will wrap res into Option  |                                                                                                                               |
+    if you replace each flatMap with map - it will wrap in additional Options |     val res = o1.flatMap(a => o2.flatMap(b => o3.map(c => (a, b, c))))  // val res: myOption[(Int, Int, Int)]                 |
+                                                                              |     val res = o1.map(a => o2.map(b => o3.map(c => (a, b, c))))          // res: myOption[myOption[myOption[(Int, Int, Int)]]] |
+                                                                              +-------------------------------------------------------------------------------------------------------------------------------+
+    -orElse
+    +--------------------------------------------------------------------+  
+    | def orElse[B>:A](ob: => myOption[B]): myOption[B] =                |  
+    |   this map (Some(_)) getOrElse ob                                  |
+    | def orElse_1[B>:A](ob: => myOption[B]): myOption[B] = this match { |
+    |   case None => ob                                                  |
+    |   case _ => this                                                   |
+    | }                                                                  |
+    +--------------------------------------------------------------------+
+    -filter
+    +---------------------------------------------------------+
+    | def filter_1(f: A => Boolean): myOption[A] =            |
+    |   flatMap(a => if (f(a)) Some(a) else None)             |
+    | def filter(f: A => Boolean): myOption[A] = this match { |
+    |   case Some(a) if f(a) => this                          |
+    |   case _ => None                                        |
+    | }                                                       |
+    +---------------------------------------------------------+
+    -variance
+    +---------------------------------------------------------------------+
+    | def variance(xs: Seq[Double]): Option[Double] =                     |
+    |   mean(xs) flatMap (m => mean(xs.map(x => math.pow(x - m, 2))))     |
+    +---------------------------------------------------------------------+
+
+    -lift
+      option map turns a function of type a=>b to a function Option[a]=>Option[b]
+      +----------------------------------------------------------------------------------------+  +--------------------------------------------------+
+      | def lift[A,B](f: A => B): myOption[A] => myOption[B] =  _ map f                        |  | def f(in:String):String=in + "a"                 |
+      | or                                                                                     |  | val res: myOption[String] = fLifted(present)     |
+      | def lift[A,B](f: A => B): myOption[A] => myOption[B] = (opt: myOption[A]) => opt map f |  +--------------------------------------------------+
+      +----------------------------------------------------------------------------------------+
+
+    -lift method with two parameters
+      +------------------------------------------------------------------------+
+      | def insuranceRateQuote(age: Int, numberOfSpeedingTickets: Int): Double |
+      +------------------------------------------------------------------------+            - using for compehension
+      +---------------------------------------------------------------------------------+   +-----------------------------------------------------------------------------------+
+      | def map2[A,B,C](a: myOption[A], b: myOption[B])(f: (A, B) => C): myOption[C] ={ |   | def map2_2[A,B,C](a: myOption[A], b: myOption[B])(f: (A, B) => C): myOption[C] ={ |
+      |   a flatMap (aa => b map (bb => f(aa, bb)))                                     |   |   for {                                                                           |
+      | }                                                                               |   |     aa <- a                                                                       |
+      | def insuranceRateQuote(age: Int, numberOfSpeedingTickets: Int): Double = {      |   |     bb <- b                                                                       |
+      |   age+numberOfSpeedingTickets                                                   |   |   } yield f(aa, bb)                                                               |
+      | }                                                                               |   | }                                                                                 |
+      | val res = map2(a,b)(insuranceRateQuote)                                         |   +-----------------------------------------------------------------------------------+
+      +---------------------------------------------------------------------------------+
+    -traverse lift
+      +----------------------------------------------------------------------+
+      | def traverse[A, B](a: List[A])(f: A => Option[B]): Option[List[B]] = |
+      |   a match {                                                          |
+      |     case Nil => Some(Nil)                                            |
+      |     case h::t => map2(f(h), traverse(t)(f))(_ :: _)                  |
+      |   }                                                                  |
+      +----------------------------------------------------------------------+
+
+  -Either
+    +-----------------------------------------------------------+
+    | sealed trait Either[+E, +A]                               |
+    | case class Left[+E](value: E) extends Either[E, Nothing]  |
+    | case class Right[+A](value: A) extends Either[Nothing, A] |
+    +-----------------------------------------------------------+
+
+    +-------------------------------------------------------+
+    | def safeDiv(x: Int, y: Int): Either[Exception, Int] = |
+    |   try Right(x / y)                                    |
+    |   catch { case e: Exception => Left(e) }              |
+    +-------------------------------------------------------+
+                                                                                              - validate data
+    +-------------------------------------------------------------------------------------+   +----------------------------------------------------------------+
+    |   def map[B](f: A => B): myEither[E, B] = this match {                              |   | def mkName(name: String): Either[String, Name] =               |
+    |     case Left(e) => Left(e)                                                         |   |   if (name == "" || name == null) Left("Name is empty.")       |
+    |     case Right(r) => Right(f(r))                                                    |   |   else Right(new Name(name))                                   |
+    |   }                                                                                 |   | def mkAge(age: Int): Either[String, Age] =                     |
+    |                                                                                     |   |   if (age < 0) Left("Age is out of range.")                    |
+    |   def flatMap[EE >: E, B](f: A => myEither[EE, B]): myEither[EE, B] = this match {  |   |   else Right(new Age(age))                                     |
+    |     case Left(e) => Left(e)                                                         |   | def mkPerson(name: String, age: Int): Either[String, Person] = |
+    |     case Right(r) => f(r)                                                           |   |   mkName(name).map2(mkAge(age))(Person(_, _))                  |
+    |   }                                                                                 |   +----------------------------------------------------------------+
+    |                                                                                     |
+    |   def orElse[EE >: E,B >: A](b: => myEither[EE, B]): myEither[EE, B] = this match { |
+    |     case Left(_) => b                                                               |
+    |     case Right(a) => Right(a)                                                       |
+    |   }                                                                                 |
+    |   def map2[EE >: E, B, C](b: myEither[EE, B])(f: (A, B) => C): myEither[EE, C] = {  |
+    |     for { a <- this; b1 <- b } yield f(a,b1)                                        |
+    |   }                                                                                 |
+    +-------------------------------------------------------------------------------------+
+
+--------------------
+| Strictness and laziness
+--------------------
+  intermidiate lists will be produced by each function and passed to next function
+  +---------------------------------------------------------+ square(41.0 + 1.0)
+  | List(1,2,3,4).map(_ + 10).filter(_ % 2 == 0).map(_ * 3) | square will receive the evaluated value of 42.0
+  +---------------------------------------------------------+
+
+  -Strict and non-strict functions
+    unless we tell it otherwise, any function definition in Scala will be strict
+    +---------------------------------------+
+    | def square(x: Double): Double = x * x |
+    +---------------------------------------+
+    
+    Boolean functions && and || - are non-strict
+    if is non-strict as well
+    non-strict if function takes its arguments by name rather than by value
+      +-------------------------------------------------------------------+
+      | def if2[A](cond: Boolean, onTrue: () => A, onFalse: () => A): A = |  arguments we’d like to pass unevaluated have a () => immediately before their type
+      |   if (cond) onTrue() else onFalse()                               |  argument that’s passed unevaluated to a function will be evaluated once for each place it’s referenced in the body of the function
+      +-------------------------------------------------------------------+
+      or
+      +-------------------------------------------------------------+
+      | def if2[A](cond: Boolean, onTrue: => A, onFalse: => A): A = |
+      |   if (cond) onTrue else onFalse                             |
+      +-------------------------------------------------------------+
+      lazy keyword to a val declaration will cause Scala to delay evaluation of the right-hand side of that lazy val declaration until it’s first referenced
+      will also cache the result so that subsequent references to it don’t trigger repeated evaluation
+
+  - An extended example: lazy lists
+    +-------------------------------------------------------------------------+
+    | sealed trait Stream[+A]                                                 |
+    | case class Cons[+A](h: () => A, t: () => Stream[A]) extends Stream[A]   |
+    |                                                                         |
+    | object Stream {                                                         |
+    |   def cons[A](hd: => A, tl: => Stream[A]): Stream[A] = {                |
+    |     lazy val head = hd                                                  |
+    |     lazy val tail = tl                                                  |
+    |     Cons(() => head, () => tail)                                        | 
+    |   }                                                                     |   +------------------------------------------+
+    |   def empty[A]: Stream[A] = Empty                                       |   | def headOption: Option[A] = this match { |
+    |   def apply[A](as: A*): Stream[A] =                                     |   |   case Empty => None                     |
+    |     if (as.isEmpty) empty else cons(as.head, apply(as.tail: _*))        |   |   case Cons(h, t) => Some(h())           |
+    | }                                                                       |   | }                                        |
+    +-------------------------------------------------------------------------+   +------------------------------------------+
+
+  -stream to list                                           - take, drop                                                      - takeWhile
+    +----------------------------------------------------+  +---------------------------------------------------------------+ +-----------------------------------------------------------+
+    |   def toListFast: List[A] = {                      |  |   def take(n: Int): myStream[A] = this match {                | | def takeWhile(f: A => Boolean): Stream[A] = this match {  |
+    |     val buf = new collection.mutable.ListBuffer[A] |  |     case StrCons(h, t) if n > 1 => cons(h(), t().take(n - 1)) | |   case Cons(h,t) if f(h()) => cons(h(), t() takeWhile f)  |
+    |     @annotation.tailrec                            |  |     case StrCons(h, _) if n == 1 => cons(h(), myStream.empty) | |   case _ => empty                                         |
+    |     def go(s: myStream[A]): List[A] = s match {    |  |     case _ => myStream.empty                                  | | }                                                         |
+    |       case StrCons(h,t) =>                         |  |   }                                                           | +-----------------------------------------------------------+
+    |         buf += h()                                 |  |                                                               |
+    |         go(t())                                    |  |   @annotation.tailrec                                         |
+    |       case _ => buf.toList                         |  |   final def drop(n: Int): myStream[A] = this match {          |
+    |     }                                              |  |     case StrCons(_, t) if n > 0 => t().drop(n - 1)            |
+    |     go(this)                                       |  |     case _ => this                                            |
+    |   }                                                |  |   }                                                           |
+    +----------------------------------------------------+   +---------------------------------------------------------------+
+  - exists                                                                    - exists with foldRight
+    +-----------------------------------------------------+                   +---------------------------------------------+
+    | def exists(p: A => Boolean): Boolean = this match { |                   |   def exists2(p: A => Boolean): Boolean =   |
+    |   case StrCons(h, t) => p(h()) || t().exists(p)     | // || is lazy     |     foldRight(false)((a, b) => p(a) || b)   |
+    |   case _ => false                                   |                   +---------------------------------------------+
+    | }                                                   |
+    +-----------------------------------------------------+
+  - foldRight
+    +------------------------------------------------------------------+
+    |   def foldRight[B](z: => B)(f: (A, => B) => B): B = this match { |
+    |       case StrCons(h,t) => f(h(), t().foldRight(z)(f))           |
+    |       case _ => z                                                |
+    |   }                                                              |
+    +------------------------------------------------------------------+
+
++----------------------------------------------------+    +-------------------------------------------------+
+| def forAll(f: A => Boolean): Boolean =             |    |  def map[B](f: A => B): Stream[B] =             |
+|   foldRight(true)((a,b) => f(a) && b)              |    |   foldRight(empty[B])((h,t) => cons(f(h), t))   |
+|                                                    |    |                                                 |
+| def takeWhile_1(f: A => Boolean): Stream[A] =      |    | def filter(f: A => Boolean): Stream[A] =        |
+|   foldRight(empty[A])((h,t) =>                     |    |   foldRight(empty[A])((h,t) =>                  |
+|     if (f(h)) cons(h,t)                            |    |     if (f(h)) cons(h, t)                        |
+|     else      empty)                               |    |     else t)                                     |
+|                                                    |    |                                                 |
+| def headOption: Option[A] =                        |    | def append[B>:A](s: => Stream[B]): Stream[B] =  |
+|   foldRight(None: Option[A])((h,_) => Some(h))     |    |   foldRight(s)((h,t) => cons(h,t))              |
++----------------------------------------------------+    |                                                 |
+                                                          | def flatMap[B](f: A => Stream[B]): Stream[B] =  |
+                                                          |   foldRight(empty[B])((h,t) => f(h) append t)   |
+                                                          +-------------------------------------------------+
+
+
+
+
+
+
+
+
+
+
+
+

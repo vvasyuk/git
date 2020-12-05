@@ -169,15 +169,15 @@
     | case class Book(title: String, authors: List[String])         |
     |                                                               |
     | val books = List(                                             |
-    |     Book(FP in Scala, List(Chiusano, Bjarnason)),       |
-    |     Book(The Hobbit, List(Tolkien)),                      |
-    |     Book(Java 8 in Action, List(Urma, Fusco, Mycroft) |
+    |     Book(FP in Scala, List(Chiusano, Bjarnason)),             |
+    |     Book(The Hobbit, List(Tolkien)),                          |
+    |     Book(Java 8 in Action, List(Urma, Fusco, Mycroft)         |
     | )                                                             |
     +---------------------------------------------------------------+
 
     - how many have word Scala
         +-----------------------------------------------------------------------------+
-        | books.map(book => book.title).filter(title => title.contains(⌠Scala÷)).size |
+        | books.map(book => book.title).filter(title => title.contains("Scala")).size |
         +-----------------------------------------------------------------------------+
 
     # book adaptations
@@ -212,12 +212,12 @@
 
             +----------------------------------------------------+
             | books.map(book => book.authors).flatten            |  // fix
-            |     List(List(Chiusano, Bjarnason), List(Tolkien)) |
+            |     List(Chiusano, Bjarnason, Tolkien)             |
             +----------------------------------------------------+
             or
             +----------------------------------------------------+
             | books.flatMap(book => book.authors)                |
-            |     List(List(Chiusano, Bjarnason), List(Tolkien)) |
+            |     List(Chiusano, Bjarnason, Tolkien)             |
             +----------------------------------------------------+
 
         2. for each author run bookAdaptations returning movies

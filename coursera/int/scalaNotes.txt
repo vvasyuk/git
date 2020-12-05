@@ -1,0 +1,72 @@
+###########
+#Pattern matching
+###########
+    val in  = List(10, 15, 3, 7)
+    in match {
+        case e::rest if set.contains(k-e) => true
+        case e::rest  => iter(in.tail, k, set+in.head)
+        case Nil => false
+      }
+    iter(in, k, Set[Int]())
+
+###########
+#foldLeft
+###########
+    val in = List(1, 2, 3, 4, 5)
+    val sum = in.foldLeft(1) { (e,acc) => acc*e }
+
+###########
+#zipWithIndex
+###########    
+    val res = ArrayBuffer.fill[Int](in.size)(0)
+    //second is index
+    in.zipWithIndex.foldLeft(res){ (acc, e) =>{
+      val (el, indx) = e
+      if(indx-2 >= 0){
+        acc(indx) = acc(indx-2) + el
+      } else {
+        acc(indx) = el
+      }
+      acc
+    }}
+
+###########
+#Range
+########### 
+    for(n <- Range(0,100)){???}     // new Range(start: Int, end: Int, step: Int)
+
+###########
+#sortBy
+########### 
+    tuples: Array[(Int, Int)]
+    val sortedArray = tuples.sortBy(_._2)
+
+###########
+#ArrayBuffer
+###########
+    ArrayBuffer.fill[Int](in.length+1)(-1)
+    val a = ArrayBuffer.fill(sz,sz)(false) // multidimensional
+
+###########
+#Map
+###########
+    val m = Map(
+      1->"a",
+      2->"b"
+    )
+
+    val m = scala.collection.mutable.Map[Int,Int]()
+    m+=((1, 1))
+
+###########
+#Partial function
+###########
+  val divide = (x: Int) => 42 / x   // blows up when the input parameter is zero:
+  //divide function as a PartialFunction 
+    +------------------------------------------------+
+    |   val divide = new PartialFunction[Int, Int] { |
+    |     def apply(x: Int) = 42 / x                 |
+    |     def isDefinedAt(x: Int) = x != 0           |
+    |   }                                            |
+    +------------------------------------------------+
+    if (divide.isDefinedAt(1)) divide(1)
