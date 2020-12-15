@@ -1,0 +1,16 @@
+//add columns
+
+import org.apache.hadoop.fs.{FileSystem, Path}
+import org.apache.spark.sql.types.{IntegerType, StringType}
+
+val fs = FileSystem.get(spark.sparkContext.hadoopConfiguration)
+val paths = fs.listStatus(new Path("/hdfs/path")).filter(_.isDir).map(_.getPath)
+paths.foreach(p=>{
+    val b = s"$p_backup"
+    if (p.toString.contains("2020-12-15")){
+        spark.read.orc(s"$p").withColumn("newCol", lit(null).cast(IntegerType)).select(col("oldCol"), col("newCol")).write.orc(s"$b")
+        fs.delete(new Path(s"$p"), true)
+        fs.rename(new Path(s"$b"), new Path(s"$p"))
+    }
+}
+)

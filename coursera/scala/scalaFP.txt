@@ -500,30 +500,217 @@
     |   }                                                              |
     +------------------------------------------------------------------+
 
-+----------------------------------------------------+    +-------------------------------------------------+
-| def forAll(f: A => Boolean): Boolean =             |    |  def map[B](f: A => B): Stream[B] =             |
-|   foldRight(true)((a,b) => f(a) && b)              |    |   foldRight(empty[B])((h,t) => cons(f(h), t))   |
-|                                                    |    |                                                 |
-| def takeWhile_1(f: A => Boolean): Stream[A] =      |    | def filter(f: A => Boolean): Stream[A] =        |
-|   foldRight(empty[A])((h,t) =>                     |    |   foldRight(empty[A])((h,t) =>                  |
-|     if (f(h)) cons(h,t)                            |    |     if (f(h)) cons(h, t)                        |
-|     else      empty)                               |    |     else t)                                     |
-|                                                    |    |                                                 |
-| def headOption: Option[A] =                        |    | def append[B>:A](s: => Stream[B]): Stream[B] =  |
-|   foldRight(None: Option[A])((h,_) => Some(h))     |    |   foldRight(s)((h,t) => cons(h,t))              |
-+----------------------------------------------------+    |                                                 |
-                                                          | def flatMap[B](f: A => Stream[B]): Stream[B] =  |
-                                                          |   foldRight(empty[B])((h,t) => f(h) append t)   |
-                                                          +-------------------------------------------------+
+    +----------------------------------------------------+    +-------------------------------------------------+
+    | def forAll(f: A => Boolean): Boolean =             |    |  def map[B](f: A => B): Stream[B] =             |
+    |   foldRight(true)((a,b) => f(a) && b)              |    |   foldRight(empty[B])((h,t) => cons(f(h), t))   |
+    |                                                    |    |                                                 |
+    | def takeWhile_1(f: A => Boolean): Stream[A] =      |    | def filter(f: A => Boolean): Stream[A] =        |
+    |   foldRight(empty[A])((h,t) =>                     |    |   foldRight(empty[A])((h,t) =>                  |
+    |     if (f(h)) cons(h,t)                            |    |     if (f(h)) cons(h, t)                        |
+    |     else      empty)                               |    |     else t)                                     |
+    |                                                    |    |                                                 |
+    | def headOption: Option[A] =                        |    | def append[B>:A](s: => Stream[B]): Stream[B] =  |
+    |   foldRight(None: Option[A])((h,_) => Some(h))     |    |   foldRight(s)((h,t) => cons(h,t))              |
+    +----------------------------------------------------+    |                                                 |
+                                                              | def flatMap[B](f: A => Stream[B]): Stream[B] =  |
+                                                              |   foldRight(empty[B])((h,t) => f(h) append t)   |
+                                                              +-------------------------------------------------+
+  - Infinite streams and corecursion
+    +----------------------------------------------+
+    | val ones: Stream[Int] = Stream.cons(1, ones) |
+    +----------------------------------------------+
+    - we het result immediately                   - will forever run
+    +-----------------------------------------+   +---------------------+
+    | scala> ones.take(5).toList              |   | ones.forAll(_ == 1) |
+    |   res0: List[Int] = List(1, 1, 1, 1, 1) |   +---------------------+
+    | scala> ones.exists(_ % 2 != 0)          |
+    |   res1: Boolean = true                  |
+    +-----------------------------------------+
+    -returns an infinite Stream of a given value                  - fibs infinite
+    +---------------------------------------------------------+   +--------------------------------------------+
+    | def constant[A](a: A): Stream[A] = {                    |   | val fibs = {                               |
+    |   lazy val tail: Stream[A] = Cons(() => a, () => tail)  |   |   def go(f0: Int, f1: Int): Stream[Int] =  |
+    |   tail                                                  |   |     cons(f0, go(f1, f0+f1))                |
+    | }                                                       |   |   go(0, 1)                                 |
+    +---------------------------------------------------------+   | }                                          |
+    -infinite stream of integers, starting from n, then n + 1     +--------------------------------------------+
+    +---------------------------------+
+    | def from(n: Int): Stream[Int] = |
+    |   cons(n, from(n+1))            |
+    +---------------------------------+
+    -takes an initial state, and a function for producing both the next state and the next value
+    +-------------------------------------------------------------+
+    | def unfold[A, S](z: S)(f: S => Option[(A, S)]): Stream[A] = | // guarded recursion
+    |   f(z) match {                                              | // Option is used to indicate when the Stream should be terminated
+    |     case Some((h,s)) => cons(h, unfold(s)(f))               |
+    |     case None => empty                                      |
+    |   }                                                         |
+    +-------------------------------------------------------------+
 
+--------------------
+| Purely functional state
+--------------------
 
+    +----------------------------------------------------------------+
+    | trait RNG {                                                    |
+    |   def nextInt: (Int, RNG)                                      |  // referential transparency is to make the state updates explicit
+    | }                                                              |  // don’t update the state as a side effect, but simply return the new state along with the value that we’re generating
+    |                                                                |
+    | case class SimpleRNG(seed: Long) extends RNG {                 |
+    |   def nextInt: (Int, RNG) = {                                  |
+    |   val newSeed = (seed * 0x5DEECE66DL + 0xBL) & 0xFFFFFFFFFFFFL |
+    |   val nextRNG = SimpleRNG(newSeed)                             |
+    |   val n = (newSeed >>> 16).toInt                               |
+    |   (n, nextRNG)                                                 |
+    |   }                                                            |
+    | }                                                              |
+    +----------------------------------------------------------------+
 
+  -nonNegativeInt                                     - double between 0 and 1, not including 1
+    +----------------------------------------------+  +-----------------------------------------+
+    | def nonNegativeInt(rng: RNG): (Int, RNG) = { |  | def double(rng: RNG): (Double, RNG) = { |
+    |   val (i, r) = rng.nextInt                   |  |   val (i, r) = nonNegativeInt(rng)      |
+    |   (if (i < 0) -(i + 1) else i, r)            |  |   (i / (Int.MaxValue.toDouble + 1), r)  |
+    | }                                            |  | }                                       |
+    +----------------------------------------------+  +-----------------------------------------+
+    - diff pairs                                                      - list of ints
+    +------------------------------------------------------------+    +-----------------------------------------------------------------+
+    | def intDouble(rng: RNG): ((Int, Double), RNG) = {          |    | def ints(count: Int)(rng: RNG): (List[Int], RNG) =              |
+    |   val (i, r1) = rng.nextInt                                |    |   if (count <= 0)                                               |
+    |   val (d, r2) = double(r1)                                 |    |     (List(), rng)                                               |
+    |   ((i, d), r2)                                             |    |   else {                                                        |
+    | }                                                          |    |     val (x, r1)  = rng.nextInt                                  |
+    |                                                            |    |     val (xs, r2) = ints(count - 1)(r1)                          |
+    | def doubleInt(rng: RNG): ((Double, Int), RNG) = {          |    |     (x :: xs, r2)                                               |
+    |   val ((i, d), r) = intDouble(rng)                         |    |   }                                                             |
+    |   ((d, i), r)                                              |    |                                                                 |
+    | }                                                          |    | // A tail-recursive solution                                    |
+    |                                                            |    | def ints2(count: Int)(rng: RNG): (List[Int], RNG) = {           |
+    | def double3(rng: RNG): ((Double, Double, Double), RNG) = { |    |   def go(count: Int, r: RNG, xs: List[Int]): (List[Int], RNG) = |
+    |   val (d1, r1) = double(rng)                               |    |     if (count <= 0)                                             |
+    |   val (d2, r2) = double(r1)                                |    |       (xs, r)                                                   |
+    |   val (d3, r3) = double(r2)                                |    |     else {                                                      |
+    |   ((d1, d2, d3), r3)                                       |    |       val (x, r2) = r.nextInt                                   |
+    | }                                                          |    |       go(count - 1, r2, x :: xs)                                |
+    +------------------------------------------------------------+    |     }                                                           |
+                                                                      |   go(count, rng, List())                                        |
+                                                                      | }                                                               |
+                                                                      +-----------------------------------------------------------------+
+  -better api for state actions                                                                      
+    each of our functions has a type of the form RNG => (A, RNG) for some type A. Functions of this
+    type are called state actions or state transitions because they transform RNG states from one to the next
 
+    - alias
+    +---------------------------------+
+    | type Rand[+A] = RNG => (A, RNG) |   // state action — a program that depends on some RNG, uses it to generate an A, and also transitions the RNG to a new state
+    +---------------------------------+
+    - next
+    +--------------------------------+
+    | val int: Rand[Int] = _.nextInt |
+    +--------------------------------+
+    
+    -unit
+    +----------------------------------------------+
+    | def unit[A](a: A): Rand[A] = rng => (a, rng) |  // simple RNG state transition is the unit action, which passes the RNG state through without using it, 
+    +----------------------------------------------+  // always returning a constant value rather than a random value
+    -map
+    +------------------------------------------------+
+    | def map[A,B](s: Rand[A])(f: A => B): Rand[B] = |  // transforming the output of a state action without modifying the state itself
+    |   rng => {                                     |  // Rand[A] is just a type alias for a function type RNG => (A, RNG)
+    |   val (a, rng2) = s(rng)                       |
+    |   (f(a), rng2)                                 |
+    | }                                              |
+    +------------------------------------------------+
+    - nonNegativeEven                           - _double
+    +---------------------------------------+   +----------------------------------------------------------+
+    | def nonNegativeEven: Rand[Int] =      |   | val _double: Rand[Double] =                              |
+    |   map(nonNegativeInt)(i => i - i % 2) |   |   map(nonNegativeInt)(_ / (Int.MaxValue.toDouble + 1))   |
+    +---------------------------------------+   +----------------------------------------------------------+
+  
+  - combining state actions
+    - map2 (6.6)
+    +----------------------------------------------------------------------+  +-------------------------------------------------------------------+
+    | def map2[A,B,C](ra: Rand[A], rb: Rand[B])(f: (A, B) => C): Rand[C] = |  | def sequence[A](fs: List[Rand[A]]): Rand[List[A]] =               |
+    |   rng => {                                                           |  |   fs.foldRight(unit(List[A]()))((f, acc) => map2(f, acc)(_ :: _)) |
+    |     val (a, r1) = ra(rng)                                            |  +-------------------------------------------------------------------+
+    |     val (b, r2) = rb(r1)                                             |
+    |     (f(a, b), r2)                                                    |
+    |   }                                                                  |
+    +----------------------------------------------------------------------+
 
+  - Nesting state actions
+    +--------------------------------------------------------------------+  +-------------------------------------------------------+
+    | def nonNegativeLessThan(n: Int): Rand[Int] =                       |  | def nonNegativeLessThan(n: Int): Rand[Int] = { rng => |
+    |   map(nonNegativeInt) { i =>                                       |  |   val (i, rng2) = nonNegativeInt(rng)                 |
+    |     val mod = i % n                                                |  |   val mod = i % n                                     |
+    |     if (i + (n-1) - mod >= 0) mod else nonNegativeLessThan(n)(???) |  |   if (i + (n-1) - mod >= 0)                           |
+    | }                                                                  |  |     (mod, rng2)                                       |
+    +--------------------------------------------------------------------+  |   else nonNegativeLessThan(n)(rng)                    |
+                                                                            | }                                                     |
+                                                                            +-------------------------------------------------------+
+    - flatMap
+    flatMap allows us to generate a random A with Rand[A], and then take that A and
+    choose a Rand[B] based on its value. In nonNegativeLessThan, we use it to choose
+    whether to retry or not, based on the value generated by nonNegativeInt.
+    +----------------------------------------------------------+  +---------------------------------------------------------------------+
+    | def flatMap[A,B](f: Rand[A])(g: A => Rand[B]): Rand[B] = |  | def nonNegativeLessThan(n: Int): Rand[Int] = {                      |
+    |   rng => {                                               |  |   flatMap(nonNegativeInt) { i =>                                    |
+    |     val (a, r1) = f(rng)                                 |  |     val mod = i % n                                                 |
+    |     g(a)(r1) // We pass the new state along              |  |     if (i + (n-1) - mod >= 0) unit(mod) else nonNegativeLessThan(n) |
+    |   }                                                      |  |   }                                                                 |
+    +----------------------------------------------------------+  | }                                                                   |
+                                                                  +---------------------------------------------------------------------+
+  - A general state action data type
+    -map
+    +------------------------------------------------------+
+    | def map[S,A,B](a: S => (A,S))(f: A => B): S => (B,S) |
+    +------------------------------------------------------+
+    -state
+    +-----------------------------------------+
+    | type State[S,+A] = S => (A,S)           |
+    | case class State[S,+A](run: S => (A,S)) | // type Rand[A] = State[RNG, A]
+    +-----------------------------------------+
 
+    +-------------------------------------------------------------------+
+    | case class State[S, +A](run: S => (A, S)) {                       |
+    |   def map[B](f: A => B): State[S, B] =                            |
+    |     flatMap(a => unit(f(a)))                                      |
+    |   def map2[B,C](sb: State[S, B])(f: (A, B) => C): State[S, C] =   |
+    |     flatMap(a => sb.map(b => f(a, b)))                            |
+    |   def flatMap[B](f: A => State[S, B]): State[S, B] = State(s => { |
+    |     val (a, s1) = run(s)                                          |
+    |     f(a).run(s1)                                                  |
+    |   })                                                              |
+    | }                                                                 |
+    +-------------------------------------------------------------------+
 
-
-
-
-
-
+    +-------------------------------------------------------------------------------------+   +--------------------------------------------------------------------------------+
+    | object State {                                                                      |   | sealed trait Input                                                             |
+    |   def unit[S, A](a: A): State[S, A] =                                               |   | case object Coin extends Input                                                 |
+    |     State(s => (a, s))                                                              |   | case object Turn extends Input                                                 |
+    |                                                                                     |   |                                                                                |
+    |   def sequenceViaFoldRight[S,A](sas: List[State[S, A]]): State[S, List[A]] =        |   | case class Machine(locked: Boolean, candies: Int, coins: Int)                  |
+    |     sas.foldRight(unit[S, List[A]](List()))((f, acc) => f.map2(acc)(_ :: _))        |   |                                                                                |
+    |                                                                                     |   | object Candy {                                                                 |
+    |   def sequence[S, A](sas: List[State[S, A]]): State[S, List[A]] = {                 |   |   def update = (i: Input) => (s: Machine) =>                                   |
+    |     def go(s: S, actions: List[State[S,A]], acc: List[A]): (List[A],S) =            |   |     (i, s) match {                                                             |
+    |       actions match {                                                               |   |       case (_, Machine(_, 0, _)) => s                                          |
+    |         case Nil => (acc.reverse,s)                                                 |   |       case (Coin, Machine(false, _, _)) => s                                   |
+    |         case h :: t => h.run(s) match { case (a,s2) => go(s2, t, a :: acc) }        |   |       case (Turn, Machine(true, _, _)) => s                                    |
+    |       }                                                                             |   |       case (Coin, Machine(true, candy, coin)) =>                               |
+    |     State((s: S) => go(s,sas,List()))                                               |   |         Machine(false, candy, coin + 1)                                        |
+    |   }                                                                                 |   |       case (Turn, Machine(false, candy, coin)) =>                              |
+    |                                                                                     |   |         Machine(true, candy - 1, coin)                                         |
+    |   def sequenceViaFoldLeft[S,A](l: List[State[S, A]]): State[S, List[A]] =           |   |     }                                                                          |
+    |     l.reverse.foldLeft(unit[S, List[A]](List()))((acc, f) => f.map2(acc)( _ :: _ )) |   |                                                                                |
+    |                                                                                     |   |   def simulateMachine(inputs: List[Input]): State[Machine, (Int, Int)] = for { |
+    |   def modify[S](f: S => S): State[S, Unit] = for {                                  |   |     _ <- sequence(inputs map (modify[Machine] _ compose update))               |
+    |     s <- get // Gets the current state and assigns it to `s`.                       |   |     s <- get                                                                   |
+    |     _ <- set(f(s)) // Sets the new state to `f` applied to `s`.                     |   |   } yield (s.coins, s.candies)                                                 |
+    |   } yield ()                                                                        |   | }                                                                              |
+    |                                                                                     |   +--------------------------------------------------------------------------------+
+    |   def get[S]: State[S, S] = State(s => (s, s))                                      |
+    |                                                                                     |
+    |   def set[S](s: S): State[S, Unit] = State(_ => ((), s))                            |
+    | }                                                                                   |
+    +-------------------------------------------------------------------------------------+
