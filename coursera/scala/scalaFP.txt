@@ -714,3 +714,17 @@
     |   def set[S](s: S): State[S, Unit] = State(_ => ((), s))                            |
     | }                                                                                   |
     +-------------------------------------------------------------------------------------+
+
+--------------------
+| Purely functional parallelism
+--------------------
+  -Choosing data types and functions
+  +---------------------------------------------+
+  | def sum(ints: IndexedSeq[Int]): Int =       |
+  |   if (ints.size <= 1)                       |
+  |     ints.headOption getOrElse 0             |
+  |   else {                                    |
+  |     val (l,r) = ints.splitAt(ints.length/2) |
+  |     sum(l) + sum(r)                         |
+  | }                                           |
+  +---------------------------------------------+

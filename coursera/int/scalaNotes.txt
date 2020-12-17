@@ -1,4 +1,105 @@
 ###########
+#Scala class hierarchy
+###########
+  #########################################################################################################
+  #+---+                                                                                                  #
+  #|any|                                                                                                  #
+  #+---+                                                                                                  #
+  #|    +------+                                                                                  +------+#
+  #+----+anyVal+-+--------+--------+--------+--------+--------+--------+--------+--------+<-------+Nothng|#
+  #|    +------+ |        |        |        |        |        |        |        |        |        +------+#
+  #|             +------+ +------+ +------+ +------+ +------+ +------+ +------+ +------+ +------+         #
+  #|             |Double| |Float | |Long  | |Int   | |Short | |Byte  | |Char  | |Bolean| |Unit  |         #
+  #|             +------+ +------+ +------+ +------+ +------+ +------+ +------+ +------+ +------+         #
+  #|                                                                                                      #
+  #|                                                                                                      #
+  #|    +------+                                     +------+                                             #
+  #+----+anyRef+-+--------+--------+--------+<-------+Null  |                                             #
+  #     +------+ |        |        |        |        +------+                                             #
+  #              +------+ +------+ +------+ +------+                                                      #
+  #              |Itrble+<+Seq   +<+List  | |Option|                                                      #
+  #              +------+ +------+ +------+ +------+                                                      #
+  #########################################################################################################
+
+###########
+#Collections
+###########
+  +-------------------------------------------------------------+
+  |                     Traversable (foreach)                   | // val s = Seq(1, 2, 3 -> dlegate is a list(s: Seq[Int] = List(1, 2, 3));
+  |                          |                                  | // Seq    - idxAccess O(n); prepend O(1); 
+  |                          |                                  | // Vector - idxAccess O(1); update O(1)
+  |                       Iterable (iterator)                   |
+  |                          |                                  |
+  |       +------------------+--------------------+             |
+  |      Map(HashMap)       Set(HashSet)         Seq(List)      |
+  |       |  ListMap         |  ListSet           |             |
+  |       |                  |             +------+-------+     |
+  |   SortedMap(TreeMap) SortedSet      Buffer IndxSeq LinearSeq|
+  |       |                  |                    |        |    |
+  |     BitSet               |                 Vector    List   |
+  |                       BitSet               String    Stack  |
+  |                                            Range     Stream |
+  |                                                      Queue  |
+  +-------------------------------------------------------------+
+
+###########
+#Seq
+###########
+
+
+###########
+#List
+###########
+  +--------------------------------------------------------------------+
+  | sealed trait ConsList[+A]                                          |  // 1 :: 2 :: 3 :: Nil
+  | case class Cons[A](head: A, tail: ConsList[A]) extends ConsList[A] |  // same as 
+  | case object Empty extends ConsList[Nothing]                        |  // Cons(1, Cons(2, Cons(3, Empty)))
+  +--------------------------------------------------------------------+
+
+  +------------------------------------------+
+  | def sum(xs: List[Int]): Int = xs match { |
+  |   case Nil => 0                          |
+  |   case head :: tail => head + sum(tail)  |
+  | }                                        |
+  +------------------------------------------+
+  - conact
+  List(1, 2) ::: List(3, 4, 5)        // res0: List[Int] = List(1, 2, 3, 4, 5)
+
+  -foldLeft                                                         - foldRight
+  +--------------------------------------------------------------+  +------------------------------------------------------------+
+  | def foldLeft[A, B](xs: Seq[A], z: B)(op: (B, A) => B): B = { |  |   def foldRight[B](z: B)(f: (A, B) => B): B = this match { |
+  |   def f(xs: Seq[A], acc: B): B = xs match {                  |  |     case Nil => z                                          |
+  |     case Seq()   => acc                                      |  |     case Cons(head, tail) => f(head, tail.foldRight(z)(f)) |
+  |     case x +: xs => f(xs, op(acc, x))                        |  |   }                                                        |
+  |   }                                                          |  +------------------------------------------------------------+
+  |   f(xs, z)                                                   |
+  | }                                                            |
+  +--------------------------------------------------------------+
+    assert(l1.foldLeft(new StringBuilder(""))((acc, e) =>acc.addAll("," + e)).toString() == ",1,2")     // as seen - orders will be different for foldLeft and foldRight
+    assert(l1.foldRight(new StringBuilder(""))((e, acc) =>acc.addAll("," + e)).toString() == ",2,1")
+  
+  -zipped
+  (List(10, 20), List(3, 4, 5)).zipped.map(_ * _)                 // res63: List[Int] = List(30, 80)
+
+###########
+#ArrayBuffer
+###########
+    ArrayBuffer.fill[Int](in.length+1)(-1)
+    val a = ArrayBuffer.fill(sz,sz)(false) // multidimensional
+
+###########
+#Map
+###########
+    val m = Map(
+      1->"a",
+      2->"b"
+    )
+
+    val m = scala.collection.mutable.Map[Int,Int]()
+    m+=((1, 1))
+
+
+###########
 #Pattern matching
 ###########
     val in  = List(10, 15, 3, 7)
@@ -31,6 +132,11 @@
     }}
 
 ###########
+#for comprehension
+########### 
+
+
+###########
 #Range
 ########### 
     for(n <- Range(0,100)){???}     // new Range(start: Int, end: Int, step: Int)
@@ -41,22 +147,7 @@
     tuples: Array[(Int, Int)]
     val sortedArray = tuples.sortBy(_._2)
 
-###########
-#ArrayBuffer
-###########
-    ArrayBuffer.fill[Int](in.length+1)(-1)
-    val a = ArrayBuffer.fill(sz,sz)(false) // multidimensional
 
-###########
-#Map
-###########
-    val m = Map(
-      1->"a",
-      2->"b"
-    )
-
-    val m = scala.collection.mutable.Map[Int,Int]()
-    m+=((1, 1))
 
 ###########
 #Partial function
@@ -70,3 +161,4 @@
     |   }                                            |
     +------------------------------------------------+
     if (divide.isDefinedAt(1)) divide(1)
+

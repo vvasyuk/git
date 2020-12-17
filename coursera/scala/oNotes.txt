@@ -2926,7 +2926,8 @@ map(2)                                              // res37: String = "two"
 
 -Concrete mutable collection classes
 -Array buffers
-// holds an array and a size, can have data efficiently added to the end, Appending an item to an array buffer takes amortized constant time
+// holds an arra
+y and a size, can have data efficiently added to the end, Appending an item to an array buffer takes amortized constant time
 // good whenever the new items are always added to the end
 // useful for building arrays
 val buf = collection.mutable.ArrayBuffer.empty[Int]
