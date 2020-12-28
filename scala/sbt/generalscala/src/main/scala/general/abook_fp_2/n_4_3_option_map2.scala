@@ -2,8 +2,8 @@ package general.abook_fp_2
 
 object n_4_3_option_map2 {
   def main(args: Array[String]): Unit = {
-    val a:myOption[Int] = Some(1)
-    val b:myOption[Int] = Some(2)
+    val a:myOption[Int] = mySome(1)
+    val b:myOption[Int] = mySome(2)
 
     val res = map2(a,b)(insuranceRateQuote)
     println(res)

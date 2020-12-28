@@ -4,8 +4,8 @@ import general.abook_fp_2.myStream.cons
 
 sealed trait myStream[+A]{
   def headOption: myOption[A] = this match {
-    case StrEmpty => None
-    case StrCons(h, t) => Some(h())
+    case StrEmpty => myNone
+    case StrCons(h, t) => mySome(h())
   }
 
   def toListFast: List[A] = {

@@ -1,0 +1,74 @@
+@startuml
+'skinparam linestyle ortho
+'rectangle "A" as one
+'rectangle "B" as two
+'rectangle "C" as three
+'rectangle "D" as four
+
+'one -right-> two: message 1-->2
+'two -right-> three: message 2-->3
+'two --> four: message 2-->4
+'three -[hidden]- four
+
+database Oracle{
+    file users
+}
+
+rectangle aws{
+    rectangle glue_raw_ingest[
+        glue_raw_ingest
+        ---
+        -reads data for currentDay-1
+    ]
+
+    rectangle glue_master_ingest[
+        glue_master_ingest
+        ---
+        -reads all data?
+    ]
+
+    rectangle glue_recon[
+        glue_recon
+        ---
+        -reads data for currentDay-1 from raw and master
+    ]
+
+    rectangle lambda[
+        lambda
+        ---
+        -reads data for transformed
+        -call python script for post request
+    ]    
+
+    rectangle s3{
+        file "/Raw/user/day=currentDay-1 (parquet)" as raw
+        file "/Master/user/day=currentDay-1 (parquet)" as master
+        file "/Transformed/user/day=currentDay-1 (parquet)" as transformed
+    }    
+}
+
+database Destination{
+    file API
+}
+
+glue_raw_ingest <-up- users: step1 - read data
+glue_raw_ingest -down-> raw: step2 - write as is
+glue_raw_ingest -[hidden]right-> glue_master_ingest
+
+glue_master_ingest <-up- API: step3 - read data
+glue_master_ingest -down-> master: step4 - write as is
+
+glue_master_ingest -[hidden]right-> glue_recon
+glue_recon <-up- raw: step5 - read data
+glue_recon <-up- master: step6 - read data
+glue_recon -up-> transformed: step7 - write data
+
+glue_master_ingest -[hidden]right-> lambda
+lambda <-down- transformed: step 8 - read data
+lambda -up-> API: step 9 - write data
+
+raw -[hidden]right-> master
+master -[hidden]right-> transformed
+
+@enduml
+

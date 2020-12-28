@@ -16,7 +16,11 @@ rectangle ftp{
 rectangle hdfs
 rectangle application{
     rectangle app1{
-        rectangle df
+        rectangle df[
+            some info
+            ---
+            additional description
+        ]
         rectangle df2
     }
     rectangle common{

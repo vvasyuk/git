@@ -16,9 +16,9 @@ object n_4_1_option {
   }
 
   def mapVsFlatMap = {
-    val o1:myOption[Int] = Some(1)
-    val o2:myOption[Int] = Some(2)
-    val o3:myOption[Int] = Some(3)
+    val o1:myOption[Int] = mySome(1)
+    val o2:myOption[Int] = mySome(2)
+    val o3:myOption[Int] = mySome(3)
 
     // map sequence
     val r1 = o1.map(_ + 1).map(_ + 1)   // Some(3)

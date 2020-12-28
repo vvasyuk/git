@@ -2,8 +2,8 @@ package general.abook_fp_2
 
 object n_4_2_option_lift {
   def main(args: Array[String]): Unit = {
-    val present:myOption[String] = Some("str")
-    val absent:myOption[String] = None
+    val present:myOption[String] = mySome("str")
+    val absent:myOption[String] = myNone
 
 
     val fLifted = lift(f)

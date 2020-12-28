@@ -1,0 +1,40 @@
+# check dependencies
+pip show <package>
+
+
+# numpy 1.19.4 - bug
+RuntimeError: The current Numpy installation ('C:\\Users\\Jopa\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.9_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python39\\site-packages\\numpy\\__init__.py') fails to pass a sanity check due to a bug in the windows runtime. See this issue for more information: https://tinyurl.com/y3dm3h86
+
+# list packages
+pip list
+
+# uninstall
+pip uninstall pandas -y
+pip uninstall numpy -y
+pip uninstall python-dateutil -y
+pip uninstall pytz -y
+pip uninstall six -y
+
+# check available versions
+pip install pandas==
+
+# install another pandas version
+nok pip install pandas==1.1.4
+pip install pandas==1.1.3
+pip install pandas==1.1.2
+pip install pandas==1.1.1
+pip install pandas==1.1.0
+
+ok  pip install numpy==1.20.0rc1
+pip install numpy==1.19.3
+pip install numpy==1.19.2
+pip install numpy==1.19.1
+pip install numpy==1.18.5
+
+# install pyarrow
+pip install pyarrow
+
+
+# test
+import pandas as pd
+df = pd.read_parquet('D:/work/tryout/coursera/aws/glue/parquet/transformed/part-00028-67d87566-90b8-4676-8d6d-1e04a07b97a9.c000.snappy.parquet')

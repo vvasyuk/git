@@ -728,3 +728,102 @@
   |     sum(l) + sum(r)                         |
   | }                                           |
   +---------------------------------------------+
+
+--------------------
+| Common structures in functional design
+--------------------
+  -Monoids
+    +---------------------------+
+    | trait Monoid[A] {         |
+    |   def op(a1: A, a2: A): A |   // op(op(x,y), z) == op(x, op(y,z))
+    |   def zero: A             |   // op(x, zero) == x and op(zero, x) == x
+    | }                         |
+    +---------------------------+
+
+    +--------------------------------------------+  +-----------------------------------------------+
+    | val stringMonoid = new Monoid[String] {    |  | def listMonoid[A] = new Monoid[List[A]] {     |
+    |   def op(a1: String, a2: String) = a1 + a2 |  |   def op(a1: List[A], a2: List[A]) = a1 ++ a2 |
+    |   val zero = ""                            |  |   val zero = Nil                              |
+    | }                                          |  | }                                             |
+    +--------------------------------------------+  +-----------------------------------------------+
+
+    -Folding lists with monoids
+                                                      What happens when A and B are the same type
+    +----------------------------------------------+  +----------------------------------------+    +-------------------------------------------------------------+
+    | def foldRight[B](z: B)(f: (A, B) => B): B    |  | def foldRight(z: A)(f: (A, A) => A): A |    | val words = List("Hic", "Est", "Index")                     |
+    | def foldLeft[B](z: B)(f: (B, A) => B): B     |  | def foldLeft(z: A)(f: (A, A) => A): A  |    | val s = words.foldRight(stringMonoid.zero)(stringMonoid.op) |
+    +----------------------------------------------+  +----------------------------------------+    +-------------------------------------------------------------+
+
+  -Monads
+    -Functors: generalizing the map function
+
+    +---------------------------------------------------+
+    | def map[A,B](ga: Gen[A])(f: A => B): Gen[B]       |
+    | def map[A,B](pa: Parser[A])(f: A => B): Parser[B] |
+    | def map[A,B](oa: Option[A])(f: A => B): Option[A] |
+    +---------------------------------------------------+
+
+    +-------------------------------------------+  +------------------------------------------------------------+
+    | trait Functor[F[_]] {                     |  | val listFunctor = new Functor[List] {                      |
+    |   def map[A,B](fa: F[A])(f: A => B): F[B] |  |   def map[A,B](as: List[A])(f: A => B): List[B] = as map f |
+    | }                                         |  | }                                                          |
+    +-------------------------------------------+  +------------------------------------------------------------+
+
+    -Monads: generalizing the flatMap and unit functions
+                                                                      - Creating a Mon trait for map2
+      +-------------------------------------------------------------+ +--------------------------------------------------------------+
+      | def map2[A,B,C](                                            | | trait Mon[F[_]] {                                            |
+      |   fa: Option[A], fb: Option[B])(f: (A,B) => C): Option[C] = | |   def map2[A,B,C](fa: F[A], fb: F[B])(f: (A,B) => C): F[C] = |
+      |   fa flatMap (a => fb map (b => f(a,b)))                    | |   fa flatMap (a => fb map (b => f(a,b)))                     |
+      +-------------------------------------------------------------+ | }                                                            |
+                                                                      +--------------------------------------------------------------+
+      -Adding map and flatMap to our trait                                                                      
+      +---------------------------------------------------------------+ +----------------------------------------------------------+
+      |   def unit[A](a: => A): F[A]                                  | | object Monad {                                           |
+      |   def flatMap[A,B](ma: F[A])(f: A => F[B]): F[B]              | |   val genMonad = new Monad[Gen] {                        |
+      |   def map[A,B](ma: F[A])(f: A => B): F[B] =                   | |   def unit[A](a: => A): Gen[A] = Gen.unit(a)             |
+      |     flatMap(ma)(a => unit(f(a)))                              | |   def flatMap[A,B](ma: Gen[A])(f: A => Gen[B]): Gen[B] = |
+      |   def map2[A,B,C](ma: F[A], mb: F[B])(f: (A, B) => C): F[C] = | |     ma flatMap f                                         |
+      |     flatMap(ma)(a => map(mb)(b => f(a, b)))                   | |   }                                                      |
+      | }                                                             | | }                                                        |
+      +---------------------------------------------------------------+ +----------------------------------------------------------+
+
+    - identity monad
+      +------------------------------------------------------------------------+  +----------------------+
+      | case class Id[A](value: A) {                                           |  | for {                |
+      |   def map[B](f: A => B): Id[B] = Id(f(value))                          |  |   a <- Id("Hello, ") |
+      |   def flatMap[B](f: A => Id[B]): Id[B] = f(value)                      |  |   b <- Id("monad!")  |
+      | }                                                                      |  | } yield a + b        |
+      |                                                                        |  +----------------------+
+      | object Id {                                                            |
+      |   val idMonad = new Monad[Id] {                                        |
+      |     def unit[A](a: => A) = Id(a)                                       |
+      |     def flatMap[A,B](ida: Id[A])(f: A => Id[B]): Id[B] = ida flatMap f |
+      |   }                                                                    |
+      | }                                                                      |
+      +------------------------------------------------------------------------+
+
+    - state monad
+      +------------------------------------------------------+
+      | case class State[S, A](run: S => (A, S)) {           |
+      |   def map[B](f: A => B): State[S, B] =               |
+      |     State(s => {                                     |
+      |       val (a, s1) = run(s)                           |
+      |       (f(a), s1)                                     |
+      |     })                                               |
+      |   def flatMap[B](f: A => State[S, B]): State[S, B] = |
+      |     State(s => {                                     |
+      |       val (a, s1) = run(s)                           |
+      |       f(a).run(s1)                                   |
+      |     })                                               |
+      | }                                                    |
+      +------------------------------------------------------+
+
+
+  -Applicative and traversable functors
+
+
+
+
+
+

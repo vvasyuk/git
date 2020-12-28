@@ -1,0 +1,45 @@
+services:
+    compute
+        ec2 - compute capacity (virtual server)
+        ec2 auto scaling
+        elastic load balancing - distribute incoming traffic
+        aws lambda - runs code in response to events
+        elastic container - allows run applications (dockers) on aws cluster
+    storeage
+        elastic block store - provides disks, ebs can be used by ec2
+        s3 - stores objects in buckets(backup and storage, app hostinmg, software delivery)
+        s3 glacier - for backup
+        storage gateway - integration
+        elastic file system
+    database
+        rds - managed relational db service - aurora, postgres, mysql, maria, oracle, sql server
+        dynamo db - noSql
+        elastic cache
+    security
+    management
+    networking
+
+pass parameters
+https://stackoverflow.com/questions/59167514/parameterize-aws-glue-job-for-etl-with-date-as-variables
+
+
+
+# start a script for aws lambda
+python -c 'import lambda_function; lambda_function.lambda_handler(1,2)'
+
+# write to s3
+const s3 = new AWS.S3();
+    try {
+        const destparams = {
+            Bucket: dstBucket,
+            Key: dstKey,
+            Body: buffer,
+            ContentType: "image"
+        };
+
+        const putResult = await s3.putObject(destparams).promise(); 
+        
+    } catch (error) {
+        console.log(error);
+        return;
+    } 

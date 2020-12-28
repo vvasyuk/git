@@ -1,0 +1,84 @@
+    import sys
+    from awsglue.transforms import *
+    from awsglue.utils import getResolvedOptions
+    from pyspark.context import SparkContext
+    from awsglue.context import GlueContext
+    from awsglue.job import Job
+    from pyspark.sql.functions import col,lit,udf,when
+    
+    glueContext = GlueContext(SparkContext.getOrCreate())
+    
+    raw = glueContext.create_dynamic_frame.from_catalog(database = "db", table_name = "source", transformation_ctx = "datasource0")
+    master = glueContext.create_dynamic_frame.from_catalog(database = "db", table_name = "destination", transformation_ctx = "datasource0")
+    
+    rawMapping = ApplyMapping.apply(frame = raw, mappings = [("id", "long", "id", "long"), ("name", "string", "name", "string"), ("col1", "long", "col1", "long"), ("col2", "long", "col2", "long"), ("partition_dt", "string", "partition_dt", "string")], transformation_ctx = "rawMapping")
+    masterMapping = ApplyMapping.apply(frame = master, mappings = [("id", "long", "id", "long"), ("name", "string", "name", "string"), ("col1", "long", "col1", "long"), ("col2", "long", "col2", "long"), ("partition_dt", "string", "partition_dt", "string")], transformation_ctx = "masterMapping")
+    
+    
+    def map_function(dynamicRecord):
+        if dynamicRecord["rating"] >= 9.0:     
+            dynamicRecord["result"] = True
+        return dynamicRecord
+    mapped_dyF =  Map.apply(frame = applymapping1, f = map_function)
+    
+    mapped_dyF.toDF().show()
+
+####
+
+    rawMapping.toDF().show()
+    masterMapping.toDF().show()
+
+    joined = Join.apply(rawMapping,masterMapping, "id", "id")
+    joined.toDF().show()
+
+####
+
+    dfRaw = rawMapping.toDF()
+    dfMaster = masterMapping.toDF()
+
+    ta = dfRaw.alias('ta')
+    tb = dfMaster.alias('tb')
+
+    joined = ta.join(tb, ta.id == tb.id, 'full').filter( (col('ta.col2') != col('tb.col2')) | (col('tb.id').isNull())).withColumn("operation", when(tb.id.isNull(), 'insert').otherwise('update')).select(col('ta.id'),col('ta.name'),col('ta.col1'),col('ta.col2'),col('operation'))
+    joined.show()
+
+
+###
+
+    import sys
+    from awsglue.transforms import *
+    from awsglue.utils import getResolvedOptions
+    from pyspark.context import SparkContext
+    from awsglue.context import GlueContext
+    from awsglue.job import Job
+    from awsglue.dynamicframe import DynamicFrame
+    from pyspark.sql.functions import col,lit,udf,when
+
+    ## @params: [JOB_NAME]
+    args = getResolvedOptions(sys.argv, ['JOB_NAME', 'partition_dt'])
+
+    print("The day-partition key is: ", args['partition_dt'])
+
+    sc = SparkContext()
+    glueContext = GlueContext(sc)
+    spark = glueContext.spark_session
+    job = Job(glueContext)
+    job.init(args['JOB_NAME'], args)
+
+    rawSource = glueContext.create_dynamic_frame.from_catalog(database = "db", table_name = "raw", pushDownPredicate = args['partition_dt'], transformation_ctx = "rawSource")
+    masterSource = glueContext.create_dynamic_frame.from_catalog(database = "db", table_name = "master", pushDownPredicate = args['partition_dt'], transformation_ctx = "masterSource")
+
+    rawMapping = ApplyMapping.apply(frame = rawSource, mappings = [("id", "long", "id", "long"), ("name", "string", "name", "string"), ("col1", "long", "col1", "long"), ("col2", "long", "col2", "long"), ("partition_dt", "string", "partition_dt", "string")], transformation_ctx = "rawMapping")
+    masterMapping = ApplyMapping.apply(frame = masterSource, mappings = [("id", "long", "id", "long"), ("name", "string", "name", "string"), ("col1", "long", "col1", "long"), ("col2", "long", "col2", "long"), ("partition_dt", "string", "partition_dt", "string")], transformation_ctx = "masterMapping")
+
+    dfRaw = rawMapping.toDF()
+    dfMaster = masterMapping.toDF()
+    ta = dfRaw.alias('ta')
+    tb = dfMaster.alias('tb')
+
+    joined = ta.join(tb, ta.id == tb.id, 'full').filter( (col('ta.col2') != col('tb.col2')) | (col('tb.id').isNull())).withColumn("operation", when(tb.id.isNull(), 'insert').otherwise('update')).select(col('ta.id'),col('ta.name'),col('ta.col1'),col('ta.col2'),col('operation'))
+
+    joinedDynamic = DynamicFrame.fromDF(joined, glueContext, "joinedDynamic")
+
+    datasink4 = glueContext.write_dynamic_frame.from_options(frame = joinedDynamic, connection_type = "s3", connection_options = {"path": "s3://glue-demo-bucket-vasiuk/transformed", "partitionKeys": ["partition_dt"]}, format = "parquet", transformation_ctx = "datasink4")
+    job.commit()

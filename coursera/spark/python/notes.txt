@@ -1,0 +1,19 @@
+# launch pyspark from spark/bin folder
+rdd = sc.textFile("D:\work\installed\spark\README.md")
+rdd.count()
+
+#dynamic_frame
+    https://itcareersholland.nl/building-an-aws-glue-etl-pipeline-locally-without-an-aws-account/
+    DataSource0 = glueContext.create_dynamic_frame.from_catalog(database = "glue-demo-db", table_name = "in", transformation_ctx = "DataSource0")
+    Transform0 = ApplyMapping.apply(frame = DataSource0, mappings = [("rank", "long", "rank", "long"), ("title", "string", "title", "string"), ("year", "long", "year", "long"), ("rating", "double", "rating", "double")], transformation_ctx = "Transform0")
+    DataSink0 = glueContext.write_dynamic_frame.from_options(frame = Transform1, connection_type = "s3", format = "csv", connection_options = {"path": "s3://glue-demo-bucket-vasiuk/out/", "partitionKeys": []}, transformation_ctx = "DataSink0")
+
+    #map
+    +---------------------------------------------------------------------+
+    | def next_day_air(rec):                                              |
+    |   if rec["zip"] == 75034:                                           |
+    |     rec["next_day_air"] = True                                      |
+    |   return rec                                                        |
+    |                                                                     |
+    | mapped_dyF =  Map.apply(frame = dyf_applyMapping, f = next_day_air) |
+    +---------------------------------------------------------------------+

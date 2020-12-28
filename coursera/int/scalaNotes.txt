@@ -25,19 +25,19 @@
 #Collections
 ###########
   +-------------------------------------------------------------+
-  |                     Traversable (foreach)                   | // val s = Seq(1, 2, 3 -> dlegate is a list(s: Seq[Int] = List(1, 2, 3));
+  |                     Traversable (foreach)                   | // val s = Seq(1, 2, 3 -> delegate is a list(s: Seq[Int] = List(1, 2, 3));
   |                          |                                  | // Seq    - idxAccess O(n); prepend O(1); 
   |                          |                                  | // Vector - idxAccess O(1); update O(1)
-  |                       Iterable (iterator)                   |
+  |                       Iterable (iterator)                   | // val x = IndexedSeq(1,2,3) // x: IndexedSeq[Int] = Vector(1, 2, 3)
   |                          |                                  |
-  |       +------------------+--------------------+             |
-  |      Map(HashMap)       Set(HashSet)         Seq(List)      |
+  |       +------------------+--------------------+             | // val ar = Array(1,2,3)
+  |      Map(HashMap)       Set(HashSet)         Seq(List)      | // can be generic Array[T] (in Java not)
   |       |  ListMap         |  ListSet           |             |
   |       |                  |             +------+-------+     |
   |   SortedMap(TreeMap) SortedSet      Buffer IndxSeq LinearSeq|
-  |       |                  |                    |        |    |
-  |     BitSet               |                 Vector    List   |
-  |                       BitSet               String    Stack  |
+  |       |                  |            |       |        |    |
+  |     BitSet               |          ArBuff Vector    List   |
+  |                       BitSet      ListBuff String    Stack  |
   |                                            Range     Stream |
   |                                                      Queue  |
   +-------------------------------------------------------------+
@@ -45,10 +45,14 @@
 ###########
 #Seq
 ###########
-
+  val seq = Seq(1, 2, 3)
+  assert(seq(0) == 1)
+  assert(0 +: seq == Seq(0,1,2,3))  //seq.prependedAll(0)
+  assert(seq :+ 0 == Seq(1,2,3,0))  //seq.appendedAll(0)
+  assert(seq.updated(0, 11) == Seq(11,2,3))
 
 ###########
-#List
+#List (effective head and tail)
 ###########
   +--------------------------------------------------------------------+
   | sealed trait ConsList[+A]                                          |  // 1 :: 2 :: 3 :: Nil
@@ -82,6 +86,10 @@
   (List(10, 20), List(3, 4, 5)).zipped.map(_ * _)                 // res63: List[Int] = List(30, 80)
 
 ###########
+#Vector (effective apply and length if mutable - update)
+###########
+
+###########
 #ArrayBuffer
 ###########
     ArrayBuffer.fill[Int](in.length+1)(-1)
@@ -90,14 +98,30 @@
 ###########
 #Map
 ###########
-    val m = Map(
-      1->"a",
-      2->"b"
-    )
+    val m = Map("a"->1,"b"->2)
+    assert(m("a") == 1)
+    val added = m + ("c" -> 3); assert(added("c") == 3); assert(added("a") == 1)
+    val changed = m + ("a" -> 11); assert(changed("a") == 11); assert(changed("b") == 2)
+    val increasedCnt = if (m.contains("a"))m + ("a" -> (m("a")+1)) else m + ("a" -> 1); assert(increasedCnt("a") == 2)
+    val increasedCnt2 = if (m.contains("a"))m.updated("a",(m("a")+1)) else m.updated("a",1); assert(increasedCnt2("a") == 2)
+      //iterate
+      increasedCnt.foreach(e => e._1 + e._2)
+      for ((k,v) <- increasedCnt) yield (k, v)
 
-    val m = scala.collection.mutable.Map[Int,Int]()
-    m+=((1, 1))
+      //mutable
+      val mutable = collection.mutable.Map[String, Int]()
+      mutable.updateWith("a")({
+        case Some(count) => Some(count + 1)
+        case None => Some(1)
+      })
+      assert(mutable("a") == 1)
 
+###########
+#Set
+###########
+  Set(1, 2, 3, 4).head // 1
+  Set(1, 2, 3, 4).tail // Set(2, 3, 4)
+  Set(1, 2, 3, 4).isEmpty // false
 
 ###########
 #Pattern matching
@@ -134,7 +158,8 @@
 ###########
 #for comprehension
 ########### 
-
+  for (x <- xs if x % 2 == 0)
+    yield x * 10
 
 ###########
 #Range
@@ -146,8 +171,6 @@
 ########### 
     tuples: Array[(Int, Int)]
     val sortedArray = tuples.sortBy(_._2)
-
-
 
 ###########
 #Partial function
@@ -162,3 +185,62 @@
     +------------------------------------------------+
     if (divide.isDefinedAt(1)) divide(1)
 
+  or
+  Partial functions are expressions in which not all of the arguments defined in a function are supplied as parameters to the function
+  +-------------------------------------------------------------------------------+
+  | def concatUpper(s1: String, s2: String): String = (s1 + " " + s2).toUpperCase |
+  | val c2 = concatUpper("short", _: String)                                      | // ( _ ) turns the method into a function value
+  | println(c2("pants"))                                                          |
+  +-------------------------------------------------------------------------------+
+
+  or
+  Another way of thinking of partial functions is as functions that will inform you when you supply them with parameters that are out of their domain.  
+  Every partial function is, as you might guess, of the type PartialFunction. This trait defines a method orElse that takes another PartialFunction
+  +------------------------------------------------------------------------------+
+  | val truthier: PartialFunction[Boolean, String] = { case true => "truthful" } |  // case statements is expanded internally to partially applied functions
+  | val fallback: PartialFunction[Boolean, String] = { case x => "sketchy" }     |  // functions provide the abstract method isDefinedAt, a feature of the PartialFunction trait used to specify the boundaries of a partial function’s domain
+  | val tester = truthier orElse fallback                                        |
+  |                                                                              |
+  | println(tester(1 == 1))                                                      |
+  | println(tester(2 + 2 == 5))                                                  |
+  +------------------------------------------------------------------------------+
+
+  +----------------------------------------------------+
+  | val pantsTest: PartialFunction[String, String] = { |
+  | case "pants" => "yes, we have pants!"              |
+  | }                                                  |
+  | println(pantsTest.isDefinedAt("pants"))            |
+  | println(pantsTest.isDefinedAt("skort"))            |
+  +----------------------------------------------------+
+
+###########
+#Value Classes
+###########
+  +--------------------------------------------------------------------+
+  |   trait Distance extends Any                                       |
+  |   case class Meter(val value: Double) extends AnyVal with Distance |
+  |   def add(a: Distance, b: Distance): Distance = ...                |
+  |   add(Meter(3.4), Meter(4.3))                                      |
+  +--------------------------------------------------------------------+
+
+###########
+#Implicit classes
+###########
+  +-----------------------------------------+ +------------------------------+
+  | object Helpers {                        | | import Helpers._             |
+  |   implicit class IntWithTimes(x: Int) { | | scala> 5 times println("HI") |
+  |     def times[A](f: => A): Unit = {     | | HI                           |
+  |       def loop(current: Int): Unit =    | | HI                           |
+  |         if(current > 0) {               | | HI                           |
+  |           f                             | | HI                           |
+  |           loop(current - 1)             | | HI                           |
+  |         }                               | +------------------------------+
+  |       loop(x)                           |
+  |     }                                   |
+  |   }                                     |
+  | }                                       |
+  +-----------------------------------------+
+
+###########
+#Type System  (Programming Scala - Scalability)
+###########
