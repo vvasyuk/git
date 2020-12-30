@@ -56,11 +56,90 @@
         +------------------------+
     
     ### Methods and Functions
-    ### Classes and Traits
+        +---------------------------+
+        | def hello(i: Int = 0) = { |
+        |     "hello " + i          |
+        | }                         |
+        +---------------------------+
+        - functions
+        +--------------------------------+
+        | var g: Int => Int = i => i + 1 |  // cannot have optional arguments (i.e. with default values) 
+        | g = i => i * 2                 |  // cannot take type parameters via the [T] syntax
+        | g(10)   // 20                  |
+        +--------------------------------+
+        - methods taking Functions
+        +------------------------------------------+    +-----------------------------------+               +-------------------------------+
+        | class Box(var x: Int) {                  |    | val b = new Box(1)                |               | def increment(i: Int) = i + 1 |
+        |     def update(f: Int => Int) = x = f(x) |    | b.printMsg("Hello")     //Hello1  |               | b.update(increment)           |
+        |     def printMsg(msg: String) = {        |    | b.update(i => i + 5)              |   // _ + 5    | b.update(x => increment(x))   |
+        |         println(msg + x)                 |    | b.printMsg("Hello")     // Hello6 |               | b.update(increment(_))        |
+        |     }                                    |    |                                   |               +-------------------------------+
+        | }                                        |    +-----------------------------------+
+        +------------------------------------------+
+        - multiple Parameter Lists
+        +----------------------------------------+  +------------------------------------+
+        | def myLoop(start: Int, end: Int)       |  | myLoop(start = 5, end = 10) { i => |
+        |     (callback: Int => Unit) = {        |  |     println(s"i has value ")       |
+        |         for (i <- Range(start, end)) { |  | }                                  |
+        |             callback(i)                |  +------------------------------------+
+        |         }                              |
+        | }                                      |
+        +----------------------------------------+
 
-for (i <- Range.inclusive(1, 100)) {
-    if (i % 3 == 0 && i % 5 == 0) println("FizzBuzz")
-    else if (i % 3 == 0) println("Fizz")
-    else if (i % 5 == 0) println("Buzz")
-    else println(i)
-}
+    ### Classes and Traits
+        +-----------------------------------+
+        | class Foo(x: Int) {               |   // x is private -> "val x: Int" - public - "f.x"
+        |     val bar = "bar"               |   // added to constructor
+        |     def printMsg(msg: String) = { |   
+        |         println(msg + x)          |   // val f = new Foo(1)
+        |     }                             |   // f.printMsg("hello")  // hello1
+        | }                                 |
+        +-----------------------------------+
+        - Traits
+        +---------------------------------------------------------------+
+        | trait Point{ def hypotenuse: Double }                         |
+        | class Point2D(x: Double, y: Double) extends Point{            |
+        |     def hypotenuse = math.sqrt(x * x + y * y)                 |
+        | }                                                             |
+        | class Point3D(x: Double, y: Double, z: Double) extends Point{ |
+        |     def hypotenuse = math.sqrt(x * x + y * y + z * z)         |
+        | }                                                             |
+        +---------------------------------------------------------------+
+
+    - flexibleFizzBuzz
+    // flexibleFizzBuzz(s => ())    
+    +-------------------------------------------------+ +-------------------------------------+
+    | def flexibleFizzBuzz(f: String => Unit) = {     | | var i = 0                           |
+    |   for (i<-Range(0,100)){                        | | val output = new Array[String](100) |
+    |     if (i % 3 == 0 && i % 5 == 0) f("FizzBuzz") | | flexibleFizzBuzz{s =>               |
+    |     else if (i % 3 == 0) f("Fizz")              | |   output(i) = s                     |
+    |     else if (i % 5 == 0) f("Buzz")              | |   i += 1                            |
+    |     else f(i.toString)                          | | }                                   |
+    |   }                                             | +-------------------------------------+
+    | }                                               |
+    +-------------------------------------------------+ 
+    - printMessages
+    +----------------------------------------------------------------+  +----------------------------------------------------------------+
+    | def printMessages(messages: Array[Msg]): Unit = {              |  | def printMessages(messages: Array[Msg]): Unit = {              |
+    |   def loop(par: Option[Int], spacesNumber: Int): Int = {       |  |   def printFrag(parent: Option[Int], indent: String): Unit = { |
+    |     par match{                                                 |  |     for (msg <- messages if msg.parent == parent) {            |
+    |       case Some(p) => loop(messages(p).parent, spacesNumber+1) |  |       println(s"#${msg.id} ${msg.txt}")                        |
+    |       case None => spacesNumber                                |  |       printFrag(Some(msg.id), indent + "    ")                 |
+    |     }                                                          |  |     }                                                          |
+    |   }                                                            |  |   }                                                            |
+    |   for (m<-messages){ println(" "*loop(m.parent, 0) + m.txt)}   |  |   printFrag(None, "")                                          |
+    | }                                                              |  | }                                                              |
+    +----------------------------------------------------------------+  +----------------------------------------------------------------+
+    - contextManager
+    +---------------------------------------------------------------------------+
+    |   def withFileWriter(str: String)(f: BufferedWriter => Unit) = {          |   // withFileWriter("File.txt") { writer => writer.write("Hello\n"); writer.write("World!")}
+    |     val bw = new BufferedWriter(new FileWriter(str))                      |
+    |     f(bw)                                                                 |
+    |     bw.close()}                                                           |
+    |                                                                           |
+    |   def withFileReader(str: String)(f: BufferedReader => String):String = { |   // val result = withFileReader("File.txt") { reader =>reader.readLine() + "\n" + reader.readLine()}
+    |     val fr = new BufferedReader(new FileReader(str))                      |   // assert(result == "Hello\nWorld!")
+    |     val res =f(fr)                                                        |
+    |     fr.close()                                                            |
+    |     res}                                                                  |
+    +---------------------------------------------------------------------------+
