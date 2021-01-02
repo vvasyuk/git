@@ -143,3 +143,196 @@
     |     fr.close()                                                            |
     |     res}                                                                  |
     +---------------------------------------------------------------------------+
+
+####################
+# Scala Collections
+####################
+
+    ### Operations
+        - Builders
+        +-----------------------------------------------+
+        | val b = Array.newBuilder[Int]                 |   // construct a collection of unknown length
+        | b += 1                                        |
+        | b += 2                                        |
+        | b.result()  // res3: Array[Int] = Array(1, 2) |
+        +-----------------------------------------------+
+
+        - Factory Methods
+        +---------------------------------------------------------------------------------------------------------+
+        | Array.fill(5)("hello")                  // Array("hello", "hello", "hello", "hello", "hello")           |
+        | Array.tabulate(5)(n => s"hello $n")     // Array("hello 0", "hello 1", "hello 2", "hello 3", "hello 4") |
+        | Array(1, 2, 3) ++ Array(4, 5, 6)        // Array(1, 2, 3, 4, 5, 6)                                      |
+        +---------------------------------------------------------------------------------------------------------+
+
+        - Transforms
+        +--------------------------------------------------------------------------+
+        | Array(1, 2, 3, 4, 5).map(i => i * 2)            // Array(2, 4, 6, 8, 10) |    // transform creates new collection, creates copies of collection
+        | Array(1, 2, 3, 4, 5).filter(i => i % 2 == 1)    // Array(1, 3, 5)        |    // copying has an overhead - to improve you can convert to mutable collection
+        | Array(1, 2, 3, 4, 5).take(2)                    // Array(1, 2)           |
+        | Array(1, 2, 3, 4, 5).drop(2)                    // Array(3, 4, 5)        |
+        | Array(1, 2, 3, 4, 5).slice(1, 4)                // Array(2, 3, 4)        |
+        | Array(1, 1, 2, 3, 4).distinct                   // Array(1, 2, 3, 4)     |
+        +--------------------------------------------------------------------------+
+
+        - Queries
+        +------------------------------------------------------------------------------------------------------------+
+        | Array(1, 2, 3, 4, 5, 6, 7).find(i => i % 2 == 0 && i > 4)       // Some(6)                                 |
+        | Array(1, 2, 3, 4, 5, 6, 7).find(i => i % 2 == 0 && i > 10)      // None                                    |
+        | Array(1, 2, 3, 4, 5, 6, 7).exists(x => x > 1)                   // are any elements greater than 1? - true |
+        | Array(1, 2, 3, 4, 5, 6, 7).exists(_ < 0) // same as a.exists(x => x < 0)    // false                       |
+        +------------------------------------------------------------------------------------------------------------+
+
+        - Aggregations
+            -mkString
+            +-----------------------------------------------------------------------------------+
+            | Array(1, 2, 3, 4, 5, 6, 7).mkString(",")            // String = "1,2,3,4,5,6,7"   |
+            | Array(1, 2, 3, 4, 5, 6, 7).mkString("[", ",", "]")  // String = "[1,2,3,4,5,6,7]" |
+            +-----------------------------------------------------------------------------------+
+
+            -foldLeft
+            +---------------------------------------------------------------------------+   +--------------------------------------------------+
+            | Array(1, 2, 3, 4, 5, 6, 7).foldLeft(0)((x, y) => x + y)     // Int = 28   |   | {var total = 0                                   |
+            | Array(1, 2, 3, 4, 5, 6, 7).foldLeft(1)((x, y) => x * y)     // Int = 5040 |   | for (i <- Array(1, 2, 3, 4, 5, 6, 7)) total += i |
+            | Array(1, 2, 3, 4, 5, 6, 7).foldLeft(1)(_ * _)               // Int = 5040 |   | total}                                           |
+            +---------------------------------------------------------------------------+   +--------------------------------------------------+
+
+            -groupBy
+            +-----------------------------------------------------------------------------------------------------------------+
+            | val grouped = Array(1, 2, 3, 4, 5, 6, 7).groupBy(_ % 2)     // Map(0 -> Array(2, 4, 6), 1 -> Array(1, 3, 5, 7)) |
+            | grouped(0)  // Array(2, 4, 6)                                                                                   |
+            | grouped(1)  // Array(1, 3, 5, 7)                                                                                |
+            +-----------------------------------------------------------------------------------------------------------------+
+
+        - Combining Operations
+            +----------------------------------------------------------------+
+            | def stdDev(a: Array[Double]): Double = {                       |
+            |     val mean = a.foldLeft(0.0)(_ + _) / a.length               |  // val mean = a.sum / a.length
+            |     val squareErrors = a.map(_ - mean).map(x => x * x)         |
+            |     math.sqrt(squareErrors.foldLeft(0.0)(_ + _) / a.length)    |
+            | }                                                              |
+            | stdDev(Array(1, 2, 3, 4, 5))    // Double = 1.4142135623730951 |
+            | stdDev(Array(3, 3, 3))          // Double = 0.0                |
+            +----------------------------------------------------------------+
+
+            -
+            +-------------------------------------------------------------------------------------------+
+            | def isValidSudoku(grid: Array[Array[Int]]): Boolean = {                                   |
+            |     !Range(0, 9).exists{i =>                                                              |
+            |         val row = Range(0, 9).map(grid(i)(_))                                             |
+            |         val col = Range(0, 9).map(grid(_)(i))                                             |
+            |         val square = Range(0, 9).map(j => grid((i % 3) * 3 + j % 3)((i / 3) * 3 + j / 3)) |
+            |         row.distinct.length != row.length ||                                              |
+            |         col.distinct.length != col.length ||                                              |
+            |         square.distinct.length != square.length                                           |
+            |     }                                                                                     |
+            | }                                                                                         |
+            +-------------------------------------------------------------------------------------------+
+
+        - Converters
+            +----------------------------------------------------+
+            | Array(1, 2, 3).to(Vector)       // Vector(1, 2, 3) |
+            | Vector(1, 2, 3).to(Array)       // Array(1, 2, 3)  |
+            | Array(1, 1, 2, 2, 3, 4).to(Set) // Set(1, 2, 3, 4) |
+            +----------------------------------------------------+
+
+        - Views
+            +------------------------------------------------------------------------------+
+            | val myArray = Array(1, 2, 3, 4, 5, 6, 7, 8, 9)                               |    // When you chain multiple transformations we are creating many intermediate collections that are immediately thrown away
+            | val myNewArray = myArray.map(x => x + 1).filter(x => x % 2 == 0).slice(1, 3) |    // ends up traversing the collection three times (its wasteful)
+            +------------------------------------------------------------------------------+
+
+            +----------------------------------------------------------------------------------------------------+
+            | val myNewArray = myArray.view.map(_ + 1).filter(_ % 2 == 0).slice(1, 3).to(Array)   // Array(4, 6) |  //  perform this chain of map/filter/slice transformations with only a single traversal
+            +----------------------------------------------------------------------------------------------------+
+
+    ### Immutable Collections
+            - useful in multi-threaded scenarios
+            - immutable collections use Structural Sharing (4.2.2) to make creating updated copies cheap, allowing you to use them in all but the most performance critical code
+        - Immutable Vectors (O(log n))
+            -fixed-size, general-purpose, immutable linear sequences (provide efficient O(log n) performance for most operations.)
+            -unlike Arrays where a(...) = ... mutates it in place, a Vector's .updated method returns a new Vector
+            -support same operations as arrays (builders, factory methods, transforms)
+            -good for sequence that will not change
+            -trre structure makes operations efficient
+            -for updates - not as fast as arrays or lists of adding to front
+            +-------------------------------------------------------------------------+     +-----------------------------------------+
+            | val v = Vector(1, 2, 3, 4, 5)                                           |     | val v = Vector[Int]()   // Vector()     |
+            | v(0)                        // Int = 1                                  |     | val v1 = v :+ 1         // Vector(1)    |
+            | val v2 = v.updated(2, 10)   //Vector(1, 2, 10, 4, 5) (v did not change) |     | val v2 = 4 +: v1        // Vector(4, 1) |
+            +-------------------------------------------------------------------------+     | val v3 = v2.tail        // Vector(1)    |
+                                                                                            +-----------------------------------------+
+
+        - Structural Sharing
+            +-----------------------------------------------------------------------+   +-----------------------------------------------------------------------+
+            | val v1 = Vector(1, 2, 0, 9, 7, 2, 9, 6, ..., 3, 2, 5, 5, 4, 8, 4, 6)  |   | val v2 = v1.updated(4, 8)                                             |
+            |                   V1                                                  |   |                   V1 copied                                           |
+            |                +-+-+-+-+                                              |   |                +-+-+-+-+                                              |
+            |            ----+ | | | +----                                          |   |            ----+ | | | +----                                          |
+            |           /    +-+-+-+-+    \                                         |   |           /    +-+-+-+-+    \                                         |
+            |          /        / \        \                                        |   |          /        / \        \                                        |
+            |         /        /   \        \                                       |   |         / copied /   \        \                                       |
+            | +-------+ +-+-+-+-+ +-+-+-+-+ +-+-+-+-+                               |   | +-------+ +-+-+-+-+ +-+-+-+-+ +-+-+-+-+                               |
+            | |1|2|0|9| | | | | | | | | | | | | | | |                               |   | |1|2|0|9| | | | | | | | | | | | | | | |                               |
+            | +-------+ +-+-+-+-+ +-+-+-+-+ +-+-+-+-+                               |   | +-------+ +-+-+-+-+ +-+-+-+-+ +-+-+-+-+                               |
+            |          /         /                                                  |   | copied   /         /                                                  |
+            | +-------+ +-------+                                                   |   | +-------+ +-------+                                                   |
+            | |7|2|9|6| |7|2|9|6|                                                   |   | |8|2|9|6| |7|2|9|6|                                                   |
+            | +-------+ +-------+                                                   |   | +-------+ +-------+                                                   |
+            +-----------------------------------------------------------------------+   +-----------------------------------------------------------------------+
+            -for update - 3 nodes needed to be copied, in large vector number of nodes needed to copy is porportional to the height of tree
+            -never be as fast as update in place (if performance needed consider ArrayDeque which has O(1) update/prepend/append or Artray if size will not change) 
+            -similar tree-shaped data structure is also used to implement Immutable Sets and Immutable Maps 
+
+        - Immutable Sets
+            - unordered collections of elements without duplicates
+            - O(log n) .contains method
+            - Set operations take time O(log n) in the size of the Set
+            - in cases where it isn't you can always fall back to Mutable Sets for better performance
+            +-----------------------------------------+ +--------------------------------------------------+
+            | val s = Set(1, 2, 3)    // Set(1, 2, 3) | | Set(1, 2, 3) + 4 + 5  // HashSet(5, 1, 2, 3, 4)  |
+            | s.contains(2)           // true         | | Set(1, 2, 3) - 2      // Set(1, 3)               |
+            | s.contains(4)           // false        | | Set(1, 2, 3) ++ Set(2, 3, 4)  // Set(1, 2, 3, 4) |
+            +-----------------------------------------+ +--------------------------------------------------+
+            +------------------------------------------+
+            | for (i <- Set(1, 2, 3, 4, 5)) println(i) |
+            +------------------------------------------+
+
+        - Immutable Maps
+            -unordered collections of keys and values, allowing efficient lookup by key
+            -most immutable Map operations take time O(log n)
+            +---------------------------------------------------+   +--------------------------------------------+
+            | val m = Map("one" -> 1, "two" -> 2, "three" -> 3) |   | m.get("one")      // Option[Int] = Some(1) |  // use .get if you're not sure whether a map contains a key or not
+            | m.contains("two")   // true                       |   | m.get("four")     // Option[Int] = None    |
+            | m("two")            // Int = 2                    |   +--------------------------------------------+
+            +---------------------------------------------------+
+            +-------------------------------------------------------------------------------------------+
+            | Vector(("one", 1), ("two", 2), ("three", 3)).to(Map)                                      |
+            | Map[String, Int]() + ("one" -> 1) + ("three" -> 3)      //  Map("one" -> 1, "three" -> 3) |
+            | for ((k, v) <- m) println(k + " " + v)                                                    |
+            |     one 1                                                                                 |
+            |     two 2                                                                                 |
+            |     three 3                                                                               |
+            +-------------------------------------------------------------------------------------------+
+
+        - Immutable Lists
+            - singly-linked list
+            - O(1) to .head, .tail, :: (to create new list with new element in front)
+            - indexed lookup via myList(i) is a slow O(n)
+            - Appending/removing elements on the right hand side of the list is also a slow O(n)
+            - want fast indexed lookup or fast appends/removes on the right, you should consider using Vectors or mutable ArrayDeques
+            +------------------------------------------------------------+  +------------------------------------------------------+
+            | val myList = List(1, 2, 3, 4, 5)                           |  |                   +------+                           |
+            | myList.head                     // Int = 1                 |  |                   |myList|                           |
+            | val myTail = myList.tail        // List(2, 3, 4, 5)        |  |            +-+    +------+                           |
+            | val myOtherList = 0 :: myList   // List(0, 1, 2, 3, 4, 5)  |  | myOtherList|1|            \                          |
+            | val myThirdList = -1 :: myList  // List(-1, 1, 2, 3, 4, 5) |  |            +-------------->+-+ +-+ +-+ +-+ +-+ +---+ |
+            +------------------------------------------------------------+  |                            |1|>|2|>|3|>|4|>|5|>|Nil| |
+                                                                            |            +--+----------->+-+ +-+ +-+ +-+ +-+ +---+ |
+                                                                            | myThirdList|-1|               /                      |
+                                                                            |            +--+       +------+                       |
+                                                                            |                       |myTail|                       |
+                                                                            |                       +------+                       |
+                                                                            +------------------------------------------------------+
+
+    ### Mutable Collections
+    ### Common Interfaces

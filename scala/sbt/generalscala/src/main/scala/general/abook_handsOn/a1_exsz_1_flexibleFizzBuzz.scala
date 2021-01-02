@@ -1,6 +1,6 @@
 package general.abook_handsOn
 
-object exsz_1_flexibleFizzBuzz {
+object a1_exsz_1_flexibleFizzBuzz {
   def main(args: Array[String]): Unit = {
     flexibleFizzBuzz(s => ())
 

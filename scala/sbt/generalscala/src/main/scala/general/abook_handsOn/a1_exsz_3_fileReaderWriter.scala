@@ -2,7 +2,7 @@ package general.abook_handsOn
 
 import java.io.{BufferedReader, BufferedWriter, FileReader, FileWriter}
 
-object exsz_3_fileReaderWriter {
+object a1_exsz_3_fileReaderWriter {
   def main(args: Array[String]): Unit = {
     withFileWriter("File.txt") { writer => writer.write("Hello\n"); writer.write("World!")}
     val result = withFileReader("File.txt") { reader =>reader.readLine() + "\n" + reader.readLine()}

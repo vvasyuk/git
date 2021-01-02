@@ -1,45 +1,142 @@
-services:
-    compute
-        ec2 - compute capacity (virtual server)
-        ec2 auto scaling
-        elastic load balancing - distribute incoming traffic
-        aws lambda - runs code in response to events
-        elastic container - allows run applications (dockers) on aws cluster
-    storeage
-        elastic block store - provides disks, ebs can be used by ec2
-        s3 - stores objects in buckets(backup and storage, app hostinmg, software delivery)
-        s3 glacier - for backup
-        storage gateway - integration
-        elastic file system
-    database
-        rds - managed relational db service - aurora, postgres, mysql, maria, oracle, sql server
-        dynamo db - noSql
-        elastic cache
-    security
-    management
-    networking
-
-pass parameters
-https://stackoverflow.com/questions/59167514/parameterize-aws-glue-job-for-etl-with-date-as-variables
-
-
-
 # start a script for aws lambda
 python -c 'import lambda_function; lambda_function.lambda_handler(1,2)'
 
-# write to s3
-const s3 = new AWS.S3();
-    try {
-        const destparams = {
-            Bucket: dstBucket,
-            Key: dstKey,
-            Body: buffer,
-            ContentType: "image"
-        };
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col,lit,udf,when
+from time import gmtime, strftime
 
-        const putResult = await s3.putObject(destparams).promise(); 
-        
-    } catch (error) {
-        console.log(error);
-        return;
-    } 
+spark = SparkSession.builder.config("spark.sql.warehouse.dir", "file:///C:/temp").appName("PopularMovies").getOrCreate()
+
+# dfRaw0 = spark.read.parquet("D:/dev/report/test_data/raw/*")
+# dfMaster = spark.read.parquet("D:/dev/report/test_data/master/*")
+
+rawDF = spark.createDataFrame(
+    [
+        (108194, 'Seaton', 'Deena', 'DSEATON@DELOITTE.COM'),
+        (306321, 'Martinez', 'Felix', 'FEMARTINEZ@DONOTUSEDELOITTE.COM'),
+        (337756, 'Wilcox', 'Nathan', 'NWILCOX@DELOITTE.COM')
+    ],
+    ['empl_id', 'last_name', 'first_name', 'email_id']
+)
+
+masterDF = spark.createDataFrame(
+    [
+        (1, 'old1', 'old1', 'old1@DELOITTE.COM', '111', '20201231', 'I'),
+        (108194, 'Seaton', 'Deena', 'DSEATON@DELOITTE.COM', '112', '20201231', 'I')
+    ],
+    ['empl_id', 'last_name', 'first_name', 'email_id', 'wap_guid', 'date_from', 'dml_flag']
+)
+
+d = strftime("%Y%m%d_%H%M%S", gmtime())
+
+#rawDF.show(10,False)
+
+ta = rawDF.alias('ta')
+tb = masterDF.alias('tb')
+joined = ta.join(tb, ta.empl_id == tb.empl_id, 'full')\
+    #.filter((col('ta.last_name') != col('tb.last_name')))\
+    #| (col('ta.first_name') != col('tb.first_name')) | (col('ta.email_id') != col('tb.email_id'))
+    # .select(col('ta.empl_id'),col('ta.last_name'),col('ta.first_name'),col('ta.email_id'))
+
+joined.show(10,False)
+
+# zeorLine.withColumn("wap_guid", lit('B71574EDA6BA1D91E0532A061E0AC777'))\
+#     .withColumn("date_from", lit(d))\
+#     .withColumn("dml_flag", lit('INS')).show(20,False)
+
+# dfRaw = zeorLine.union(dfRaw0)
+#
+# dfRaw.show(20,False)
+# dfMaster.show(20,False)
+#
+# ta = dfRaw.alias('ta')
+# tb = dfMaster.alias('tb')
+#
+# joined = ta.join(tb, ta.id == tb.id, 'full')\
+#     .filter( (col('ta.col2') != col('tb.col2')) | (col('tb.id').isNull()))\
+#     .withColumn("operation", when(tb.id.isNull(), 'insert').otherwise('update'))\
+#     .select(col('ta.id'),col('ta.name'),col('ta.col1'),col('ta.col2'),col('operation'))
+# joined.show(20,False)
+
+##########
+# apply partition to dynamicDF
+##########
+
+datasink4 = glueContext.write_dynamic_frame.from_options(frame = applymapping1, connection_type = "s3", connection_options = {"path": "s3://glue-demo-bucket-vasiuk/master", "partitionKeys": ["partition_dt"]}, format = "parquet", transformation_ctx = "datasink4")
+
+##########
+# apply function to dynamicDF
+##########
+
+def map_function(dynamicRecord):
+    if dynamicRecord["rating"] == 9.2:     
+        dynamicRecord["result"] = True
+    return dynamicRecord
+mapped_dyF =  Map.apply(frame = applymapping1, f = map_function)
+
+
+##########
+# job recon
+##########
+
+import sys
+from awsglue.transforms import *
+from awsglue.utils import getResolvedOptions
+from pyspark.context import SparkContext
+from awsglue.context import GlueContext
+from awsglue.job import Job
+from pyspark.sql.functions import col,lit,udf,when,coalesce
+from time import gmtime, strftime
+from awsglue.dynamicframe import DynamicFrame
+
+## @params: [JOB_NAME]
+args = getResolvedOptions(sys.argv, ['JOB_NAME'])
+d = strftime("%Y%m%d_%H%M%S", gmtime())
+
+sc = SparkContext()
+glueContext = GlueContext(sc)
+spark = glueContext.spark_session
+job = Job(glueContext)
+job.init(args['JOB_NAME'], args)
+
+dsDatapoint = glueContext.create_dynamic_frame.from_catalog(database = "db", table_name = "datapoint")
+dsMasterDatapoint = glueContext.create_dynamic_frame.from_catalog(database = "db", table_name = "masterdatapoint")
+dsWdap = glueContext.create_dynamic_frame.from_catalog(database = "db", table_name = "wdap")
+
+datapointMapped = ApplyMapping.apply(frame = dsDatapoint, mappings = [("first_name", "string", "first_name", "string"), ("last_day_dt", "string", "last_day_dt", "string"), ("marital_cd", "string", "marital_cd", "string"), ("plant_id", "string", "plant_id", "string"), ("term_dt", "string", "term_dt", "string"), ("badge_id", "string", "badge_id", "string"), ("cont_rel_2", "string", "cont_rel_2", "string"), ("rowversion", "long", "rowversion", "long"), ("email_id", "string", "email_id", "string"), ("spvsr_name", "string", "spvsr_name", "string"), ("vet_status_o", "string", "vet_status_o", "string"), ("ln_1_adr", "string", "ln_1_adr", "string"), ("empl_auth_mthd", "string", "empl_auth_mthd", "string"), ("vet_status_r", "string", "vet_status_r", "string"), ("disabled_fl", "string", "disabled_fl", "string"), ("country_cd", "string", "country_cd", "string"), ("postal_cd", "string", "postal_cd", "string"), ("cont_phone_2", "string", "cont_phone_2", "string"), ("elig_auto_pay_fl", "string", "elig_auto_pay_fl", "string"), ("ln_2_adr", "string", "ln_2_adr", "string"), ("pay_pd_reg_hrs_no", "long", "pay_pd_reg_hrs_no", "long"), ("cont_name_1", "string", "cont_name_1", "string"), ("birth_country_cd", "string", "birth_country_cd", "string"), ("pin_updated_fl", "string", "pin_updated_fl", "string"), ("hrsmart_export_dt", "string", "hrsmart_export_dt", "string"), ("name_prfx_cd", "string", "name_prfx_cd", "string"), ("vet_release_dt", "string", "vet_release_dt", "string"), ("blind_fl", "string", "blind_fl", "string"), ("user_login_id", "string", "user_login_id", "string"), ("sft_fl", "string", "sft_fl", "string"), ("cont_rel_1", "string", "cont_rel_1", "string"), ("hua_actv_map_fl", "string", "hua_actv_map_fl", "string"), ("home_email_id", "string", "home_email_id", "string"), ("lv_pd_cd", "string", "lv_pd_cd", "string"), ("contractor_fl", "string", "contractor_fl", "string"), ("ts_pd_cd", "string", "ts_pd_cd", "string"), ("visa_type_cd", "string", "visa_type_cd", "string"), ("ess_pin_id", "string", "ess_pin_id", "string"), ("birth_dt", "string", "birth_dt", "string"), ("mes_fl", "string", "mes_fl", "string"), ("sr_export_dt", "string", "sr_export_dt", "string"), ("visa_dt", "string", "visa_dt", "string"), ("last_first_name", "string", "last_first_name", "string"), ("birth_mail_state_dc", "string", "birth_mail_state_dc", "string"), ("name_sfx_cd", "string", "name_sfx_cd", "string"), ("hua_id", "string", "hua_id", "string"), ("mail_state_dc", "string", "mail_state_dc", "string"), ("ln_3_adr", "string", "ln_3_adr", "string"), ("empl_id", "long", "empl_id", "long"), ("s_ess_cos_cd", "string", "s_ess_cos_cd", "string"), ("mos_review_no", "long", "mos_review_no", "long"), ("union_empl_fl", "string", "union_empl_fl", "string"), ("city_name", "string", "city_name", "string"), ("cont_phone_1", "string", "cont_phone_1", "string"), ("s_empl_status_cd", "string", "s_empl_status_cd", "string"), ("company_id", "long", "company_id", "long"), ("locator_cd", "string", "locator_cd", "string"), ("next_review_dt", "string", "next_review_dt", "string"), ("empl_source_cd", "string", "empl_source_cd", "string"), ("modified_by", "string", "modified_by", "string"), ("county_name", "string", "county_name", "string"), ("last_review_dt", "string", "last_review_dt", "string"), ("vet_status_p", "string", "vet_status_p", "string"), ("pr_serv_empl_id", "string", "pr_serv_empl_id", "string"), ("mgr_empl_id", "string", "mgr_empl_id", "string"), ("vet_status_a", "string", "vet_status_a", "string"), ("clock_fl", "string", "clock_fl", "string"), ("s_race_cd", "string", "s_race_cd", "string"), ("time_entry_type", "string", "time_entry_type", "string"), ("mid_name", "string", "mid_name", "string"), ("last_name", "string", "last_name", "string"), ("vet_status_s", "string", "vet_status_s", "string"), ("badge_group", "string", "badge_group", "string"), ("vet_status_v", "string", "vet_status_v", "string"), ("ess_user_fl", "string", "ess_user_fl", "string"), ("vet_status_d", "string", "vet_status_d", "string"), ("adj_hire_dt", "string", "adj_hire_dt", "string"), ("time_stamp", "string", "time_stamp", "string"), ("notes", "string", "notes", "string"), ("prir_name", "string", "prir_name", "string"), ("pref_name", "string", "pref_name", "string"), ("cont_name_2", "string", "cont_name_2", "string"), ("sex_cd", "string", "sex_cd", "string"), ("login_id", "string", "login_id", "string"), ("taxble_entity_id", "long", "taxble_entity_id", "long"), ("birth_city_name", "string", "birth_city_name", "string"), ("govwiniq_login_id", "string", "govwiniq_login_id", "string"), ("ts_pd_reg_hrs_no", "long", "ts_pd_reg_hrs_no", "long"), ("partition_dt", "string", "partition_dt", "string")])
+datapointMasterMapped = ApplyMapping.apply(frame = dsMasterDatapoint, mappings = [("empl_id", "long", "empl_id", "long"), ("last_name", "string", "last_name", "string"), ("first_name", "string", "first_name", "string"), ("email_id", "string", "email_id", "string"), ("wap_guid", "string", "wap_guid", "string"), ("date_from", "string", "date_from", "string"), ("dml_flag", "string", "dml_flag", "string")])
+wdapMapped = ApplyMapping.apply(frame = dsWdap, mappings = [("id", "string", "id", "string"), ("login", "string", "login", "string"), ("email", "string", "email", "string"), ("name", "string", "name", "string"), ("roleid", "string", "roleid", "string"), ("guid", "string", "guid", "string"), ("timezone", "string", "timezone", "string")])
+
+
+dfDatapoint = datapointMapped.toDF()
+dfDatapointMaster = datapointMasterMapped.toDF()
+dfWdap = wdapMapped.toDF()
+
+dfDatapoint = datapointMapped.toDF()
+dfDatapointMaster = datapointMasterMapped.toDF()
+dfWdap = wdapMapped.toDF()
+
+dp = dfDatapoint.alias('dp')
+dpM = dfDatapointMaster.alias('dpM')
+
+datapointJoinedDf = dp.join(dpM, dp.empl_id == dpM.empl_id, 'full')\
+    .filter((coalesce(col('dp.last_name'),lit('')) != coalesce(col('dpM.last_name'),lit(''))) |
+            (coalesce(col('dp.first_name'),lit('')) != coalesce(col('dpM.first_name'),lit(''))) |
+            (coalesce(col('dp.email_id'),lit('')) != coalesce(col('dpM.email_id'),lit('')))) \
+    .withColumn('operation', when(dpM.empl_id.isNull(), 'insert').when(dp.empl_id.isNull(), 'delete').otherwise('update'))\
+    .withColumn('from_date', lit(d))\
+    .select(coalesce(col('dp.empl_id'),col('dpM.empl_id')).alias('empl_id'),
+            coalesce(col('dp.last_name'),col('dpM.last_name')).alias('last_name'),
+            coalesce(col('dp.first_name'),col('dpM.first_name')).alias('first_name'),
+            coalesce(col('dp.email_id'),col('dpM.email_id')).alias('email_id'),
+            col('from_date'),
+            col('operation'))
+
+deltaChangesDF = datapointJoinedDf.join(dfWdap, datapointJoinedDf.email_id == dfWdap.login, 'left')\
+    .select(col('empl_id'),col('last_name'),col('first_name'),col('email_id'),col('guid'),col('from_date'),col('operation')).repartition(1)
+
+deltaChangesDF.write.mode("append").parquet('s3a://glue-demo-bucket-vasiuk/master/datapoint')
+
+#dynDF = DynamicFrame.fromDF(datapointJoinedDf, glueContext, "dynDF")
+#datasink = glueContext.write_dynamic_frame.from_options(frame = dynDF, connection_type = "s3", connection_options = {"path": "s3://glue-demo-bucket-vasiuk/master/datapoint"}, format = "parquet")
+job.commit()
