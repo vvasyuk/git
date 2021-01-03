@@ -335,4 +335,57 @@
                                                                             +------------------------------------------------------+
 
     ### Mutable Collections
+        - Mutable ArrayDeques
+            - efficient O(1) indexed lookups/updates/inserts/removal of left & right ends
+            - reuses array as much as possible moving start/end
+            - if number of elements exceeds array size - it gets reallocated
+            - faster than immu8table Vector
+            - good for fifo, filo with .append/.removeHead-.removeLast
+            +--------------------------------------------------+
+            |             removeHead() append(6)  removeHead() |
+            |         end         end  end         end         |
+            |  start   +     start +   + start     +   start   |
+            |  +       |     +     |   | +         |   +       |
+            | ++-------++ +--+-----++ ++-+------+ ++---+----+  |
+            | |1|2|3|4|5| | |2|3|4|5| |6|2|3|4|5| |6| |3|4|5|  |
+            | +---------+ +---------+ +---------+ +---------+  |
+            +--------------------------------------------------+
+            +-------------------------+
+            | myArrayDeque.to(Vector) | // "freeze" a mutable ArrayDeque 
+            +-------------------------+
+
+        - Mutable Sets
+            - .contains checks (O(1))
+            - instead of constructing new copies of the Set via + and -, you instead add and remove elements from the Set via .add and .remove
+            +-----------------------------------------------------------------+     +---------------------------------+
+            | val s = collection.mutable.Set(1, 2, 3)     // HashSet(1, 2, 3) |     | s.add(4)                        |
+            | s.contains(2)       // true                                     |     | s.remove(1)                     |
+            | s.contains(4)       // false                                    |     | s           // HashSet(2, 3, 4) |
+            +-----------------------------------------------------------------+     +---------------------------------+
+
+        - Mutable Maps
+            +--------------------------------------------------------------------------------------------------------------------------+
+            | val m = collection.mutable.Map("one" -> 1, "two" -> 2, "three" -> 3)    // HashMap("two" -> 2, "three" -> 3, "one" -> 1) |
+            | m.remove("two")     // Some(2)                                                                                           |
+            | m("five") = 5                                                                                                            |
+            | m                   // HashMap("five" -> 5, "three" -> 3, "one" -> 1)                                                    |
+            +--------------------------------------------------------------------------------------------------------------------------+
+            -getOrElseUpdate - look up a value by key, and compute/store the value if there isn't one already present:
+            +-----------------------------------------------------------------------------------------------------+
+            | val m = collection.mutable.Map("one" -> 1, "two" -> 2, "three" -> 3)                                |
+            | m.getOrElseUpdate("three", -1)      // Int = 3                                                      |
+            | m                                   // HashMap("two" -> 2, "three" -> 3, "one" -> 1)                |
+            | m.getOrElseUpdate("four", -1)       // Int = -1                                                     |
+            | m                                   // HashMap( "two" -> 2, "three" -> 3, "four" -> -1, "one" -> 1) |
+            +-----------------------------------------------------------------------------------------------------+
+
+        - In-Place Operations
+            - All mutable collections, including Arrays, have in-place versions of many common collection operations
+            +-----------------------------------------------------------+
+            | val a = collection.mutable.ArrayDeque(1, 2, 3, 4)         |
+            | a.mapInPlace(_ + 1)             // ArrayDeque(2, 3, 4, 5) |
+            | a.filterInPlace(_ % 2 == 0)     // ArrayDeque(2, 4)       |
+            | a                               // ArrayDeque(2, 4)       |
+            +-----------------------------------------------------------+
+
     ### Common Interfaces

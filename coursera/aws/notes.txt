@@ -140,3 +140,49 @@ deltaChangesDF.write.mode("append").parquet('s3a://glue-demo-bucket-vasiuk/maste
 #dynDF = DynamicFrame.fromDF(datapointJoinedDf, glueContext, "dynDF")
 #datasink = glueContext.write_dynamic_frame.from_options(frame = dynDF, connection_type = "s3", connection_options = {"path": "s3://glue-demo-bucket-vasiuk/master/datapoint"}, format = "parquet")
 job.commit()
+
+
+##########
+# job transform
+##########
+
+import sys
+from awsglue.transforms import *
+from awsglue.utils import getResolvedOptions
+from pyspark.context import SparkContext
+from awsglue.context import GlueContext
+from awsglue.job import Job
+from pyspark.sql.functions import col,substring
+from awsglue.dynamicframe import DynamicFrame
+
+## @params: [JOB_NAME]
+args = getResolvedOptions(sys.argv, ['JOB_NAME'])
+
+sc = SparkContext()
+glueContext = GlueContext(sc)
+spark = glueContext.spark_session
+job = Job(glueContext)
+job.init(args['JOB_NAME'], args)
+
+dsDatapoint = glueContext.create_dynamic_frame.from_catalog(database = "db", table_name = "masterdatapoint")
+datapointMapped = ApplyMapping.apply(frame = dsDatapoint, mappings = [("empl_id", "long", "empl_id", "long"), ("last_name", "string", "last_name", "string"), ("first_name", "string", "first_name", "string"), ("email_id", "string", "email_id", "string"), ("guid", "string", "guid", "string"), ("from_date", "string", "from_date", "string"), ("operation", "string", "operation", "string")])
+
+currentDate = "20210102"
+
+datapointFiltered = Filter.apply(frame = datapointMapped, f = lambda x: x["from_date"][0:8] == currentDate)
+
+# def filter_function(dynamicRecord):
+# 	if dynamicRecord["from_date"][0:8] == currentDate:
+# 		return True
+# 	else:
+# 		return False
+# datapointFiltered = Filter.apply(frame = datapointMapped, f = filter_function)
+# datapointFiltered = Filter.apply(frame = datapointMapped, f = lambda x: x["from_date"] == currentDate)
+
+df = datapointFiltered.toDF().withColumn('partition_dt', substring('from_date', 0,8))
+dynDf = DynamicFrame.fromDF(df, glueContext, "dynDf")
+
+#print(dynDf.show())
+
+datasink = glueContext.write_dynamic_frame.from_options(frame = dynDf, connection_type = "s3", connection_options = {"path": "s3://glue-demo-bucket-vasiuk/transform", "partitionKeys": ["partition_dt"]}, format = "parquet")
+job.commit()
