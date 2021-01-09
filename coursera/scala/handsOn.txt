@@ -638,5 +638,165 @@
             +--------------------------------------------------------------------------------------+
 
     ### By-Name Parameters
+        +----------------------------+
+        | def func(arg: => String) = |
+        +----------------------------+
+
+        - Avoiding Evaluation
+            +-----------------------------------------+
+            | var logLevel = 1                        | // log(2, "Hello " + 123 + " World")    // Hello 123 World
+            | def log(level: Int, msg: => String) = { | // above is not computing log message
+            |     if (level > logLevel) println(msg)  | // getOrElse and getOrElseUpdate are similiar - not use the argument for default value if the value we looking for is present
+            | }                                       |
+            +-----------------------------------------+
+
+        - Wrapping Evaluation
+            defers evaluation of f: => Unit, allowing us to run System.currentTimeMillis() before and after
+            +-------------------------------------------------------------------+
+            | def measureTime(f: => Unit) = {                                   |   // measureTime(new Array[String](10 * 1000 * 1000).hashCode()) // Evaluation took 24 milliseconds
+            |     val start = System.currentTimeMillis()                        |
+            |     f                                                             |
+            |     val end = System.currentTimeMillis()                          |
+            |     println("Evaluation took " + (end - start) + " milliseconds") |
+            | }                                                                 |
+            +-------------------------------------------------------------------+
+
+        - Repeating Evaluation
+            +---------------------------------------------------+
+            | def retry[T](max: Int)(f: => T): T = {            |   // val httpbin = "https://httpbin.org"
+            |     var tries = 0                                 |   // retry(max = 5) {
+            |     var result: Option[T] = None                  |   // // Only succeeds with a 200 response
+            |     while (result == None) {                      |   // // code 1/3 of the time
+            |         try { result = Some(f) }                  |   //     requests.get(
+            |         catch {case e: Throwable =>               |   //     s"/status/200,400,500"
+            |             tries += 1                            |   //     )
+            |             if (tries > max) throw e              |   // }
+            |             else {                                |   // call failed, retry #1
+            |                 println(s"failed, retry #$tries") |   // call failed, retry #2
+            |             }                                     |   // res68: requests.Response = Response(
+            |         }                                         |   // "https://httpbin.org/status/200,400,500",
+            |     }                                             |   // 200,
+            |     result.get                                    |
+            | }                                                 |
+            +---------------------------------------------------+
+
     ### Implicit Parameters
+        implicit parameter is automatically filled when calling function
+        +--------------------------------------------------------+
+        | class Foo(val value: Int)                              |
+        | def bar(implicit foo: Foo) = foo.value + 10            |
+        | implicit val foo: Foo = new Foo(1)                     |
+        | bar // `foo` is resolved implicitly // res72: Int = 11 |
+        +--------------------------------------------------------+
+        - Passing ExecutionContext to Futures                                           - Dependency Injection via Implicits
+            passing this ExecutionContext everywhere                                    +------------------------------------------------------------------------------------+
+        +---------------------------------------------------------------------------+   | def getEmployee(id: Int)(implicit ec: ExecutionContext): Future[Employee] = ...    |
+        | def getEmployee(ec: ExecutionContext, id: Int): Future[Employee] = ...    |   | def getRole(employee: Employee)(implicit ec: ExecutionContext): Future[Role] = ... |
+        | def getRole(ec: ExecutionContext, employee: Employee): Future[Role] = ... |   | implicit val executionContext: ExecutionContext = ...                              |
+        | val executionContext: ExecutionContext = ...                              |   |                                                                                    |
+        |                                                                           |   | val bigEmployee: Future[EmployeeWithRole] = {                                      |
+        | val bigEmployee: Future[EmployeeWithRole] = {                             |   |     getEmployee(100).flatMap(e =>                                                  |
+        |     getEmployee(executionContext, 100).flatMap(                           |   |         getRole(e).map(r =>                                                        |
+        |         executionContext, e =>                                            |   |             EmployeeWithRole(e, r)                                                 |
+        |             getRole(executionContext, e)                                  |   |         )                                                                          |
+        |                 .map(executionContext, r => EmployeeWithRole(e, r))       |   |     )                                                                              |
+        |     )                                                                     |   | }                                                                                  |
+        | }                                                                         |   +------------------------------------------------------------------------------------+
+        +---------------------------------------------------------------------------+
+
     ### Typeclass Inference
+        - Problem Statement: Parsing Command Line Arguments
+        +---------------------------------------------------+
+        | def parseFromString[T](s: String): T = ...        |
+        |                                                   |
+        | val args = Seq("123", "true", "7.5")              |
+        | val myInt = parseFromString[Int](args(0))         |   // How does the parseCliArgument know how to convert 
+        | val myBoolean = parseFromString[Boolean](args(1)) |   // the given String into an arbitrary T
+        | val myDouble = parseFromString[Double](args(2))   |
+        +---------------------------------------------------+
+
+        - Separate Parser Objects
+            +--------------------------------------------------------------------------------------+     +---------------------------------------------+
+            | trait StrParser[T]{ def parse(s: String): T }                                        |     | val args = Seq("123", "true", "7.5")        |
+            | object ParseInt extends StrParser[Int]{ def parse(s: String) = s.toInt }             |     | val myInt = ParseInt.parse(args(0))         |
+            | object ParseBoolean extends StrParser[Boolean]{ def parse(s: String) = s.toBoolean } |     | val myBoolean = ParseBoolean.parse(args(1)) |
+            | object ParseDouble extends StrParser[Double]{ def parse(s: String) = s.toDouble }    |     | val myDouble = ParseDouble.parse(args(2))   |
+            +--------------------------------------------------------------------------------------+     +---------------------------------------------+
+            - write a method that didn't parse a String directly, but parsed a value from the console
+            - option 1                                                      - option 2
+            +------------------------------------------------------------+  +-------------------------------------------------------------------------------------------+
+            | trait ConsoleParser[T]{ def parse(): T }                   |  | def parseFromConsole[T](parser: StrParser[T]) = parser.parse(scala.Console.in.readLine()) |
+            | object ConsoleParseInt extends ConsoleParser[Int]{         |  | val myInt = parseFromConsole[Int](ParseInt)                                               |
+            |     def parse() = scala.Console.in.readLine().toInt        |  | val myBoolean = parseFromConsole[Boolean](ParseBoolean)                                   |
+            | }                                                          |  | val myDouble = parseFromConsole[Double](ParseDouble)                                      |
+            | object ConsoleParseBoolean extends ConsoleParser[Boolean]{ |  +-------------------------------------------------------------------------------------------+
+            |     def parse() = scala.Console.in.readLine().toBoolean    |
+            | }                                                          |
+            | object ConsoleParseDouble extends ConsoleParser[Double]{   |
+            |     def parse() = scala.Console.in.readLine().toDouble     |
+            | }                                                          |
+            | val myInt = ConsoleParseInt.parse()                        |
+            | val myBoolean = ConsoleParseBoolean.parse()                |
+            | val myDouble = ConsoleParseDouble.parse()                  |
+            +------------------------------------------------------------+     
+
+        - Solution: Implicit StrParser
+            -  solution to the problems above is to make the instances of StrParser implicit
+             put the implicit object ParseInt, ParseBoolean, etc. in an object StrParser with the same name as the trait StrParser next to it
+            +--------------------------------------------------------------+
+            | trait StrParser[T]{ def parse(s: String): T }                |
+            | object StrParser{                                            |    // companion object
+            |     implicit object ParseInt extends StrParser[Int]{         |    // often used to group together implicits, static methods, factory methods, and other functionality that is related to a trait or class but does not belong to any specific instance.
+            |         def parse(s: String) = s.toInt                       |    // Implicits in the companion object are also treated specially, and do not need 
+            |     }                                                        |    // to be imported into scope in order to be used as an implicit parameter
+            |     implicit object ParseBoolean extends StrParser[Boolean]{ |
+            |         def parse(s: String) = s.toBoolean                   |
+            |     }                                                        |
+            |     implicit object ParseDouble extends StrParser[Double]{   |
+            |         def parse(s: String) = s.toDouble                    |
+            |     }                                                        |
+            | }                                                            |
+            +--------------------------------------------------------------+
+            - we can now write a generic function that automatically uses the correct instance of StrParser depending on what type we asked it to parse
+            +----------------------------------------------------------------------+
+            | def parseFromString[T](s: String)(implicit parser: StrParser[T]) = { |    // function can now automatically infer the correct StrParser for each type it is trying to parse
+            |     parser.parse(s)                                                  |
+            | }                                                                    |
+            | val args = Seq("123", "true", "7.5")                                 |
+            | val myInt = parseFromString[Int](args(0))                            |
+            | val myBoolean = parseFromString[Boolean](args(1))                    |
+            | val myDouble = parseFromString[Double](args(2))                      |
+            +----------------------------------------------------------------------+
+            - Re-Using Our Implicit StrParsers                              - Context-Bound Syntax
+            +------------------------------------------------------------+  technique of taking an implicit parameter with a generic type is common enough that the Scala language provides dedicated syntax for it. The following method signature
+            | def parseFromConsole[T](implicit parser: StrParser[T]) = { |  +------------------------------------------------------------------------+
+            |     parser.parse(scala.Console.in.readLine())              |  | def parseFromString[T](s: String)(implicit parser: StrParser[T]) = ... |
+            | }                                                          |  +------------------------------------------------------------------------+
+            | val myInt = parseFromConsole[Int]                          |  Can be written more concisely as:
+            +------------------------------------------------------------+  +----------------------------------------------------+  // context bound
+                                                                            | def parseFromString[T: StrParser](s: String) = ... |  // equivalent to the (implicit parser: StrParser[T])
+                                                                            +----------------------------------------------------+  // esolve the implicit values via the implicitly function, e.g. implicitly[StrParser[T]].parse
+
+        - Recursive Typeclass Inference
+            Parsing Sequences
+            teaching the compiler how to produce a StrParser[Seq[T]] for any type T as long as it has an implicit StrParser[T] available
+            +-----------------------------------------------------------------------------+ // implicit def ParseSeq would thus return a different StrParser each time it is called with a different type T
+            | implicit def ParseSeq[T](implicit p: StrParser[T]) = new StrParser[Seq[T]]{ | +-------------------------------------------------------------------------------------------------------+
+            |    def parse(s: String) = s.split(',').toSeq.map(p.parse)                   | | parseFromString[Seq[Boolean]]("true,false,true") // res99: Seq[Boolean] = ArraySeq(true, false, true) |
+            | }                                                                           | | parseFromString[Seq[Int]]("1,2,3,4")    // res100: Seq[Int] = ArraySeq(1, 2, 3, 4)                    |
+            +-----------------------------------------------------------------------------+ +-------------------------------------------------------------------------------------------------------+
+            Parsing Tuples
+            +------------------------------------------------------------------------------+    +-------------------------------------------------------------------------------------------+
+            | implicit def ParseTuple[T, V](implicit p1: StrParser[T], p2: StrParser[V]) = |    | parseFromString[(Int, Boolean)]("123=true")     // res102: (Int, Boolean) = (123, true)   |
+            |     new StrParser[(T, V)]{                                                   |    | parseFromString[(Boolean, Double)]("true=1.5")  //res103: (Boolean, Double) = (true, 1.5) |
+            |         def parse(s: String) = {                                             |    +-------------------------------------------------------------------------------------------+
+            |             val Array(left, right) = s.split('=')                            |
+            |             (p1.parse(left), p2.parse(right))                                |
+            |         }                                                                    |
+            |     }                                                                        |
+            +------------------------------------------------------------------------------+
+            Parsing Nested Structures
+            +-----------------------------------------------------------------------------------------------------------------------------------+
+            | parseFromString[Seq[(Int, Boolean)]]("1=true,2=false,3=true,4=false")   // ArraySeq((1, true), (2, false), (3, true), (4, false)) |
+            | parseFromString[(Seq[Int], Seq[Boolean])]("1,2,3,4,5=true,false,true")  // (ArraySeq(1, 2, 3, 4, 5), ArraySeq(true, false, true)) |
+            +-----------------------------------------------------------------------------------------------------------------------------------+
