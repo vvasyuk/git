@@ -4,3 +4,8 @@
 @startuml
 testdot
 @enduml
+
+
+or copy plantuml jar and add it to your path
+ CLASSPATH = C:\jars\plantuml.jar
+ and add it to PATH %CLASSPATH%

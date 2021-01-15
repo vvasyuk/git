@@ -800,3 +800,67 @@
             | parseFromString[Seq[(Int, Boolean)]]("1=true,2=false,3=true,4=false")   // ArraySeq((1, true), (2, false), (3, true), (4, false)) |
             | parseFromString[(Seq[Int], Seq[Boolean])]("1,2,3,4,5=true,false,true")  // (ArraySeq(1, 2, 3, 4, 5), ArraySeq(true, false, true)) |
             +-----------------------------------------------------------------------------------------------------------------------------------+
+
+
+####################
+# Implementing Algorithms in Scala
+####################
+
+    ### Merge Sort
+                                                                                                                - Generic Merge Sort
+        +-------------------------------------------------------------------------------------------------+    // T: Ordering
+        | def mergeSort(items: Array[Int]): Array[Int] = { MergeSort.sc                                   |    // context bound
+        |     if (items.length <= 1) items                                                                |    // equivalent to the (implicit parser: StrParser[T])
+        |     else {                                                                                      |    // esolve the implicit values via the implicitly function, e.g. implicitly[StrParser[T]].parse
+        |         val (left, right) = items.splitAt(items.length / 2)                                     |     +-------------------------------------------------------------------------------------------------+
+        |         val (sortedLeft, sortedRight) = (mergeSort(left), mergeSort(right))                     |     | def mergeSort[T: Ordering](items: IndexedSeq[T]): IndexedSeq[T] = {                             |
+        |         var (leftIdx, rightIdx) = (0, 0)                                                        |     |     if (items.length <= 1) items                                                                |
+        |         val output = Array.newBuilder[Int]                                                      |     |     else {                                                                                      |
+        |         while (leftIdx < sortedLeft.length || rightIdx < sortedRight.length) {                  |     |         val (left, right) = items.splitAt(items.length / 2)                                     |
+        |             val takeLeft = (leftIdx < sortedLeft.length, rightIdx < sortedRight.length) match { |     |         val (sortedLeft, sortedRight) = (mergeSort(left), mergeSort(right))                     |
+        |                 case (true, false) => true                                                      |     |         var (leftIdx, rightIdx) = (0, 0)                                                        |
+        |                 case (false, true) => false                                                     |     |         val output = IndexedSeq.newBuilder[T]                                                   |
+        |                 case (true, true) => sortedLeft(leftIdx) < sortedRight(rightIdx)                |     |         while (leftIdx < sortedLeft.length || rightIdx < sortedRight.length) {                  |
+        |             }                                                                                   |     |             val takeLeft = (leftIdx < sortedLeft.length, rightIdx < sortedRight.length) match { |
+        |             if (takeLeft) {                                                                     |     |                 case (true, false) => true                                                      |
+        |                 output += sortedLeft(leftIdx)                                                   |     |                 case (false, true) => false                                                     |
+        |                 leftIdx += 1                                                                    |     |                 case (true, true) => Ordering[T].lt(sortedLeft(leftIdx), sortedRight(rightIdx)) |
+        |             } else {                                                                            |     |             }                                                                                   |
+        |             output += sortedRight(rightIdx)                                                     |     |             if (takeLeft) {                                                                     |
+        |             rightIdx += 1                                                                       |     |                 output += sortedLeft(leftIdx)                                                   |
+        |             }                                                                                   |     |                 leftIdx += 1                                                                    |
+        |         }                                                                                       |     |             } else {                                                                            |
+        |         output.result()                                                                         |     |                 output += sortedRight(rightIdx)                                                 |
+        |     }                                                                                           |     |                 rightIdx += 1                                                                   |
+        | }                                                                                               |     |             }                                                                                   |
+        +-------------------------------------------------------------------------------------------------+     |         }                                                                                       |
+                                                                                                                |     output.result()}}         
+                                                                                                                +-------------------------------------------------------------------------------------------------+
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
