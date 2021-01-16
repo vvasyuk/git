@@ -812,16 +812,16 @@
         | def mergeSort(items: Array[Int]): Array[Int] = { MergeSort.sc                                   |    // context bound
         |     if (items.length <= 1) items                                                                |    // equivalent to the (implicit parser: StrParser[T])
         |     else {                                                                                      |    // esolve the implicit values via the implicitly function, e.g. implicitly[StrParser[T]].parse
-        |         val (left, right) = items.splitAt(items.length / 2)                                     |     +-------------------------------------------------------------------------------------------------+
-        |         val (sortedLeft, sortedRight) = (mergeSort(left), mergeSort(right))                     |     | def mergeSort[T: Ordering](items: IndexedSeq[T]): IndexedSeq[T] = {                             |
-        |         var (leftIdx, rightIdx) = (0, 0)                                                        |     |     if (items.length <= 1) items                                                                |
-        |         val output = Array.newBuilder[Int]                                                      |     |     else {                                                                                      |
-        |         while (leftIdx < sortedLeft.length || rightIdx < sortedRight.length) {                  |     |         val (left, right) = items.splitAt(items.length / 2)                                     |
-        |             val takeLeft = (leftIdx < sortedLeft.length, rightIdx < sortedRight.length) match { |     |         val (sortedLeft, sortedRight) = (mergeSort(left), mergeSort(right))                     |
-        |                 case (true, false) => true                                                      |     |         var (leftIdx, rightIdx) = (0, 0)                                                        |
-        |                 case (false, true) => false                                                     |     |         val output = IndexedSeq.newBuilder[T]                                                   |
-        |                 case (true, true) => sortedLeft(leftIdx) < sortedRight(rightIdx)                |     |         while (leftIdx < sortedLeft.length || rightIdx < sortedRight.length) {                  |
-        |             }                                                                                   |     |             val takeLeft = (leftIdx < sortedLeft.length, rightIdx < sortedRight.length) match { |
+        |         val (left, right) = items.splitAt(items.length / 2)                                     |     +-------------------------------------------------------------------------------------------------+ +--------------------------------------------------------------------------------+
+        |         val (sortedLeft, sortedRight) = (mergeSort(left), mergeSort(right))                     |     | def mergeSort[T: Ordering](items: IndexedSeq[T]): IndexedSeq[T] = {                             | | case class Person(name:String, age:Int)                                        |
+        |         var (leftIdx, rightIdx) = (0, 0)                                                        |     |     if (items.length <= 1) items                                                                | | implicit object AgeOrdering extends Ordering[Person] {                         |
+        |         val output = Array.newBuilder[Int]                                                      |     |     else {                                                                                      | |   def compare(a:Person, b:Person) = a.age compare b.age}                       |
+        |         while (leftIdx < sortedLeft.length || rightIdx < sortedRight.length) {                  |     |         val (left, right) = items.splitAt(items.length / 2)                                     | | def main(args: Array[String]): Unit = {                                        |
+        |             val takeLeft = (leftIdx < sortedLeft.length, rightIdx < sortedRight.length) match { |     |         val (sortedLeft, sortedRight) = (mergeSort(left), mergeSort(right))                     | |   val people = Array(Person("bob", 30), Person("ann", 32), Person("carl", 19)) |
+        |                 case (true, false) => true                                                      |     |         var (leftIdx, rightIdx) = (0, 0)                                                        | |   val res = mergeSort(people)                                                  |
+        |                 case (false, true) => false                                                     |     |         val output = IndexedSeq.newBuilder[T]                                                   | |   print(res)                                                                   |
+        |                 case (true, true) => sortedLeft(leftIdx) < sortedRight(rightIdx)                |     |         while (leftIdx < sortedLeft.length || rightIdx < sortedRight.length) {                  | | }                                                                              |
+        |             }                                                                                   |     |             val takeLeft = (leftIdx < sortedLeft.length, rightIdx < sortedRight.length) match { | +--------------------------------------------------------------------------------+
         |             if (takeLeft) {                                                                     |     |                 case (true, false) => true                                                      |
         |                 output += sortedLeft(leftIdx)                                                   |     |                 case (false, true) => false                                                     |
         |                 leftIdx += 1                                                                    |     |                 case (true, true) => Ordering[T].lt(sortedLeft(leftIdx), sortedRight(rightIdx)) |
@@ -838,7 +838,15 @@
                                                                                                                 +-------------------------------------------------------------------------------------------------+
         
         
-        
+case class Person(name:String, age:Int)
+implicit object AgeOrdering extends Ordering[Person] {
+  def compare(a:Person, b:Person) = a.age compare b.age
+}
+def main(args: Array[String]): Unit = {
+  val people = Array(Person("bob", 30), Person("ann", 32), Person("carl", 19))
+  val res = mergeSort(people)
+  print(res)
+}        
         
         
         
