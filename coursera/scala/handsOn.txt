@@ -883,23 +883,67 @@
         +-------------------------------------------------------------------------------------------------------------------+
         
 
+    ### Breadth First Search
+        - cyclic                        - acyclic
+        +---------------------------+   +---------------------------+
+        | val graph = Map(          |   | val graph = Map(          |
+        |     "a" -> Seq("b", "c"), |   |     "a" -> Seq("b", "c"), |
+        |     "b" -> Seq("a"),      |   |     "b" -> Seq("c", "d"), |
+        |     "c" -> Seq("b")       |   |     "c" -> Seq("d"),      |
+        | )                         |   |     "d" -> Seq())         |
+        +---------------------------+   +---------------------------+
+        - with bfs you can:
+            Find all nodes which are reachable from a particular starting node
+            Find the shortest distance between a starting node and all other nodes
+            Find the shortest path between two specific nodes
         
+        - Implementing Breadth First Search
+            Keep a seen set of all nodes you have seen so far, and a queue of nodes waiting to be processed
+            Start with your starting node in both the seen set and queue
+            While the queue is not empty, pull a node off the queue
+            For every node which is reachable from the node you just pulled off the queue, if it isn't present in the seen set, add it to both the seen set and queue
+            When the queue is empty, we have searched the entire graph
         
+            +----------------------------------------------------------------------+    +----------------------------------------+  +---------------------------------------------+ +-----------------------------------+
+            | def search[T](start: T, graph: Map[T, Seq[T]]): Set[T] = {           |    | search(                                |  | search(                                     | | search(                           |
+            |     val seen = collection.mutable.Set(start)                         |    |     start = "c",                       |  |     start = "a",                            | |     start = "c",                  |
+            |     val queue = collection.mutable.ArrayDeque(start)                 |    |     graph = Map(                       |  |     graph = Map(                            | |     graph = Map(                  |
+            |     while (queue.nonEmpty) {                                         |    |         "a" -> Seq("b", "c"),          |  |         "a" -> Seq("b", "c"),               | |         "a" -> Seq("b", "c"),     |
+            |         val current = queue.removeHead()                             |    |         "b" -> Seq("a"),               |  |         "b" -> Seq("c", "d"),               | |         "b" -> Seq("c", "d"),     |
+            |         for (next <- graph(current) if !seen.contains(next)) {       |    |         "c" -> Seq("b")                |  |         "c" -> Seq("d"),                    | |         "c" -> Seq("d"),          |
+            |             seen.add(next)                                           |    |     )                                  |  |         "d" -> Seq()                        | |         "d" -> Seq()              |
+            |             queue.append(next)                                       |    | )                                      |  |     )                                       | |     )                             |
+            |         }                                                            |    | res0: Set[String] = Set("a", "b", "c") |  | )                                           | | )                                 |
+            |     }                                                                |    +----------------------------------------+  | res1: Set[String] = Set("a", "b", "c", "d") | | res2: Set[String] = Set("c", "d") |
+            |     seen.to(Set)                                                     |                                                +---------------------------------------------+ +-----------------------------------+
+            | }                                                                    |
+            +----------------------------------------------------------------------+    
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+        - Shortest Paths
+            -first path we find from our start node to our destination will be a shortest path between the two nodes
+            -Rather than keeping a seen Set[T], we instead maintain a Map[T, List[T]]
+
+        +---------------------------------------------------------------------------+   +----------------------------------------+  +-----------------------------------------+ +------------------------------------+
+        | def searchPaths[T](start: T, graph: Map[T, Seq[T]]): Map[T, List[T]] = {  |   | searchPaths(                           |  | shortestPath(                           | | shortestPath(                      |
+        |     val seen = collection.mutable.Map(start -> List(start))               |   |     graph = Map(                       |  |     start = "a",                        | |     start = "a",                   |
+        |     val queue = collection.mutable.ArrayDeque(start -> List(start))       |   |         "a" -> Seq("b", "c"),          |  |     dest = "d",                         | |     dest = "c",                    |
+        |     while (queue.nonEmpty) {                                              |   |         "b" -> Seq("c", "d"),          |  |     graph = Map(                        | |     graph = Map(                   |
+        |         val (current, path) = queue.removeHead()                          |   |         "c" -> Seq("d"),               |  |         "a" -> Seq("b", "c"),           | |         "a" -> Seq("b", "c"),      |
+        |         for (next <- graph(current) if !seen.contains(next)) {            |   |         "d" -> Seq()                   |  |         "b" -> Seq("c", "d"),           | |         "b" -> Seq("c", "d"),      |
+        |             val newPath = next :: path                                    |   |     )                                  |  |         "c" -> Seq("d"),                | |         "c" -> Seq("d"),           |
+        |             seen(next) = newPath                                          |   | )                                      |  |         "d" -> Seq()                    | |         "d" -> Seq()               |
+        |             queue.append((next, newPath))                                 |   | res0: Map[String, List[String]] = Map( |  |     )                                   | |     )                              |
+        |         }                                                                 |   |     "a" -> List("a"),                  |  | )                                       | | )                                  |
+        |     }                                                                     |   |     "b" -> List("b", "a"),             |  | res1: Seq[String] = List("a", "b", "d") | | res2: Seq[String] = List("a", "c") |
+        |     seen.toMap                                                            |   |     "c" -> List("c", "a"),             |  +-----------------------------------------+ +------------------------------------+
+        | }                                                                         |   |     "d" -> List("d", "b", "a")         |
+        |                                                                           |   | )                                      |
+        | def shortestPath[T](start: T, dest: T, graph: Map[T, Seq[T]]): Seq[T] = { |   +----------------------------------------+
+        |     val shortestReversedPaths = searchPaths(start, graph)                 |
+        |     shortestReversedPaths(dest).reverse                                   |
+        | }                                                                         |
+        +---------------------------------------------------------------------------+
+
         
         
         
