@@ -838,50 +838,53 @@
                                                                                                                 +-------------------------------------------------------------------------------------------------+
         
     ### Prefix Tries
-        +-------------------------------------------------------------------------------------------------------------------+
-        | class Trie() { Trie.sc                                                                                            |
-        |     class Node(var hasValue: Boolean,val children: collection.mutable.Map[Char, Node] = collection.mutable.Map()) |
-        |     val root = new Node(false)                                                                                    |
-        |     def add(s: String) = {                                                                                        |
-        |         var current = root                                                                                        |
-        |         for (c <- s) current = current.children.getOrElseUpdate(c, new Node(false))                               |
-        |         current.hasValue = true                                                                                   |
-        |     }                                                                                                             |
-        |     def contains(s: String): Boolean = {                                                                          |
-        |         var current = Option(root)                                                                                |
-        |         for (c <- s if current.nonEmpty) current = current.get.children.get(c)                                    |
-        |         current.exists(_.hasValue)                                                                                |
-        |     }                                                                                                             |
-        |     def prefixesMatchingString0(s: String): Set[Int] = {                                                          |
-        |         var current = Option(root)                                                                                |
-        |         val output = Set.newBuilder[Int]                                                                          |
-        |         for ((c, i) <- s.zipWithIndex if current.nonEmpty) {                                                      |
-        |             if (current.get.hasValue) output += i                                                                 |
-        |             current = current.get.children.get(c)                                                                 |
-        |         }                                                                                                         |
-        |         if (current.exists(_.hasValue)) output += s.length                                                        |
-        |         output.result()                                                                                           |
-        |     }                                                                                                             |
-        |     def prefixesMatchingString(s: String): Set[String] = {                                                        |
-        |         prefixesMatchingString0(s).map(s.substring(0, _))                                                         |
-        |     }                                                                                                             |
-        |     def stringsMatchingPrefix(s: String): Set[String] = {                                                         |
-        |         var current = Option(root)                                                                                |
-        |             for (c <- s if current.nonEmpty) current = current.get.children.get(c) // initial walk                |
-        |         if (current.isEmpty) Set()                                                                                |
-        |         else {                                                                                                    |
-        |             val output = Set.newBuilder[String]                                                                   |
-        |             def recurse(current: Node, path: List[Char]): Unit = {                                                |
-        |                 if (current.hasValue) output += (s + path.reverse.mkString)                                       |
-        |                 for ((c, n) <- current.children) recurse(n, c :: path)                                            |
-        |             }                                                                                                     |
-        |             recurse(current.get, Nil) // recursive walk                                                           |
-        |             output.result()                                                                                       |
-        |         }                                                                                                         |
-        |     }                                                                                                             |
-        | }                                                                                                                 |
-        +-------------------------------------------------------------------------------------------------------------------+
-        
+        +-------------------------------------------------------------------------------------------------------------------+   +--------------------------------------------------------------------------------------------+
+        | class Trie() {                                                                                                    |   | class ImmutableTrie(inputs: Seq[String]) {                                                 |
+        |     class Node(var hasValue: Boolean,val children: collection.mutable.Map[Char, Node] = collection.mutable.Map()) |   |   class Node(index: Int, inputs: Seq[String]) {                                            |
+        |     val root = new Node(false)                                                                                    |   |     val hasValue = inputs.exists(_.length == index)                                        |
+        |     def add(s: String) = {                                                                                        |   |     val children = {                                                                       |
+        |         var current = root                                                                                        |   |       val filteredInputs = inputs.filter(_.length > index)                                 |
+        |         for (c <- s) current = current.children.getOrElseUpdate(c, new Node(false))                               |   |       for((childChar, childInputs) <- filteredInputs.groupBy(_.charAt(index)))             |
+        |         current.hasValue = true                                                                                   |   |         yield (childChar, new Node(index + 1, childInputs))                                |
+        |     }                                                                                                             |   |     }                                                                                      |
+        |     def contains(s: String): Boolean = {                                                                          |   |   }                                                                                        |
+        |         var current = Option(root)                                                                                |   |                                                                                            |
+        |         for (c <- s if current.nonEmpty) current = current.get.children.get(c)                                    |   |   val root = new Node(0, inputs)                                                           |
+        |         current.exists(_.hasValue)                                                                                |   |                                                                                            |
+        |     }                                                                                                             |   |   def contains(s: String): Boolean = {                                                     |
+        |     def prefixesMatchingString0(s: String): Set[Int] = {                                                          |   |     var current = Option(root)                                                             |
+        |         var current = Option(root)                                                                                |   |     for (c <- s if current.nonEmpty) current = current.get.children.get(c)                 |
+        |         val output = Set.newBuilder[Int]                                                                          |   |     current.exists(_.hasValue)                                                             |
+        |         for ((c, i) <- s.zipWithIndex if current.nonEmpty) {                                                      |   |   }                                                                                        |
+        |             if (current.get.hasValue) output += i                                                                 |   |   def prefixesMatchingString0(s: String): Set[Int] = {                                     |
+        |             current = current.get.children.get(c)                                                                 |   |     var current = Option(root)                                                             |
+        |         }                                                                                                         |   |     val output = Set.newBuilder[Int]                                                       |
+        |         if (current.exists(_.hasValue)) output += s.length                                                        |   |     for ((c, i) <- s.zipWithIndex if current.nonEmpty) {                                   |
+        |         output.result()                                                                                           |   |       if (current.get.hasValue) output += i                                                |
+        |     }                                                                                                             |   |       current = current.get.children.get(c)                                                |
+        |     def prefixesMatchingString(s: String): Set[String] = {                                                        |   |     }                                                                                      |
+        |         prefixesMatchingString0(s).map(s.substring(0, _))                                                         |   |     if (current.exists(_.hasValue)) output += s.length                                     |
+        |     }                                                                                                             |   |     output.result()                                                                        |
+        |     def stringsMatchingPrefix(s: String): Set[String] = {                                                         |   |   }                                                                                        |
+        |         var current = Option(root)                                                                                |   |   def prefixesMatchingString(s: String): Set[String] = {                                   |
+        |             for (c <- s if current.nonEmpty) current = current.get.children.get(c) // initial walk                |   |     prefixesMatchingString0(s).map(s.substring(0, _))                                      |
+        |         if (current.isEmpty) Set()                                                                                |   |   }                                                                                        |
+        |         else {                                                                                                    |   |   def stringsMatchingPrefix(s: String): Set[String] = {                                    |
+        |             val output = Set.newBuilder[String]                                                                   |   |     var current = Option(root)                                                             |
+        |             def recurse(current: Node, path: List[Char]): Unit = {                                                |   |     for (c <- s if current.nonEmpty) current = current.get.children.get(c) // initial walk |
+        |                 if (current.hasValue) output += (s + path.reverse.mkString)                                       |   |     if (current.isEmpty) Set()                                                             |
+        |                 for ((c, n) <- current.children) recurse(n, c :: path)                                            |   |     else {                                                                                 |
+        |             }                                                                                                     |   |       val output = Set.newBuilder[String]                                                  |
+        |             recurse(current.get, Nil) // recursive walk                                                           |   |       def recurse(current: Node, path: List[Char]): Unit = {                               |
+        |             output.result()                                                                                       |   |         if (current.hasValue) output += (s + path.reverse.mkString)                        |
+        |         }                                                                                                         |   |         for ((c, n) <- current.children) recurse(n, c :: path)                             |
+        |     }                                                                                                             |   |       }                                                                                    |
+        | }                                                                                                                 |   |       recurse(current.get, Nil) // recursive walk                                          |
+        +-------------------------------------------------------------------------------------------------------------------+   |       output.result()                                                                      |
+                                                                                                                                |     }                                                                                      |
+                                                                                                                                |   }                                                                                        |
+                                                                                                                                | }                                                                                          |
+                                                                                                                                +--------------------------------------------------------------------------------------------+
 
     ### Breadth First Search
         - cyclic                        - acyclic
@@ -936,18 +939,10 @@
         |         }                                                                 |   |     "a" -> List("a"),                  |  | )                                       | | )                                  |
         |     }                                                                     |   |     "b" -> List("b", "a"),             |  | res1: Seq[String] = List("a", "b", "d") | | res2: Seq[String] = List("a", "c") |
         |     seen.toMap                                                            |   |     "c" -> List("c", "a"),             |  +-----------------------------------------+ +------------------------------------+
-        | }                                                                         |   |     "d" -> List("d", "b", "a")         |
-        |                                                                           |   | )                                      |
-        | def shortestPath[T](start: T, dest: T, graph: Map[T, Seq[T]]): Seq[T] = { |   +----------------------------------------+
-        |     val shortestReversedPaths = searchPaths(start, graph)                 |
-        |     shortestReversedPaths(dest).reverse                                   |
-        | }                                                                         |
-        +---------------------------------------------------------------------------+
-
-        
-        
-        
-        
-        
-        
-        
+        | }                                                                         |   |     "d" -> List("d", "b", "a")         |      +-+
+        |                                                                           |   | )                                      |      |a|
+        | def shortestPath[T](start: T, dest: T, graph: Map[T, Seq[T]]): Seq[T] = { |   +----------------------------------------+      +-+
+        |     val shortestReversedPaths = searchPaths(start, graph)                 |                                                  /   \
+        |     shortestReversedPaths(dest).reverse                                   |                                               +-+     +-+     +-+
+        | }                                                                         |                                               |c+<----+b+---->+d|
+        +---------------------------------------------------------------------------+                                               +-+     +-+     +-+
