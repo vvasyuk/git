@@ -946,3 +946,42 @@
         |     shortestReversedPaths(dest).reverse                                   |                                               +-+     +-+     +-+
         | }                                                                         |                                               |c+<----+b+---->+d|
         +---------------------------------------------------------------------------+                                               +-+     +-+     +-+
+
+
+####################
+# Files and Subprocesses
+####################
+    ### Paths
+        +-----------------------------------------------------+
+        | os.pwd  // /Users/lihaoyi/test                      |
+        | os.root // /                                        |
+        | os.home // /Users/lihaoyi                           |
+        | os.home.segments.toList // List("Users","lihaoyi",) |
+        | os.home.last    // "lihaoyi"                        |
+        +-----------------------------------------------------+
+
+        - Constructing Paths
+        +---------------------------------------------------------------+   +---------------------------------------------------------------------+
+        | os.home / "Github" / "blog"     // /Users/lihaoyi/Github/blog |   | os.Path("/Users/lihaoyi")               // /Users/lihaoyi           |
+        | os.pwd / os.up                  // /Users/lihaoyi             |   | os.Path("post", base = os.pwd)          // /Users/lihaoyi/test/post |
+        | os.pwd / os.up / os.up          // /Users                     |   | os.Path("../Ammonite", base = os.pwd)   // /Users/lihaoyi/Ammonite  |
+        +---------------------------------------------------------------+   +---------------------------------------------------------------------+
+
+        - Relative Paths
+        +-------------------------------------------------------------------+
+        | val helloRelPath = os.RelPath("../hello")                         |
+        | os.home / helloRelPath              // /Users/hello               |
+        | helloRelPath / os.RelPath("post")   // os.RelPath = ../hello/post |
+        +-------------------------------------------------------------------+
+
+        - Sub Paths
+        +------------------------------------------------------------+
+        | val p1 = os.Path("/Users/lihaoyi/Github")                  |
+        | val p2 = os.Path("/Users")                                 |
+        | p1.subRelativeTo(p2)        // os.SubPath = lihaoyi/Github |
+        +------------------------------------------------------------+
+
+    ### Filesystem Operations
+    ### Folder Syncing
+    ### Simple Subprocess Invocations
+    ### Interactive and Streaming Subprocesses
