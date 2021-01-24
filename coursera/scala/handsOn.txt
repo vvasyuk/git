@@ -982,6 +982,58 @@
         +------------------------------------------------------------+
 
     ### Filesystem Operations
+        - Queries
+            list ()
+            +------------------------------------------------------------------------------------------------------------+ ()
+            | os.list(os.pwd) // IndexedSeq[os.Path] = ArraySeq(/Users/lihaoyi/test/.gitignore,/Users/lihaoyi/test/post) | ()
+            +------------------------------------------------------------------------------------------------------------+
+            walk (list recursively, you can use os.walk.stream)
+            +--------------------------------------------------------------------------------------------------------------+
+            | os.walk(os.pwd)   // IndexedSeq[os.Path] = ArraySeq(/Users/lihaoyi/test/.gitignore,/Users/lihaoyi/test/post) |
+            +--------------------------------------------------------------------------------------------------------------+
+            stat (metadata, one can use os.isFile/isDir/mtime/size)
+            +-----------------------------------------------------------------------------------------------------------------------------------------------------+
+            | os.stat(os.pwd / ".gitignore")    // os.StatInfo = StatInfo(129L,2019-09-27T08:04:35.292056Z,2019-12-15T22:23:01.462598Z,2019-09-27T08:04:35Z,File) |
+            +-----------------------------------------------------------------------------------------------------------------------------------------------------+
+
+        - Actions
+            read/wrote
+            +---------------------------------------------------------------------------------+
+            | os.write(os.pwd / "new.txt", "Hello")                                           | // can write anything that implements writable
+            | os.list(os.pwd) // IndexedSeq[os.Path] = ArraySeq(/Users/lihaoyi/test/new.txt,) |
+            | os.read(os.pwd / "new.txt")   // String = "Hello"                               | // reads file as string, os.readLines reads as IndexedSeq[String], os.readBytes - Array[Byte]
+            +---------------------------------------------------------------------------------+
+            move                                                    copy
+            +--------------------------------------------------+    +------------------------------------------------------+
+            | os.move(os.pwd / "new.txt",os.pwd / "newer.txt") |    | os.copy(os.pwd / "newer.txt",os.pwd / "newer-2.txt") |
+            +--------------------------------------------------+    +------------------------------------------------------+
+            remove                              makeDir
+            +---------------------------------+ +-----------------------------------+
+            | os.remove(os.pwd / "newer.txt") | | os.makeDir(os.pwd / "new-folder") |
+            +---------------------------------+ +-----------------------------------+
+
+        - Combining Operations
+            - all files will be loaded into memory to avoid it use .stream methods
+            +-----------------------------------------------------------------------------------+
+            | os.walk(os.pwd).filter(os.isFile).map(p => (os.size(p), p)).sortBy(-_._1).take(5) |
+            +-----------------------------------------------------------------------------------+
+
+        - Streaming
+            +-----------------------------------------------------------------------------------------------------+
+            | os.read.lines.stream(os.pwd / ".gitignore").foreach(println)    // target/,*.iml,.idea,.settings... |
+            | os.walk.stream(os.pwd).foreach(println)                                                             |
+            +-----------------------------------------------------------------------------------------------------+
+
+        - Transforming Streams
+            filter and map are combined
+            +----------------------------------------------------------------------------------------------------------------------------------------------------------+
+            | { os.read.lines.stream(os.pwd / ".gitignore").filter(_.startsWith(".")).map(_.drop(1)).toList } // List[String] = List("idea","settings","classpath",... |
+            +----------------------------------------------------------------------------------------------------------------------------------------------------------+
+            because of stream - read/filter/map occur one line at a time
+            +----------------------------------------------------------------------------------------------------------------------------------------------+
+            | os.read.lines.stream(os.pwd / ".gitignore").collect{case s".$str" => str}.toList    // List[String] = List("idea","settings","classpath",... |
+            +----------------------------------------------------------------------------------------------------------------------------------------------+
+
     ### Folder Syncing
     ### Simple Subprocess Invocations
     ### Interactive and Streaming Subprocesses
