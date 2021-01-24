@@ -1,5 +1,7 @@
 package general.abasics.collections
 
+// scala array is mutable, elements can change, but size of array cannot change
+// if you need mutable indexed sequence whos size can change - you need ArrayBuffer
 object arrayTest {
   def main(args: Array[String]): Unit = {
     // Builders
