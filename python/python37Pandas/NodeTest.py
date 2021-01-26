@@ -3,18 +3,10 @@ class Node(object):
         self.value = v
         self.childs = []
 
-    def traverse(self):
+    def traverse(self, lvl):
+        print(" "*lvl + str(self.value))
         for c in self.childs:
-            yield c.value()
-        # def _traverse():
-        #     for c in self.childs:
-        #         yield c.value()
-        # return (_traverse())
-        # print(self.value)
-        # for child in self.childs:
-        #     yield from child.traverse()
-
-
+            c.traverse(lvl+1)
 
 root = Node(0)
 
@@ -26,8 +18,6 @@ n4 = Node(4)
 root.childs.append(n13)
 n13.childs.append(n2)
 n13.childs.append(n3)
-n2.childs.append(n2)
+n2.childs.append(n4)
 
-
-x = root.traverse()
-print(1)
+x = root.traverse(1)
