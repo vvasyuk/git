@@ -1035,5 +1035,55 @@
             +----------------------------------------------------------------------------------------------------------------------------------------------+
 
     ### Folder Syncing
+        - Walking the Filesystem
+            +------------------------------------------------------------+
+            | def sync(src: os.Path, dest: os.Path) = {                  |
+            |     for (srcSubPath <- os.walk(src)) {                     |
+            |     val subPath = srcSubPath.subRelativeTo(src)            |
+            |     val destSubPath = dest / subPath                       |
+            |     println((os.isDir(srcSubPath), os.isDir(destSubPath))) |
+            |     }                                                      |
+            | }                                                          |
+            +------------------------------------------------------------+
+
+        - Copying New Files Over
+            +-----------------------------------------------------------------------------------------------------------+
+            | def sync(src: os.Path, dest: os.Path) = {                                                                 |
+            |     for (srcSubPath <- os.walk(src)) {                                                                    |
+            |     val subPath = srcSubPath.subRelativeTo(src)                                                           |
+            |     val destSubPath = dest / subPath                                                                      |
+            |     (os.isDir(srcSubPath), os.isDir(destSubPath)) match {                                                 |
+            |         case (false, true) | (true, false) => os.copy.over(srcSubPath, destSubPath, createFolders = true) |
+            |         case _ => // do nothing                                                                           |
+            |     }                                                                                                     |
+            |     }                                                                                                     |
+            | }                                                                                                         |
+            +-----------------------------------------------------------------------------------------------------------+
+
+        - Updating Files
+            +--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+            | def sync(src: os.Path, dest: os.Path) = {                                                                                                                                                        |
+            |     for (srcSubPath <- os.walk(src)) {                                                                                                                                                           |
+            |         val subPath = srcSubPath.subRelativeTo(src)                                                                                                                                              |
+            |         val destSubPath = dest / subPath                                                                                                                                                         |
+            |         (os.isDir(srcSubPath), os.isDir(destSubPath)) match {                                                                                                                                    |
+            |             case (false, true) | (true, false) => os.copy.over(srcSubPath, destSubPath, createFolders = true)                                                                                    |
+            |             case (false, false) if !os.exists(destSubPath) || !os.read.bytes(srcSubPath).sameElements(os.read.bytes(destSubPath)) => os.copy.over(srcSubPath, destSubPath, createFolders = true) |
+            |             case _ => // do nothing                                                                                                                                                              |
+            |         }                                                                                                                                                                                        |
+            |     }                                                                                                                                                                                            |
+            | }                                                                                                                                                                                                |
+            +--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+        - Testing Our File Syncer
+            +------------------------------------------------------+
+            | os.write(os.pwd / "post" / "ABC.txt", "Hello World") |
+            | sync(os.pwd / "post", os.pwd / "post-copy")          |
+            +------------------------------------------------------+
+
     ### Simple Subprocess Invocations
+        - Use Case: remove non-current branches from a Git repo
+        - Use Case: Curl to a local file
+        - Streaming Gzip
+
     ### Interactive and Streaming Subprocesses
