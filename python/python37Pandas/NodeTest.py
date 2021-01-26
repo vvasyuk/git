@@ -1,12 +1,19 @@
-class Node:
+class Node(object):
     def __init__(self, v):
         self.value = v
         self.childs = []
 
-def traverse(node):
-    print(node.value)
-    for i in node.childs:
-        traverse(i)
+    def traverse(self):
+        for c in self.childs:
+            yield c.value()
+        # def _traverse():
+        #     for c in self.childs:
+        #         yield c.value()
+        # return (_traverse())
+        # print(self.value)
+        # for child in self.childs:
+        #     yield from child.traverse()
+
 
 
 root = Node(0)
@@ -21,4 +28,6 @@ n13.childs.append(n2)
 n13.childs.append(n3)
 n2.childs.append(n2)
 
-traverse(root)
+
+x = root.traverse()
+print(1)
