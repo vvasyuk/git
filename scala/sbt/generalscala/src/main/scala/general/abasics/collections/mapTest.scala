@@ -5,6 +5,7 @@ object mapTest {
     // Builders
     Map(1 -> "one", 2 -> "two")
     Map()
+    assert((Set("a", "d") collect Map("a" -> 1, "b" -> 2, "c" -> 3)) == Set(1))
     assert(List(1 -> "one", 2 -> "two").foldLeft(Map.empty[Int, String]) {case (map, (key, value)) => map + (key -> value)} == Map(1 -> "one", 2 -> "two"))
 
     // modify
