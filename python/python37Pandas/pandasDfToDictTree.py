@@ -132,6 +132,9 @@ class Node(object):
         self.has_parent = has_parent
         self.childs = []
 
+    def toMap(self, id):
+        return {'id': id, 'name': self.id, 'currency': self.currency, 'shortName': self.shortName, 'children': []}
+
     def add_child_if_not_exists(self, node):
         if not [n.id for n in self.childs].__contains__(node.id):
             self.childs.append(node)
@@ -142,13 +145,37 @@ class Node(object):
             c.traverse(lvl+1)
 
     def traverse_into_dict(self, result):
-        tmp_result = {'id': self.wap_id,'name': self.id,'currency': self.currency,'shortName': self.shortName, 'children': []}
+        tmp_result = self.toMap(self.id)
         result.append(tmp_result)
         for c in self.childs:
             c.traverse_into_dict(tmp_result['children'])
 
+    def traverse_until_wap_helper(self, result):
+        for c in self.childs:
+            c.traverse_until_wap_into_dict(result, False, "root")
+        return result
+
+    def traverse_until_wap_into_dict(self, result, isStarted, prev_wap):
+        def _iterate(id):
+            tmp_result = self.toMap(id)
+            result.append(tmp_result)
+            for c in self.childs:
+                c.traverse_until_wap_into_dict(tmp_result['children'], isStarted, self.wap_id)
+        if isStarted:
+            _iterate(self.wap_id)
+        elif prev_wap == "root" and (self.wap_id is None or self.wap_id == ''):
+            isStarted = True
+            _iterate(self.wap_id)
+        elif not isStarted:
+            if (self.wap_id is None or self.wap_id == '') and prev_wap is not None:
+                isStarted = True
+                _iterate(prev_wap)
+            else:
+                for c in self.childs:
+                    c.traverse_until_wap_into_dict(result, isStarted, self.wap_id)
+
 def make_map(df):
-    root = Node(0)
+    root = Node("root")
     all_items = {}
 
     def _get_node(id):
@@ -165,29 +192,21 @@ def make_map(df):
 
     for index, row in df.iterrows():
         (id,name,ppmd,pm,parent,sector,account,cust_name,wap_id,wap_prnt_id) = row
-        print(f"---")
-        print(f"processing: {id}")
         if id in all_items:
-            print(f"altering id: {id}")
             node_obj = all_items[id]
             if name is not None:
                 node_obj.name = name
             node_obj.wap_id = wap_id
             node_obj.currency = 'USD'
         if id not in all_items:
-            print(f"creating id: {id}")
             all_items[id] = Node(id=id, wap_id=wap_id, name=name, currency='USD', shortName='', sector=sector, account=account, cust_name=cust_name, has_parent=True)
         if parent not in all_items:
-            print(f"creating parent for id: {id}")
             if parent is None and sector is not None and account is not None and cust_name is not None:
-                print(f"top parent for id: {sector}->{account}->{cust_name}")
                 _link_top_levels(id, sector, account, cust_name)
             else:
-                print(f"regular parent for id: {id}")
                 all_items[parent] = Node(id=parent, wap_id=wap_id, name=name, currency='USD', shortName='', sector=sector, account=account, cust_name=cust_name, has_parent=False)
                 all_items[parent].add_child_if_not_exists(all_items[id])
         if parent in all_items:
-            print(f"attaching child to existing parent for id: {id}")
             all_items[parent].add_child_if_not_exists(all_items[id])
 
     def _substract_last_dot(input):
@@ -198,7 +217,6 @@ def make_map(df):
 
     def _generate_parent(node):
         if not node.has_parent and str(node.id).__contains__('.'):
-            print(f"generating parents for: {node.id}")
             new_parent_id_str = _substract_last_dot(str(node.id))
             if new_parent_id_str in all_items:
                 all_items[new_parent_id_str].add_child_if_not_exists(node)
@@ -218,6 +236,10 @@ def make_map(df):
 
 res = make_map(df1)
 res.traverse(1)
-result = []
-res.traverse_into_dict(result)
-print(result[0]['children'])
+# result = []
+# res.traverse_into_dict(result)
+# print(result[0]['children'])
+
+result_until_wap = []
+res.traverse_until_wap_helper(result_until_wap)
+print(result_until_wap)
