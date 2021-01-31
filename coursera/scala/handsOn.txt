@@ -1082,8 +1082,79 @@
             +------------------------------------------------------+
 
     ### Simple Subprocess Invocations
+        +---------------------------------------------------------+
+        | os.proc(command: os.Shellable*)                         |
+        |     .call(cwd: Path = null,                             | // cwd to set the location of the subprocess's current working directory
+        |         env: Map[String, String] = null,                |
+        |         stdin: ProcessInput = os.Pipe,                  |
+        |         stdout: ProcessOutput = os.Pipe,                |
+        |         stderr: ProcessOutput = os.Inherit,             |
+        |         mergeErrIntoOut: Boolean = false,               |     +--------------------------------------------------------------------------------------------------------+
+        |         timeout: Long = Long.MaxValue,                  |     | val gitStatus = os.proc("git", "status").call() // gitStatus: os.CommandResult = CommandResult( 0, ... |
+        |         check: Boolean = true,                          |     | gitStatus.exitCode  // res1: Int = 0                                                                   |
+        |         propagateEnv: Boolean = true): os.CommandResult |     | gitStatus.out.text()    // "On branch master Your branch is up to date with origin/master.             |
+        +---------------------------------------------------------+     +--------------------------------------------------------------------------------------------------------+
+
         - Use Case: remove non-current branches from a Git repo
+            +------------------------------------------------------------------------------------+
+            | def gitBranchLines = os.proc("git", "branch").call().out.lines()                   |
+            | pprint.log(gitBranchLines)                                                         |
+            | val otherBranches = gitBranchLines.collect{case s" $branchName" => branchName}     |
+            | for (branch <- otherBranches) os.proc("git", "branch", "-D", branch).call()        |
+            | pprint.log(otherBranches)                                                          |
+            +------------------------------------------------------------------------------------+
+
         - Use Case: Curl to a local file
+            +----------------------------------------------------------------+
+            | val url = "https://api.github.com/repos/lihaoyi/mill/releases" |
+            | os.proc("curl", url).call(stdout = os.pwd / "github.json")     |
+            | os.proc("ls", "-lh", "github.json").call().out.text()          |  // res8: String = """-rw-r--r-- 1 lihaoyi staff 607K Jun 3 13:16 github.json
+            +----------------------------------------------------------------+
+
         - Streaming Gzip
+            +------------------------------------------------------------------------------------------+
+            | os.proc("gzip").call(stdin = os.pwd / "github.json", stdout = os.pwd / "github.json.gz") |
+            | os.proc("ls", "-lh", "github.json.gz").call().out.text()                                 |    // res10: String = """-rw-r--r-- 1 lihaoyi staff 23K Jun 3 13:30 github.json.gz
+            +------------------------------------------------------------------------------------------+
 
     ### Interactive and Streaming Subprocesses
+
+         os.proc.spawn is to spawn a long-lived worker process running concurrently with the host process
+         one can interact with and preserve between interactions
+        +-----------------------------------------------------------------------------------------+
+        | val sub = os.proc("python", "-u", "-c", "while True: print(eval(raw_input()))").spawn() |
+        +-----------------------------------------------------------------------------------------+
+        +----------------------------------------------------+  +------------------------------------------------------+
+        | sub.stdin.writeLine("1 + 2 + 4")                   |  | sub.stdin.writeLine("1 + 2 + 4")                     |
+        | sub.stdin.flush()                                  |  | sub.stdin.flush()                                    |
+        | sub.stdout.readLine()       // res14: String = "7" |  | sub.stdout.readLine()       // res17: String = "124" |
+        +----------------------------------------------------+  +------------------------------------------------------+
+        +------------------------------------------+
+        | sub.isAlive()   //res18: Boolean = true  |
+        | sub.destroy()                            |
+        | sub.isAlive()   //res20: Boolean = false |
+        +------------------------------------------+
+
+        - Streaming distinct contributors in a Git repo history
+        +---------------------------------------------------------------------------+
+        | val gitLog = os.proc("git", "log").spawn()                                |
+        | val grepAuthor = os.proc("grep", "Author: ").spawn(stdin = gitLog.stdout) |
+        | val output = grepAuthor.stdout.lines().distinct                           |   // Vector[String] = Vector("Author: Li Haoyi","Author: Guillaume Galy","Author: Nik Vanderhoof",    
+        +---------------------------------------------------------------------------+
+
+        - Streaming Subprocess Pipelines
+        +----------------------------------------------------------------------------------------------------------------------+
+        | val download = os.proc("curl", "https://api.github.com/repos/lihaoyi/mill/releases").spawn()                         |
+        | val upload = os.proc("curl", "-X", "PUT", "-d", "@-", "https://httpbin.org/anything").spawn(stdin = download.stdout) |
+        | val contentLength = upload.stdout.lines().filter(_.contains("Content-Length"))                                       |    // contentLength: Vector[String] = Vector(" \"Content-Length\": \"609216\"
+        +----------------------------------------------------------------------------------------------------------------------+
+        with gzip
+        +------------------------------------------------------------------------------------------------------------------+
+        | val download = os.proc("curl", "https://api.github.com/repos/lihaoyi/mill/releases").spawn()                     |
+        | val base64 = os.proc("base64").spawn(stdin = download.stdout)                                                    |
+        | val gzip = os.proc("gzip").spawn(stdin = base64.stdout)                                                          |
+        | val upload = os.proc("curl", "-X", "PUT", "-d", "@-", "https://httpbin.org/anything").spawn(stdin = gzip.stdout) |
+        | val contentLength = upload.stdout.lines().filter(_.contains("Content-Length"))                                   |
+        +------------------------------------------------------------------------------------------------------------------+
+        
+        com.lihaoyi::os-lib:0.7.1
