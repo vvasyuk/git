@@ -108,16 +108,17 @@ import math
 # # local Test
 df = pd.read_csv("c:/Users/jopa/Downloads/data/testData/levels/datapoint/master_small.txt", dtype={'wap_id': str,'wap_prnt_id':str})
 df1 = df.where(pd.notnull(df), None)
-dfFiltered = df1.loc[df['proj_id'].str.contains('KOU12037.00.01.01.0110')\
-                        | df['proj_id'].str.contains('GOU12037.00.01.01.0110')\
-                        | df['proj_id'].str.contains('IOU12037.00.01.01.0110')
+dfFiltered = df1.loc[df['proj_id'].str.contains('IOU12037.00.01.01.0110')\
+                        | df['proj_id'].str.contains('SLHE')
+                        # | df['proj_id'].str.contains('GOU12037.00.01.01.0110')\
+                        # | df['proj_id'].str.contains('KOU12037.00.01.01.0110')
 ]
 dfFiltered2 = df1.loc[df['proj_id'].str.contains('HOU12037')\
                         | df['proj_id'].str.contains('HOUSING AND URBAN DEVELOP')\
                         | df['proj_id'].str.contains('HUD')\
                         | df['proj_id'].str.contains('CIVIL GOVT')
 ]
-print(df1.to_string())
+print(dfFiltered.to_string())
 
 class Node(object):
     def __init__(self, id, wap_id='', name='', currency='', shortName='', sector='', account='', cust_name='', has_parent=False):
@@ -234,7 +235,7 @@ def make_map(df):
 
     return root
 
-res = make_map(df1)
+res = make_map(dfFiltered)
 res.traverse(1)
 # result = []
 # res.traverse_into_dict(result)
