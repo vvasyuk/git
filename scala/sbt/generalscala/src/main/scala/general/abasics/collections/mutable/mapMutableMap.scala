@@ -1,4 +1,4 @@
-package general.abasics.collections
+package general.abasics.collections.mutable
 
 import scala.collection.mutable.Map
 

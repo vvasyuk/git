@@ -1,4 +1,4 @@
-package general.abasics.collections
+package general.abasics.collections.immutable
 
 object listTest {
   def main(args: Array[String]): Unit = {

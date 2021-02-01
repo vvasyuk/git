@@ -1,4 +1,4 @@
-package general.abasics.collections
+package general.abasics.collections.immutable
 
 // immutable indexed seq collection
 // can access elements very quickly (quicker then in lists)
