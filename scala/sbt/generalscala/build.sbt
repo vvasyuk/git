@@ -16,6 +16,7 @@ val scalaMock  = "org.scalamock" %% "scalamock" % "5.0.0" % Test
 val scalaTest  = "org.scalatest" %% "scalatest" % "3.0.8" % Test
 val camelCore  = "org.apache.camel" % "camel-core" % "3.6.0"
 val camelScala = "org.apache.camel" % "camel-scala" % "2.25.2"
+val os         = "com.lihaoyi" %% "os-lib" % "0.7.2"
 
-libraryDependencies ++= Seq(scopt, scalaXml, typeSafe, scalaArm, sparkJava, http, wireMock, scalaMock, scalaTest, mockito, camelCore, camelScala)
+libraryDependencies ++= Seq(scopt, scalaXml, typeSafe, scalaArm, sparkJava, http, wireMock, scalaMock, scalaTest, mockito, camelCore, camelScala, os)
 //libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8" % Test
