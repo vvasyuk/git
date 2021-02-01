@@ -133,8 +133,8 @@ class Node(object):
         self.has_parent = has_parent
         self.childs = []
 
-    def toMap(self, id):
-        return {'id': id, 'name': self.id, 'currency': self.currency, 'shortName': self.shortName, 'children': []}
+    def toMap(self):
+        return {'id': self.wap_id, 'name': self.id, 'currency': 'USD', 'shortName': self.shortName, 'children': []}
 
     def add_child_if_not_exists(self, node):
         if not [n.id for n in self.childs].__contains__(node.id):
@@ -146,34 +146,36 @@ class Node(object):
             c.traverse(lvl+1)
 
     def traverse_into_dict(self, result):
-        tmp_result = self.toMap(self.id)
+        tmp_result = self.toMap()
         result.append(tmp_result)
         for c in self.childs:
             c.traverse_into_dict(tmp_result['children'])
 
     def traverse_until_wap_helper(self, result):
         for c in self.childs:
-            c.traverse_until_wap_into_dict(result, False, "root")
+            c.traverse_until_wap_into_dict(result, False, None)
         return result
 
-    def traverse_until_wap_into_dict(self, result, isStarted, prev_wap):
-        def _iterate(id):
-            tmp_result = self.toMap(id)
-            result.append(tmp_result)
+    def traverse_until_wap_into_dict(self, result, isStarted, prev_node):
+        def _iterate(res):
+            tmp_result = self.toMap()
+            res.append(tmp_result)
             for c in self.childs:
                 c.traverse_until_wap_into_dict(tmp_result['children'], isStarted, self.wap_id)
         if isStarted:
-            _iterate(self.wap_id)
-        elif prev_wap == "root" and (self.wap_id is None or self.wap_id == ''):
+            _iterate(result)
+        elif prev_node is None and (self.wap_id is None or self.wap_id == ''):
             isStarted = True
-            _iterate(self.wap_id)
+            _iterate(result)
         elif not isStarted:
-            if (self.wap_id is None or self.wap_id == '') and prev_wap is not None:
+            if (self.wap_id is None or self.wap_id == '') and prev_node.id is not None:
+                prev_result = prev_node.toMap()
+                result.append(prev_result)
                 isStarted = True
-                _iterate(prev_wap)
+                _iterate(prev_result['children'])
             else:
                 for c in self.childs:
-                    c.traverse_until_wap_into_dict(result, isStarted, self.wap_id)
+                    c.traverse_until_wap_into_dict(result, isStarted, self)
 
 def make_map(df):
     root = Node("root")
@@ -198,14 +200,14 @@ def make_map(df):
             if name is not None:
                 node_obj.name = name
             node_obj.wap_id = wap_id
-            node_obj.currency = 'USD'
+            node_obj.currency = ''
         if id not in all_items:
-            all_items[id] = Node(id=id, wap_id=wap_id, name=name, currency='USD', shortName='', sector=sector, account=account, cust_name=cust_name, has_parent=True)
+            all_items[id] = Node(id=id, wap_id=wap_id, name=name, currency='', shortName='', sector=sector, account=account, cust_name=cust_name, has_parent=True)
         if parent not in all_items:
             if parent is None and sector is not None and account is not None and cust_name is not None:
                 _link_top_levels(id, sector, account, cust_name)
             else:
-                all_items[parent] = Node(id=parent, wap_id=wap_id, name=name, currency='USD', shortName='', sector=sector, account=account, cust_name=cust_name, has_parent=False)
+                all_items[parent] = Node(id=parent, wap_id=wap_id, name=name, currency='', shortName='', sector=sector, account=account, cust_name=cust_name, has_parent=False)
                 all_items[parent].add_child_if_not_exists(all_items[id])
         if parent in all_items:
             all_items[parent].add_child_if_not_exists(all_items[id])
@@ -222,7 +224,7 @@ def make_map(df):
             if new_parent_id_str in all_items:
                 all_items[new_parent_id_str].add_child_if_not_exists(node)
             else:
-                parent_obj = Node(id=new_parent_id_str, wap_id=node.wap_id, name=node.id, currency='USD', shortName='', sector=node.sector, account=node.account, cust_name=node.cust_name, has_parent=False)
+                parent_obj = Node(id=new_parent_id_str, wap_id=node.wap_id, name=node.id, currency='', shortName='', sector=node.sector, account=node.account, cust_name=node.cust_name, has_parent=False)
                 parent_obj.add_child_if_not_exists(node)
                 node.has_parent = True
                 all_items[new_parent_id_str]=parent_obj
