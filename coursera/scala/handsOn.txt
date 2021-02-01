@@ -1158,3 +1158,68 @@
         +------------------------------------------------------------------------------------------------------------------+
         
         com.lihaoyi::os-lib:0.7.1
+
+
+####################
+# JSON and Binary Data Serialization
+####################
+    ### Manipulating JSON
+        +-------------------------------------------------------------+     // Arr(ArrayBuffer(Obj(LinkedHashMap(
+        | val jsonString = os.read(os.pwd / "ammonite-releases.json") |     // "url" -> Str("https://api.github.com/repos/.../releases/17991367"),
+        | val data = ujson.read(jsonString)                           |     // "assets_url" -> Str("https://api.github.com/repos/.../releases/17991367/assets"),
+        +-------------------------------------------------------------+
+
+        +-------------------------------------------------------------------------------------------------------------+
+        | val small = ujson.Arr(ujson.Obj("hello" -> ujson.Str("world"), "answer" -> ujson.Num(42)),ujson.Bool(true)) |
+        | val small = ujson.Arr(ujson.Obj("hello" -> "world", "answer" -> 42),true)                                   |
+        | println(ujson.write(small))             // [{"hello":"world","answer":42},true]                             |
+        | os.write(os.pwd / "out.json", small)                                                                        |
+        | os.read(os.pwd / "out.json")            // "[{\hello\:\world\,\answer\:42},true]"                           |
+        +-------------------------------------------------------------------------------------------------------------+
+
+        - The ujson.Value Data Type
+        +---------------------------------------------------------------------------+
+        | sealed trait Value                                                        |
+        | case class Str(value: String) extends Value                               |
+        | case class Obj(value: mutable.LinkedHashMap[String, Value]) extends Value |
+        | case class Arr(value: mutable.ArrayBuffer[Value]) extends Value           |
+        | case class Num(value: Double) extends Value                               |
+        | sealed trait Bool extends Value                                           |
+        | case object False extends Bool                                            |
+        | case object True extends Bool                                             |
+        | case object Null extends Value                                            |
+        +---------------------------------------------------------------------------+
+        - Querying and Modifying JSON
+        +-------------------------------------------------------------------------------------------------------------------------------------+
+        | data(0)                 // ujson.Value = Obj(LinkedHashMap("url" -> Str("https://api.github.com/repos/.../releases/17991367"), ...  |
+        | data(0)("url")          // ujson.Value = Str("https://api.github.com/repos/.../releases/17991367")                                  |
+        | data(0)("author")("id") // ujson.Value = Num(2.0607116E7)                                                                           |
+        +-------------------------------------------------------------------------------------------------------------------------------------+
+         mutating
+        +------------------------------------------------------------------------------------------------+
+        | println(small)  // [{"hello":"world","answer":42},true]                                        |
+        | small(0)("hello") = "goodbye"                                                                  |
+        | small(0)("tags") = ujson.Arr("awesome", "yay", "wonderful")                                    |
+        | println(small)  // [{"hello":"goodbye","answer":42,"tags":["awesome","yay","wonderful"]},true] |
+        +------------------------------------------------------------------------------------------------+
+
+        - Extracting Typed Values
+        +----------------------------------------------------------------------------------+    +----------------------------------------------------------------------------------------------+
+        | small(0).obj.remove("hello")                                                     |    | data(0)("url").str          // String = "https://api.github.com/repos/.../releases/17991367" |
+        | small.arr.append(123)                                                            |    | data(0)("author")("id").num // Double = 2.0607116E7                                          |
+        | println(small)  // [{"answer":42,"tags":["awesome","yay","wonderful"]},true,123] |    | data(0)("author")("id").num.toInt   // Int = 20607116                                        |
+        +----------------------------------------------------------------------------------+    +----------------------------------------------------------------------------------------------+
+
+        - Traversing JSON
+        +-------------------------------------------------------------+ +------------------------------------------------------------------+
+        | def traverse(v: ujson.Value): Iterable[String] = v match {  | | traverse(data)                                                   |
+        |     case a: ujson.Arr => a.arr.map(traverse).flatten        | | res21: Iterable[String] = ArrayBuffer(                           |
+        |     case o: ujson.Obj => o.obj.values.map(traverse).flatten | | "https://api.github.com/repos/.../releases/17991367",            |
+        |     case s: ujson.Str => Seq(s.str)                         | | "https://api.github.com/repos/.../releases/17991367/assets",     |
+        |     case _ => Nil                                           | | "https://uploads.github.com/repos/.../releases/17991367/assets", |
+        | }                                                           | +------------------------------------------------------------------+
+        +-------------------------------------------------------------+
+
+    ### JSON Serialization of Scala Data Types
+    ### Writing your own Generic Serialization Methods
+    ### Binary Serialization
