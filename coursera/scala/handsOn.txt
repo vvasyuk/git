@@ -1221,5 +1221,66 @@
         +-------------------------------------------------------------+
 
     ### JSON Serialization of Scala Data Types
+        - Serializing Scala Builtins
+            Serializing values of type T is done by looking up implicit serializers of type ReadWriter[T]
+            Implicit ReadWriters are already defined for most common Scala data types
+            +------------------------------------------------------------------------------------------------------------------------------------------+
+            | val numbers = upickle.default.read[Seq[Int]]("[1, 2, 3, 4]")                        // Seq[Int] = List(1, 2, 3, 4)                       |
+            | upickle.default.write(numbers)                                                      // String = "[1,2,3,4]"                              |
+            | val tuples = upickle.default.read[Seq[(Int, Boolean)]]("[[1, true], [2, false]]")   // Seq[(Int, Boolean)] = List((1, true), (2, false)) |
+            | upickle.default.write(tuples)                                                       // String = "[[1,true],[2,false]]"                   |
+            +------------------------------------------------------------------------------------------------------------------------------------------+
+            Serialization is done via the Typeclass Inference technique and thus can work for arbitrarily deep nested data structures
+            +---------------------------------------------------------------------------------------------------------------------------------------------------------------+
+            | val input = """{"weasel": ["i", "am"], "baboon": ["i", "r"]}"""                                                                                               |
+            | val parsed = upickle.default.read[Map[String, Seq[String]]](input)  // Map[String, Seq[String]] = Map("weasel" -> List("i", "am"),"baboon" -> List("i", "r")) |
+            | upickle.default.write(parsed)                                       // String = "{\weasel\:[\i\,\am\],\baboon\:[\i\,\r\]}"                                    |
+            +---------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+        - Serializing Case Classes
+            To convert a JSON structure into a case class           For every case class you want to serialize, you have to define an implicit upickle.default.ReadWriter
+            +-----------------------------------------------------+ +-------------------------------------------------------------------------------------+
+            | println(ujson.write(data(0)("author"), indent = 4)) | | case class Author(login: String, id: Int, site_admin: Boolean)                      |
+            | {                                                   | | implicit val authorRW: upickle.default.ReadWriter[Author] = upickle.default.macroRW |
+            |     "login": "Ammonite-Bot",                        | +-------------------------------------------------------------------------------------+
+            |     "id": 20607116,                                 |
+            |     "node_id": "MDQ6VXNlcjIwNjA3MTE2",              |
+            |     "gravatar_id": "",                              |
+            |     "type": "User",                                 |
+            |     "site_admin": false,                            |
+            | }                                                   |
+            +-----------------------------------------------------+
+
+            +---------------------------------------------------------------------------------------------------------------------------------------------------------+
+            | val author = upickle.default.read[Author](data(0)("author")) // author: Author = Author("Ammonite-Bot", 20607116, false)                                |
+            | author.login                                                // String = "Ammonite-Bot"                                                                  |
+            | val author2 = upickle.default.read[Author]("""{"login": "lihaoyi", "id": 313373, "site_admin": true}""")    // Author = Author("lihaoyi", 313373, true) |
+            | upickle.default.write(author2)                              // String = "{\login\:\lihaoyi\,\id\:313373,\site_admin\:true}"                             |
+            +---------------------------------------------------------------------------------------------------------------------------------------------------------+
+            Once you have defined a ReadWriter[Author], you can then also serialize and de-serialize Authors as part of any larger data structure:
+            +--------------------------------------------------------------------+  // Map[String, Author] = Map(
+            | upickle.default.read[Map[String, Author]]("""{                     |  //   "haoyi" -> Author("lihaoyi", 1337, true),
+            | "haoyi": {"login": "lihaoyi", "id": 1337, "site_admin": true},     |  //   "bot" -> Author("ammonite-bot", 31337, false)
+            | "bot": {"login": "ammonite-bot", "id": 31337, "site_admin": false} |  // )
+            | }""")                                                              |
+            +--------------------------------------------------------------------+
+
+        - Mapped Serializers
+            By default you cannot serialize os.Paths // upickle.default.write(os.pwd)
+            - use the bimap function to construct a ReadWriter[os.Path] from the existing ReadWriter[String]
+            +--------------------------------------------------------------------------+
+            | implicit val pathRw = upickle.default.readwriter[String].bimap[os.Path]( |
+            |     p => p.toString, /* convert os.Path to String */,                    |
+            |     s => os.Path(s) /* convert String to os.Path */                      |
+            | )                                                                        |
+            +--------------------------------------------------------------------------+
+            With this implicit val pathRw defined, we can now serialize and deserialize os.Paths
+            +---------------------------------------------------------------------------------------------------------------------------------------+
+            | val str = upickle.default.write(os.pwd) // String = "\/Users/lihaoyi/test\"                                                           |
+            | upickle.default.read[os.Path](str)      // os.Path = /Users/lihaoyi/test                                                              |
+            | val str2 = upickle.default.write(Array(os.pwd, os.home, os.root))   // String = "[\/Users/lihaoyi/test\,\/Users/lihaoyi\,\/\]"        |
+            | upickle.default.read[Array[os.Path]](str2)                          // Array[os.Path] = Array(/Users/lihaoyi/test, /Users/lihaoyi, /) |
+            +---------------------------------------------------------------------------------------------------------------------------------------+
+
     ### Writing your own Generic Serialization Methods
     ### Binary Serialization
