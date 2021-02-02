@@ -11,7 +11,7 @@ object vectorTest {
     assert((1 until 3).toVector == Vector(1, 2))
     assert(Vector.range(1, 4) == Vector(1, 2, 3))
 
-    // modify
+    // Modify
     assert(Vector(1,2,3).appended(4) == Vector(1,2,3,4))
     assert(Vector(1,2,3):+4 == Vector(1,2,3,4))
     assert(Vector(1,2,3).prepended(0) == Vector(0,1,2,3))
