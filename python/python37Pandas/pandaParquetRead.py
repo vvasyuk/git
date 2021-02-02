@@ -1,6 +1,6 @@
 import pandas as pd
 
-df = pd.read_parquet('C:/Users/Jopa/Downloads/part-00000-8708c1d8-b4be-4637-8bff-d0ac1fcd2908-c000.snappy.parquet')
+df = pd.read_parquet('c:/Users/jopa/Downloads/data/raw/wdap/levels/raw_datapoint_levels')
 print(df.to_string())
 
 # currentDate = "20210102"

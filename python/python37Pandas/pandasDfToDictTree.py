@@ -1,5 +1,5 @@
 import pandas as pd
-import math
+import TreeNode
 
 # def make_map(df):
 #     root = Node(0)
@@ -87,7 +87,7 @@ import math
 # print(dfWdapFiltered.head(10).to_string())
 
 # MASTER
-# df = pd.read_parquet("c:/Users/jopa/Downloads/data/testData/levels/datapoint/part-00000-dde741f0-cc81-46e8-b72f-3ac74bbd4024-c000.snappy.parquet")
+df = pd.read_parquet("c:/Users/jopa/Downloads/data/testData/levels/datapoint/part-00000-dde741f0-cc81-46e8-b72f-3ac74bbd4024-c000.snappy.parquet")
 # # HOU12037, IOU12037, GOU12037, KOU12037
 # dfFiltered = df.loc[df['proj_id'].str.contains('HOU12037')\
 #                     | df['proj_id'].str.contains('IOU12037')\
@@ -106,142 +106,45 @@ import math
 
 
 # # local Test
-df = pd.read_csv("c:/Users/jopa/Downloads/data/testData/levels/datapoint/master_small.txt", dtype={'wap_id': str,'wap_prnt_id':str})
-df1 = df.where(pd.notnull(df), None)
-dfFiltered = df1.loc[df['proj_id'].str.contains('IOU12037.00.01.01.0110')\
-                        | df['proj_id'].str.contains('SLHE')
-                        # | df['proj_id'].str.contains('GOU12037.00.01.01.0110')\
-                        # | df['proj_id'].str.contains('KOU12037.00.01.01.0110')
+# df = pd.read_csv("c:/Users/jopa/Downloads/data/testData/levels/datapoint/master_small.txt", dtype={'wap_id': str,'wap_prnt_id':str})
+# df1 = df.where(pd.notnull(df), None)
+# dfFiltered = df1.loc[df['proj_id'].str.contains('IOU12037.00.01.01.0110')\
+#                         | df['proj_id'].str.contains('SLHE')
+#                         # | df['proj_id'].str.contains('GOU12037.00.01.01.0110')\
+#                         # | df['proj_id'].str.contains('KOU12037.00.01.01.0110')
+# ]
+# dfFiltered2 = df1.loc[df['proj_id'].str.contains('HOU12037')\
+#                         | df['proj_id'].str.contains('HOUSING AND URBAN DEVELOP')\
+#                         | df['proj_id'].str.contains('HUD')\
+#                         | df['proj_id'].str.contains('CIVIL GOVT')
+# ]
+print(df.to_string())
+
+
+data = [
+    ['HOU12037', 'HOU12037', '286251', '285972', None, 'CIVIL GOVT', 'HUD', 'HOUSING AND URBAN DEVELOPMENT',  None, None],
+    ['HOU12037.00', 'HOU12037.00', '286251', '285972', 'HOU12037', 'CIVIL GOVT', 'HUD', 'HOUSING AND URBAN DEVELOPMENT',  None, None],
+    ['HOU12037.00.01', 'StratMan New Core TO 05', '286251', '285972', 'HOU12037.00', 'CIVIL GOVT', 'HUD', 'HOUSING AND URBAN DEVELOPMENT',  None, None],
+    ['IOU12037.00.01.01.0110', 'AEM Phase 2I - L&C', '286251', '285972', 'IOU12037.00.01.01', 'SLHE', 'ICALIFORNIA', 'ICALIFORNIA DEPT OF PUBLIC', None, None],
+    ['GOU12037.00.01.01.0110', 'AEM Phase 2G - L&C', '286251', '285972', 'GOU12037.00.01.01', 'SLHE', 'CALIFORNIA', 'CALIFORNIA DEPT OF PUBLIC HEALTH', None, None],
+    ['KOU12037.00.01.01.0110', 'AEM Phase 2K - L&C', '286251', '285972', 'KOU12037.00.01.01', 'SLHE', 'CALIFORNIA', 'CALIFORNIA DEPT OF PUBLIC HEALTH', None, None],
+    ['CALIFORNIA', None, None, None, None, None, None, None,  '68', '42'],
+    ['CALIFORNIA DEPT OF CONSUMER AFFAIRS', None, None, None, None, None, None, None,  '210', '68'],
+    ['CALIFORNIA DEPT OF PUBLIC HEALTH', None, None, None, None, None, None, None,  '212', '68'],
+    ['CIVIL GOVT', None, None, None, None, None, None, None,  '44', '1'],
+    ['HOUSING AND URBAN DEVELOPMENT', None, None, None, None, None, None, None,  '369', '103'],
+    ['HUD', None, None, None, None, None, None, None,  '103', '44'],
+    ['SLHE', None, None, None, None, None, None, None,  '42', '1'],
+    ['UNIV CALIFORNIA', None, None, None, None, None, None, None,  '130', '42'],
+    ['UNIVERSITY OF CALIFORNIA, REGE', None, None, None, None, None, None, None,  '608', '130'],
+    ['WATER RESOURCES, CALIFORNIA DE', None, None, None, None, None, None, None,  '663', '68'],
 ]
-dfFiltered2 = df1.loc[df['proj_id'].str.contains('HOU12037')\
-                        | df['proj_id'].str.contains('HOUSING AND URBAN DEVELOP')\
-                        | df['proj_id'].str.contains('HUD')\
-                        | df['proj_id'].str.contains('CIVIL GOVT')
-]
-print(dfFiltered.to_string())
+df0 = pd.DataFrame(data, columns=['proj_id', 'proj_name', 'ppmd_id', 'pm_id', 'prnt_proj_id', 'sector', 'accounts', 'cust_name', 'wap_id', 'wap_prnt_id'])
+df0 = df0.where(pd.notnull(df0), None)
+#print(df0.to_string())
 
-class Node(object):
-    def __init__(self, id, wap_id='', name='', currency='', shortName='', sector='', account='', cust_name='', has_parent=False):
-        self.id = id
-        self.wap_id = wap_id
-        self.name = name
-        self.currency = currency
-        self.shortName = shortName
-        self.sector = sector
-        self.account = account
-        self.cust_name = cust_name
-        self.has_parent = has_parent
-        self.childs = []
-
-    def toMap(self):
-        return {'id': self.wap_id, 'name': self.id, 'currency': 'USD', 'shortName': self.shortName, 'children': []}
-
-    def add_child_if_not_exists(self, node):
-        if not [n.id for n in self.childs].__contains__(node.id):
-            self.childs.append(node)
-
-    def traverse(self, lvl):
-        print(" "*lvl + f"{self.id}: {self.wap_id}: {self.name}")
-        for c in self.childs:
-            c.traverse(lvl+1)
-
-    def traverse_into_dict(self, result):
-        tmp_result = self.toMap()
-        result.append(tmp_result)
-        for c in self.childs:
-            c.traverse_into_dict(tmp_result['children'])
-
-    def traverse_until_wap_helper(self, result):
-        for c in self.childs:
-            c.traverse_until_wap_into_dict(result, False, None)
-        return result
-
-    def traverse_until_wap_into_dict(self, result, isStarted, prev_node):
-        def _iterate(res):
-            tmp_result = self.toMap()
-            res.append(tmp_result)
-            for c in self.childs:
-                c.traverse_until_wap_into_dict(tmp_result['children'], isStarted, self.wap_id)
-        if isStarted:
-            _iterate(result)
-        elif prev_node is None and (self.wap_id is None or self.wap_id == ''):
-            isStarted = True
-            _iterate(result)
-        elif not isStarted:
-            if (self.wap_id is None or self.wap_id == '') and prev_node.id is not None:
-                prev_result = prev_node.toMap()
-                result.append(prev_result)
-                isStarted = True
-                _iterate(prev_result['children'])
-            else:
-                for c in self.childs:
-                    c.traverse_until_wap_into_dict(result, isStarted, self)
-
-def make_map(df):
-    root = Node("root")
-    all_items = {}
-
-    def _get_node(id):
-        if id not in all_items:
-            all_items[id] = Node(id=id)
-        return all_items[id]
-
-    def _link_top_levels(id, sector, account, cust_name):
-        (cust_name_obj, account_obj, sector_obj) = (_get_node(cust_name), _get_node(account), _get_node(sector))
-        sector_obj.add_child_if_not_exists(account_obj)
-        account_obj.add_child_if_not_exists(cust_name_obj)
-        cust_name_obj.add_child_if_not_exists(all_items[id])
-        root.add_child_if_not_exists(all_items[sector])
-
-    for index, row in df.iterrows():
-        (id,name,ppmd,pm,parent,sector,account,cust_name,wap_id,wap_prnt_id) = row
-        if id in all_items:
-            node_obj = all_items[id]
-            if name is not None:
-                node_obj.name = name
-            node_obj.wap_id = wap_id
-            node_obj.currency = ''
-        if id not in all_items:
-            all_items[id] = Node(id=id, wap_id=wap_id, name=name, currency='', shortName='', sector=sector, account=account, cust_name=cust_name, has_parent=True)
-        if parent not in all_items:
-            if parent is None and sector is not None and account is not None and cust_name is not None:
-                _link_top_levels(id, sector, account, cust_name)
-            else:
-                all_items[parent] = Node(id=parent, wap_id=wap_id, name=name, currency='', shortName='', sector=sector, account=account, cust_name=cust_name, has_parent=False)
-                all_items[parent].add_child_if_not_exists(all_items[id])
-        if parent in all_items:
-            all_items[parent].add_child_if_not_exists(all_items[id])
-
-    def _substract_last_dot(input):
-        splitted = input.split(".")
-        new_parent_id = splitted[:len(splitted) - 1]
-        new_parent_id_str = '.'.join([str(elem) for elem in new_parent_id])
-        return new_parent_id_str
-
-    def _generate_parent(node):
-        if not node.has_parent and str(node.id).__contains__('.'):
-            new_parent_id_str = _substract_last_dot(str(node.id))
-            if new_parent_id_str in all_items:
-                all_items[new_parent_id_str].add_child_if_not_exists(node)
-            else:
-                parent_obj = Node(id=new_parent_id_str, wap_id=node.wap_id, name=node.id, currency='', shortName='', sector=node.sector, account=node.account, cust_name=node.cust_name, has_parent=False)
-                parent_obj.add_child_if_not_exists(node)
-                node.has_parent = True
-                all_items[new_parent_id_str]=parent_obj
-                _generate_parent(parent_obj)
-        elif not str(node.id).__contains__('.') and node.sector and node.account and node.cust_name:
-            _link_top_levels(node.id, node.sector, node.account, node.cust_name)
-
-    for (k, node) in list(all_items.items()):
-        _generate_parent(node)
-
-    return root
-
-res = make_map(dfFiltered)
-res.traverse(1)
-# result = []
-# res.traverse_into_dict(result)
-# print(result[0]['children'])
+res = TreeNode.get_node(df)
+#res.traverse(1)
 
 result_until_wap = []
 res.traverse_until_wap_helper(result_until_wap)
