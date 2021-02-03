@@ -87,7 +87,11 @@ import TreeNode
 # print(dfWdapFiltered.head(10).to_string())
 
 # MASTER
-df = pd.read_parquet("c:/Users/jopa/Downloads/data/testData/levels/datapoint/part-00000-dde741f0-cc81-46e8-b72f-3ac74bbd4024-c000.snappy.parquet")
+df = pd.read_parquet("c:/Users/jopa/Downloads/data/testData/levels/datapoint/part-00000-dde741f0-cc81-46e8-b72f-3ac74bbd4024-c000.snappy.parquet", use_nullable_dtypes=True)
+df1 = df.loc[df['proj_id'] == 'FDA00084']
+df1.info()
+print(df1.to_string())
+
 # # HOU12037, IOU12037, GOU12037, KOU12037
 # dfFiltered = df.loc[df['proj_id'].str.contains('HOU12037')\
 #                     | df['proj_id'].str.contains('IOU12037')\
@@ -118,33 +122,40 @@ df = pd.read_parquet("c:/Users/jopa/Downloads/data/testData/levels/datapoint/par
 #                         | df['proj_id'].str.contains('HUD')\
 #                         | df['proj_id'].str.contains('CIVIL GOVT')
 # ]
-print(df.to_string())
+# print(df.to_string())
 
-data = [
-    ['xHOU12037', 'HOU12037', '286251', '285972', None, 'XCIVIL GOVT', 'XHUD', 'XHOUSING AND URBAN DEVELOPMENT', None,None],
-    ['XHOU12037.00', 'HOU12037.00', '286251', '285972', 'HOU12037', 'XCIVIL GOVT', 'XHUD','XHOUSING AND URBAN DEVELOPMENT', None, None],
-    ['XHOU12037.00.01', 'StratMan New Core TO 05', '286251', '285972', 'HOU12037.00', 'XCIVIL GOVT', 'XHUD','XHOUSING AND URBAN DEVELOPMENT', None, None],
-    ['XIOU12037.00.01.01.0110', 'AEM Phase 2I - L&C', '286251', '285972', 'IOU12037.00.01.01', 'XSLHE', 'XICALIFORNIA','XICALIFORNIA DEPT OF PUBLIC', None, None],
-    ['XGOU12037.00.01.01.0110', 'AEM Phase 2G - L&C', '286251', '285972', 'GOU12037.00.01.01', 'XSLHE', 'XCALIFORNIA','XCALIFORNIA DEPT OF PUBLIC HEALTH', None, None],
-    ['XKOU12037.00.01.01.0110', 'AEM Phase 2K - L&C', '286251', '285972', 'KOU12037.00.01.01', 'XSLHE', 'XCALIFORNIA','XCALIFORNIA DEPT OF PUBLIC HEALTH', None, None],
-    ['XCALIFORNIA', None, None, None, None, None, None, None, '68', '42'],
-    ['XCALIFORNIA DEPT OF CONSUMER AFFAIRS', None, None, None, None, None, None, None, '210', '68'],
-    ['XCALIFORNIA DEPT OF PUBLIC HEALTH', None, None, None, None, None, None, None, '212', '68'],
-    ['XCIVIL GOVT', None, None, None, None, None, None, None, '44', '1'],
-    ['XHOUSING AND URBAN DEVELOPMENT', None, None, None, None, None, None, None, '369', '103'],
-    ['XHUD', None, None, None, None, None, None, None, '103', '44'],
-    ['XSLHE', None, None, None, None, None, None, None, '42', '1'],
-    ['XUNIV CALIFORNIA', None, None, None, None, None, None, None, '130', '42'],
-    ['XUNIVERSITY OF CALIFORNIA, REGE', None, None, None, None, None, None, None, '608', '130'],
-    ['XWATER RESOURCES, CALIFORNIA DE', None, None, None, None, None, None, None, '663', '68'],
-]
-df0 = pd.DataFrame(data, columns=['proj_id', 'proj_name', 'ppmd_id', 'pm_id', 'prnt_proj_id', 'sector', 'accounts', 'cust_name', 'wap_id', 'wap_prnt_id'])
-df0 = df0.where(pd.notnull(df0), None)
-#print(df0.to_string())
+# df1 = df.loc[df['proj_id'] == 'FDA00084']
+# df1.info()
+# print(df1.to_string())
 
-res = TreeNode.get_node(df)
-#res.traverse(1)
-
-result_until_wap = []
-res.traverse_until_wap_helper(result_until_wap)
-print(result_until_wap)
+# data = [
+#     ['HOU12037', 'HOU12037', '286251', '285972', None, 'XCIVIL GOVT', 'XHUD', 'XHOUSING AND URBAN DEVELOPMENT', None,None],
+#     ['HOU12037.00', 'HOU12037.00', '286251', '285972', 'HOU12037', 'XCIVIL GOVT', 'XHUD','XHOUSING AND URBAN DEVELOPMENT', None, None],
+#     ['HOU12037.00.01', 'StratMan New Core TO 05', '286251', '285972', 'HOU12037.00', 'XCIVIL GOVT', 'XHUD','XHOUSING AND URBAN DEVELOPMENT', None, None],
+#     ['IOU12037.00.01.01.0110', 'AEM Phase 2I - L&C', '286251', '285972', 'IOU12037.00.01.01', 'XSLHE', 'XICALIFORNIA','XICALIFORNIA DEPT OF PUBLIC', None, None],
+#     ['GOU12037.00.01.01.0110', 'AEM Phase 2G - L&C', '286251', '285972', 'GOU12037.00.01.01', 'XSLHE', 'XCALIFORNIA','XCALIFORNIA DEPT OF PUBLIC HEALTH', None, None],
+#     ['KOU12037.00.01.01.0110', 'AEM Phase 2K - L&C', '286251', '285972', 'KOU12037.00.01.01', 'XSLHE', 'XCALIFORNIA','XCALIFORNIA DEPT OF PUBLIC HEALTH', None, None],
+#     ['XCALIFORNIA', None, None, None, None, None, None, None, '68', '42'],
+#     ['XCALIFORNIA DEPT OF CONSUMER AFFAIRS', None, None, None, None, None, None, None, '210', '68'],
+#     ['XCALIFORNIA DEPT OF PUBLIC HEALTH', None, None, None, None, None, None, None, '212', '68'],
+#     ['XCIVIL GOVT', None, None, None, None, None, None, None, '44', '1'],
+#     ['XHOUSING AND URBAN DEVELOPMENT', None, None, None, None, None, None, None, '369', '103'],
+#     ['XHUD', None, None, None, None, None, None, None, '103', '44'],
+#     ['XSLHE', None, None, None, None, None, None, None, '42', '1'],
+#     ['XUNIV CALIFORNIA', None, None, None, None, None, None, None, '130', '42'],
+#     ['XUNIVERSITY OF CALIFORNIA, REGE', None, None, None, None, None, None, None, '608', '130'],
+#     ['XWATER RESOURCES, CALIFORNIA DE', None, None, None, None, None, None, None, '663', '68'],
+# ]
+# df0 = pd.DataFrame(data, columns=['proj_id', 'proj_name', 'ppmd_id', 'pm_id', 'prnt_proj_id', 'sector', 'accounts', 'cust_name', 'wap_id', 'wap_prnt_id'])
+# df0.info()
+# print(df0.to_string())
+#
+# df0 = df0.where(pd.notnull(df0), None)
+# #print(df0.to_string())
+#
+# res = TreeNode.get_node(df)
+# res.traverse(1)
+#
+# result_until_wap = []
+# res.traverse_until_wap_helper(result_until_wap)
+# print(result_until_wap)
