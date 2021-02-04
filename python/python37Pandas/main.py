@@ -23,15 +23,22 @@ class Node(object):
         self.childs = []
 
 def main():
-    root = Node(0)
-    c1 = Node(1)
-    c2 = Node(2)
-    c3 = Node(3)
-    root.childs.append(c1)
-    root.childs.append(c2)
-    root.childs.append(c3)
 
-    print([x.id for x in root.childs].__contains__(3))
+    map = {}
+    map['a'] = 1
+    map[None] = 0
+    map[None] = -1
+    print(map)
+
+    # root = Node(0)
+    # c1 = Node(1)
+    # c2 = Node(2)
+    # c3 = Node(3)
+    # root.childs.append(c1)
+    # root.childs.append(c2)
+    # root.childs.append(c3)
+    #
+    # print([x.id for x in root.childs].__contains__(3))
 
 
     # m = {1: "one", 2: "two"}

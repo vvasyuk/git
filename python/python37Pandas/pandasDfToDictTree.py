@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import TreeNode
 
 # def make_map(df):
@@ -88,9 +89,16 @@ import TreeNode
 
 # MASTER
 df = pd.read_parquet("c:/Users/jopa/Downloads/data/testData/levels/datapoint/part-00000-dde741f0-cc81-46e8-b72f-3ac74bbd4024-c000.snappy.parquet", use_nullable_dtypes=True)
-df1 = df.loc[df['proj_id'] == 'FDA00084']
-df1.info()
-print(df1.to_string())
+df = df.loc[df['proj_id'] == 'FDA00084']
+# df1 = df1.isna()
+# df1 = df1.where(df1.isna(), np.NaN)
+# print(df1.to_string())
+# print(df.dtypes)
+# df["ppmd_id"] = df['ppmd_id'].astype('int')
+# print(df.dtypes)
+# df = df.fillna('')
+#
+# print(df1.to_string())
 
 # # HOU12037, IOU12037, GOU12037, KOU12037
 # dfFiltered = df.loc[df['proj_id'].str.contains('HOU12037')\
@@ -153,9 +161,11 @@ print(df1.to_string())
 # df0 = df0.where(pd.notnull(df0), None)
 # #print(df0.to_string())
 #
-# res = TreeNode.get_node(df)
-# res.traverse(1)
-#
-# result_until_wap = []
-# res.traverse_until_wap_helper(result_until_wap)
-# print(result_until_wap)
+
+print(df.to_string())
+res = TreeNode.get_node(df)
+res.traverse(1)
+
+result_until_wap = []
+res.traverse_until_wap_helper(result_until_wap)
+print(result_until_wap)
