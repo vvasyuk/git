@@ -1320,5 +1320,37 @@
         Security
             every upickle.default.read call has a statically-specified type, we will never deserialize a value of unexpected type
 
-
     ### Binary Serialization
+        - writeBinary and readBinary
+        +--------------------------------------------------------------------------------------------------------------------------------+
+        | case class Author(login: String, id: Int, site_admin: Boolean)                                                                 |
+        | implicit val authorRw = upickle.default.macroRW[Author]                                                                        |
+        | val blob = upickle.default.writeBinary(Author("haoyi", 31337, true))    // blob: Array[Byte] = Array(-125, -91, 108, 111, ...) |
+        | upickle.default.readBinary[Author](blob)                                // res54: Author = Author("haoyi", 31337, true)        |
+        +--------------------------------------------------------------------------------------------------------------------------------+
+        map serialization/deserialization
+        +--------------------------------------------------------------------------------------------------+
+        | val data = Map(                                                                                  |
+        |     1 -> Nil,                                                                                    |
+        |     2 -> List(Author("haoyi", 1337, true), Author("lihaoyi", 31337, true))                       |
+        | )                                                                                                |
+        | val blob2 = upickle.default.writeBinary(data)   // Array[Byte] = Array(-110, -110, 1, -112, ...) |
+        | upickle.default.readBinary[Map[Int, List[Author]]](blob2)                                        |
+        | Map[Int, List[Author]] = Map(                                                                    |
+        |     1 -> List(),                                                                                 |
+        |     2 -> List(Author("haoyi", 1337, true), Author("lihaoyi", 31337, true))                       |
+        | )                                                                                                |
+        +--------------------------------------------------------------------------------------------------+
+
+        - MessagePack Structures
+        +---------------------------------------+   +-------------------------------------------------------------+ +-------------------------------------------------------------------------------------------------------------------------+
+        | @ upack.read(blob)                    |   | upack.read(blob2)                                           | | val msg = upack.Obj(                                                                                                    |
+        | res58: upack.Msg = Obj(LinkedHashMap( |   | res59: upack.Msg = Arr(                                     | |     upack.Str("login") -> upack.Str("haoyi"),                                                                           |
+        |     Str("login") -> Str("haoyi"),     |   | ArrayBuffer(Arr(ArrayBuffer(Int32(1), Arr(ArrayBuffer()))), | |     upack.Str("id") -> upack.Int32(31337),                                                                              |
+        |     Str("id") -> Int32(31337),        |   | Arr(ArrayBuffer(Int32(2),Arr(ArrayBuffer(Obj(               | |     upack.Str("site_admin") -> upack.True                                                                               |
+        |     Str("site_admin") -> True         |   | LinkedHashMap(                                              | | )                                                                                                                       |
+        |     )                                 |   |     Str("login") -> Str("haoyi"),                           | | val blob3 = upack.write(msg)                                    // blob3: Array[Byte] = Array(-125, -91, 108, 111, ...) |
+        | )                                     |   |     Str("id") -> Int32(1337),                               | | val deserialized = upickle.default.readBinary[Author](blob3)    // deserialized: Author = Author("haoyi", 31337, true)  |
+        +---------------------------------------+   |     Str("site_admin") -> True                               | +-------------------------------------------------------------------------------------------------------------------------+
+                                                    | )),                                                         |
+                                                    +-------------------------------------------------------------+
