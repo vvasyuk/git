@@ -1,4 +1,4 @@
-package general.abasics.collections.immutable.seq.map
+package general.abasics.collections.immutable.map
 
 object mapTest {
   def main(args: Array[String]): Unit = {

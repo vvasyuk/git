@@ -1,7 +1,11 @@
-package general.abasics.collections.immutable.seq.map
+package general.abasics.collections.immutable.map
 
 import scala.collection.immutable.ListMap
 
+//Entries are stored internally in reversed insertion order, which means the newest key is at the head of the list.
+// As such, methods such as head and tail are O(n), while last and init are O(1).
+// Other operations, such as inserting or removing entries, are also O(n), which makes this collection suitable only
+// for a small number of elements.
 object listMapTest {
   def main(args: Array[String]): Unit = {
     // Builders
