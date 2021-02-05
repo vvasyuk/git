@@ -89,7 +89,7 @@ import TreeNode
 
 # MASTER
 df = pd.read_parquet("c:/Users/jopa/Downloads/data/testData/levels/datapoint/part-00000-dde741f0-cc81-46e8-b72f-3ac74bbd4024-c000.snappy.parquet", use_nullable_dtypes=True)
-df = df.loc[df['proj_id'] == 'FDA00084']
+#df = df.loc[df['proj_id'] == 'FDA00084']
 # df1 = df1.isna()
 # df1 = df1.where(df1.isna(), np.NaN)
 # print(df1.to_string())
@@ -162,7 +162,7 @@ df = df.loc[df['proj_id'] == 'FDA00084']
 # #print(df0.to_string())
 #
 
-print(df.to_string())
+#print(df.to_string())
 res = TreeNode.get_node(df)
 res.traverse(1)
 

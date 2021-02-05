@@ -57,6 +57,7 @@ class TreeNode(object):
                 for c in self.childs:
                     c.traverse_until_wap_into_dict(result, isStarted, self)
 
+
 def get_node(df):
     root = TreeNode("root")
     all_items = {}
@@ -85,12 +86,14 @@ def get_node(df):
             if new_parent_id_str in all_items:
                 all_items[new_parent_id_str].add_child_if_not_exists(node)
             else:
-                parent_obj = TreeNode(id=new_parent_id_str, wap_id=node.wap_id, name=node.id, currency='',shortName='', sector=node.sector, account=node.account,cust_name=node.cust_name, has_parent=False)
+                parent_obj = TreeNode(id=new_parent_id_str, wap_id=node.wap_id, name=node.id, currency='',
+                                      shortName='', sector=node.sector, account=node.account,
+                                      cust_name=node.cust_name, has_parent=False)
                 parent_obj.add_child_if_not_exists(node)
                 node.has_parent = True
                 all_items[new_parent_id_str] = parent_obj
                 _generate_parent(parent_obj)
-        elif not str(node.id).__contains__('.') and node.sector is not None and node.account is not None and node.cust_name is not None:
+        elif not str(node.id).__contains__('.') and node.sector and node.account and node.cust_name:
             _link_top_levels(node.id, node.sector, node.account, node.cust_name)
 
     def _replace_na_to_none(df):
@@ -102,9 +105,8 @@ def get_node(df):
                 res.append(x)
         return tuple(res)
 
-    for row in df.itertuples(index=False):
-        #id, name, ppmd, pm, parent, sector, account, cust_name, wap_id, wap_prnt_id = _replace_na_to_none(row)
-        (id, name, ppmd, pm, parent, sector, account, cust_name, wap_id, wap_prnt_id) = row
+    for index, row in df.iterrows():
+        id, name, ppmd, pm, parent, sector, account, cust_name, wap_id, wap_prnt_id = _replace_na_to_none(row)
         if id in all_items:
             node_obj = all_items[id]
             if name is not None:
@@ -112,12 +114,12 @@ def get_node(df):
             node_obj.wap_id = wap_id
             node_obj.currency = ''
         if id not in all_items:
-            all_items[id] = TreeNode(id=id, wap_id=wap_id, name=name, currency='', shortName='', sector=sector,account=account, cust_name=cust_name, has_parent=True)
+            all_items[id] = TreeNode(id=id, wap_id=wap_id, name=name, currency='', shortName='', sector=sector, account=account, cust_name=cust_name, has_parent=True)
         if parent not in all_items:
             if parent is None and sector is not None and account is not None and cust_name is not None:
                 _link_top_levels(id, sector, account, cust_name)
             else:
-                all_items[parent] = TreeNode(id=parent, wap_id=wap_id, name=name, currency='', shortName='',sector=sector, account=account, cust_name=cust_name, has_parent=False)
+                all_items[parent] = TreeNode(id=parent, wap_id=wap_id, name=name, currency='', shortName='', sector=sector, account=account, cust_name=cust_name, has_parent=False)
                 all_items[parent].add_child_if_not_exists(all_items[id])
         if parent in all_items:
             all_items[parent].add_child_if_not_exists(all_items[id])
@@ -126,4 +128,3 @@ def get_node(df):
         _generate_parent(node)
 
     return root
-
