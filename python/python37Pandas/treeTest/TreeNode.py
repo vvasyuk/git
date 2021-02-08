@@ -1,3 +1,5 @@
+from pandas._libs.missing import *
+
 class TreeNode(object):
     def __init__(self, id, wap_id='', name='', currency='', shortName='', sector='', account='', cust_name='', has_parent=False):
         self.id = id
@@ -55,6 +57,7 @@ class TreeNode(object):
                 for c in self.childs:
                     c.traverse_until_wap_into_dict(result, isStarted, self)
 
+
 def get_node(df):
     root = TreeNode("root")
     all_items = {}
@@ -83,43 +86,45 @@ def get_node(df):
             if new_parent_id_str in all_items:
                 all_items[new_parent_id_str].add_child_if_not_exists(node)
             else:
-                parent_obj = TreeNode(id=new_parent_id_str, wap_id=node.wap_id, name=node.id, currency='',shortName='', sector=node.sector, account=node.account,cust_name=node.cust_name, has_parent=False)
+                parent_obj = TreeNode(id=new_parent_id_str, wap_id=node.wap_id, name=node.id, currency='',
+                                      shortName='', sector=node.sector, account=node.account,
+                                      cust_name=node.cust_name, has_parent=False)
                 parent_obj.add_child_if_not_exists(node)
                 node.has_parent = True
                 all_items[new_parent_id_str] = parent_obj
                 _generate_parent(parent_obj)
-        elif not str(node.id).__contains__('.') and node.sector is not None and node.account is not None and node.cust_name is not None:
+        elif not str(node.id).__contains__('.') and node.sector and node.account and node.cust_name:
             _link_top_levels(node.id, node.sector, node.account, node.cust_name)
 
+    def _replace_na_to_none(df):
+        res = []
+        for x in df:
+            if isinstance(x, NAType):
+                res.append(None)
+            else:
+                res.append(x)
+        return tuple(res)
+
     for index, row in df.iterrows():
-        try:
-            (id, name, ppmd, pm, parent, sector, account, cust_name, wap_id, wap_prnt_id) = row
-            if id in all_items:
-                node_obj = all_items[id]
-                if name is not None:
-                    node_obj.name = name
-                node_obj.wap_id = wap_id
-                node_obj.currency = ''
-            if id not in all_items:
-                all_items[id] = TreeNode(id=id, wap_id=wap_id, name=name, currency='', shortName='', sector=sector,account=account, cust_name=cust_name, has_parent=True)
-            if parent not in all_items:
-                if parent is None and sector is not None and account is not None and cust_name is not None:
-                    _link_top_levels(id, sector, account, cust_name)
-                else:
-                    all_items[parent] = TreeNode(id=parent, wap_id=wap_id, name=name, currency='', shortName='',sector=sector, account=account, cust_name=cust_name, has_parent=False)
-                    all_items[parent].add_child_if_not_exists(all_items[id])
-            if parent in all_items:
+        id, name, ppmd, pm, parent, sector, account, cust_name, wap_id, wap_prnt_id = _replace_na_to_none(row)
+        if id in all_items:
+            node_obj = all_items[id]
+            if name is not None:
+                node_obj.name = name
+            node_obj.wap_id = wap_id
+            node_obj.currency = ''
+        if id not in all_items:
+            all_items[id] = TreeNode(id=id, wap_id=wap_id, name=name, currency='', shortName='', sector=sector, account=account, cust_name=cust_name, has_parent=True)
+        if parent not in all_items:
+            if parent is None and sector is not None and account is not None and cust_name is not None:
+                _link_top_levels(id, sector, account, cust_name)
+            else:
+                all_items[parent] = TreeNode(id=parent, wap_id=wap_id, name=name, currency='', shortName='', sector=sector, account=account, cust_name=cust_name, has_parent=False)
                 all_items[parent].add_child_if_not_exists(all_items[id])
-        except Exception as e:
-            print(f"could add to the tree {row}")
-            print(e)
+        if parent in all_items:
+            all_items[parent].add_child_if_not_exists(all_items[id])
 
     for (k, node) in list(all_items.items()):
-        try:
-            _generate_parent(node)
-        except Exception as e:
-            print(f"could not _generate_parent for id/wap_id/name/currency/shortName/sector/account/cust_name {node.id}/{node.wap_id}/{node.name}/{node.currency}/{node.shortName}/{node.sector}/{node.account}/{node.cust_name}")
-            print(e)
+        _generate_parent(node)
 
     return root
-

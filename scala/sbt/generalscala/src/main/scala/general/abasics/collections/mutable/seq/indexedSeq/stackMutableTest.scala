@@ -1,25 +1,32 @@
-package general.abasics.collections.mutable.seq
+package general.abasics.collections.mutable.seq.indexedSeq
 
 import scala.collection.mutable.Stack
 
 // instead of mutable stack - use list :: and head methods
 // there is also ArrayStack which maybe be faster
-object stackMutable {
+object stackMutableTest {
   def main(args: Array[String]): Unit = {
     // Builders
     assert(Stack(1, 2, 3) == Stack(1, 2, 3))
     Stack[Int]() // empty vector
     assert(Stack.range(1, 4) == Vector(1, 2, 3))
-    val s1 = Stack(1,2,3)
+    val s1 = Stack(1, 2, 3)
 
     // Modify
-    assert(s1 == Stack(1,2,3))
-    val x = s1.pop(); assert(x == 1); assert(s1 == Stack(2,3))
-    s1.push(1); assert(s1 == Stack(1,2,3))
-    s1.push(-2,-1,0); assert(s1 == Stack(0,-1,-2, 1,2,3))
-    s1.popWhile(_<0); assert(s1 == Stack(0, -1, -2, 1, 2, 3))
-    s1.popWhile(_<1); assert(s1 == Stack(1, 2, 3))
-    assert(s1.top == 1); assert(s1 == Stack(1, 2, 3))
+    assert(s1 == Stack(1, 2, 3))
+    val x = s1.pop();
+    assert(x == 1);
+    assert(s1 == Stack(2, 3))
+    s1.push(1);
+    assert(s1 == Stack(1, 2, 3))
+    s1.push(-2, -1, 0);
+    assert(s1 == Stack(0, -1, -2, 1, 2, 3))
+    s1.popWhile(_ < 0);
+    assert(s1 == Stack(0, -1, -2, 1, 2, 3))
+    s1.popWhile(_ < 1);
+    assert(s1 == Stack(1, 2, 3))
+    assert(s1.top == 1);
+    assert(s1 == Stack(1, 2, 3))
 
     // vector specific
 
