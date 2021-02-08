@@ -1354,3 +1354,52 @@
         +---------------------------------------+   |     Str("site_admin") -> True                               | +-------------------------------------------------------------------------------------------------------------------------+
                                                     | )),                                                         |
                                                     +-------------------------------------------------------------+
+
+
+####################
+# Self-Contained Scala Scripts
+####################
+    ### Reading Files Off Disk
+        +----------------------------------------------+
+        | interp.watch(os.pwd / "post")                |    // optional
+        | val postInfo = os                            |
+        |     .list(os.pwd / "post")                   |    // list files in post
+        |     .map{ p =>                               |
+        |         val s"$prefix - $suffix.md" = p.last |    // split names on -
+        |         (prefix, suffix, p)                  |    
+        |     }                                        |
+        |     .sortBy(_._1.toInt)                      |
+        | println("POSTS")                             |
+        | postInfo.foreach(println)                    |
+        +----------------------------------------------+
+
+    ### Rendering HTML with Scalatags
+        +------------------------------------------------------------------+
+        | import $ivy.`com.lihaoyi::scalatags:0.9.1`, scalatags.Text.all._ |    // $ivy specila REPL syntax to download dependency
+        | interp.watch(os.pwd / "post")                                    |
+        | val postInfo = os                                                |
+        |     .list(os.pwd / "post")                                       |
+        |     .map{ p =>                                                   |
+        |         val s"$prefix - $suffix.md" = p.last                     |
+        |         (prefix, suffix, p)                                      |
+        |     }                                                            |
+        |     .sortBy(_._1.toInt)                                          |
+        | os.remove.all(os.pwd / "out")                                    |
+        | os.makeDir.all(os.pwd / "out" / "post")                          |
+        | os.write(                                                        |
+        |     os.pwd / "out" / "index.html",                               |
+        |     doctype("html")(                                             |
+        |         html(                                                    |
+        |             body(                                                |
+        |                 h1("Blog"),                                      |
+        |                 for ((_, suffix, _) <- postInfo)                 |
+        |                 yield h2(suffix)                                 |
+        |             )                                                    |
+        |         )                                                        |
+        |     )                                                            |
+        | )                                                                |
+        +------------------------------------------------------------------+
+
+    ### Rendering Markdown with Commonmark-Java
+    ### Links and Bootstrap
+    ### Optionally Deploying the Static Site
