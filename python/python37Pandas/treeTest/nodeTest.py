@@ -1,6 +1,7 @@
 import unittest
 import pandas as pd
-import TreeNode
+from treeTest import TreeNode
+
 
 class NodeTest(unittest.TestCase):
     def test_node_output(self):
