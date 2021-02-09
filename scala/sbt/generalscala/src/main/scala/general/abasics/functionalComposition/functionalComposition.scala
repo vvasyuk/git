@@ -1,14 +1,14 @@
-package general.abasics.partialFunction
+package general.abasics.functionalComposition
 
 // function that will only work for a subset of possible input values
 // or you want to define a series of functions that only work for a subset of input values,
 // and combine those functions to completely solve a problem
-object partialFunctionTest {
+object functionalComposition {
   def addSuffix(s: String, suffix: String):String= s+suffix
   def addPrefix(s: String, prefix: String):String= prefix+s
   def udf (f: Function[String, String]):Function[String, String] = f
 
-  def main(args: Array[String]): Unit = {
+  def partialFunctionTest() ={
     val divide = new PartialFunction[Int,Int] {
       override def isDefinedAt(x: Int): Boolean = x!=0
       override def apply(x: Int): Int = 42/x
@@ -17,8 +17,9 @@ object partialFunctionTest {
 
     val divide2: PartialFunction[Int, Int] = { case d: Int if d != 0 => 42 / d }
     if (divide2.isDefinedAt(1)) divide(1)
+  }
 
-
+  def partialFunctionTest2() = {
     // example 2
     // converts 1 to "one", etc., up to 5
     val convert1to5 = new PartialFunction[Int, String] {
@@ -43,15 +44,17 @@ object partialFunctionTest {
     val handle1to10Short = convert1to5Short orElse convert6to10Short
     assert(handle1to10(3) == "three"); assert(handle1to10(8) == "eight")
     assert(handle1to10Short(3) == "three"); assert(handle1to10Short(8) == "eight")
+  }
 
-
+  def andThenTest() = {
     // andThen
     val in = "_mid_"
     val partSuffix: String=>String = addSuffix(_, "suffix")
     val partPrefix: String=>String = addPrefix(_, "prefix")
     assert(partSuffix.andThen(partPrefix)(in) == "prefix_mid_suffix")
+  }
 
-
+  def pipelineTest()={
     //pipeline
     val partSuffix2: String=>String = s => "suffix2" + s
     def partPrefix2(additionalP1: String,additionalP2: String)(s:String):String ={
@@ -60,6 +63,16 @@ object partialFunctionTest {
     }
     val x = udf(partSuffix2.andThen(partPrefix2("foo", "bar")))
     assert(x("_mid2_") == "suffix2_mid2_prefix2")
+  }
 
+  def compositionTest() ={
+    def f(s: String) = "f(" + s + ")"
+    def g(s: String) = "g(" + s + ")"
+    val fComposeG = f _ compose g _           // f(g(x))
+    println()
+    assert(fComposeG("yay") == "f(g(yay))")
+  }
+  def main(args: Array[String]): Unit = {
+    compositionTest
   }
 }

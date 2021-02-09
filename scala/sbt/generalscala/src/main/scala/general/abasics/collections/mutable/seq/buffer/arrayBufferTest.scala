@@ -3,6 +3,7 @@ package general.abasics.collections.mutable.seq.buffer
 import scala.collection.mutable.ArrayBuffer
 
 // mutable indexed seq collection
+// acts like an array, but you can add and remove elements from it
 // use listBuffer if you prefer linear seq collection
 object arrayBufferTest {
   def main(args: Array[String]): Unit = {
