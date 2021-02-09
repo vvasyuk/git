@@ -1401,5 +1401,58 @@
         +------------------------------------------------------------------+
 
     ### Rendering Markdown with Commonmark-Java
+        import $ivy.`com.atlassian.commonmark:commonmark:0.13.1`
+        generic markdown texts:
+        +------------------------------------+  +-----------------------------------------------------------------------------+ +--------------------------------------------------------------------------------+
+        | Sometimes you want numbered lists: |  | # Structured documents                                                      | | There are many different ways to style code with GitHubs markdown. If you have |
+        | 1. One                             |  | Sometimes its useful to have different levels of headings to structure your | | inline code blocks, wrap them in backticks: var example = true. If youve got   |
+        | 2. Two                             |  | documents. Start lines with a # to create headings. Multiple ## in a row    | | a longer block of code, you can indent with four spaces:                       |
+        | 3. Three                           |  | denote smaller heading sizes.                                               | |     if (isAwesome) {                                                           |
+        +------------------------------------+  | ### This is a third-tier heading                                            | |         return true                                                            |
+        +-----------------------------------+   +-----------------------------------------------------------------------------+ |     }                                                                          |
+        | Sometimes you want bullet points: |                                                                                   +--------------------------------------------------------------------------------+
+        | * Start a line with a star        |
+        | * Profit!                         |
+        +-----------------------------------+
+        - Translating Java Snippets to Scala
+        +------------------------------------------------------------------+        +----------------------------------------------------------------------------+
+        | import org.commonmark.node.*;                                    |        | import .`com.atlassian.commonmark:commonmark:0.13.1`                       |
+        | import org.commonmark.parser.Parser;                             |        | val parser = org.commonmark.parser.Parser.builder().build()                |
+        | import org.commonmark.renderer.html.HtmlRenderer;                |        | val document = parser.parse("This is *Sparta*")                            |
+        | Parser parser = Parser.builder().build();                        |    =>  | val renderer = org.commonmark.renderer.html.HtmlRenderer.builder().build() |
+        | Node document = parser.parse("This is *Sparta*");                |        | val output = renderer.render(document)                                     |
+        | HtmlRenderer renderer = HtmlRenderer.builder().build();          |        | output: String = """<p>This is <em>Sparta</em></p>                         |
+        | renderer.render(document); // "<p>This is <em>Sparta</em></p>\n" |        | """                                                                        |
+        +------------------------------------------------------------------+        +----------------------------------------------------------------------------+
+        reading the .md files, transforming them into HTML and writing them into HTML files
+        +--------------------------------------------------------------------------------+
+        | import $ivy.`com.atlassian.commonmark:commonmark:0.13.1`                       |
+        | def mdNameToHtml(name: String) = name.replace(" ", "-").toLowerCase + ".html"  |
+        | for ((_, suffix, path) <- postInfo) {                                          |
+        |     val parser = org.commonmark.parser.Parser.builder().build()                |
+        |     val document = parser.parse(os.read(path))                                 |
+        |     val renderer = org.commonmark.renderer.html.HtmlRenderer.builder().build() |
+        |     val output = renderer.render(document)                                     |
+        |     os.write(                                                                  |
+        |         os.pwd / "out" / "post" / mdNameToHtml(suffix),                        |
+        |         doctype("html")(                                                       |
+        |             html(                                                              |
+        |                 body(                                                          |
+        |                     h1("Blog", " / ", suffix),                                 |
+        |                     raw(output)                                                |
+        |                 )                                                              |
+        |             )                                                                  |
+        |         )                                                                      |
+        |     )                                                                          |
+        | }                                                                              |
+        +--------------------------------------------------------------------------------+
+
+        - Testing our Java Markdown Parser
+        +---------------------------------+
+        | amm Blog.sc                     |
+        | find out -type f                |
+        | cat out/post/my-first-post.html |
+        +---------------------------------+
+
     ### Links and Bootstrap
     ### Optionally Deploying the Static Site
