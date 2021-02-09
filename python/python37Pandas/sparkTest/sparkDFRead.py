@@ -4,8 +4,8 @@ import time
 
 spark = SparkSession.builder.config("spark.sql.warehouse.dir", "file:///C:/temp").appName("PopularMovies").getOrCreate()
 
-dfRaw0 = spark.read.parquet("D:/work/tryout/coursera/aws/glue/parquet/raw/*")
-dfMaster = spark.read.parquet("D:/work/tryout/coursera/aws/glue/parquet/master/*")
+# dfRaw0 = spark.read.parquet("D:/work/tryout/coursera/aws/glue/parquet/raw/*")
+# dfMaster = spark.read.parquet("D:/work/tryout/coursera/aws/glue/parquet/master/*")
 
 firstLine = spark.createDataFrame(
     [
