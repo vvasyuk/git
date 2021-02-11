@@ -1,11 +1,12 @@
-package general.abasics.collections.mutable.map
+package general.abasics.collections.mutable.map.seqMap
 
-import scala.collection.mutable.Map
+import scala.collection.mutable.LinkedHashMap
 
-object mapMutableMap {
+// iterator and all traversal methods of this class visit elements in the order they were inserted.
+object linkedHashMutableMap {
   def main(args: Array[String]): Unit = {
     // Builders
-    val m1 = Map(1 -> "one", 2 -> "two")
+    val m1 = LinkedHashMap(1 -> "one", 2 -> "two")
 
     // modify
     m1(3) = "three"; assert(m1 == Map(1 -> "one", 2 -> "two", 3 -> "three"));
@@ -13,14 +14,16 @@ object mapMutableMap {
     m1 -= (3); assert(m1 == Map(1 -> "one", 2 -> "two"))
     m1 ++= Map(3 -> "three"); assert(m1 == Map(1 -> "one", 2 -> "two", 3 -> "three"))
     m1 --= List(3); assert(m1 == Map(1 -> "one", 2 -> "two"))
-
     assert(m1.getOrElseUpdate(2, "two") == "two")
     assert(m1.getOrElseUpdate(3, "three") == "three")
     assert(m1 == Map(1 -> "one", 2 -> "two", 3 -> "three"))
-    m1 -= 3
+
+    // order as inserted
+    val m2 = LinkedHashMap[Int, String]()
+    m2+=(2 -> "two"); m2+=(1 -> "one"); m2+=(3 -> "three"); m2+=(2 -> "twoo"); assert(m2.toList == List((2,"twoo") ,(1,"one"),(3,"three")))
 
     // map specific
-    val m22 = Map(1 -> "one", 2 -> "two")
+    val m22 = LinkedHashMap(1 -> "one", 2 -> "two")
     assert(m22.get(1) == Some("one"))
     assert(m22.getOrElse(3, "zero") == "zero")
     assert(m22(1) == "one")
@@ -33,7 +36,7 @@ object mapMutableMap {
     assert(m22.values.toList == List("one", "two"))
 
     // Transforms
-    val m3 = Map(1 -> "one", 2 -> "two")
+    val m3 = LinkedHashMap(1 -> "one", 2 -> "two")
     assert(m3.flatMap(a => List(a._1 + 1 -> a._2)) == Map(2 -> "one", 3 -> "two"))
     assert(m3.map(i => i._1 * 2 -> i._2) == Map(2 -> "one", 4 -> "two"))
     assert(m3.filter(i => i._1 % 2 == 1) == Map(1 -> "one"))
@@ -53,5 +56,6 @@ object mapMutableMap {
     assert(m3.mkString(",") == "1 -> one,2 -> two")
     assert(m3.foldLeft(0)((a, b) => a + b._1) == 3)
     assert(m3.reduce((a, b) => (a._1 + b._1) -> (a._2 + b._2)) == (3 -> "onetwo"))
+
   }
 }
