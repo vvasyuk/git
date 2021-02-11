@@ -1455,4 +1455,39 @@
         +---------------------------------+
 
     ### Links and Bootstrap
+        - Page Links, Bootstrap
+            re-generating the HTML files using amm Blog.sc
+            +------------------------------------------------------------------------------------+
+            | val bootstrapCss = link(                                                           |
+            |     rel := "stylesheet",                                                           |
+            |     href := "https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.css" |
+            | )                                                                                  |
+            +------------------------------------------------------------------------------------+            
+            +--------------------------------------------------------------------------------+  +--------------------------------------------------------------------------------+
+            | import $ivy.`com.lihaoyi::scalatags:0.9.1`, scalatags.Text.all._               |  | import .`com.atlassian.commonmark:commonmark:0.13.1`                           |
+            | interp.watch(os.pwd / "post")                                                  |  | def mdNameToHtml(name: String) = name.replace(" ", "-").toLowerCase + ".html"  |
+            | val postInfo = os                                                              |  | for ((_, suffix, path) <- postInfo) {                                          |
+            |     .list(os.pwd / "post")                                                     |  |     val parser = org.commonmark.parser.Parser.builder().build()                |
+            |     .map{ p =>                                                                 |  |     val document = parser.parse(os.read(path))                                 |
+            |         val s"$prefix - $suffix.md" = p.last                                   |  |     val renderer = org.commonmark.renderer.html.HtmlRenderer.builder().build() |
+            |         (prefix, suffix, p)                                                    |  |     val output = renderer.render(document)                                     |
+            |     }                                                                          |  |     os.write(                                                                  |
+            |     .sortBy(_._1.toInt)                                                        |  |         os.pwd / "out" / "post" / mdNameToHtml(suffix),                        |
+            | os.remove.all(os.pwd / "out")                                                  |  |         doctype("html")(                                                       |
+            | os.makeDir.all(os.pwd / "out" / "post")                                        |  |             html(                                                              |
+            | os.write(                                                                      |  |                 head(bootstrapCss),                                            |
+            |     os.pwd / "out" / "index.html",                                             |  |                 body(                                                          |
+            |     doctype("html")(                                                           |  |                     h1(a(href := "../index.html")("Blog"), " / ", suffix),     |
+            |         html(                                                                  |  |                     raw(output)                                                |
+            |             head(bootstrapCss),                                                |  |                 )                                                              |
+            |             body(                                                              |  |             )                                                                  |
+            |                 h1("Blog"),                                                    |  |         )                                                                      |
+            |                 for ((_, suffix, _) <- postInfo)                               |  |     )                                                                          |
+            |                 yield h2(a(href := ("post/" + mdNameToHtml(suffix)), suffix))  |  | }                                                                              |
+            |             )                                                                  |  +--------------------------------------------------------------------------------+
+            |         )                                                                      |
+            |     )                                                                          |
+            | )                                                                              |
+            +--------------------------------------------------------------------------------+
+
     ### Optionally Deploying the Static Site
