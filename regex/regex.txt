@@ -1,3 +1,7 @@
 replace spaces inside ""
 find waht:      (someTexst:[^"]*)("[^ "]*) ([^"]*")
 replace wuth:   $1$2$3
+
+replace coma inside ""
+find waht:      ([^"]*)("[^ "]*), ([^"]*")
+replace wuth:   $1$2 $3

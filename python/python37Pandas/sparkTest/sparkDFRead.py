@@ -7,32 +7,35 @@ spark = SparkSession.builder.config("spark.sql.warehouse.dir", "file:///C:/temp"
 # dfRaw0 = spark.read.parquet("D:/work/tryout/coursera/aws/glue/parquet/raw/*")
 # dfMaster = spark.read.parquet("D:/work/tryout/coursera/aws/glue/parquet/master/*")
 
-firstLine = spark.createDataFrame(
-    [
-        (0, 'name0', 10, 20),
-    ],
-    ['id', 'name', 'col1', 'col2']
-)
+dfRaw = spark.read.parquet("c:/Users/jopa/Downloads/data/testData/vendor_hours/part-00000-6babb7a0-ef2d-4943-b41e-d6b4d2ce8f64.c000.snappy.parquet")
+dfRaw.show(20,False)
 
-secondLine = spark.createDataFrame(
-    [
-        (0, 'name0', 10, 20),
-    ],
-    ['id', 'name', 'col1', 'col2']
-)
-
-p1 = time.time()
-cachedFirst = firstLine.cache()
-cachedSecond = secondLine.cache()
-
-cachedFirst.drop(col('col2')).show(20,False)
-cachedSecond.drop(col('col2')).show(20,False)
-p2 = time.time()
-print(p2-p1)
-
-print(cachedFirst.collect() == cachedSecond.collect())
-p3 = time.time()
-print(p3-p2)
+# firstLine = spark.createDataFrame(
+#     [
+#         (0, 'name0', 10, 20),
+#     ],
+#     ['id', 'name', 'col1', 'col2']
+# )
+#
+# secondLine = spark.createDataFrame(
+#     [
+#         (0, 'name0', 10, 20),
+#     ],
+#     ['id', 'name', 'col1', 'col2']
+# )
+#
+# p1 = time.time()
+# cachedFirst = firstLine.cache()
+# cachedSecond = secondLine.cache()
+#
+# cachedFirst.drop(col('col2')).show(20,False)
+# cachedSecond.drop(col('col2')).show(20,False)
+# p2 = time.time()
+# print(p2-p1)
+#
+# print(cachedFirst.collect() == cachedSecond.collect())
+# p3 = time.time()
+# print(p3-p2)
 
 
 

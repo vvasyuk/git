@@ -258,20 +258,7 @@ class WDAPClient(object):
         request = self.__new_request("updateLevels")
         levels_tag = Et.SubElement(request, "levels")
         _create_level(levels_tag, levels)
-            # else:
-            #     parent_level_tag = Et.SubElement(levels_tag, 'level', id=level['parentId'])
-            #     level_tag = Et.SubElement(parent_level_tag,
-            #                               'level',
-            #                               id='',
-            #                               name=level['name'],
-            #                               currency=level['currency'],
-            #                               shortName=level['shortName'])
-                # if 'attributes' in level:
-                #     for key, value in level['attributes'].items():
-                #         Et.SubElement(level_tag,
-                #                       'attribute',
-                #                       name=key,
-                #                       value=value)
+
         if sim:
             print_query(request)
             return {'success': True, 'data': 'Simulated'}
@@ -279,19 +266,11 @@ class WDAPClient(object):
         root = Et.fromstring(response.content)
         if root.attrib['success'] != 'true':
             result['success'] = False
-            result['error'] = {
-                'key': root.find('messages').find('message').attrib['key'],
-                'message': root.find('messages').find('message').text
-            }
+            result['error'] = []
+            for msg in root.findall(".//messages/"):
+                result['error'].append(msg.text)
         else:
             result['success'] = True
-            if return_response:
-                result['response'] = response.text
-
-            users = []
-            for user in root.find('output').find('result').find('created_users'):
-                users.append(user.attrib)
-            result['data'] = users
 
         return result
 
