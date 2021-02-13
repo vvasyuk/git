@@ -48,6 +48,10 @@ object mapTest {
     assert((for ((k, v) <- m1) yield (s"key: $k, value: $v")).toList == List("key: 1, value: one", "key: 2, value: two"))
     assert((for (kv <- m1) yield (s"key: ${kv._1}, value: ${kv._2}")).toList == List("key: 1, value: one", "key: 2, value: two"))
 
+    val partialAndThen = m1.andThen({case s:String=>s+1}); assert(partialAndThen(1) == "one1")
+    val partialCompose = m1.compose[String]({case s:String => 1}); assert(partialCompose("any string") == "one")
+
+
     // Queries
     assert(m1.find(x => x._2 == "two") == Some((2, "two")))
     assert(m1.exists(_._1 == 1) == true)
