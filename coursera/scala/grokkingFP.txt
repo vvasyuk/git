@@ -10,17 +10,50 @@
     you could substitute the function call, f(20), with its result, 19, without changing the program’s behavior
     
     # ShoppingCart
-    +--------------------------------------------------------------+
-    | object ShoppingCartDiscounts {                               |
-    |     def getDiscountPercentage(items: List[String]): Int = {  |
-    |         if (items.contains(Book)) {                        |
-    |             5                                                |
-    |         } else {                                             |
-    |             0                                                |
-    |         }                                                    |
-    |     }                                                        |
-    | }                                                            |
-    +--------------------------------------------------------------+
+        v1                                                          v2                                              v3                                                          v4
+        items, bookAdded - states                                   add remove method
+        cart.getItems().remove("Book") - breaks code                cart.removeItem("Book") - breaks code
+        fix: return new ArrayList<>(items)                          if we added 2 and removed 1
+        +---------------------------------------------------+   =>  +---------------------------------------+   =>  +--------------------------------------------------+    =>  +--------------------------------------------------------------+
+        | public class ShoppingCart {                       |       | public void removeItem(String item) { |       |public class ShoppingCart {                       |        | object ShoppingCartDiscounts {                               |
+        |   private List<String> items = new ArrayList<>(); |       |   items.remove(item);                 |       |  private List<String> items = new ArrayList<>(); |        |     def getDiscountPercentage(items: List[String]): Int = {  |
+        |   private boolean bookAdded = false;              |       |   if(item.equals(ôBookö)) {           |       |  public int addItem(String item) {               |        |         if (items.contains(Book)) {                          |
+        |   public int addItem(String item) {               |       |     bookAdded = false;                |       |    items.add(item);                              |        |             5                                                |
+        |     items.add(item);                              |       |   }                                   |       |  }                                               |        |         } else {                                             |
+        |     if(item.equals(ôBookö)) {                     |       | }                                     |       |  public int getDiscountPercentage() {            |        |             0                                                |
+        |       bookAdded = true;                           |       +---------------------------------------+       |    if(items.contains("Book")) {                  |        |         }                                                    |
+        |     }                                             |                                                       |      return 5;                                   |        |     }                                                        |
+        |   }                                               |                                                       |    } else {                                      |        | }                                                            |
+        |   public int getDiscountPercentage() {            |                                                       |      return 0;                                   |        +--------------------------------------------------------------+
+        |     if(bookAdded) {                               |                                                       |    }                                             |
+        |       return 5;                                   |                                                       |  }                                               |
+        |     } else {                                      |                                                       |  public List<String> getItems() {                |
+        |       return 0;                                   |                                                       |    return new ArrayList<>(items);                |
+        |     }                                             |                                                       |  }                                               |
+        |   }                                               |                                                       |  public void removeItem(String item) {           |
+        |   public List<String> getItems() {                |                                                       |    items.remove(item)                            |
+        |     return items;                                 |                                                       |  }                                               |
+        |   }                                               |                                                       |}                                                 |
+        | }                                                 |                                                       +--------------------------------------------------+
+        +---------------------------------------------------+
+        - refactoring                                               - state as argument, pass copies of data, recalculate instead of storing
+        +--------------------------------------------------+    =>  +--------------------------------------------------------------------+
+        | class TipCalculator {                            |        | class TipCalculator {                                              |
+        |   private val names = new util.ArrayList[AnyRef] |        |   public List<String> addPerson(List<String> names, String name) { |
+        |   private var tipPercentage = 0                  |        |     List<String> updated = new ArrayList<>(names);                 |
+        |   def addPerson(name: String): Unit = {          |        |     updated.add(name);                                             |
+        |     names.add(name)                              |        |     return updated;                                                |
+        |     if (names.size > 5) tipPercentage = 20       |        |   }                                                                |
+        |     else if (names.size > 0) tipPercentage = 10  |        |   public static int getTipPercentage(List<String> names) {         |
+        |   }                                              |        |     if(names.size() > 5) {                                         |
+        |   def getNames: Nothing = names                  |        |       return 20;                                                   |
+        |   def getTipPercentage: Int = tipPercentage      |        |     } else if(names.size() > 0) {                                  |
+        | }                                                |        |       return 10;                                                   |
+        +--------------------------------------------------+        |     } else return 0;                                               |
+                                                                    |   }                                                                |
+                                                                    | }                                                                  |
+                                                                    +--------------------------------------------------------------------+
+
 
 ####################
 # immutable values
