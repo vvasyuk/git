@@ -70,7 +70,21 @@
     |  }                                                                                  |
     +-------------------------------------------------------------------------------------+
 
-####################
+    v1                                                                                          v2                                                                                                  v3
+    - is mutable- is not mutating argument                                                      - making functions pure by mutating copies                                                          - encapsulation
+    +------------------------------------------------------------------------------------+  =>  +--------------------------------------------------------------------------------------------+  =>  +---------------------------------------------------------+
+    | static List<String> replan(List<String> plan, String newCity, String beforeCity) { |      | static List<String> replan(List<String> plan, String splitPoint, List<String> newEnding) { |      | private List<String> plan = new ArrayList<>();          |
+    |   int newCityIndex = plan.indexOf(beforeCity);                                     |      |   int newCityIndex = plan.indexOf(beforeCity);                                             |      | public void replan(String newCity, String beforeCity) { |
+    |   plan.add(newCityIndex, newCity);                                                 |      |   List<String> replanned = new ArrayList<>(plan);                                          |      |   int newCityIndex = plan.indexOf(beforeCity);          |
+    |   return plan;                                                                     |      |   replanned.add(newCityIndex, newCity);                                                    |      |   plan.add(newCityIndex, newCity);                      |
+    | }                                                                                  |      |   return replanned;                                                                        |      | }                                                       |
+    +------------------------------------------------------------------------------------+      | }                                                                                          |      | public void add(String city) {                          |
+                                                                                                +--------------------------------------------------------------------------------------------+      |   plan.add(city);                                       |
+                                                                                                                                                                                                    | }                                                       |
+                                                                                                                                                                                                    | public List<String> getPlan() {                         |
+                                                                                                                                                                                                    |   return Collections.unmodifiableList(plan);            |
+                                                                                                                                                                                                    | }                                                       |
+####################                                                                                                                                                                                +---------------------------------------------------------+
 # functions as values
 ####################
     # rankedWords -  rank the words by the number of letters different than a
