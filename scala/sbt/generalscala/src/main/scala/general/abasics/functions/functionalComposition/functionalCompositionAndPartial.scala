@@ -1,9 +1,9 @@
-package general.abasics.functionalComposition
+package general.abasics.functions.functionalComposition
 
 // function that will only work for a subset of possible input values
 // or you want to define a series of functions that only work for a subset of input values,
 // and combine those functions to completely solve a problem
-object functionalComposition {
+object functionalCompositionAndPartial {
   def addSuffix(s: String, suffix: String):String= s+suffix
   def addPrefix(s: String, prefix: String):String= prefix+s
   def udf (f: Function[String, String]):Function[String, String] = f
@@ -72,7 +72,15 @@ object functionalComposition {
     println()
     assert(fComposeG("yay") == "f(g(yay))")
   }
+
+  def partialApplicationtest()={
+    def adder(a: Int, b: Int)= a+b
+    val add2 = adder(2, _:Int)
+    assert(add2(3) == 5)
+  }
+
   def main(args: Array[String]): Unit = {
     compositionTest
+    partialApplicationtest
   }
 }
