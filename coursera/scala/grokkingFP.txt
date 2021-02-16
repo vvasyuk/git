@@ -88,34 +88,51 @@
 # functions as values
 ####################
     # rankedWords -  rank the words by the number of letters different than a
-    +----------------------------------------------------------------------------------+
-    | def rankedWords(wordScore: String => Int, words: List[String]): List[String] = { |
-    |     words.sortBy(wordScore).reverse                                              |
-    | }                                                                                |
-    | def score(word: String): Int = word.replaceAll(a, ).length                   |
-    | rankedWords(score, words)                                                        |
-    | List(haskell, rust, scala, java, ada)                                  |
-    +----------------------------------------------------------------------------------+
+    v1                                                          v2 - with streams, bad - scoreComparator defined elsewhere  v3 - 
+    +------------------------------------------------------+    +------------------------------------------------------+    +-------------------------------------------------------------------------------------+
+    |static int score(String word) {                       |    |static List<String> rankedWords(List<String> words) { |    |static List<String> rankedWords(Comparator<String> comparator, List<String> words) { |
+    |  return word.replaceAll("a", "").length();           |    |  return words.stream()                               |    |  return words.stream()                                                              |
+    |}                                                     |    |    .sorted(scoreComparator)                          |    |    .sorted(comparator)                                                              |
+    |Comparator<String> scoreComparator =                  |    |    .collect(Collectors.toList());                    |    |    .collect(Collectors.toList());                                                   |
+    |  new Comparator<String>() {                          |    |}                                                     |    |}                                                                                    |
+    |    public int compare(String w1, String w2) {        |    +------------------------------------------------------+    +-------------------------------------------------------------------------------------+
+    |      return Integer.compare(score(w2), score(w1));   |
+    |    }                                                 |
+    |  };                                                  |
+    |static List<String> rankedWords(List<String> words) { |
+    |  words.sort(scoreComparator);                        |
+    |  return words;                                       |
+    |}                                                     |
+    +------------------------------------------------------+
 
-    # additionaly if contains c - gets 5 points bonus
-    +----------------------------------------------+
-    | def scoreWithBonus(word: String): Int = {    |
-    |     val base = score(word)                   |    // problem is that it uses score inside so it does more than one thing
-    |     if (word.contains(c)) base + 5 else base |
-    | }                                            |
-    | rankedWords(scoreWithBonus, words);          |
-    | List(scala, haskell, rust, java, ada)        |
-    +----------------------------------------------+
-
-    - passing functions inline
-    +-----------------------------------------------+
-    | def score(word: String): Int =                |
-    |     word.replaceAll(a, ).length           |
-    | def bonus(word: String): Int =                |
-    |     if (word.contains(c)) 5 else 0          |
-    | rankedWords(w => score(w) + bonus(w), words); |
-    | List(scala, haskell, rust, java, ada)         |
-    +-----------------------------------------------+
+    - changing requirments - bonus score of 5 needs to be added to the score if the word contains a 'c'
+    v4                                                          v5                                                                  v6
+    duplication in scoreWithBonusComparator & scoreComparator   - pass a function, comparator creates inside                        - score,bonus,penalty
+    +-----------------------------------------------+           +--------------------------------------------------------------+    +--------------------------------------------------------------+
+    |static int scoreWithBonus(String word) {       |           |List<String> rankedWords(Function<String, Integer> wordScore, |    |   static int bonus(String word) {                            |
+    |  int base = score(word);                      |           |  List<String> words) {                                       |    |     return word.contains(ôcö) ? 5 : 0;                       |
+    |  if (word.contains("c")) return base + 5;     |           |  Comparator<String> wordComparator =                         |    |   }                                                          |
+    |  else return base;                            |           |    (w1, w2) -> Integer.compare(                              |    |   static int penalty(String word) {                          |
+    |}                                              |           |      wordScore.apply(w2),                                    |    |     return word.contains(ôsö) ? 7 : 0;                       |
+    |Comparator<String> scoreWithBonusComparator =  |           |      wordScore.apply(w1)                                     |    |   }                                                          |
+    |  new Comparator<String>() {                   |           |    );                                                        |    |   rankedWords(w -> score(w) + bonus(w) - penalty(w), words); |
+    |    public int compare(String w1, String w2) { |           |  return words                                                |    +--------------------------------------------------------------+
+    |      return Integer.compare(                  |           |    .stream()                                                 |
+    |        scoreWithBonus(w2),                    |           |    .sorted(wordComparator)                                   |
+    |        scoreWithBonus(w1));                   |           |    .collect(Collectors.toList());                            |
+    |    }                                          |           |}                                                             |
+    |  };                                           |           |rankedWords(w -> score(w), words);                            |
+    |rankedWords(scoreWithBonusComparator, words);  |           |rankedWords(w -> scoreWithBonus(w), words);                   |
+    +-----------------------------------------------+           +--------------------------------------------------------------+
+    - implemented in Scala                                                                  - passing functions inline
+    +----------------------------------------------------------------------------------+    +-----------------------------------------------+
+    | def rankedWords(wordScore: String => Int, words: List[String]): List[String] = { |    | def score(word: String): Int =                |
+    |     words.sortBy(wordScore).reverse                                              |    |     word.replaceAll(a, ).length               |
+    | }                                                                                |    | def bonus(word: String): Int =                |
+    | def score(word: String): Int = word.replaceAll(a, ).length                       |    |     if (word.contains(c)) 5 else 0            |
+    | rankedWords(score, words)                                                        |    | rankedWords(w => score(w) + bonus(w), words); |
+    | List(haskell, rust, scala, java, ada)                                            |    | List(scala, haskell, rust, java, ada)         |
+    +----------------------------------------------------------------------------------+    +-----------------------------------------------+
 
     ----------
     - map
@@ -193,10 +210,10 @@
     - Currying
     ----------
     Transforming multiple-parameter functions into a series of 1-parameter functions returned from each other is called currying.
-    +----------------------------+
-    | def f(a: A, b: B, c: C): D |
-    | def f(a: A): B => C => D   |
-    | def f(a: A)(b: B)(c: C): D |
+    +----------------------------+  +-------------------------------------------------+
+    | def f(a: A, b: B, c: C): D |  | def largerThan(n: Int)(i: Int): Boolean = i > n |
+    | def f(a: A): B => C => D   |  | List(5, 1, 2, 4, 0).filter(largerThan(4))       |
+    | def f(a: A)(b: B)(c: C): D |  +-------------------------------------------------+
     +----------------------------+
 
     ----------
@@ -208,6 +225,14 @@
     | words.foldLeft(0)((total, word) => total + wordScore(word))     |
     +-----------------------------------------------------------------+
 
+    ----------
+    - case classes
+    ----------
+    +---------------------------------------------------------+
+    | case class ProgrammingLanguage(name: String, year: Int) |
+    | ProgrammingLanguage("Java", 1995)                       |
+    | java.name                                               |
+    +---------------------------------------------------------+
 --------------------
 | sequential programs
 --------------------
