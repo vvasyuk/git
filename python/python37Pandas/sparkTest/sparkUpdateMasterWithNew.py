@@ -7,7 +7,10 @@ spark.sparkContext.setLogLevel("ERROR")
 d = strftime("%Y%m%d_%H%M%S", gmtime())
 
 new = spark.createDataFrame(
-    [(10, 'name10', 10),],
+    [(10, 'name10', 10)
+    ,(20, 'name22', 10)
+    ,(40, 'name40', 10)
+     ],
     ['id', 'name', 'lkpId']
 )
 

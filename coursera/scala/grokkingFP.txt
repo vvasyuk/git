@@ -233,24 +233,22 @@
     | ProgrammingLanguage("Java", 1995)                       |
     | java.name                                               |
     +---------------------------------------------------------+
+
+
+
 --------------------
 | sequential programs
 --------------------
-
-    +---------------------------------------------------------------+
-    | case class Book(title: String, authors: List[String])         |
-    |                                                               |
+                                                                        - how many have word Scala
+    +---------------------------------------------------------------+   +-----------------------------------------------------------------------------+
+    | case class Book(title: String, authors: List[String])         |   | books.map(book => book.title).filter(title => title.contains("Scala")).size |
+    |                                                               |   +-----------------------------------------------------------------------------+
     | val books = List(                                             |
     |     Book(FP in Scala, List(Chiusano, Bjarnason)),             |
     |     Book(The Hobbit, List(Tolkien)),                          |
     |     Book(Java 8 in Action, List(Urma, Fusco, Mycroft)         |
     | )                                                             |
     +---------------------------------------------------------------+
-
-    - how many have word Scala
-        +-----------------------------------------------------------------------------+
-        | books.map(book => book.title).filter(title => title.contains("Scala")).size |
-        +-----------------------------------------------------------------------------+
 
     # book adaptations
         1. for each book take author
@@ -271,8 +269,25 @@
         | else List.empty                                       |
         +-------------------------------------------------------+
 
+        -imperative approach
+        bad:
+            mutable list return
+            nesting for
+            statemnts in for instead of expressions
+        +-----------------------------------------------------------+
+        |static List<String> recommendationFeed(List<Book> books) { |
+        |  List<String> result = new ArrayList<>();                 |
+        |  for (Book book : books)                                  |
+        |    for (String author : book.authors)                     |
+        |      for (Movie movie : bookAdaptations(author)) {        |
+        |        result.add(movie.title, author, book.title);       |
+        |  }                                                        |
+        |  return result;                                           |
+        |}                                                          |
+        +-----------------------------------------------------------+
+
         +---------
-        | foldLeft
+        | flatMap
         +---------
             flatMap not only can change the type of the list (e.g. from Book to String), but also can change the size of the resulting list, which isn’t possible with map
         1. for each book take author
@@ -299,6 +314,19 @@
             |                                             |
             | List(Movie(An Unexpected Journey),          |
             |      Movie(The Desolation of Smaug))        |
+            +---------------------------------------------+
+        - flatMap can change the type and size of returned list                     flatten
+            map on 3 elements results in 3 lists                                    goes through each list and extracts elements to new list
+            +-----------------------------------------------------------------+     +------------------------------------------+
+            | val movieLists = authors.map(author => bookAdaptations(author)) |     | movieLists.flatten                       |
+            | List(List.empty,                                                |     |     List(Movie(An Unexpected Journey),   |
+            |      List.empty,                                                |     |          Movie(The Desolation of Smaug)) |
+            |      List(Movie(An Unexpected Journey),                         |     +------------------------------------------+
+            |           Movie(The Desolation of Smaug))))                     |
+            +-----------------------------------------------------------------+
+
+            +---------------------------------------------+
+            | List(1, 2, 3).flatMap(i => List(i, i + 10)) | // List(1,11,2,12,3,13)
             +---------------------------------------------+
 
     - List signatures:
@@ -329,6 +357,8 @@
     | for comprehension
     +---------
         - or each element x in xs and for each element y in ys, call the function doSomething(x, y)
+        - expression after yield defines result of whole expression
+        - result is list of type which dictated by yields
             +-------------------------------------------------+
             | for {                                           |
             |     x <- xs                                     |
@@ -352,13 +382,15 @@
             |     because you liked Tolkiens The Hobbit))     |
             +-------------------------------------------------+
 
-        - for gurad expressions
-            +-------------------------------------------+
-            | for {                                     |
-            |     r <- radiuses                         |
-            |     point <- points if isInside(point, r) |
-            | } yield s$point is within a radius of $r  |
-            +-------------------------------------------+
+        - for gurad expressions                             - using filter
+            +-------------------------------------------+   +-------------------------------------------------+ +--------------------------------------------+
+            | for {                                     |   | for {                                           | | for {                                      |
+            |     r <- radiuses                         |   |     r <- radiuses                               | |     r <- radiuses                          |
+            |     point <- points if isInside(point, r) |   |     point <- points.filter(p => isInside(p, r)) | |     point <- points                        |
+            | } yield s$point is within a radius of $r  |   | } yield s"$point is within a radius of $r"      | |     if isInside(point, r)                  |
+            +-------------------------------------------+   +-------------------------------------------------+ | } yield s" $point is within a radius of $r"|
+                                                                                                                +--------------------------------------------+
+
 
     +---------
     | Comparing map, foldLeft and flatMap
@@ -368,6 +400,47 @@
         | List[A].foldLeft(z: B)(f: (B, A) => B): B |   // accumulates a value of type B by applying the function passed as f to each element of the original list (A) and current accumulator value (B).
         | List[A].flatMap(f: A => List[B]): List[B] |   // applies the function passed as f to each element of the original list—producing n lists which are joined in the same order as the elements they originated from.
         +-------------------------------------------+
+
+    +---------
+    | parsing as pipeline
+    +---------
+
+        +------------------------------------------------------+
+        | case class Event(name: String, start: Int, end: Int) |
+        +------------------------------------------------------+
+        v1                                                          v2
+        bad:
+            All the concerns are entangled in one line of code
+            has nulls
+        +--------------------------------------------------------+  +------------------------------------------------------------------+
+        | def parse(name: String, start: Int, end: Int): Event = |  | def parse(name: String, start: Int, end: Int): Option[Event] = { |
+        |     if (name.size > 0 && end < 3000 & start <= end)    |  |     if (name.size > 0 && end < 3000 & start <= end)              |
+        |         Event(name, start, end)                        |  |         Some(Event(name, start, end))                            |
+        |     else                                               |  |     else                                                         |
+        |         null                                           |  |         None                                                     |
+        | parse("Apollo Program", 1961, 1972)                    |  | }                                                                |
+        | Event("Apollo Program", 1961, 1972))                   |  +------------------------------------------------------------------+
+        | parse("", 1939, 1945)                                  |
+        | null                                                   |
+        +--------------------------------------------------------+
+        v3
+        +----------------------------------------------------------------+
+        | def validateName(name: String): Option[String] =               |
+        |     if (name.size > 0) Some(name) else None                    |
+        | def validateEnd(end: Int): Option[Int] =                       |
+        |     if (end < 3000) Some(end) else None                        |
+        | def validateStart(start: Int, end: Int): Option[Int] =         |
+        |     if (start <= end) Some(start) else None                    |
+        |                                                                |
+        | def parse(name: String, start: Int, end: Int): Option[Event] = |
+        |     for {                                                      |
+        |     validName <- validateName(name)                            |
+        |     validEnd <- validateEnd(end)                               |
+        |     validStart <- validateStart(start, end)                    |
+        |     } yield Event(validName, validStart, validEnd)             |
+        | parse("Apollo Program", 1961, 1972)                            |
+        | Some(Event("Apollo Program", 1961, 1972)))                     |
+        +----------------------------------------------------------------+
 
 --------------------
 | error handling
