@@ -1,4 +1,6 @@
 
+python/glue/awsglue/*
+python/glue/venv/*
 *.log
 java/igniteClient/spring-shell.log
 *.log
