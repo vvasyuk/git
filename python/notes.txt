@@ -1,3 +1,13 @@
+# how to run glue
+  - create project with venv (python 3.7)
+  - python interpreter: pypandoc, pyspark 2.4.3
+  - env: SPARK_HOME - 2.4.3
+  - mvn install on aws libs to create jar and put it into venv
+
+
+
+
+
 for i in range(3):                                  # 0, 1, 2
   print(i)
   
