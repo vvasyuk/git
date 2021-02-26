@@ -1,10 +1,16 @@
 
+a_dict = {'login': 'pswd'}
+print(type(a_dict))
 
-a_dict = {'A': 1, 'B': 2}
-items_view = a_dict.items()
-items_iterator = iter(items_view)
-first_item = next(items_iterator)
-print(first_item)
+loginPswd = [(k, v) for k, v in a_dict.items()]
+print(loginPswd[0][0])
+
+
+# a_dict = {'A': 1, 'B': 2}
+# items_view = a_dict.items()
+# items_iterator = iter(items_view)
+# first_item = next(items_iterator)
+# print(first_item)
 
 # p = 2
 # c = 22
