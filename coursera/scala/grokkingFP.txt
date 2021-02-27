@@ -554,12 +554,17 @@
                                                                                             |   )                                                                                                                                                                          |
                                                                                             | }                                                                                                                                                                            |
                                                                                             +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-    updated                                                                                            
-    +----------------------------------------------------------------------------------------------------------------------+
-    | case class Artist(name: String, genre: String, origin: Location, yearsActiveStart: Int, yearsActiveEnd: Option[Int]) |
-    +----------------------------------------------------------------------------------------------------------------------+
+        updated                                                                                            
+        +----------------------------------------------------------------------------------------------------------------------+
+        | case class Artist(name: String, genre: String, origin: Location, yearsActiveStart: Int, yearsActiveEnd: Option[Int]) |
+        +----------------------------------------------------------------------------------------------------------------------+
 
-    (artist.yearsActiveEnd.forall(_ >= activeAfter))
+        +-----------------------------------------------------------+
+        | (artist.isActive || artist.yearsActiveEnd >= activeAfter) |
+        | changed to                                                |
+        | (artist.yearsActiveEnd.forall(_ >= activeAfter))          |   // forall returns true if the element inside the given Option(if the Option is Some) satisfies the condition
+        +-----------------------------------------------------------+   // or if there is no element inside the Option (i.e. it is None)
+        // if this represents a value, check if it satisfies the given condition, if there is no value, ignore the condition
 
     val year: Option[Int] = Some(996)
     val noYear: Option[Int] = None
@@ -574,6 +579,29 @@
     | noYear.forall(_ > 2020) |     | noYear.exists(_ > 2020) |     | noYear.filter(_ > 2020) |
     | -> true                 |     | -> false                |     | -> None                 |
     +-------------------------+     +-------------------------+     +-------------------------+
+
+    +------------------------------------------------------------------------------------+
+    | case class User(name: String, city: Option[String], favoriteArtists: List[String]) |
+    |                                                                                    |
+    | def f1(users: List[User]): List[User] = {                                          |
+    |     users.filter(_.city.forall(_ == Melbourne))                                    |  // users that havent specified their city or live in Melbourne
+    | }                                                                                  |
+    | def f2(users: List[User]): List[User] = {                                          |
+    |     users.filter(_.city.contains(Lagos))                                           |  // users that live in Lagos.
+    | }                                                                                  |
+    | def f3(users: List[User]): List[User] = {                                          |
+    |     users.filter(_.favoriteArtists.contains(Bee Gees))                             |  // users that like Bee Gees.
+    | }                                                                                  |
+    | def f4(users: List[User]): List[User] = {                                          |
+    |     users.filter(_.city.exists(_.startsWith(T)))                                   |  // users that live in cities that start with a letter T.
+    | }                                                                                  |
+    | def f5(users: List[User]): List[User] = {                                          |  // users that only like artists that have
+    |     users.filter(_.favoriteArtists.forall(_.length > 8))                           |  // a name longer than 8 characters (or no favorite artists at all).
+    | }                                                                                  |
+    | def f6(users: List[User]): List[User] = {                                          |
+    |     users.filter(_.favoriteArtists.exists(_.startsWith(M)))                        |  // users that like some artists whose names start with M.
+    | }                                                                                  |
+    +------------------------------------------------------------------------------------+
 
     - coupling a concept inside one case class
         +----------------------------------------------------------------------------------------------+
