@@ -619,12 +619,12 @@
         -Programmers need to come up with, understand and convey additional meanings to raw types
         -Programmers need to remember that some parameters only make sense when used together
 
-    - value classes
+    - value classes (solve order of parameters)
         +--------------------------------------------------+    // Location("U.S.")
         | case class Location(name: String) extends AnyVal |    // extends AnyVal we state that Location type is only checked in the compile time,
         +--------------------------------------------------+    // but still is treated as an unwrapped String in the runtime!
 
-    - option type
+    - option type (solve additional meaning of parameter combinations)
         +----------------------------------------+  // represent one logical entity         +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
         | isActive: Boolean, yearsActiveEnd: Int |  // yearsActiveEnd: Option[Int]          | def searchArtists(artists: List[Artist], genres: List[String], locations: List[String], searchByActiveYears: Boolean, activeAfter: Int, activeBefore: Int): List[Artist] = { |
         +----------------------------------------+                                          |   artists.filter(artist =>                                                                                                                                                   |
@@ -685,36 +685,38 @@
     | }                                                                                  |
     +------------------------------------------------------------------------------------+
 
-    - coupling a concept inside one case class
+    - coupling a concept inside one case class (solve additional meaning of parameter combinations)
         +----------------------------------------------------------------------------------------------+
-        | case class PeriodInYears(start: Int, end: Option[Int])                                       |
+        | case class PeriodInYears(start: Int, end: Option[Int])                                       |    // yearsActiveStart and yearsActiveEnd represent one concept
         | case class Artist(name: String, genre: String, origin: Location, yearsActive: PeriodInYears) |
         | Artist("Led Zeppelin", "Hard Rock", Location("England"),PeriodInYears(1968, None))           |
         | Artist("Bee Gees",     "Pop",       Location("England"),PeriodInYears(1958, Some(2003)))     |
         +----------------------------------------------------------------------------------------------+
 
-    - modeling finite possibilities
+    - modeling finite possibilities (solve ensure that some parameters have finite set of values)
         +-------------------------------------------+
         | sealed trait MusicGenre                   |   // sum type (sealed trait). Type that can only take a finite set of values
-        | case object HeavyMetal extends MusicGenre |
-        | case object Pop extends MusicGenre        |
-        | case object HardRock extends MusicGenre   |
-        +-------------------------------------------+ 
-        // better modeling with sealed traits
+        | case object HeavyMetal extends MusicGenre |   +---------------------------------+
+        | case object Pop extends MusicGenre        |   | val genre: MusicGenre = Pop     | // Pop
+        | case object HardRock extends MusicGenre   |   | val x: MusicGenre = HeavyMeta   | // compilation error!
+        +-------------------------------------------+   | val y: MusicGenre = "HeavyMeta" | // compilation error!
+        // better modeling with sealed traits           +---------------------------------+
+        // sum types make sure value of its type is defined by us
+        // sum types with case classes (product types) can model many concepts
         +--------------------------------------------------------------------------------------------------+
         | case class Artist(name: String, genre: MusicGenre, origin: Location, yearsActive: PeriodInYears) |
         +--------------------------------------------------------------------------------------------------+
-
+        // lets improve PeriodInYears
         +--------------------------------------------------------+
         | case class PeriodInYears(start: Int, end: Option[Int]) |
         +--------------------------------------------------------+
-
+                                                        // there are two cases of YearsActive(still active, or not)
+        +-------------------------------------------+   // there are two options - use sealed trait
+        | sealed trait MusicGenre                   |   +----------------------------------------------------------------------+   
+        | case object HeavyMetal extends MusicGenre |   | sealed trait YearsActive                                             |
+        | case object Pop extends MusicGenre        |   | case class StillActive(since: Int) extends YearsActive               |
+        | case object HardRock extends MusicGenre   |   | case class ActiveBetween(start: Int, until: Int) extends YearsActive |
         +-------------------------------------------+   +----------------------------------------------------------------------+
-        | sealed trait MusicGenre                   |   | sealed trait YearsActive                                             |
-        | case object HeavyMetal extends MusicGenre |   | case class StillActive(since: Int) extends YearsActive               |
-        | case object Pop extends MusicGenre        |   | case class ActiveBetween(start: Int, until: Int) extends YearsActive |
-        | case object HardRock extends MusicGenre   |   +----------------------------------------------------------------------+
-        +-------------------------------------------+
 
         // last version
         +-------------------------------------------------------------------------------------+
@@ -723,6 +725,9 @@
         +-------------------------------------------------------------------------------------+
 
     - using ADT-based models in behaviors (functions)
+        - sealed trait - models a thing that may be one of many things at once
+        - case class - models opposite - something that is one or many things at once (product types)
+        - sum types and product types called ADT`s
         +------------------------------------------------------------------------------+        +-------------------------------------------------------------------------------------------------------+
         | sealed trait SearchCondition                                                 |        | def searchArtists(artists: List[Artist], requiredConditions: List[SearchCondition]): List[Artist] = { |
         | case class SearchByGenre(genres: List[MusicGenre]) extends SearchCondition   |        |   artists.filter(artist =>                                                                            |
@@ -732,3 +737,12 @@
           two parameters instead of seven, no raw types, no nested                              |         case SearchByOrigin(locations) => locations.contains(artist.origin)                           |
           if conditions, no boolean flags. Only the code that’s really needed                   |         case SearchByActiveYears(start, end) => wasArtistActive(artist, start, end)}))}               |
                                                                                                 +-------------------------------------------------------------------------------------------------------+
+        - ADT and inheritence diffs:
+            1. ADT dont contain behaviour (in FP data is modeled using immutable values, behaviour - independent functions)
+            2. when we define sealed trait - we mut provide all possible values of this type
+        - In FP we define ADT and immutable types - data part
+          Behavior part - create pure functions that use immutable types
+
+--------------------
+| IO as values
+--------------------
