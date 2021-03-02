@@ -236,9 +236,9 @@
 
 
 
---------------------
-| sequential programs
---------------------
+####################
+# sequential programs
+####################
                                                                         - how many have word Scala
     +---------------------------------------------------------------+   +-----------------------------------------------------------------------------+
     | case class Book(title: String, authors: List[String])         |   | books.map(book => book.title).filter(title => title.contains("Scala")).size |
@@ -442,9 +442,10 @@
         | Some(Event("Apollo Program", 1961, 1972)))                     |
         +----------------------------------------------------------------+
 
---------------------
-| error handling
---------------------
+####################
+# error handling
+####################
+
     - Task to sort tv shows which arrive in string as:
         List("Breaking Bad (2008-2013)",
              "The Wire (2002-2008)",
@@ -595,9 +596,9 @@
     +----------------------------------+
 
     
---------------------
-| requirements as types
---------------------
+####################
+# requirements as types
+####################
     
     +--------------------------------------------------------------------------------------------------------------------------------+
     | case class Artist(name: String, genre: String, origin: String, yearsActiveStart: Int, isActive: Boolean, yearsActiveEnd: Int)) |
@@ -743,6 +744,79 @@
         - In FP we define ADT and immutable types - data part
           Behavior part - create pure functions that use immutable types
 
---------------------
-| IO as values
---------------------
+
+
+####################
+# IO as values
+####################
+    - requirment:                                                                       imperative solution
+        having 2 persons, meeting length - find a common slot                           +-----------------------------------------------------------------------------------------+
+        persist meeting in calendar                                                     | static MeetingTime schedule(String person1, String person2,int lengthHours) {           |
+        should use impure functions calendarEntriesApiCall and createMeetingApiCall     |     List<MeetingTime> person1Entries = calendarEntriesApiCall(person1);                 |
+        simulation API:                                                                 |     List<MeetingTime> person2Entries = calendarEntriesApiCall(person2);                 |
+            // API call may return different results for the same argument              |     List<MeetingTime> scheduledMeetings = new ArrayList<>();                            |
+            // API call may take too long to finish                                     |     scheduledMeetings.addAll(person1Entries);                                           | 
+            // API call may fail with a connection (or another) error                   |     scheduledMeetings.addAll(person2Entries);                                           |
+        +--------------------------------------------------------------------------+    |     List<MeetingTime> slots = new ArrayList<>();                                        |
+        | class MeetingTime {                                                      |    |                                                                                         |  
+        |     public final int startHour;                                          |    |     for (int startHour = 8; startHour < 16 - lengthHours + 1; startHour++) {            |    
+        |     public final int endHour;                                            |    |         slots.add(new MeetingTime(startHour, startHour + lengthHours));                 |   
+        |     MeetingTime(int startHour, int endHour) { ... }                      |    |     }                                                                                   |
+        | }                                                                        |    |                                                                                         |
+        | List<MeetingTime> calendarEntriesApiCall(String name) {                  |    |     List<MeetingTime> possibleMeetings = new ArrayList<>();                             |
+        |     if (name.equals(Alice))                                              |    |     for (var slot : slots) {                                                            |
+        |         return List.of(new MeetingTime(8, 10), new MeetingTime(11, 12)); |    |         var meetingPossible = true;                                                     |
+        |     else if (name.equals(Bob)) return List.of(new MeetingTime(9, 10));   |    |         for (var meeting : scheduledMeetings) {                                         |
+        |     else {                                                               |    |             if (slot.endHour > meeting.startHour && meeting.endHour > slot.startHour) { |
+        |         Random rand = new Random();                                      |    |             meetingPossible = false;                                                    |
+        |         return List.of(                                                  |    |             break;                                                                      |
+        |             new MeetingTime(rand.nextInt(5) + 8, rand.nextInt(4) + 13)); |    |             }                                                                           |
+        |     }                                                                    |    |         }                                                                               |
+        | }                                                                        |    |         if (meetingPossible) {                                                          |
+        | void createMeetingApiCall(List<String> names, MeetingTime meetingTime)   |    |         possibleMeetings.add(slot);                                                     |
+        +--------------------------------------------------------------------------+    |         }                                                                               |       
+    imperative problems                                                                 |     }                                                                                   |
+    - The function has at least two responsibilities                                    |     if (!possibleMeetings.isEmpty()) {                                                  |
+        calls external APIs plus it finds a free slot                                   |         createMeetingApiCall(List.of(person1, person2),possibleMeetings.get(0));        |
+    - If any of the three external API calls fails, the whole function fails            |         return possibleMeetings.get(0);                                                 |
+    - Signature lies                                                                    |     } else return null;                                                                 |
+                                                                                        | }                                                                                       |
+                                                                                        +-----------------------------------------------------------------------------------------+
+    - handle IO imperatively
+        -retry
+        -other options: more retries, using a cached value, using a default value (fallback) or retrying after some backoff period to name a few
+        +-------------------------------------------------------+
+        | List<MeetingTime> person1Entries = null;              |   // we shouldnt care about recovery strategy inside the schedule function
+        | try {                                                 |   // retry should not be entangled in business code
+        |     person1Entries = calendarEntriesApiCall(person1); |
+        | } catch(Exception e) {                                |
+        | // retry                                              |
+        |     person1Entries = calendarEntriesApiCall(person1); |
+        | }                                                     |
+        +-------------------------------------------------------+
+
+    - IO values
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
