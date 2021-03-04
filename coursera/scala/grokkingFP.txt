@@ -796,11 +796,77 @@
         +-------------------------------------------------------+
 
     - IO values
+        IO - we’ll do, however, is wrap this external, impure, side-effectful function within a function that returns IO
+        - unsafe function   
+        +--------------------------------------------------------------+
+        | static List<MeetingTime> calendarEntriesApiCall(String name) |
+        +--------------------------------------------------------------+
+        - wrapped
+        +--------------------------------------------------------------+
+        | def calendarEntries(name: String): IO[List[MeetingTime]] = { |
+        |     IO.delay(calendarEntriesApiCall(name))                   |
+        | }                                                            |
+        +--------------------------------------------------------------+              
+        - example function with side effect
+        +--------------------------------------------+  castTheDieImpure()
+        | static int castTheDieImpure() {            |      The die is cast     // prints a side effect
+        |     System.out.println(ôThe die is castö); |      3
+        |     Random rand = new Random();            |  - wrap in IO
+        |     return rand.nextInt(6) + 1;            |  +----------------------------------------------------------+
+        | }                                          |  | def castTheDie(): IO[Int] = IO.delay(castTheDieImpure()) |
+        +--------------------------------------------+  | castTheDie()                                             |
+        - IO delay did not execute the code             |     IO[Int]                                              |
+        - responsobility to run the code is delegated   +----------------------------------------------------------+
 
+        - running IO
+        +-------------------------------------+
+        | val dieCast: IO[Int] = castTheDie() | // IO values, just like Lists, Options and Eithers can be transformed using pure functions
+        |     dieCast: IO[Int]                |
+        | dieCast.unsafeRunSync()             | // usually only once, at the end of our program
+        |     The die is cast                 |
+        |     3                               |                     
+        +-------------------------------------+                     +-----------------------------------------------------+
+                                                                    | static int castTheDieImpure() {                     |
+        - cast die twice and return result of it                    |     System.out.println(ôThe die is castö);          |
+        +-----------------------------------------+ if exception -> |     Random rand = new Random();                     |    
+        | castTheDieImpure() + castTheDieImpure() |                 |     if(rand.nextBoolean())                          |
+        |     The die is cast                     |                 |         throw new RuntimeException(ôDie fell offö); |
+        |     The die is cast                     |                 |     return rand.nextInt(6) + 1;                     |
+        |     9                                   |                 | }                                                   |    
+        +-----------------------------------------+                 +-----------------------------------------------------+    
+        - we just want to implement business logic                      +---------------------------+
+            // get two numbers and if they exist sum                    | Some(2) + Some(4)         |
+            // IO[int] does not have addition                           |     compilation error!    |
+        +----------------------------------------------------------+ -> | val result: Option[Int] = |    
+        | def castTheDie(): IO[Int] = IO.delay(castTheDieImpure()) |    |     for {                 |
+        |     def castTheDie(): IO[Int]                            |    |         a <- aOption      |
+        | castTheDie() + castTheDie()                              |    |         b <- bOption      |   // result Some(6)
+        |     compilation error!                                   |    |     } yield a + b         |   // but could be None 
+        +----------------------------------------------------------+    +---------------------------+   // if either is None
+        - IO has flatMap
+        +--------------------------------------+
+        | def castTheDieTwice(): IO[Int] = {   |
+        |     for {                            |
+        |         firstCast <- castTheDie()    |
+        |         secondCast <- castTheDie()   |    // result is IO
+        |     } yield firstCast + secondCast}  |    // to be executed in other place
+        +--------------------------------------+          
 
-
-
-
+        - combining IO
+        +------------------------------------------------------------------------------------+
+        | def calendarEntries(name: String): IO[List[MeetingTime]] = {                       |
+        |     IO.delay(calendarEntriesApiCall(name))                                         |  // describes an input action (reads a value)
+        | }                                                                                  |
+        | def createMeeting(names: List[String], meeting: MeetingTime): IO[Unit] = {         |
+        |     IO.delay(createMeetingApiCall(names, meeting))                                 |  // IO[Unit] means that it's an output action (writes a value).
+        | }                                                                                  |
+        | def scheduledMeetings(person1: String, person2: String): IO[List[MeetingTime]] = { |
+        | for {                                                                              |
+        |     person1Entries <- calendarEntries(person1)                                     |
+        |     person2Entries <- calendarEntries(person2)                                     |
+        | } yield person1Entries.appendedAll(person2Entries)}                                |
+        +------------------------------------------------------------------------------------+  
+        277    
 
 
 
