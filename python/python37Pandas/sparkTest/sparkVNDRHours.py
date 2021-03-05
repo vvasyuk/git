@@ -10,7 +10,7 @@ spark = SparkSession.builder.config("spark.sql.warehouse.dir", "file:///C:/temp"
 # raw
 # dfRaw = spark.read.parquet("c:\\work\\project\\data\\raw\\datapoint\\vendor_hours\\").cache()
 # dfRaw.show(20,False)
-dfRaw = spark.read.parquet("c:\\work\\project\\data\\raw\\datapoint\\vendor_hours\\small\\part-00000-dd6596f6-df7b-4a99-8e86-c9ea197a6155.c000.snappy.parquet").cache()
+dfRaw = spark.read.parquet("c:\\work\\project\\data\\raw\\datapoint\\vendor_hours\\part-00000-ebe9f998-efe1-4197-8ac0-17c28c51d05c.c000.snappy.parquet").cache()
 dfRaw.show(20,False)
 # print(dfRaw.count())
 

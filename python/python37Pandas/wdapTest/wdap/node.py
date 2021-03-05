@@ -116,7 +116,7 @@ def get_node(df):
         if id not in all_items:
             all_items[id] = TreeNode(id=id, wap_id=wap_id, name=name, currency='', shortName='', sector=sector, account=account, cust_name=cust_name, has_parent=True)
         if parent not in all_items:
-            if parent is None and sector is not None and account is not None and cust_name is not None:
+            if (parent is None or parent == '') and sector is not None and account is not None and cust_name is not None:
                 _link_top_levels(id, sector, account, cust_name)
             else:
                 all_items[parent] = TreeNode(id=parent, wap_id=wap_id, name=name, currency='', shortName='', sector=sector, account=account, cust_name=cust_name, has_parent=False)
