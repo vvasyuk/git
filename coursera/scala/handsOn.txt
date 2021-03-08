@@ -1563,7 +1563,144 @@
 # Static Build Pipelines
 ####################
     ### Mill Build Pipelines
+                                                                                         usage
+        +---------------------------------------------------------------------------+   +-------------------------------------------------------------------------------+
+        | import mill._ build.sc                                                    |   | curl -L https://github.com/lihaoyi/mill/releases/download/0.8.0/0.8.0 -o mill |
+        | def srcs = T.source(millSourcePath / "src")                               |   | chmod +x mill                                                                 |
+        | def concat = T{                                                           |   | ./mill concat                                                                 |
+        |     os.write(T.dest / "concat.txt", os.list(srcs().path).map(os.read(_))) |   | cat out/concat/dest/concat.txt                                                |
+        |     PathRef(T.dest / "concat.txt")                                        |   |     hear me moo                                                               |   // listens to src changes
+        | }                                                                         |   |     hello world                                                               |
+        +---------------------------------------------------------------------------+   +-------------------------------------------------------------------------------+
+
     ### Mill Modules
-    ### Revisiting our Static Site Script
-    ### Conversion to a Mill Build Pipeline
-    ### Extending our Static Site Pipeline        
+        +------------------------------------------------------------+  +---------------------------------------------------------------+
+        | import mill._ build.sc                                     |  | ./mill resolve __                                             |
+        | trait FooModule extends Module{                            |  | bar.compress, bar.concat, bar.resources, bar.srcs, bar.zipped |
+        |     def srcs = T.source(millSourcePath / "src")            |  | qux.compress, qux.concat, qux.resources, qux.srcs, qux.zipped |
+        |     def resources = T.source(millSourcePath / "resources") |  +---------------------------------------------------------------+
+        |     def concat = T{ ... }                                  |
+        |     def compress = T{ ... }                                |
+        |     def zipped = T{ ... }                                  |
+        | }                                                          |
+        | object bar extends FooModule                               |  // millSourcePaths of bar/
+        | object qux extends FooModule                               |  // millSourcePaths of qux/
+        +------------------------------------------------------------+
+
+        - nested to form arbitrary hierarchies
+        +-------------------------------------+ Source Folders
+        | object bar extends FooModule{       | // bar/src/
+        |     object inner1 extends FooModule | // bar/inner1/src/
+        |     object inner2 extends FooModule | // bar/inner2/src/
+        | }                                   |
+        +-------------------------------------+
+        - cross modules
+        +-------------------------------------------------------------------------------+
+        | import mill._ build.sc                                                        |
+        | val items = interp.watchValue{ os.list(millSourcePath / "foo").map(_.last) }  |   // items found by listing the sub-folders in foo/ (dynamic list)
+        | object foo extends Cross[FooModule](items:_*)                                 |
+        | class FooModule(label: String) extends Module{                                |
+        |     def srcs = T.source(millSourcePath / "src")                               |
+        |     def concat = T{                                                           |
+        |         os.write(T.dest / "concat.txt", os.list(srcs().path).map(os.read(_))) |
+        |         PathRef(T.dest / "concat.txt")                                        |
+        |     }                                                                         |
+        | }                                                                             |
+        +-------------------------------------------------------------------------------+ 
+
+    ### Extending our Static Site Pipeline
+        +--------------------------------------------------------------------------------------------+  +------------------------------------------------------------------------------------------+
+        |   import $ivy.`com.lihaoyi::scalatags:0.9.1`, scalatags.Text.all._ build.sc                |  |   object post extends Cross[PostModule](postInfo.map(_._1):_*)                           |
+        |   import $ivy.`com.atlassian.commonmark:commonmark:0.13.1`                                 |  |   class PostModule(number: String) extends Module{                                       |
+        |   import mill._                                                                            |  |     val Some((_, suffix, markdownPath)) = postInfo.find(_._1 == number)                  |
+        |   def mdNameToHtml(name: String) = name.replace(" ", "-").toLowerCase + ".html"            |  |     def path = T.source(markdownPath)                                                    |
+        |   val postInfo = interp.watchValue {                                                       |  |     def preview = T{                                                                     |
+        |     os.list(os.pwd / "post")                                                               |  |       renderMarkdown(os.read.lines(path().path).takeWhile(_.nonEmpty).mkString("\n"))    |
+        |       .map { p =>                                                                          |  |     }                                                                                    |
+        |         val s"$prefix - $suffix.md" = p.last                                               |  |     def render = T{                                                                      |
+        |         (prefix, suffix, p)                                                                |  |       renderHtmlPage(                                                                    |
+        |       } .                                                                                  |  |         T.dest / mdNameToHtml(suffix),                                                   |
+        |       sortBy(_._1.toInt)                                                                   |  |         "../bootstrap.css",                                                              |
+        |   }                                                                                        |  |         h1(a(href := "../index.html")("Blog"), " / ", suffix),                           |
+        |   def bootstrap = T{                                                                       |  |         raw(renderMarkdown(os.read(path().path)))                                        |
+        |     os.write(                                                                              |  |       )                                                                                  |
+        |       T.dest / "bootstrap.css",                                                            |  |     }                                                                                    |
+        |       requests.get("https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.css") |  |   }                                                                                      |
+        |         .text()                                                                            |  |   def links = T.input{ postInfo.map(_._2) }                                              |
+        |     )                                                                                      |  |   val posts = T.sequence(postInfo.map(_._1).map(post(_).render))                         |
+        |     PathRef(T.dest / "bootstrap.css")                                                      |  |   val previews = T.sequence(postInfo.map(_._1).map(post(_).preview))                     |
+        |   }                                                                                        |  |   def index = T {                                                                        |
+        |   def renderMarkdown(s: String) = {                                                        |  |     renderHtmlPage(                                                                      |
+        |     val parser = org.commonmark.parser.Parser.builder().build()                            |  |       T.dest / "index.html",                                                             |
+        |     val document = parser.parse(s)                                                         |  |       "bootstrap.css",                                                                   |
+        |     val renderer = org.commonmark.renderer.html.HtmlRenderer.builder().build()             |  |       h1("Blog"),                                                                        |
+        |     renderer.render(document)                                                              |  |       for ((suffix, preview) <- links().zip(previews()))                                 |
+        |   }                                                                                        |  |         yield frag(                                                                      |
+        |   def renderHtmlPage(dest: os.Path, bootstrapUrl: String, contents: Frag*) = {             |  |           h2(a(href := ("post/" + mdNameToHtml(suffix)))(suffix)),                       |
+        |     os.write(                                                                              |  |           raw(preview) // include markdown-generated HTML "raw" without HTML-escaping it |
+        |       dest,                                                                                |  |         )                                                                                |
+        |       doctype("html")(                                                                     |  |     )                                                                                    |
+        |         html(head(link(rel := "stylesheet", href := bootstrapUrl)), body(contents))        |  |   }                                                                                      |
+        |       )                                                                                    |  |   def dist = T {                                                                         |
+        |         PathRef(dest)                                                                      |  |     for (post <- posts()) {                                                              |
+        |   }                                                                                        |  |       os.copy(post.path, T.dest / "post" / post.path.last, createFolders = true)         |
+        +--------------------------------------------------------------------------------------------+  |     }                                                                                    |
+                                                                                                        |     os.copy(index().path, T.dest / "index.html")                                         |
+                                                                                                        |     os.copy(bootstrap().path, T.dest / "bootstrap.css")                                  |
+                                                                                                        |     PathRef(T.dest)                                                                      |
+                                                                                                        |   }                                                                                      |
+                                                                                                        +------------------------------------------------------------------------------------------+
+####################
+# Scraping Websites
+####################
+    ### Scraping Wikipedia
+        - downloads wiki as html                                        - parse locally
+        +-----------------------------------------------------------+   +-----------------------------------------------------------+
+        | val doc = Jsoup.connect("http://en.wikipedia.org/").get() |   | val doc = Jsoup.parse(os.read(os.pwd / "Wikipedia.html")) |
+        |     doc: nodes.Document = <!doctype html>                 |   |     doc: nodes.Document = <!doctype html>                 |
+        |     <html class="client-nojs" lang="en" dir="ltr">        |   |     <html class="client-nojs" lang="en" dir="ltr">        |
+        |     <head>                                                |   |     <head>                                                |
+        |     <meta charset="UTF-8">                                |   |     <meta charset="UTF-8">                                |
+        |     <title>Wikipedia, the free encyclopedia</title>       |   |     <title>Wikipedia, the free encyclopedia</title>       |
+        +-----------------------------------------------------------+   +-----------------------------------------------------------+
+        - selection                                                                                         - extract data
+        +----------------------------------------------------------------------------------------------+    +-----------------------------------------------------------------------------------+
+        | import collection.JavaConverters._                                                           |    | for (headline <- headlines) yield (headline.attr("title"), headline.attr("href")) |
+        | import collection.JavaConverters._                                                           |    |     res4: collection.mutable.Buffer[(String, String)] = ArrayBuffer(              |
+        | val headlines = doc.select("#mp-itn b a").asScala                                            |    |     ("Bek Air Flight 2100", "/wiki/Bek_Air_Flight_2100"),                         |
+        |     headlines: collection.mutable.Buffer[nodes.Element] = Buffer(                            |    |     ("Assassination of ...", "/wiki/Assassination_of_..."),                       |
+        |     <a href="/wiki/Bek_Air_Flight_2100" title="Bek Air Flight 2100">Bek Air Flight 2100</a>, |    |     ("State of the...", "/wiki/State_of_the_..."),                                |
+        |     <a href="/wiki/Assassination_of_..." title="Assassination of ...">2018 killing</a>,      |    +-----------------------------------------------------------------------------------+
+        |     <a href="/wiki/State_of_the_..." title="State of the...">upholds a ruling</a>            |
+        +----------------------------------------------------------------------------------------------+
+
+    ### Scraping MDN
+        +------------------------------------------------------------------------------------------------+
+        | import $ivy.`org.jsoup:jsoup:1.13.1`, org.jsoup._ ScrapingDocs.sc                              |
+        | import collection.JavaConverters._                                                             |
+        | val indexDoc = Jsoup.connect("https://developer.mozilla.org/en-US/docs/Web/API").get()         |
+        | val links = indexDoc.select("h2#Interfaces").nextAll.select("div.index a").asScala             |  // <h2 id="Interfaces"> header can be used to identify the section we care about
+        | val linkData = links.map(link => (link.attr("href"), link.attr("title"), link.text))           |  // extract the high-level information we want from each link
+        | val articles = for ((url, tooltip, name) <- linkData) yield {                                  |  
+        |     println("Scraping " + name)                                                                |
+        |     val doc = Jsoup.connect("https://developer.mozilla.org" + url).get()                       |
+        |     val summary = doc.select("article#wikiArticle > p").asScala.headOption match {             |  // find all relevant paragraphs
+        |         case Some(n) => n.text; case None => ""                                                |
+        |     }                                                                                          |
+        |     val methodsAndProperties = doc                                                             |
+        |         .select("article#wikiArticle dl dt")                                                   |  // find all the tags containing the name of a property or method
+        |         .asScala                                                                               |
+        |         .map(el => (el.text, el.nextElementSibling match {case null => ""; case x => x.text})) |
+        |     (url, tooltip, name, summary, methodsAndProperties)                                        |
+        | }                                                                                              |
+        +------------------------------------------------------------------------------------------------+
+
+
+####################
+# Working with HTTP APIs
+####################
+    ### The Task: Github Issue Migrator
+    ### Creating Issues and Comments
+    ### Fetching Issues and Comments
+    ### Migrating Issues and Comments
+s
