@@ -1,3 +1,6 @@
+use Win32::Clipboard;
+$CLIP = Win32::Clipboard();
+
 my $argument_list = join(" ", @ARGV);
 #print $argument_list
 #my @lines = split /\n/, @ARGV[0];
@@ -22,13 +25,26 @@ my $argument_list = join(" ", @ARGV);
 # }
 # print "+" . "-" x ($max+2) . "+\n";
 
-print "+" . "-" x ($max+2) . "+\n";
+# print "+" . "-" x ($max+2) . "+\n";
+# for my $i (0 .. $#lines){
+#     chomp $lines[$i];
+#     my $line = $lines[$i];
+#     if ($i < $#lines) {
+#         print "| " . $line  . " " x ($max-length($line)) . " |\n";
+#     }
+    
+# }
+# print "+" . "-" x ($max+2) . "+\n";
+
+$res = "+" . "-" x ($max+2) . "+\n";
 for my $i (0 .. $#lines){
     chomp $lines[$i];
     my $line = $lines[$i];
     if ($i < $#lines) {
-        print "| " . $line  . " " x ($max-length($line)) . " |\n";
+        $res = $res . "| " . $line  . " " x ($max-length($line)) . " |\n";
     }
     
 }
-print "+" . "-" x ($max+2) . "+\n";
+$res = $res . "+" . "-" x ($max+2) . "+\n";
+print "$res";
+$CLIP->Set("$res");
