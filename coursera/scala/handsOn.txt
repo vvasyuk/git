@@ -1816,4 +1816,105 @@
         +-----------------------------------------------------------------+
 
     ### Asynchronous Futures
-    ### Asynchronous Web Crawling         
+        - creating Futures via Future{ ... } blocks, which schedules the code in the block to run on a background thread pool
+        - another way to create Futures is via scala.concurrent.Promise
+        +-----------------------------------------------------------------------------+
+        | def doThing(succeed: Boolean) = {                                           |
+        |   val p: Promise[String] = Promise[String]                                  |
+        |   val f: Future[String] = p.future                                          |
+        |   f.onComplete {                                                            |
+        |     case scala.util.Success(res)       => println(s"Success! $res")         |
+        |     case scala.util.Failure(exception) => println(s"Failure :( $exception") |
+        |   }                                                                         |
+        |   if (succeed) p.success("Yay!")                                            |
+        |   else p.failure(new Exception("boom"))                                     |
+        | }                                                                           |
+        | doThing(succeed = true)                                                     |
+        |     Success! Yay!                                                           |
+        | doThing(succeed = false)                                                    |
+        |     Failure :( java.lang.Exception: boom                                    |
+        +-----------------------------------------------------------------------------+
+
+        - sync                                          - async (main thread is not blocked)
+        +-------------------------------------------+   +-------------------------------------------+
+        | val fut = Future{ hash("Chinatown.jpg") } |   | val fut = Future{ hash("Chinatown.jpg") } |   // .map and .foreach calls also return immediately
+        | val res = Await.result(fut, Inf).length   |   | val res = fut.map(_.length)               |   // schedule the length call to happen whenever the hashing Future completes
+        | println(res)                              |   | res.foreach(println)                      |   // foreach is similar to the onComplete method - it only handles successful results
+        +-------------------------------------------+   +-------------------------------------------+
+        -sync                                           - async
+        +--------------------------------------------+  +---------------------------------------------+
+        | val fut1 = Future{ hash("Chinatown.jpg") } |  | val fut1 = Future{ hash("Chinatown.jpg") }  |
+        | val fut2 = Future{ hash("ZCenter.jpg") }   |  | val fut2 = Future{ hash("ZCenter.jpg") }    |
+        | val hash1 = Await.result(fut1, Inf)        |  | val zipped = fut1.zip(fut2)                 | // combine a Future[T] and a Future[V] into a Future[(T, V)] that returns a tuple
+        | val hash2 = Await.result(fut2, Inf)        |  | val joined = zipped.map{                    | // map on it to process the tuple
+        | val joined = s"$hash1 $hash2"              |  |     case (hash1, hash2) => s" "             |
+        | println(joined)                            |  | }                                           |
+        +--------------------------------------------+  | joined.foreach(println)                     | // use zip and map to perform the same logic asynchronously
+                                                        +---------------------------------------------+
+
+        - sync                                                  - async
+        +--------------------------------------------------+    +--------------------------------------------------+
+        | val files = Seq( "Chinatown.jpg", "ZCenter.jpg", |    | val files = Seq( "Chinatown.jpg", "ZCenter.jpg", |    // Future.sequence lets you convert a collection of Futures Seq[Future[T]] into a Future returning a collection Future[Seq[T]]
+        |                  "Kresge.jpg", "Memorial.jpg")   |    |                  "Kresge.jpg", "Memorial.jpg")   |
+        | val futs = files.map(s => Future{hash(s)})       |    | val futs = files.map(s => Future{hash(s)})       |
+        | val hashes = futs.map(Await.result(_, Inf))      |    | val hashes = Future.sequence(futs)               |
+        | val joined = hashes.mkString(" ")                |    | val joined = hashes.map(_.mkString(" "))         |
+        | println(joined)                                  |    | joined.foreach(println)                          |
+        +--------------------------------------------------+    +--------------------------------------------------+
+
+      
+    ### Asynchronous Web Crawling   
+        - We want to avoid using a thread for every HTTP request, and avoid blocking the main thread using Await.result      
+        - convert our for-loop into a recursive function as for-loops are inherently synchronous, whereas recursion gives us the flexibility to evaluate either synchronously or asynchronously
+        +-----------------------------------------------------------------------------------------+
+        | import $file.FetchLinks, FetchLinks._ Crawler.sc                                        |
+        | import scala.concurrent._, duration.Duration.Inf, java.util.concurrent.Executors        |
+        | implicit val ec = ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(8)) |
+        | def fetchAllLinksRec(startTitle: String, depth: Int): Set[String] = {                   | // still synchronous, but is now rec and not for loop
+        |   def rec(current: Set[String],seen: Set[String],recDepth: Int): Set[String] = {        |
+        |     if (recDepth >= depth) seen                                                         |
+        |     else {                                                                              |
+        |       val futures = for (title <- current) yield Future { fetchLinks(title) }           |
+        |       val nextTitles = futures.map(Await.result(_, Inf)).flatten                        |
+        |       rec(                                                                              |
+        |         nextTitles.filter(!seen.contains(_)),                                           |
+        |         seen ++ nextTitles,                                                             |
+        |         recDepth + 1                                                                    |
+        |       )                                                                                 |
+        |     }                                                                                   |
+        |   }                                                                                     |
+        |   rec(Set(startTitle), Set(startTitle), 0)                                              |
+        | }                                                                                       |
+        +-----------------------------------------------------------------------------------------+
+
+        - Asynchronous Link Fetching with AsyncHttpClient
+            // we were using earlier is optimized for simple synchronous operation
+            // now we will use AsyncHttpClient library
+            // convert to scalaFut
+            // returns a Future[Seq[String]], indicating that the results are not available immediately 
+            when the function call returns, but will be made available some time in the future
+        +--------------------------------------------------------------------------------------------+      +--------------------------------------------------------------------------------------------+
+        | import $ivy.`org.asynchttpclient:async-http-client:2.5.2` FetchLinksAsync.sc               |      | import .FetchLinksAsync, FetchLinksAsync._ Crawler.sc                               |
+        | import scala.concurrent._                                                                  |      | import scala.concurrent._, java.util.concurrent.Executors                                |
+        | val asyncHttpClient = org.asynchttpclient.Dsl.asyncHttpClient()                            |      | implicit val ec = ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(8))  |
+        | def fetchLinksAsync(title: String)(implicit ec: ExecutionContext): Future[Seq[String]] = { |      | def fetchAllLinksAsync(startTitle: String, depth: Int): Future[Set[String]] = {          |
+        |   val p = Promise[String]                                                                  |      |   def rec(current: Set[String],seen: Set[String],recDepth: Int): Future[Set[String]] = { |
+        |   val listenableFut = asyncHttpClient                                                      |      |     if (recDepth >= depth) Future.successful(seen)                                       |
+        |     .prepareGet("https://en.wikipedia.org/w/api.php")                                      |      |     else {                                                                               |
+        |     .addQueryParam("action", "query")                                                      |      |       val futures = for (title <- current) yield fetchLinksAsync(title)                  |
+        |     .addQueryParam("titles", title)                                                        |      |       Future.sequence(futures).map { nextTitleLists =>                                   |
+        |     .addQueryParam("prop", "links")                                                        |      |           val nextTitles = nextTitleLists.flatten                                        |
+        |     .addQueryParam("format", "json")                                                       |      |           rec(                                                                           |
+        |     .execute()                                                                             |      |             nextTitles.filter(!seen.contains(_)),                                        |
+        |   listenableFut.addListener(() => p.success(listenableFut.get().getResponseBody),null)     |      |             seen ++ nextTitles,                                                          |
+        |   val scalaFut: Future[String] = p.future                                                  |      |             recDepth + 1                                                                 |
+        |   scalaFut.map { responseBody =>                                                           |      |           )                                                                              |
+        |     for {                                                                                  |      |         }                                                                                |
+        |       page <- ujson.read(responseBody)("query")("pages").obj.values.toSeq                  |      |         .flatten                                                                         |
+        |       links <- page.obj.get("links").toSeq                                                 |      |     }                                                                                    |
+        |       link <- links.arr                                                                    |      |   }                                                                                      |
+        |     } yield link("title").str                                                              |      |   rec(Set(startTitle), Set(startTitle), 0)                                               |
+        |   }                                                                                        |      | }                                                                                        |
+        | }                                                                                          |      +--------------------------------------------------------------------------------------------+
+        +--------------------------------------------------------------------------------------------+
+
