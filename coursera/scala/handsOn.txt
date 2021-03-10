@@ -1768,7 +1768,52 @@
 # Fork-Join Parallelism with Futures
 ####################
     ### Parallel Computation using Futures
+        - hash                                                                                          - spawn threads
+        +------------------------------------------------------------------------------------------+    +-------------------------------------------------+
+        | import $ivy.`at.favre.lib:bcrypt:0.9.0`                                                  |    | val f = Future{ hash("Chinatown.jpg") }         | // control is returned, thread is spawned
+        | import at.favre.lib.crypto.bcrypt.{BCrypt, LongPasswordStrategies}                       |    |     f: Future[String] = Future(<not completed>) |
+        | val hasher = BCrypt.`with`(LongPasswordStrategies.hashSha512(BCrypt.Version.VERSION_2A)) |    | Await.result(f, Inf)                            | // if done will return, else - will wait untill done and return 
+        | def hash(name: String) = {                                                               |    +-------------------------------------------------+
+        |   val salt = name.take(16).padTo(16, ' ').getBytes                                       |
+        |   val bytes = hasher.hash( /*difficulty*/ 17, salt, os.read.bytes(os.pwd / name))        |
+        |   new String(bytes)                                                                      |
+        | }                                                                                        |
+        +------------------------------------------------------------------------------------------+
+
     ### N-Ways Parallelism
-    ### Parallel Web Crawling
+        - N Sequential Computations                 - N Parallel Computations
+        +--------------------------------------+    +-------------------------------------------------------------+
+        | val (hashes, duration) = time {      |    | val (hashes, duration) = time {                             |
+        |   for (p <- os.list(os.pwd)) yield { |    |     val futures = for (p <- os.list(os.pwd)) yield Future { |
+        |     println("Hashing " + p)          |    |       println("Hashing " + p)                               |
+        |     hash(p.last)                     |    |       hash(p.last)                                          |
+        |   }                                  |    |     }                                                       |
+        | }                                    |    |     futures.map(Await.result(_, Inf))                       | // final collection of hashes will be assembled in the same order the Futures were created
+        +--------------------------------------+    |   }                                                         |
+                                                    | }                                                           |
+                                                    +-------------------------------------------------------------+
+
+    ### Parallel Web Crawling 
+        - fetchLinks                                                        - Sequential Crawling (breadth-first traversal )                            - Parallel Crawling
+        +-----------------------------------------------------------------+ +-------------------------------------------------------------------------+ +-----------------------------------------------------------------------------------------+
+        | def fetchLinks(title: String): Seq[String] = {                  | | import .FetchLinks, FetchLinks._ Crawler.sc                             | | import .FetchLinks, FetchLinks._ Crawler.sc                                             |
+        |   FetchLinks.sc                                                 | | def fetchAllLinks(startTitle: String, depth: Int): Set[String] = {      | | import scala.concurrent._, duration.Duration.Inf, java.util.concurrent.Executors        |
+        |   val resp = requests.get(                                      | |   var seen = Set(startTitle)                                            | | implicit val ec = ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(8)) |
+        |     "https://en.wikipedia.org/w/api.php",                       | |   var current = Set(startTitle)                                         | | def fetchAllLinksParallel(startTitle: String, depth: Int): Set[String] = {              |
+        |     params = Seq(                                               | |   for (i <- Range(0, depth)) {                                          | |   var seen = Set(startTitle)                                                            |
+        |       "action" -> "query",                                      | |     val nextTitleLists = for (title <- current) yield fetchLinks(title) | |   var current = Set(startTitle)                                                         |
+        |       "titles" -> title,                                        | |     current = nextTitleLists.flatten.filter(!seen.contains(_))          | |   for (i <- Range(0, depth)) {                                                          |
+        |       "prop" -> "links",                                        | |     seen = seen ++ current                                              | |     val futures = for (title <- current) yield Future { fetchLinks(title) }             |
+        |       "format" -> "json"                                        | |   }                                                                     | |     val nextTitleLists = futures.map(Await.result(_, Inf))                              |
+        |     )                                                           | |   seen                                                                  | |     current = nextTitleLists.flatten.filter(!seen.contains(_))                          |
+        |   )                                                             | | }                                                                       | |     seen = seen ++ current                                                              |
+        |   for {                                                         | +-------------------------------------------------------------------------+ |   }                                                                                     |
+        |     page <- ujson.read(resp)("query")("pages").obj.values.toSeq |                                                                             |   seen                                                                                  |
+        |     links <- page.obj.get("links").toSeq                        |                                                                             | }                                                                                       |
+        |     link <- links.arr                                           |                                                                             +-----------------------------------------------------------------------------------------+
+        |   } yield link("title").str                                     |
+        | }                                                               |
+        +-----------------------------------------------------------------+
+
     ### Asynchronous Futures
     ### Asynchronous Web Crawling         
