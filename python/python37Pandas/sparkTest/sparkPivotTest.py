@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col
+from pyspark.sql.functions import col, lit
 from pyspark.sql.types import IntegerType
 
 spark = SparkSession.builder.config("spark.sql.warehouse.dir", "file:///C:/temp").appName("PivotTest").getOrCreate()
@@ -23,8 +23,14 @@ df = spark.createDataFrame(
     ['WDAP_ACCOUNT','GL_ACCOUNT','GL_ACCOUNT_SHORT','LEVEL_','VENDOR_EMPLOYEE','TIME_DIM','HRS']
 )
 
-df.show(20,False)
+#df.show(20,False)
 
-pivoted = df.withColumn('HRS', col('HRS').cast(IntegerType()))\
-    .groupBy("WDAP_ACCOUNT", "GL_ACCOUNT", "GL_ACCOUNT_SHORT", "LEVEL_", "VENDOR_EMPLOYEE").pivot("TIME_DIM").sum("HRS")
-pivoted.show(20,False)
+pivoted = df.withColumn('HRS', col('HRS').cast(IntegerType())).withColumn('space here', lit(''))\
+    .groupBy("WDAP_ACCOUNT", "GL_ACCOUNT", "GL_ACCOUNT_SHORT", "LEVEL_", "VENDOR_EMPLOYEE", "space here").pivot("TIME_DIM").sum("HRS")
+#pivoted.columnRenamed
+
+pivotNoNulls = pivoted.na.fill(0)
+pivotNoNulls.show(20,False)
+
+pivotNoNulls.write.parquet("C:\\work\\tryout\\python\\python37Pandas\\sparkTest\\parq.parquet")
+#pyspark.sql.utils.AnalysisException: Attribute name "space here" contains invalid character(s) among " ,;{}()\n\t=". Please use alias to rename it.;

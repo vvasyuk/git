@@ -1918,3 +1918,75 @@
         | }                                                                                          |      +--------------------------------------------------------------------------------------------+
         +--------------------------------------------------------------------------------------------+
 
+
+####################
+# Simple Web and API Servers
+####################
+ ### A Minimal Webserver
+    - server                                                    -build
+    +-------------------------------------------------------+   +----------------------------------------------------------+
+    |   package app app/src/MinimalApplication.scala        |   |   import mill._, scalalib._                              |    // ./mill -w app.runBackground
+    |   object MinimalApplication extends cask.MainRoutes { |   |   object app extends ScalaModule {                       |
+    |     @cask.get("/")                                    |   |     def scalaVersion = "2.13.2"                          |
+    |     def hello() = {                                   |   |     def ivyDeps = Agg(                                   |
+    |       "Hello World!"                                  |   |       ivy"com.lihaoyi::cask:0.7.4"                       |
+    |     }                                                 |   |     )                                                    |
+    |     @cask.post("/do-thing")                           |   |     object test extends Tests {                          |
+    |     def doThing(request: cask.Request) = {            |   |       def testFrameworks = Seq("utest.runner.Framework") |
+    |       request.text().reverse                          |   |       def ivyDeps = Agg(                                 |
+    |     }                                                 |   |         ivy"com.lihaoyi::utest:0.7.4",                   |
+    |     initialize()                                      |   |         ivy"com.lihaoyi::requests:0.6.5"                 |
+    |   }                                                   |   |       )                                                  |
+    +-------------------------------------------------------+   |     }                                                    |
+                                                                |   }                                                      |
+                                                                +----------------------------------------------------------+
+
+ ### Serving HTML
+
+    +--------------------------------------------------------------------------------------------+
+    |   package app                                                                              |
+    |   import scalatags.Text.all._                                                              |
+    |   object MinimalApplication extends cask.MainRoutes {                                      |
+    |     val bootstrap = "https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.css" |
+    |     @cask.get("/")                                                                         |
+    |     def hello() = doctype("html")(                                                         |
+    |       html(                                                                                |
+    |         head(link(rel := "stylesheet", href := bootstrap)),                                |
+    |         body(                                                                              |
+    |           div(cls := "container")(                                                         |
+    |             h1("Hello!"),                                                                  |
+    |             p("World")                                                                     |
+    |           )                                                                                |
+    |         )                                                                                  |
+    |       )                                                                                    |
+    |     )                                                                                      |
+    |   }                                                                                        |
+    +--------------------------------------------------------------------------------------------+
+
+ ### Real-time Updates with Websockets                                                                  - start                                                                                     - continue
+    +----------------------------------------------------------------------------------------------+    +-----------------------------------------------------------------------------------------+ +----------------------------------------------------------------------------------+
+    | function submitForm() {                                                                      |    |package app app/src/MinimalApplication.scala                                             | |def messageList() = frag(                                                    |
+    |     fetch(                                                                                   |    |import scalatags.Text.all._                                                              | |  for ((name, msg) <- messages) yield p(b(name), " ", msg)                   |
+    |         "/",                                                                                 |    |object MinimalApplication extends cask.MainRoutes {                                      | |)                                                                            |
+    |         {method: "POST", body: JSON.stringify({name: nameInput.value, msg: msgInput.value})} |    |  var messages = Vector(("alice", "Hello World!"), ("bob", "I am cow, hear me moo"))     | |@cask.postJson("/")                                                          |
+    |     ).then(response => response.json())                                                      |    |  var openConnections = Set.empty[cask.WsChannelActor]                                   | |def postChatMsg(name: String, msg: String) = {                               |
+    |     .then(json => {                                                                          |    |  val bootstrap = "https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.css" | |  if (name == "")                                                            |
+    |         if (json["success"]) msgInput.value = ""                                             |    |  @cask.staticResources("/static")                                                       | |    ujson.Obj("success" -> false, "err" -> "Name cannot be empty")           |
+    |             errorDiv.innerText = json["err"]                                                 |    |  def staticResourceRoutes() = "static"                                                  | |  else if (msg == "")                                                        |
+    |         })                                                                                   |    |  @cask.get("/")                                                                         | |    ujson.Obj("success" -> false, "err" -> "Message cannot be empty")        |
+    |     }                                                                                        |    |  def hello() = doctype("html")(                                                         | |  else {                                                                     |
+    |     var socket = new WebSocket("ws://" + location.host + "/subscribe");                      |    |    html(                                                                                | |    messages = messages :+ (name -> msg)                                     |
+    |     socket.onmessage = function(ev) { messageList.innerHTML = ev.data }                      |    |      head(                                                                              | |    for (conn <- openConnections)                                            |
+    +----------------------------------------------------------------------------------------------+    |        link(rel := "stylesheet", href := bootstrap),                                    | |      conn.send(cask.Ws.Text(messageList().render))                          |
+                                                                                                        |        script(src := "/static/app.js")                                                  | |    ujson.Obj("success" -> true, "err" -> "")                                |
+                                                                                                        |      ),                                                                                 | |  }                                                                          |
+                                                                                                        |      body(                                                                              | |}                                                                            |
+                                                                                                        |        div(cls := "container")(                                                         | |@cask.websocket("/subscribe")                                                |
+                                                                                                        |          h1("Scala Chat!"),                                                             | |def subscribe() = cask.WsHandler { connection =>                             |
+                                                                                                        |          div(id := "messageList")(messageList()),                                       | |  connection.send(cask.Ws.Text(messageList().render))                        |
+                                                                                                        |          div(id := "errorDiv", color.red),                                              | |  openConnections += connection                                              |
+                                                                                                        |          form(onsubmit := "submitForm(); return false")(                                | |  cask.WsActor { case cask.Ws.Close(_, _) => openConnections -= connection } |
+                                                                                                        |            input(`type` := "text",id := "nameInput",placeholder := "User name"),        | |}                                                                            |
+                                                                                                        |            input(`type` := "text",id := "msgInput",placeholder := "Write a message!"),  | |initialize()                                                                 |
+                                                                                                        |            input(`type` := "submit"))))))                                               | |                                                                             |
+                                                                                                        +-----------------------------------------------------------------------------------------+ +----------------------------------------------------------------------------------+
