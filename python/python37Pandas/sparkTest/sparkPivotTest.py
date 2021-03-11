@@ -25,8 +25,8 @@ df = spark.createDataFrame(
 
 #df.show(20,False)
 
-pivoted = df.withColumn('HRS', col('HRS').cast(IntegerType())).withColumn('space here', lit(''))\
-    .groupBy("WDAP_ACCOUNT", "GL_ACCOUNT", "GL_ACCOUNT_SHORT", "LEVEL_", "VENDOR_EMPLOYEE", "space here").pivot("TIME_DIM").sum("HRS")
+pivoted = df.withColumn('HRS', col('HRS').cast(IntegerType())).withColumn('space%here', lit(''))\
+    .groupBy("WDAP_ACCOUNT", "GL_ACCOUNT", "GL_ACCOUNT_SHORT", "LEVEL_", "VENDOR_EMPLOYEE", "space%here").pivot("TIME_DIM").sum("HRS")
 #pivoted.columnRenamed
 
 pivotNoNulls = pivoted.na.fill(0)
