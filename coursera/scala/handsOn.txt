@@ -1990,3 +1990,64 @@
                                                                                                         |            input(`type` := "text",id := "msgInput",placeholder := "Write a message!"),  | |initialize()                                                                 |
                                                                                                         |            input(`type` := "submit"))))))                                               | |                                                                             |
                                                                                                         +-----------------------------------------------------------------------------------------+ +----------------------------------------------------------------------------------+
+
+
+####################
+# Querying SQL Databases
+####################
+    ### Mapping Tables to Case Classes
+        +--------------------------------------------------------------------------------------------+  +------------------------------------------------------------------------------+
+        | case class City(id: Int,name: String,countryCode: String,district: String,population: Int) |  | ctx.run(query[City])                                                         |
+        +--------------------------------------------------------------------------------------------+  |     SELECT x.id, x.name, x.countrycode, x.district, x.population FROM city x |
+                                                                                                        +------------------------------------------------------------------------------+
+
+    ### Querying and Updating Data
+        // anything within a ctx.run(...) clause is converted to SQL to run within your database
+
+        - filter                                                                    - lifting (If you want to include dynamic values in your queries)
+        +-----------------------------------------------------------------------+   +---------------------------------------------------------------------------+
+        | ctx.run(query[City].filter(_.name == "Singapore"))                    |   | def find(cityId: Int) = ctx.run(query[City].filter(_.id == lift(cityId))) |
+        |     SELECT x1.id, x1.name, x1.countrycode, x1.district, x1.population |   |     SELECT x1.id, x1.name, x1.countrycode, x1.district, x1.population     |
+        |     FROM city x1 WHERE x1.name = "Singapore"                          |   |     FROM city x1 WHERE x1.id = ?                                          |
+        +-----------------------------------------------------------------------+   +---------------------------------------------------------------------------+
+        - mapping                                                               - inserts
+        +---------------------------------------------------------+             +---------------------------------------------------------------------------+
+        | ctx.run(query[Country].map(c => (c.name, c.continent))) |             | ctx.run(query[City].insert(City(10000, "test", "TST", "Test County", 0))) |
+        |     SELECT c.name, c.continent FROM country c           |             |     INSERT INTO city (id,name,countrycode,district,population)            |
+        +---------------------------------------------------------+             |     VALUES (10000, test, TST, Test County, 0)                             |
+        - joins                                                                 +---------------------------------------------------------------------------+
+        +------------------------------------------------------------------+    - updates
+        | ctx.run(query[City]                                              |    +--------------------------------------------------------------------+
+        |     .join(query[Country])                                        |    | ctx.run(query[City]                                                |
+        |     .on(_.countryCode == _.code)                                 |    |     .filter(_.id == 10000)                                         |
+        |     .filter{case (city, country) => country.continent == "Asia"} |    |     .update(City(10000, "testham", "TST", "Test County", 0))       |
+        |     .map{case (city, country) => city.name}                      |    | )                                                                  |
+        | )                                                                |    |     UPDATE city SET id = 10000, name = testham, countrycode = TST, |
+        |     SELECT x01.name FROM city x01 INNER JOIN country x11         |    |     district = Test County, population = 0 WHERE id = 10000        |
+        |     ON x01.countrycode = x11.code WHERE x11.continent = "Asia"   |    +--------------------------------------------------------------------+
+        +------------------------------------------------------------------+    
+        
+        -transactions
+        +----------------------------------------------------------------------------------------------+
+        | ctx.transaction{                                                                             |
+        |     ctx.run(                                                                                 |
+        |         query[City].filter(_.district == "Test Borough").update(_.district -> "Test County") |
+        |     )                                                                                        |
+        |     throw new Exception()                                                                    |
+        | }                                                                                            |
+        +----------------------------------------------------------------------------------------------+
+     
+       
+
+
+
+        
+        
+        
+        
+        
+
+
+    
+    
+    ### Mapping Tables to Case Classes
