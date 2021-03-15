@@ -2036,18 +2036,200 @@
         |     throw new Exception()                                                                    |
         | }                                                                                            |
         +----------------------------------------------------------------------------------------------+
-     
-       
 
 
+####################
+# Message-based Parallelism with Actors
+####################
+    ### Castor Actors
+        - actors are objects who receive messages via a send method, and asynchronously process those messages one after the other
+        - processing happens in the background, and can take place without blocking. After a message is sent, the thread or actor that called .send() can immediately go on to do other things
 
-        
-        
-        
-        
-        
+    ### Actor-based Background Uploads
+        - Simple Upload Actor
+            // send returns immediately while the actor processes the incoming messages one after the other in the background
+        +------------------------------------------------------------------------------+    +------------------------------+    // sending hello
+        | import $ivy.`com.lihaoyi::castor:0.1.7` Simple.sc                            |    | {                            |    // sending world
+        | class SimpleUploadActor()(implicit cc: castor.Context)                       |    |     println("sending hello") |    // sending !
+        |     extends castor.SimpleActor[String] {                                     |    |     uploader.send("hello")   |    // Uploading hello
+        |   var count = 0                                                              |    |     println("sending world") |    // response 1 200 "hello"
+        |   def run(msg: String) = {                                                   |    |     uploader.send("world")   |    // Uploading world
+        |     println(s"Uploading $msg")                                               |    |     println("sending !")     |    // response 2 200 "world"
+        |     val res = requests.post("https://httpbin.org/post", data = msg)          |    |     uploader.send("!")       |    // Uploading !
+        |     count += 1                                                               |    | }                            |    // response 3 200 "!"
+        |     println(s"response $count ${res.statusCode} " + ujson.read(res)("data")) |    +------------------------------+
+        |   }                                                                          |
+        | }                                                                            |
+        | implicit val cc = new castor.Context.Test()                                  |
+        | val uploader = new SimpleUploadActor()                                       |
+        +------------------------------------------------------------------------------+
+
+        - Actors vs Futures
+            - streaming vs request-response
+                - actors is good when data flow is one way: logging (no response needed)
+                    -loging, metrics, monitoring
+                - futures is more request-response (async computation takes params and gives result that app needs to wait for)
+                    -http, database query
+            - preserving orderng
+                - messages sent to an actor are always processed in the order in which the messages are sent
+                - messages sent to futures may be scheduled and executed in arbitrary order
+            -private mutable state
+                - in concurrent env with many threads, each actor only processes messages in a single-threaded fashion one after the other
+                  actor can freely make use of private mutable fields without worrying about locks or thread-safety
+                - futures always have possibility of running in parallel, and cannot safely access shared mutable variables without risking race conditions
+
+        - Batch
+            - we may want to upload as many messages as we can in each HTTP request to minimize the per-request overhead
+        +------------------------------------------------------------------------------+    +---------------------------------+ // sending hello
+        |//import $ivy.`com.lihaoyi::castor:0.1.7`                                     |    | {                               | // sending world
+        |class BatchUploadActor()(implicit cc: castor.Context)                         |    |     println("sending hello")    | // sending !
+        |    extends castor.BatchActor[String] {                                       |    |     batchUploader.send("hello") | // Uploading helloworld!
+        |  var responseCount = 0                                                       |    |     println("sending world")    | // response 200
+        |  def runBatch(msgs: Seq[String]) = {                                         |    |     batchUploader.send("world") |
+        |    val res = requests.post("https://httpbin.org/post", data = msgs.mkString) |    |     println("sending !")        |
+        |    responseCount += 1                                                        |    |     batchUploader.send("!")     |
+        |    println(s"response ${res.statusCode} " + ujson.read(res)("data"))         |    | }                               |
+        |  }                                                                           |    +---------------------------------+
+        |}                                                                             |
+        |implicit val cc = new castor.Context.Test()                                   |
+        |val batchUploader = new BatchUploadActor()                                    |
+        +------------------------------------------------------------------------------+
+
+        - State Machine Upload Actor
+        +------------------------------------------------------------------------------------------------------------+  +----------------------------------------------------------------------+
+        | import $ivy.`com.lihaoyi::castor:0.1.7`                                                                    |  | @ stateMachineUploader.send(Text("I am Cow"))                        |
+        | sealed trait Msg                                                                                           |  | Uploading I am Cow                                                   |
+        | case class Text(s: String) extends Msg                                                                     |  | response 200 "I am Cow"                                              |
+        | case class Flush() extends Msg                                                                             |  |                                                                      |
+        | class StateMachineUploadActor(n: Int)(implicit cc: castor.Context) extends castor.StateMachineActor[Msg] { |  | @ stateMachineUploader.send(Text("Hear me moo"))                     |
+        |   var responseCount = 0                                                                                    |  | @ stateMachineUploader.send(Text("I weigh twice as much as you"))    |
+        |   def initialState = Idle()                                                                                |  | Uploading Hear me mooI weigh twice as much as you                    |
+        |   case class Idle() extends State({ case Text(msg) => upload(msg)})                                        |  | response 200 "Hear me mooI weigh twice as much as you"               |
+        |   case class Buffering(msgs: Vector[String])                                                               |  |                                                                      |
+        |       extends State({                                                                                      |  | @ stateMachineUploader.send(Text("And I look good on the barbecue")) |
+        |         case Text(s) => Buffering(msgs :+ s)                                                               |  | Uploading And I look good on the barbecue                            |
+        |         case Flush() => if (msgs.isEmpty) Idle() else upload(msgs.mkString)})                              |  | response 200 "And I look good on the barbecue"                       |
+        |   def upload(data: String) = {                                                                             |  +----------------------------------------------------------------------+
+        |     println("Uploading " + data)                                                                           |
+        |     val res = requests.post("https://httpbin.org/post", data = data)                                       |
+        |     responseCount += 1                                                                                     |
+        |     println(s"response ${res.statusCode} " + ujson.read(res)("data"))                                      |
+        |     cc.scheduleMsg(this, Flush(), java.time.Duration.ofSeconds(n))                                         |
+        |     Buffering(Vector.empty)                                                                                |
+        |   }                                                                                                        |
+        | }                                                                                                          |
+        | implicit val cc = new castor.Context.Test()                                                                |
+        | val stateMachineUploader = new StateMachineUploadActor(n = 5)                                              |
+        +------------------------------------------------------------------------------------------------------------+
+
+    ### Concurrent Logging Pipelines
+        - A Logging SimpleActor                                                                     - test
+        // multiple threads can be sending messages to the logger at once, and the messages will be queued up and executed one at a time
+        +---------------------------------------------------------------------------------------+   +--------------------------------------------------------------+
+        | import $ivy.`com.lihaoyi::castor:0.1.7`                                               |   | //import .LoggingPipeline, LoggingPipeline.{logger, cc}      |
+        | class DiskActor(logPath: os.Path, rotateSize: Int = 50)(implicit cc: castor.Context)  |   | logger.send("I am cow")                                      |
+        | extends castor.SimpleActor[String] {                                                  |   | logger.send("hear me moo")                                   |
+        |   val oldPath = logPath / os.up / (logPath.last + "-old")                             |   | logger.send("I weight twice as much as you")                 |
+        |   def run(s: String) = {                                                              |   | logger.send("And I look good on the barbecue")               |
+        |     val newLogSize = logSize + s.length + 1                                           |   | logger.send("Yoghurt curds cream cheese and butter")         |
+        |     if (newLogSize <= rotateSize) logSize = newLogSize                                |   | logger.send("Comes from liquids from my udder")              |
+        |     else { // rotate log file by moving it to old path and starting again from empty  |   | logger.send("I am cow, I am cow")                            |
+        |       logSize = s.length + 1                                                          |   | logger.send("Hear me moo, moooo")                            |
+        |       os.move(logPath, oldPath, replaceExisting = true)                               |   | // Logger hasnt finished yet, running in the background      |
+        |     }                                                                                 |   | cc.waitForInactivity()                                       |
+        |     os.write.append(logPath, s + "\n", createFolders = true)                          |   | // Now logger has finished                                   |
+        |   }                                                                                   |   | assert(                                                      |
+        |   private var logSize = 0                                                             |   |   os.read.lines(os.pwd / "log.txt-old") == Seq(              |
+        | }                                                                                     |   |     "Comes from liquids from my udder"                       |
+        | import $file.Classes, Classes._                                                       |   |   )                                                          |
+        | implicit val cc = new castor.Context.Test()                                           |   | )                                                            |
+        | val diskActor = new DiskActor(os.pwd / "log.txt")                                     |   | assert(                                                      |
+        | val logger = diskActor                                                                |   |   os.read.lines(os.pwd / "log.txt") ==                       |
+        +---------------------------------------------------------------------------------------+   |     Seq("I am cow, I am cow", "Hear me moo, moooo")          |
+                                                                                                    | )                                                            |
+                                                                                                    +--------------------------------------------------------------+
+        - Multi-stage Actor Pipelines
+        +-------------+    +-------------+    +-----------+    +---------+
+        | application | -> | base64Actor | -> | diskActor | -> | log.txt |
+        +-------------+    +-------------+    +-----------+    +---------+
+
+        +----------------------------------------------------------------------------------------------------------------+
+        | import $ivy.`com.lihaoyi::castor:0.1.7`                                                                        |
+        | class DiskActor...                                                                                             |
+        | class Base64Actor(dest: castor.Actor[String])(implicit cc: castor.Context) extends castor.SimpleActor[String]{ |
+        |     def run(msg: String) = {                                                                                   |
+        |         dest.send(java.util.Base64.getEncoder.encodeToString(msg.getBytes))                                    |
+        |     }                                                                                                          |
+        | }                                                                                                              |
+        | implicit val cc = new castor.Context.Test()                                                                    |
+        | val diskActor = new DiskActor(os.pwd / "log.txt", rotateSize = 50)                                             |
+        | val base64Actor = new Base64Actor(diskActor)                                                                   |
+        | val logger = base64Actor                                                                                       |
+        | cc.waitForInactivity()                                                                                         |
+        | def decodeFile(p: os.Path) = {                                                                                 |
+        |     os.read.lines(p).map(s => new String(java.util.Base64.getDecoder.decode(s)))                               |
+        | }                                                                                                              |
+        | assert(decodeFile(os.pwd / "log.txt-old") == Seq("Comes from liquids from my udder"))                          |
+        | assert(decodeFile(os.pwd / "log.txt") == Seq("I am cow, I am cow", "Hear me moo, moooo"))                      |
+        +----------------------------------------------------------------------------------------------------------------+
 
 
-    
-    
-    ### Mapping Tables to Case Classes
+        - Non-Linear Pipelines
+                                                                +-----------+    +---------+
+                                                                | diskActor | -> | log.txt |
+                                                                +-----------+    +---------+
+                                                               /
+        +-------------+    +---------------+    +-------------+
+        | application | -> | sanitizeActor | -> | base64Actor |
+        +-------------+    +---------------+    +-------------+
+                                                               \
+                                                                +-------------+    +-------------+
+                                                                | uploadActor | -> | httpbin.org |
+                                                                +-------------+    +-------------+
+        +----------------------------------------------------------------------------------+    +-------------------------------------------------------------------------------------------+
+        | class UploadActor(url: String)(implicit cc: castor.Context)                      |    | logger.send("Comes from liquids from my udder") TestLoggingPipeline.sc                    |
+        |     extends castor.SimpleActor[String] {                                         |    | logger.send("I am cow1234567887654321")                                                   |
+        |   def run(msg: String) = {                                                       |    | logger.send("Hear me moo, moooo")                                                         |
+        |     val res = requests.post(url, data = msg)                                     |    | cc.waitForInactivity()                                                                    |
+        |     println(s"response ${res.statusCode} " + ujson.read(res)("data"))            |    | def decodeFile(p: os.Path) = {                                                            |
+        |   }                                                                              |    |     os.read.lines(p).map(s => new String(java.util.Base64.getDecoder.decode(s)))          |
+        | }                                                                                |    | }                                                                                         |
+        | class SanitizeActor(dest: castor.Actor[String])(implicit cc: castor.Context)     |    | assert(decodeFile(os.pwd / "log.txt-old") == Seq("Comes from liquids from my udder"))     |
+        |     extends castor.SimpleActor[String] {                                         |    | assert(decodeFile(os.pwd / "log.txt") == Seq("I am cow<redacted>", "Hear me moo, moooo")) |
+        |   def run(msg: String) = {                                                       |    +-------------------------------------------------------------------------------------------+
+        |     dest.send(msg.replaceAll("([0-9]{4})[0-9]{8}([0-9]{4})", "<redacted>"))      |
+        |   }                                                                              |
+        | }                                                                                |
+        | implicit val cc = new castor.Context.Test() LoggingPipeline.sc                   |
+        | val diskActor = new DiskActor(os.pwd / "log.txt")                                |
+        | val uploadActor = new UploadActor("https://httpbin.org/post")                    |
+        | val base64Actor = new Base64Actor(new castor.SplitActor(diskActor, uploadActor)) |
+        | val sanitizeActor = new SanitizeActor(base64Actor)                               |
+        | val logger = sanitizeActor                                                       |
+        -----------------------------------------------------------------------------------+
+
+        - Re-arranging Actor Pipelines
+                                            +-----------+    +---------+            +----------------------------------------------------------------------------------+
+                                            | diskActor | -> | log.txt |            | import .Classes, Classes._ LoggingPipeline.sc                               |
+                                            +-----------+    +---------+            | implicit val cc = new castor.Context.Test()                                      |
+                                           /                                        | val diskActor = new DiskActor(os.pwd / "log.txt")                                |
+        +-------------+     +-------------+                                         | val uploadActor = new UploadActor("https://httpbin.org/post")                    |
+        | application |  -> | base64Actor |                                         | val base64Actor = new Base64Actor(new castor.SplitActor(diskActor, uploadActor)) |
+        +-------------+     +-------------+                                         | val logger = base64Actor                                                         |
+                                           \                                        +----------------------------------------------------------------------------------+
+                                            +-------------+    +-------------+
+                                            | uploadActor | -> | httpbin.org |
+                                            +-------------+    +-------------+
+
+                        +---------------+    +-------------+    +-------------+     +------------------------------------------------------------------+
+                        | sanitizeActor | -> | uploadActor | -> | httpbin.org |     | import .Classes, Classes._ LoggingPipeline.sc               |
+                        +---------------+    +-------------+    +-------------+     | implicit val cc = new castor.Context.Test()                      | 
+                       /                                                            | val diskActor = new DiskActor(os.pwd / "log.txt")                |
+        +-------------+                                                             | val uploadActor = new UploadActor("https://httpbin.org/post")    |
+        | application |                                                             | val base64Actor = new Base64Actor(diskActor)                     |
+        +-------------+                                                             | val sanitizeActor = new SanitizeActor(uploadActor)               |
+                       \                                                            | val logger = new castor.SplitActor(base64Actor, sanitizeActor)   |
+                        +-------------+    +-----------+    +---------+             +------------------------------------------------------------------+
+                        | base64Actor | -> | diskActor | -> | log.txt |        
+                        +-------------+    +-----------+    +---------+                            
+
