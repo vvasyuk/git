@@ -99,7 +99,7 @@ def get_node(df):
     def _replace_na_to_none(df):
         res = []
         for x in df:
-            if isinstance(x, NAType):
+            if isinstance(x, NAType) or x == '':
                 res.append(None)
             else:
                 res.append(x)

@@ -147,29 +147,29 @@ import os
 # # print(df1.to_string())
 #
 
-df = pd.read_parquet("C:\\work\\project\\data\\master\\datapoint\\levels\\latest\\part-00000-d1fb2fb9-d4ed-4fa8-ac9a-fc5f08f64646-c000.snappy.parquet", use_nullable_dtypes=True)
 
-data = [
-    ['TWVA00001.00.01', 'Test 3', '286251', '285972', 'TWVA00001.00', 'XCIVIL GOVT', 'XHUD', 'XHOUSING AND URBAN DEVELOPMENT', np.nan,np.nan],
-    ['TWVA00001.00', 'Test 2 ', '286251', '285972', 'TWVA00001', 'XCIVIL GOVT', 'XHUD', 'XHOUSING AND URBAN DEVELOPMENT', None,None],
-    ['TWVA00001', 'Test 1', '286251', '285972', None, 'XCIVIL GOVT', 'XHUD', 'XHOUSING AND URBAN DEVELOPMENT', None,None],
-    #['HOU12037', 'HOU12037', '286251', '285972', None, 'XCIVIL GOVT', 'XHUD', 'XHOUSING AND URBAN DEVELOPMENT', None,None],
-    #['HOU12037.00', 'HOU12037.00', '286251', '285972', 'HOU12037', 'XCIVIL GOVT', 'XHUD','XHOUSING AND URBAN DEVELOPMENT', None, None],
-    #['HOU12037.00.01', 'StratMan New Core TO 05', '286251', '285972', 'HOU12037.00', 'XCIVIL GOVT', 'XHUD','XHOUSING AND URBAN DEVELOPMENT', None, None],
-    #['IOU12037.00.01.01.0110', 'AEM Phase 2I - L&C', '286251', '285972', 'IOU12037.00.01.01', 'XSLHE', 'XICALIFORNIA','XICALIFORNIA DEPT OF PUBLIC', None, None],
-    #['GOU12037.00.01.01.0110', 'AEM Phase 2G - L&C', '286251', '285972', 'GOU12037.00.01.01', 'XSLHE', 'XCALIFORNIA','XCALIFORNIA DEPT OF PUBLIC HEALTH', None, None],
-    #['KOU12037.00.01.01.0110', 'AEM Phase 2K - L&C', '286251', '285972', 'KOU12037.00.01.01', 'XSLHE', 'XCALIFORNIA','XCALIFORNIA DEPT OF PUBLIC HEALTH', None, None],
-    ['XCALIFORNIA', None, None, None, None, None, None, None, '68', '42'],
-    ['XCALIFORNIA DEPT OF CONSUMER AFFAIRS', None, None, None, None, None, None, None, '210', '68'],
-    ['XCALIFORNIA DEPT OF PUBLIC HEALTH', None, None, None, None, None, None, None, '212', '68'],
-    ['XCIVIL GOVT', None, None, None, None, None, None, None, '44', '1'],
-    #['XHOUSING AND URBAN DEVELOPMENT', None, None, None, None, None, None, None, '369', '103'],
-    ['XHUD', None, None, None, None, None, None, None, '103', '44'],
-    ['XSLHE', None, None, None, None, None, None, None, '42', '1'],
-    ['XUNIV CALIFORNIA', None, None, None, None, None, None, None, '130', '42'],
-    ['XUNIVERSITY OF CALIFORNIA, REGE', None, None, None, None, None, None, None, '608', '130'],
-    ['XWATER RESOURCES, CALIFORNIA DE', None, None, None, None, None, None, None, '663', '68'],
-]
+
+# data = [
+#     ['TWVA00001.00.01', 'Test 3', '286251', '285972', 'TWVA00001.00', 'XCIVIL GOVT', 'XHUD', 'XHOUSING AND URBAN DEVELOPMENT', np.nan,np.nan],
+#     ['TWVA00001.00', 'Test 2 ', '286251', '285972', 'TWVA00001', 'XCIVIL GOVT', 'XHUD', 'XHOUSING AND URBAN DEVELOPMENT', None,None],
+#     ['TWVA00001', 'Test 1', '286251', '285972', None, 'XCIVIL GOVT', 'XHUD', 'XHOUSING AND URBAN DEVELOPMENT', None,None],
+#     #['HOU12037', 'HOU12037', '286251', '285972', None, 'XCIVIL GOVT', 'XHUD', 'XHOUSING AND URBAN DEVELOPMENT', None,None],
+#     #['HOU12037.00', 'HOU12037.00', '286251', '285972', 'HOU12037', 'XCIVIL GOVT', 'XHUD','XHOUSING AND URBAN DEVELOPMENT', None, None],
+#     #['HOU12037.00.01', 'StratMan New Core TO 05', '286251', '285972', 'HOU12037.00', 'XCIVIL GOVT', 'XHUD','XHOUSING AND URBAN DEVELOPMENT', None, None],
+#     #['IOU12037.00.01.01.0110', 'AEM Phase 2I - L&C', '286251', '285972', 'IOU12037.00.01.01', 'XSLHE', 'XICALIFORNIA','XICALIFORNIA DEPT OF PUBLIC', None, None],
+#     #['GOU12037.00.01.01.0110', 'AEM Phase 2G - L&C', '286251', '285972', 'GOU12037.00.01.01', 'XSLHE', 'XCALIFORNIA','XCALIFORNIA DEPT OF PUBLIC HEALTH', None, None],
+#     #['KOU12037.00.01.01.0110', 'AEM Phase 2K - L&C', '286251', '285972', 'KOU12037.00.01.01', 'XSLHE', 'XCALIFORNIA','XCALIFORNIA DEPT OF PUBLIC HEALTH', None, None],
+#     ['XCALIFORNIA', None, None, None, None, None, None, None, '68', '42'],
+#     ['XCALIFORNIA DEPT OF CONSUMER AFFAIRS', None, None, None, None, None, None, None, '210', '68'],
+#     ['XCALIFORNIA DEPT OF PUBLIC HEALTH', None, None, None, None, None, None, None, '212', '68'],
+#     ['XCIVIL GOVT', None, None, None, None, None, None, None, '44', '1'],
+#     #['XHOUSING AND URBAN DEVELOPMENT', None, None, None, None, None, None, None, '369', '103'],
+#     ['XHUD', None, None, None, None, None, None, None, '103', '44'],
+#     ['XSLHE', None, None, None, None, None, None, None, '42', '1'],
+#     ['XUNIV CALIFORNIA', None, None, None, None, None, None, None, '130', '42'],
+#     ['XUNIVERSITY OF CALIFORNIA, REGE', None, None, None, None, None, None, None, '608', '130'],
+#     ['XWATER RESOURCES, CALIFORNIA DE', None, None, None, None, None, None, None, '663', '68'],
+# ]
 #df0 = pd.DataFrame(data, columns=['proj_id', 'proj_name', 'ppmd_id', 'pm_id', 'prnt_proj_id', 'sector', 'accounts', 'cust_name', 'wap_id', 'wap_prnt_id'])
 # # df0.info()
 #print(df0.to_string())
@@ -185,12 +185,17 @@ data = [
 #               # | df['proj_id'].str.contains('HUD') | df['proj_id'].str.contains('CIVIL GOVT')]
 # print(test.to_string())
     #filter(col('proj_id').like('%TWVA00001%'))
+
+df = pd.read_parquet("C:\\work\\project\\data\\master\\datapoint\\levels\\", use_nullable_dtypes=True)
+# df = df.tail(10)
+# print(df.to_string())
+# df = df.loc[df['proj_id'].str.contains('HOU12037') | df['proj_id'].str.contains('HUD') | df['proj_id'].str.contains('CIVIL GOVT') | df['proj_id'].str.contains('HOUSING AND URBAN DEVELOP')]
+# df = df.loc[(df['proj_id'].str.contains('IAMTEST')) & (df['proj_name'] == '')]
 start = time.perf_counter()
 res = get_node(df)
 end = time.perf_counter()
 print(f"create tree: {start - end:0.4f}")
 res.traverse(1)
-
 start = time.perf_counter()
 result_until_wap = []
 res.traverse_until_wap_helper(result_until_wap)
