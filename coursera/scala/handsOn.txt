@@ -2279,15 +2279,15 @@
             Read the next message
 
         +--------------------------------------------------------------------------------+  +-----------------------------------------------------------------------------------------------------------+
-        | package sync agent/src/Agent.scala                                             |  |   package sync sync/src/Sync.scala                                                                        |
+        | package sync agent/src/Agent.scala                                             |  |   package sync                                                                                            |
         | object Agent {                                                                 |  |   object Sync {                                                                                           |
         |   def main(args: Array[String]): Unit = {                                      |  |     def main(args: Array[String]): Unit = {                                                               |
         |     val input = new java.io.DataInputStream(System.in)                         |  |       val src = os.Path(args(0), os.pwd)                                                                  |
         |     val output = new java.io.DataOutputStream(System.out)                      |  |       val dest = os.Path(args(1), os.pwd)                                                                 |
         |     while (true) try {                                                         |  |       val agentExecutable = os.temp(os.read.bytes(os.resource / "agent.jar"))                             |
         |       val rpc = Shared.receive[Rpc](input)                                     |  |       os.perms.set(agentExecutable, "rwx------")                                                          |
-        |       rpc match {                                                              |  |       val agent = os.proc(agentExecutable).spawn(cwd = dest)                                              |
-        |         case Rpc.IsDir(path)  => Shared.send(output, os.isDir(os.pwd / path))  |  |       def callAgent[T: upickle.default.Reader](rpc: Rpc): T = {                                           |
+        |       rpc match {                                                              |  |       val agent = os.proc(agentExecutable).spawn(cwd = dest)                                              |   //  create a child process we can communicate with
+        |         case Rpc.IsDir(path)  => Shared.send(output, os.isDir(os.pwd / path))  |  |       def callAgent[T: upickle.default.Reader](rpc: Rpc): T = {                                           |   // callAgent function that writes a message to agent using send, and reads the agent's response using receive
         |         case Rpc.Exists(path) => Shared.send(output, os.exists(os.pwd / path)) |  |         Shared.send(agent.stdin.data, rpc)                                                                |
         |         case Rpc.ReadBytes(path) =>                                            |  |         Shared.receive[T](agent.stdout.data)                                                              |
         |           Shared.send(output, os.read.bytes(os.pwd / path))                    |  |       }                                                                                                   |
@@ -2353,3 +2353,131 @@
 ####################
 # Building a Real-time File Synchronizer
 ####################
+    ### Watching for Changes
+        os.watch.watch(roots: Seq[os.Path], onEvent: Set[os.Path] => Unit): Unit
+        +----------------------------------------------------------------+
+        | import $ivy.`com.lihaoyi::os-lib-watch:0.7.1`                |
+        | os.makeDir(os.pwd / "out")                                   |
+        | os.watch.watch(                                              |
+        |   Seq(os.pwd / "out"),                                       |
+        |   paths => println("paths changed: " + paths.mkString(", ")) |
+        | )                                                            |
+        | os.write(os.pwd / "out" / "i am", "cow")                     |
+        | paths changed: / Users / lihaoyi / test / out / i am         |
+        | os.move(os.pwd / "out" / "i am", os.pwd / "out" / "hear me") |
+        +----------------------------------------------------------------+
+
+    ### Real-time Syncing with Actors
+        // 1. feed the results of os.watch's onEvent callback into SyncActor. This is an actor that processes incoming messages one at a time
+        // 2. SyncActor will send a StatPath message to the Agent to ask for the hash for the file at a particular path
+        // 3. Agent will query the destination folder for the hash of that path, and return it as a StatInfo message to SyncActor
+        // 4. SyncActor compares the source and destination hashes. If they differ, SyncActor sends WriteOver messages to Agent, containing the contents of files we wish to copy over
+        +--------------------------------------------+                +-------------+
+        |                 Main Process               |                | Sub Process |
+        | +----------+                 +-----------+ | 2.StatPath->   |  +-------+  |
+        | | os.watch | 1.ChangedPath-> | SyncActor | | <-3.StatInfo   |  | Agent |  |
+        | +----------+                 +-----------+ | 4.WriteOver->  |  +-------+  |
+        +--------------------------------------------+                +-------------+
+
+        - Build Configuration                                           - shared code
+        +------------------------------------------------------------+  +------------------------------------------------------------------------+  +--------------------------------------------------------------------------+
+        | object test {                                              |  | package sync shared/src/Rpc.scala                                      |  | object test {                                                            |
+        |   import mill._, scalalib._                                |  | import upickle.default.{ReadWriter, macroRW, readwriter}               |  | //package sync                                                           |
+        |   trait SyncModule extends ScalaModule {                   |  | sealed trait Rpc                                                       |  |   import upickle.default.{Reader, Writer}                                |
+        |     def scalaVersion = "2.13.2"                            |  | object Rpc {                                                           |  |   object Shared {                                                        |
+        |     def ivyDeps = Agg(                                     |  |   implicit val subPathRw =                                             |  |     def send[T: Writer](out: java.io.DataOutputStream, msg: T): Unit = { |
+        |       ivy"com.lihaoyi::upickle:1.2.0",                     |  |     readwriter[String].bimap[os.SubPath](_.toString, os.SubPath(_))    |  |       val bytes = upickle.default.writeBinary(msg)                       |
+        |       ivy"com.lihaoyi::os-lib:0.7.1",                      |  |   case class StatPath(path: os.SubPath) extends Rpc                    |  |       out.writeInt(bytes.length)                                         |
+        |       ivy"com.lihaoyi::os-lib-watch:0.7.1",                |  |   implicit val statPathRw: ReadWriter[StatPath] = macroRW              |  |       out.write(bytes)                                                   |
+        |       ivy"com.lihaoyi::castor:0.1.7"                       |  |   case class WriteOver(src: Array[Byte], path: os.SubPath) extends Rpc |  |       out.flush()                                                        |
+        |     )                                                      |  |   implicit val writeOverRw: ReadWriter[WriteOver] = macroRW            |  |     }                                                                    |
+        |   }                                                        |  |   case class StatInfo(p: os.SubPath, fileHash: Option[Int])            |  |     def receive[T: Reader](in: java.io.DataInputStream) = {              |
+        |   object sync extends SyncModule {                         |  |   implicit val statInfoRw: ReadWriter[StatInfo] = macroRW              |  |       val buf = new Array[Byte](in.readInt())                            |
+        |     def moduleDeps = Seq(shared)                           |  |   implicit val msgRw: ReadWriter[Rpc] = macroRW                        |  |       in.readFully(buf)                                                  |
+        |     def resources = T.sources {                            |  | }                                                                      |  |       upickle.default.readBinary[T](buf)                                 |
+        |       os.copy(agent.assembly().path, T.dest / "agent.jar") |  +------------------------------------------------------------------------+  |     }                                                                    |
+        |       super.resources() ++ Seq(PathRef(T.dest))            |                                                                              |     def hashPath(p: os.Path) = {                                         |
+        |     }                                                      |                                                                              |       if (!os.isFile(p)) None                                            |
+        |   }                                                        |                                                                              |       else Some(java.util.Arrays.hashCode(os.read.bytes(p)))             |
+        |   object agent extends SyncModule {                        |                                                                              |     }                                                                    |
+        |     def moduleDeps = Seq(shared)                           |                                                                              |   }                                                                      |
+        |   }                                                        |                                                                              | }                                                                        |
+        |   object shared extends SyncModule                         |                                                                              |                                                                          |
+        | }                                                          |                                                                              +--------------------------------------------------------------------------+
+        |                                                            |
+        +------------------------------------------------------------+
+
+        - Agent
+        +-----------------------------------------------------------------------+
+        | //package sync                                                        |
+        |   object Agent {                                                      |
+        |     def main(args: Array[String]): Unit = {                           |
+        |       val input = new java.io.DataInputStream(System.in)              |
+        |       val output = new java.io.DataOutputStream(System.out)           |
+        |       while (true) try {                                              |
+        |         val rpc = Shared.receive[Rpc](input)                          |
+        |         System.err.println("Agent handling: " + rpc)                  |
+        |         rpc match {                                                   |
+        |           case Rpc.StatPath(path) =>                                  |
+        |             Shared.send(                                              |
+        |               output,                                                 |
+        |               Rpc.StatInfo(path, Shared.hashPath(os.pwd / path))      |
+        |             )                                                         |
+        |           case Rpc.WriteOver(bytes, path) =>                          |
+        |             os.remove.all(os.pwd / path)                              |
+        |             os.write.over(os.pwd / path, bytes, createFolders = true) |
+        |         }                                                             |
+        |       } catch { case e: java.io.EOFException => System.exit(0) }      |
+        |     }                                                                 |
+        |   }                                                                   |
+        +-----------------------------------------------------------------------+
+
+        - Sync                                                                                      - pipelined
+        +----------------------------------------------------------------------------------------+  +---------------------------------------------------------------------------------------------------+
+        | package sync                                                                           |  |   package sync                                                                                    |
+        | object Sync {                                                                          |  |   object Sync {                                                                                   |
+        |   def main(args: Array[String]): Unit = {                                              |  |     def main(args: Array[String]): Unit = {                                                       |
+        |     val (src, dest) = (os.Path(args(0), os.pwd), os.Path(args(1), os.pwd))             |  |       val (src, dest) = (os.Path(args(0), os.pwd), os.Path(args(1), os.pwd))                      |
+        |     val agentExecutable = os.temp(os.read.bytes(os.resource / "agent.jar"))            |  |       val agentExecutable = os.temp(os.read.bytes(os.resource / "agent.jar"))                     |
+        |     os.perms.set(agentExecutable, "rwx------")                                         |  |       os.perms.set(agentExecutable, "rwx------")                                                  |
+        |     val agent = os.proc(agentExecutable).spawn(cwd = dest)                             |  |       val agent = os.proc(agentExecutable).spawn(cwd = dest)                                      |   //  create a child process we can communicate with
+        |     sealed trait Msg                                                                   |  |       sealed trait Msg                                                                            |
+        |     case class ChangedPath(value: os.SubPath) extends Msg                              |  |       case class ChangedPath(value: os.SubPath) extends Msg                                       |
+        |     case class AgentResponse(value: Rpc.StatInfo) extends Msg                          |  |       case class HashStatInfo(localHash: Option[Int], value: Rpc.StatInfo)                        |
+        |     import castor.Context.Simple.global                                                |  |           extends Msg                                                                             |
+        |     object SyncActor extends castor.SimpleActor[Msg] {                                 |  |       import castor.Context.Simple.global                                                         |
+        |       def run(msg: Msg): Unit = {                                                      |  |       object SyncActor extends castor.SimpleActor[Msg] {                                          |
+        |         println("SyncActor handling: " + msg)                                          |  |         def run(msg: Msg): Unit = {                                                               |
+        |         msg match {                                                                    |  |           println("SyncActor handling: " + msg)                                                   |
+        |           case ChangedPath(value) =>                                                   |  |           msg match {                                                                             |
+        |             Shared.send(agent.stdin.data, Rpc.StatPath(value))                         |  |             case ChangedPath(value) =>                                                            |
+        |           case AgentResponse(Rpc.StatInfo(p, remoteHash)) =>                           |  |               Shared.send(agent.stdin.data, Rpc.StatPath(value))                                  |
+        |             val localHash = Shared.hashPath(src / p)                                   |  |             case HashStatInfo(localHash, Rpc.StatInfo(p, remoteHash)) =>                          |
+        |             if (localHash != remoteHash && localHash.isDefined) {                      |  |               if (localHash != remoteHash && localHash.isDefined) {                               |
+        |               Shared.send(                                                             |  |                 Shared.send(                                                                      |
+        |                 agent.stdin.data,                                                      |  |                   agent.stdin.data,                                                               |
+        |                 Rpc.WriteOver(os.read.bytes(src / p), p)                               |  |                   Rpc.WriteOver(os.read.bytes(src / p), p)                                        |
+        |               )                                                                        |  |                 )                                                                                 |
+        |             }                                                                          |  |               }                                                                                   |
+        |         }                                                                              |  |           }                                                                                       |
+        |       }                                                                                |  |         }                                                                                         |
+        |     }                                                                                  |  |       }                                                                                           |
+        |     val agentReader = new Thread(() => {                                               |  |       object HashActor extends castor.SimpleActor[Rpc.StatInfo] {                                 |
+        |       while (agent.isAlive()) {                                                        |  |         def run(msg: Rpc.StatInfo): Unit = {                                                      |
+        |         SyncActor.send(AgentResponse(Shared.receive[Rpc.StatInfo](agent.stdout.data))) |  |           println("HashActor handling: " + msg)                                                   |
+        |       }                                                                                |  |           val localHash = Shared.hashPath(src / msg.p)                                            |
+        |     })                                                                                 |  |           SyncActor.send(HashStatInfo(localHash, msg))                                            |
+        |     agentReader.start()                                                                |  |         }                                                                                         |
+        |     val watcher = os.watch.watch(                                                      |  |       }                                                                                           |
+        |       Seq(src),                                                                        |  |       val agentReader = new Thread(() => {                                                        |
+        |       onEvent = _.foreach(p => SyncActor.send(ChangedPath(p.subRelativeTo(src))))      |  |         while (agent.isAlive()) {HashActor.send(Shared.receive[Rpc.StatInfo](agent.stdout.data))} |
+        |     )                                                                                  |  |       })                                                                                          |
+        |     Thread.sleep(Long.MaxValue)                                                        |  |       agentReader.start()                                                                         |
+        |   }                                                                                    |  |       val watcher = os.watch.watch(                                                               |
+        | }                                                                                      |  |         Seq(src),                                                                                 |
+        +----------------------------------------------------------------------------------------+  |         onEvent = _.foreach(p => SyncActor.send(ChangedPath(p.subRelativeTo(src))))               |
+                                                                                                    |       )                                                                                           |
+                                                                                                    |       Thread.sleep(Long.MaxValue)                                                                 |
+                                                                                                    |     }                                                                                             |
+                                                                                                    |   }                                                                                               |
+                                                                                                    +---------------------------------------------------------------------------------------------------+
