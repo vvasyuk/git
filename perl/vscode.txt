@@ -17,3 +17,45 @@ vscode-command-runner
         //"wrap": "$cmdOutput = ('${selectedTextList}' -replace '\"', '\\\"')| Out-String; echo $cmdOutput\n"
         
     },    
+
+
+
+
+    ---debug
+("te'st" -replace '\"', '\\\"' )| Out-String
+
+perl C:\work\tryout\perl\vsCodeBoxWrap2.pl
+
+$cmdOutput = ('<?xml version='1.0' encoding='UTF-8'?>
+<call method="createUser" callerName="a string that identifies your client application">
+       <credentials login="sampleuser@company.com" password="my_pwd" />
+         <users>
+             <user
+               email="newUser@company.com"
+               name="new guy"
+               password="new Password"
+               permissionSetId="1"
+               ownedLevels="2,3,7,11"
+               timeZone="America/Mexico_City"
+/> </users>
+</call>' -replace '"', '\"')| Out-String; perl C:\work\tryout\perl\vsCodeBoxWrap2.pl $cmdOutput
+
+$cmdOutput = ('te's't' -replace '"', '\"')| Out-String; perl C:\work\tryout\perl\vsCodeBoxWrap2.pl $cmdOutput
+
+# works
+$cmdOutput = ('te''s''t' -replace '"', '\"')| Out-String; perl C:\work\tryout\perl\vsCodeBoxWrap2.pl $cmdOutput
+
+$var = "te's't"
+$cmdOutput = ('${var}\n' -replace '"', '\"')| Out-String; perl C:\work\tryout\perl\vsCodeBoxWrap2.pl $cmdOutput
+
+
+D:\Scratch\soscratch>set var=You're such a hot shot!
+
+D:\Scratch\soscratch>echo %var%
+You're such a hot shot!
+
+D:\Scratch\soscratch>echo %var:hot=cold%
+You're such a cold scold!
+So, in the command (modified from Duncan's answer to align with the OP's example, for the sake of clarity):
+
+powershell G:\test.ps1 -name '%x:'=''%' -data '%y:'=''%'

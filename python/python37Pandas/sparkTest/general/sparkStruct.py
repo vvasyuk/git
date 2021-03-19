@@ -18,9 +18,11 @@ df = spark.createDataFrame(
 #df.show(20,False)
 
 dfStruct = df.withColumn("my_struct",struct(col("last_name").alias('col1'),col("first_name"))).drop("last_name", "first_name")
-dfStruct = df.withColumn("my_struct2",struct(col("my_struct.last_name").alias('col11')))
+# dfStruct = df.withColumn("my_struct2",struct(col("my_struct.last_name").alias('col11')))
 dfStruct.show(20,False)
 dfStruct.printSchema()
+# cannot save a column with a space in struct or not in struct
+dfStruct.write.parquet("C:\\work\\tryout\\python\\python37Pandas\\sparkTest\\parq")
 
 # structureData0 = [
 #     (("James0","","Smith"),"36636","M",3100),
