@@ -2481,3 +2481,119 @@
                                                                                                     |     }                                                                                             |
                                                                                                     |   }                                                                                               |
                                                                                                     +---------------------------------------------------------------------------------------------------+
+
+####################
+# Parsing Structured Text
+####################
+    ### Simple Parsers
+        +------------------------------------------------------------------------------------+
+        | import fastparse._, NoWhitespace._                                                 |
+        | def parser[_: P] = P( "hello" )                                                    |  // [_: P] context bound
+        | fastparse.parse("hello", parser(_))                                                |
+        | fastparse.parse("goodbye", parser(_))                                              |
+        | val Parsed.Failure(expected, index, extra) = fastparse.parse("goodbye", parser(_)) |
+        | println(extra.trace().longMsg)                                                     |  // Expected parser:1:1 / "hello":1:1, found "goodbye", trace requires re-scan string twice
+        +------------------------------------------------------------------------------------+
+
+        - pattern match
+        +--------------------------------------------------------+
+        | fastparse.parse("goodbye", parser(_)) match {          |
+        |     case Parsed.Success(value, index) => ...           |
+        |     case Parsed.Failure(expected, index, extra) => ... |
+        | }                                                      |
+        +--------------------------------------------------------+
+
+        -Partial & Incomplete Parses                                    -Combining Alternatives with Sequences                                            
+            // fastparse.parse also fails if there's not enough             +-----------------------------------------------------------------------------------+
+            input to parse                                                  | def parser[_: P] = P( ("hello" | "goodbye") ~ " " ~ ("world" | "seattle") ~ End ) |
+            +--------------------------------------------+                  | fastparse.parse("hello world", parser(_))                                         |   // success
+            | fastparse.parse("hel", parser(_))          |  // fail         | fastparse.parse("hello seattle", parser(_))                                       |   // success
+            | fastparse.parse("hellogoodbye", parser(_)) |  // success      | fastparse.parse("goodbye world", parser(_))                                       |   // success
+            +--------------------------------------------+                  +-----------------------------------------------------------------------------------+
+                                                                        
+        -Alternative Parsers                                            -Repeated Parsers
+            +---------------------------------------------+                 // .rep(1) means it repeats the " " parser at least once
+            | def parser[_: P] = P( "hello" | "goodbye" ) |                 +------------------------------------------------------------------------------------------+
+            | fastparse.parse("hello", parser(_))         | // success      | def parser[_: P] = P( ("hello" | "goodbye") ~ " ".rep(1) ~ ("world" | "seattle") ~ End ) |
+            | fastparse.parse("goodbye", parser(_))       | // success      | fastparse.parse("hello world", parser(_))                                                |    // success
+            | fastparse.parse("dunno", parser(_))         | // fail         | fastparse.parse("hello world", parser(_))                                                |    // success
+            +---------------------------------------------+                 | fastparse.parse("helloworld", parser(_))                                                 |    // fail
+                                                                            +------------------------------------------------------------------------------------------+
+        -Sequence Parsers                                               
+            // a ~ b parses a followed by b                             -Optional Parsers
+            +---------------------------------------------+                 // Marking a parser as optional is done using .?
+            | def parser[_: P] = P( "hello" ~ "goodbye" ) |                 +--------------------------------------------------------------------------------------------+
+            | fastparse.parse("hellogoodbye", parser(_))  | // success      | def parser[_: P] = P( ("hello" | "goodbye") ~ (" ".rep(1) ~ ("world" | "seattle")).? ~ End |
+            | fastparse.parse("hello", parser(_))         | // fail         | fastparse.parse("hello world", parser(_))                                                  |  // success
+            | fastparse.parse("goodbye", parser(_))       | // fail         | fastparse.parse("hello", parser(_))                                                        |  // success
+            +---------------------------------------------+                 | fastparse.parse("hello ", parser(_))                                                       |  // fail
+                                                                            +--------------------------------------------------------------------------------------------+
+
+    ### Parsing Structured Values
+        - Capturing Strings
+            // capture .! operator
+            +----------------------------------------------------------------------------------------------+
+            | def parser[_: P] = P( ("hello" | "goodbye").! ~ " ".rep(1) ~ ("world" | "seattle").! ~ End ) |
+            | fastparse.parse("hello seattle", parser(_))                                                  |    // Success(("hello", "seattle"), 13)
+            | fastparse.parse("hello world", parser(_))                                                    |    // Success(("hello", "world"), 15)
+            +----------------------------------------------------------------------------------------------+
+
+        - Parsing Case Classes
+            +------------------------------------------------------------------------------------+
+            | case class Phrase(isHello: Boolean, place: String)                                 |
+            | def parser[_: P]: P[Phrase] =                                                      |
+            |     P( ("hello" | "goodbye").! ~ " ".rep(1) ~ ("world" | "seattle").! ~ End ).map{ |
+            |         case ("hello", place) => Phrase(true, place)                               |
+            |         case ("goodbye", place) => Phrase(false, place)                            |
+            |     }                                                                              |
+            | val Parsed.Success(result, index) = fastparse.parse("goodbye seattle", parser(_))  |  // Phrase = Phrase(false, "seattle"), index 17
+            | result.isHello                                                                     |  // res39: Boolean = false
+            | result.place                                                                       |  // res40: String = "seattle"
+            +------------------------------------------------------------------------------------+
+
+        - Modularizing and Typing our Parsers
+            +---------------------------------------------------------------------------------+
+            | def prefix[_: P]: P[String] = P( "hello" | "goodbye" ).!                        |
+            | def suffix[_: P]: P[String] = P( "world" | "seattle" ).!                        |
+            | def ws[_: P]: P[Unit] = P( " ".rep(1) ) // white-space                          |
+            | def parser[_: P] = P( prefix ~ ws ~ suffix ).map{                               |
+            |     case ("hello", place) => new Phrase(true, place)                            |
+            |     case ("goodbye", place) => new Phrase(false, place)                         |
+            | }                                                                               |
+            | val Parsed.Success(result, index) = fastparse.parse("goodbye world", parser(_)) |     // Phrase = Phrase(false, "world"), index 15
+            +---------------------------------------------------------------------------------+
+
+        - Using Sub-Parsers Independently
+            // prefix or suffix are themselves P[String] parsers
+            +---------------------------------------+
+            | fastparse.parse("hello", prefix(_))   |   // Success("hello", 5)
+            | fastparse.parse("goodbye", prefix(_)) |   // Success("goodbye", 7)
+            | fastparse.parse("moo", prefix(_))     |   // Parsed.Failure(Position 1:1, found "moo")
+            +---------------------------------------+
+
+        - Recursive Parsers
+            // reference parsers by name inside another parser means parsers can be recursive
+            +----------------------------------------------------------+
+            | sealed trait Phrase                                      |
+            | case class Word(s: String) extends Phrase                |
+            | case class Pair(lhs: Phrase, rhs: Phrase) extends Phrase |
+            +----------------------------------------------------------+
+            // .map(Word) to turn them from P[String]s into P[Word]s, which is a subtype of P[Phrase]   +-----------------------------------------------------------------------+
+            // new parened parser, which wraps parser with a "(" before it and ")" after                | fastparse.parse("(hello world) ((goodbye seattle) world)", parser(_)) |
+            // map to become a P[Pair], also a subtype of P[Phrase]                                     |     res51: Parsed[Phrase] = Success(                                  |
+            +--------------------------------------------------------------------------------------+    |         Pair(                                                         |
+            | {                                                                                    |    |             Pair(Word("hello"), Word("world")),                       |
+            | def prefix[_: P] = P( "hello" | "goodbye" ).!.map(Word)                              |    |             Pair(                                                     |
+            | def suffix[_: P] = P( "world" | "seattle" ).!.map(Word)                              |    |                 Pair(Word("goodbye"), Word("seattle")),               |
+            | def ws[_: P] = P( " ".rep(1) )                                                       |    |                 Word("world")                                         |
+            | def parened[_: P] = P( "(" ~ parser ~ ")" )                                          |    |             )                                                         |
+            | def parser[_: P]: P[Phrase] = P( (parened | prefix) ~ ws ~ (parened | suffix) ).map{ |    |         ),                                                            |
+            |     case (lhs, rhs) => Pair(lhs, rhs)                                                |    |         42                                                            |
+            | } }                                                                                  |    |     )                                                                 |
+            +--------------------------------------------------------------------------------------+    +-----------------------------------------------------------------------+
+
+    ### Implementing a Calculator
+        - Defining our Syntax Tree
+        - Parsing Literals
+        - Parsing Arithmetic
+        - Manipulating the Syntax Tree
