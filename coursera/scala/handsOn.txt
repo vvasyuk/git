@@ -2594,6 +2594,63 @@
 
     ### Implementing a Calculator
         - Defining our Syntax Tree
+            +--------------------------------------------------------------------+
+            | sealed trait Expr                                                  |
+            | case class BinOp(left: Expr, op: String, right: Expr) extends Expr |
+            | case class Number(Value: Int) extends Expr                         |
+            +--------------------------------------------------------------------+
+        
         - Parsing Literals
+            +---------------------------------------------------------+ +-------------------------------------+
+            | def number[_: P]: P[Expr] = P(                          | | fastparse.parse("seven", number(_)) | // res54: Parsed[Int] = Success(Number(7), 5)
+            |     "zero" | "one" | "two" | "three" | "four" |         | | fastparse.parse("zero", number(_))  | // res55: Parsed[Int] = Success(Number(0), 4)
+            |     "five" | "six" | "seven" | "eight" | "nine"         | | fastparse.parse("lol", number(_))   | // fail
+            | ).!.map{                                                | +-------------------------------------+
+            |     case "zero" => Number(0); case "one" => Number(1)   | - operator
+            |     case "two" => Number(2); case "three" => Number(3)  | +------------------------------------------------------------------------------+
+            |     case "four" => Number(4); case "five" => Number(5)  | | def operator[_: P]: P[String] = P( "plus" | "minus" | "times" | "divide" ).! |
+            |     case "six" => Number(6); case "seven" => Number(7)  | +------------------------------------------------------------------------------+
+            |     case "eight" => Number(8); case "nine" => Number(9) | - white space
+            | }                                                       | +--------------------------------+
+            +---------------------------------------------------------+ | def ws[_: P] = P( " ".rep(1) ) |
+                                                                        +--------------------------------+
+
         - Parsing Arithmetic
+            // (one plus two) times (nine minus three)
+            // we want to be able to parse is a left-hand-side expression, followed by an operator, followed by
+            a right-hand-side expression. Each side's expression is either a number, or the parser itself surrounded by parentheses
+            +----------------------------------------------------------------------------+  +----------------------------------------------------------------------------------------+
+            | {                                                                          |  | val t = fastparse.parse("(one plus two) times (three plus four)", parser(_)).get.value |
+            |     def expr[_: P] = P( "(" ~ parser ~ ")" | number )                      |  |     t: Parsed[Expr] = Success(                                                         |
+            |     def parser[_: P]: P[Expr] = P( expr ~ ws ~ operator ~ ws ~ expr ).map{ |  |         BinOp(                                                                         |
+            |         case (lhs, op, rhs) => BinOp(lhs, op, rhs)                         |  |             BinOp(Number(1), "plus", Number(2)),                                       |
+            | } }                                                                        |  |             "times",                                                                   |
+            +----------------------------------------------------------------------------+  |             BinOp(Number(3), "plus", Number(4))                                        |
+                                                                                            |         ),                                                                             |
+                                                                                            |         38                                                                             |
+                                                                                            |     )                                                                                  |
+                                                                                            +----------------------------------------------------------------------------------------+
+
         - Manipulating the Syntax Tree
+            +-------------------------------------------------------------------------+ +---------------------------------------------------------------------------+
+            |   import fastparse._, NoWhitespace._ Arithmetic.sc                      | |   import .Arithmetic, Arithmetic._ Traversals.sc                     |
+            |   sealed trait Expr                                                     | |   def stringify(e: Expr): String = e match {                              |
+            |   case class BinOp(left: Expr, op: String, right: Expr) extends Expr    | |     case BinOp(left, op, right) =>                                        |
+            |   case class Number(Value: Int) extends Expr                            | |       s"(${stringify(left)}  ${stringify(right)})"                     |
+            |   def number[_: P] = P(                                                 | |     case Number(0) => "zero"; case Number(1)  => "one"                    |
+            |     "zero" | "one" | "two" | "three" | "four" |                         | |     case Number(2) => "two"; case Number(3)   => "three"                  |
+            |       "five" | "six" | "seven" | "eight" | "nine"                       | |     case Number(4) => "four"; case Number(5)  => "five"                   |
+            |   ).!.map {                                                             | |     case Number(6) => "six"; case Number(7)   => "seven"                  |
+            |     case "zero"  => Number(0); case "one"   => Number(1)                | |     case Number(8) => "eight"; case Number(9) => "seven"                  |
+            |     case "two"   => Number(2); case "three" => Number(3)                | |   }                                                                       |
+            |     case "four"  => Number(4); case "five"  => Number(5)                | |   def evaluate(e: Expr): Int = e match {                                  |
+            |     case "six"   => Number(6); case "seven" => Number(7)                | |     case BinOp(left, "plus", right)   => evaluate(left) + evaluate(right) |
+            |     case "eight" => Number(8); case "nine"  => Number(9)                | |     case BinOp(left, "minus", right)  => evaluate(left) - evaluate(right) |
+            |   }                                                                     | |     case BinOp(left, "times", right)  => evaluate(left) * evaluate(right) |
+            |   def ws[_: P] = P(" ".rep(1))                                          | |     case BinOp(left, "divide", right) => evaluate(left) / evaluate(right) |
+            |   def operator[_: P] = P("plus" | "minus" | "times" | "divide").!       | |     case Number(n)                    => n                                |
+            |   def expr[_: P] = P("(" ~ parser ~ ")" | number)                       | |   }                                                                       |
+            |   def parser[_: P]: P[Expr] = P(expr ~ ws ~ operator ~ ws ~ expr).map { | +---------------------------------------------------------------------------+
+            |     case (lhs, op, rhs) => BinOp(lhs, op, rhs)                          |
+            |   }                                                                     |
+            +-------------------------------------------------------------------------+
