@@ -40,31 +40,35 @@ spark = SparkSession.builder.config("spark.sql.warehouse.dir", "file:///C:/temp"
 
 
 # raw wdap
-dfRawWp = spark.read.parquet("c:\\work\\project\\data\\raw\\wdap\\levels\\latest")
-dfRawWp.printSchema()
-dfRawWp.withColumnRenamed('attributes', 'attributes_old')\
-    .withColumn('attributes',struct(
-    col("attributes_old.Account").alias('Account'),
-    col("attributes_old.Client").alias('Client'),
-    col("attributes_old.Client Name").alias('Client%Name'),
-    col("attributes_old.Contract Type").alias('Contract%Type'),
-    col("attributes_old.Division").alias('Division'),
-    col("attributes_old.Engagement Business").alias('Engagement%Business'),
-    col("attributes_old.Engagement Manager").alias('Engagement%Manager'),
-    col("attributes_old.Engagement PPMD").alias('Engagement%PPMD'),
-    col("attributes_old.Financial Advisor").alias('Financial%Advisor'),
-    col("attributes_old.L1").alias('L1'),
-    col("attributes_old.L2").alias('L2'),
-    col("attributes_old.L3").alias('L3'),
-    col("attributes_old.L4").alias('L4'),
-    col("attributes_old.PC Sub-Account").alias('PC%Sub-Account'),
-    col("attributes_old.PNR FLAG").alias('PNR%FLAG'),
-    col("attributes_old.POP End").alias('POP%End'),
-    col("attributes_old.POP Start").alias('POP%Start'),
-    col("attributes_old.Planning Level").alias('Planning%Level'),
-    col("attributes_old.Sector").alias('Sector')))\
-    .select(col('id'),col('name'),col('attributes'))\
-    .show(10,False)
+# dfRawWp = spark.read.parquet("c:\\work\\project\\data\\raw\\wdap\\levels\\latest")
+# dfRawWp.printSchema()
+# dfRawWp.withColumnRenamed('attributes', 'attributes_old')\
+#     .withColumn('attributes',struct(
+#     col("attributes_old.Account").alias('Account'),
+#     col("attributes_old.Client").alias('Client'),
+#     col("attributes_old.Client Name").alias('Client%Name'),
+#     col("attributes_old.Contract Type").alias('Contract%Type'),
+#     col("attributes_old.Division").alias('Division'),
+#     col("attributes_old.Engagement Business").alias('Engagement%Business'),
+#     col("attributes_old.Engagement Manager").alias('Engagement%Manager'),
+#     col("attributes_old.Engagement PPMD").alias('Engagement%PPMD'),
+#     col("attributes_old.Financial Advisor").alias('Financial%Advisor'),
+#     col("attributes_old.L1").alias('L1'),
+#     col("attributes_old.L2").alias('L2'),
+#     col("attributes_old.L3").alias('L3'),
+#     col("attributes_old.L4").alias('L4'),
+#     col("attributes_old.PC Sub-Account").alias('PC%Sub-Account'),
+#     col("attributes_old.PNR FLAG").alias('PNR%FLAG'),
+#     col("attributes_old.POP End").alias('POP%End'),
+#     col("attributes_old.POP Start").alias('POP%Start'),
+#     col("attributes_old.Planning Level").alias('Planning%Level'),
+#     col("attributes_old.Sector").alias('Sector')))\
+#     .select(col('id'),col('name'),col('attributes'))\
+#     .show(10,False)
 
 # dfRaw = spark.read.parquet("c:\\work\\project\\data\\master\\datapoint\\levels\\latest\\part-00000-d1fb2fb9-d4ed-4fa8-ac9a-fc5f08f64646-c000.snappy.parquet")
-# dfRaw.filter(col('proj_id').like("%TWVA00001%")).show(20,False)
+# dfRaw.filter(col('proj_id').like("%TWVA00001%")).show(20,False)]
+
+# master
+dfMaster = spark.read.parquet("C:\\work\\project\\data\\master\\datapoint\\levels_attributes")
+dfMaster.show(10,False)

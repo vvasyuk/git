@@ -19,9 +19,10 @@ spark = SparkSession.builder.config("spark.sql.warehouse.dir", "file:///C:/temp"
 # groupedUnioned.show(10,False)
 
 ## logic2
-# dfProjects = spark.read.parquet("c:\\work\\project\\data\\master\\datapoint\\levels\\").filter(col('wap_id').isNotNull()).cache()
+dfProjects = spark.read.parquet("c:\\work\\project\\data\\master\\datapoint\\levels\\").filter(col('wap_id').isNotNull()).cache()
+dfProjects.printSchema()
 # print(dfProjects.count())    # 38?
-#
+
 # dfProjectsPPMD = dfProjects.filter((col('PPMD_ID').isNotNull()) & (col('PPMD_ID') != ' '))\
 #      .groupBy("PPMD_ID").agg(concat_ws(",", expr("sort_array(collect_list(wap_id))")).alias("agg_list")).cache()
 # print(dfProjectsPPMD.count())    # 38?
@@ -31,17 +32,49 @@ spark = SparkSession.builder.config("spark.sql.warehouse.dir", "file:///C:/temp"
 #      .groupBy("PM_ID").agg(concat_ws(",", expr("sort_array(collect_list(wap_id))")).alias("agg_list")).cache()
 # print(dfProjectsPM.count())    # 46?
 # dfProjectsPM.show(10,False)
+
+### new cols
+dfProjectsPM = dfProjects.filter((col('ppmd_del_id').isNotNull()) & (col('ppmd_del_id') != ' ') & (col('ppmd_del_id') != ''))\
+     .groupBy("ppmd_del_id").agg(concat_ws(",", expr("sort_array(collect_list(wap_id))")).alias("agg_list")).cache()
+print(dfProjectsPM.count())
+dfProjectsPM.show(10,False)
+
+dfProjectsPM = dfProjects.filter((col('pm_del_id').isNotNull()) & (col('pm_del_id') != ' ') & (col('pm_del_id') != ''))\
+     .groupBy("pm_del_id").agg(concat_ws(",", expr("sort_array(collect_list(wap_id))")).alias("agg_list")).cache()
+print(dfProjectsPM.count())
+dfProjectsPM.show(10,False)
+
+dfProjectsPM = dfProjects.filter((col('efa_id').isNotNull()) & (col('efa_id') != ' ') & (col('efa_id') != ''))\
+     .groupBy("efa_id").agg(concat_ws(",", expr("sort_array(collect_list(wap_id))")).alias("agg_list")).cache()
+print(dfProjectsPM.count())
+dfProjectsPM.show(10,False)
+
+dfProjectsPM = dfProjects.filter((col('lcsp_id').isNotNull()) & (col('lcsp_id') != ' ') & (col('lcsp_id') != ''))\
+     .groupBy("lcsp_id").agg(concat_ws(",", expr("sort_array(collect_list(wap_id))")).alias("agg_list")).cache()
+print(dfProjectsPM.count())
+dfProjectsPM.show(10,False)
+
+dfProjectsPM = dfProjects.filter((col('sectorlead_id').isNotNull()) & (col('sectorlead_id') != ' ') & (col('sectorlead_id') != ''))\
+     .groupBy("sectorlead_id").agg(concat_ws(",", expr("sort_array(collect_list(wap_id))")).alias("agg_list")).cache()
+print(dfProjectsPM.count())
+dfProjectsPM.show(10,False)
+
+dfProjectsPM = dfProjects.filter((col('efa_acct_id').isNotNull()) & (col('efa_acct_id') != ' ') & (col('efa_acct_id') != ''))\
+     .groupBy("efa_acct_id").agg(concat_ws(",", expr("sort_array(collect_list(wap_id))")).alias("agg_list")).cache()
+print(dfProjectsPM.count())
+dfProjectsPM.show(10,False)
+
 #
 # dfUnioned = dfProjectsPPMD.union(dfProjectsPM)\
 #     .groupBy("PPMD_ID").agg(concat_ws(",", expr("sort_array(collect_list(agg_list))")).alias("agg_list")).cache()
 # print(dfUnioned.count())    # 114
 
 ## logic2 check counts (2)?
-dfProjects = spark.read.parquet("c:\\work\\project\\data\\master\\datapoint\\levels\\").filter(col('wap_id').isNotNull()).cache()
-print(dfProjects.count())    # 38985
-cnt1 = dfProjects.filter((col('PPMD_ID').isNotNull()) & (col('PPMD_ID') != ' '))
-print(cnt1.count())    # 6
-cnt1.show(10,False)
+# dfProjects = spark.read.parquet("c:\\work\\project\\data\\master\\datapoint\\levels\\").filter(col('wap_id').isNotNull()).cache()
+# print(dfProjects.count())    # 38985
+# cnt1 = dfProjects.filter((col('PPMD_ID').isNotNull()) & (col('PPMD_ID') != ' '))
+# print(cnt1.count())    # 6
+# cnt1.show(10,False)
 
 # master levels
 # dfLevelMaster = spark.read.parquet("c:\\work\\project\\data\\master\\datapoint\\levels\\")
@@ -70,6 +103,19 @@ cnt1.show(10,False)
     # .filter((col('PM_ID').isNotNull()) & (col('PM_ID') != ' '))
 #print(dfProjects.count())
 # PM_ID
+# dfProjects.show(40,False)
+
+# PPMD_DEL_ID
+# PM_DEL_ID
+# EFA_ID
+# LCSP_ID
+# SECTORLEAD_ID
+# EFA_ACCT_ID
+
+# 'PPMD_DEL_ID', 'PM_DEL_ID', 'EFA_ID', 'LCSP_ID', 'SECTORLEAD_ID', 'EFA_ACCT_ID'
+
+# dfProjects = spark.read.parquet("c:\\work\\project\\data\\raw\\wdap\\levels\\")\
+#     .filter((col('PPMD_DEL_ID').isNotNull()) & (col('PPMD_DEL_ID') != ' '))
 # dfProjects.show(40,False)
 
 # --- users
