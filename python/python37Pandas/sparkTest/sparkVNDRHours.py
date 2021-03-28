@@ -10,8 +10,9 @@ spark = SparkSession.builder.config("spark.sql.warehouse.dir", "file:///C:/temp"
 # raw
 # dfRaw = spark.read.parquet("c:\\work\\project\\data\\raw\\datapoint\\vendor_hours\\").cache()
 # dfRaw.show(20,False)
-dfRaw = spark.read.parquet("c:\\work\\project\\data\\raw\\datapoint\\vendor_hours\\part-00000-ebe9f998-efe1-4197-8ac0-17c28c51d05c.c000.snappy.parquet").cache()
-dfRaw.show(20,False)
+# dfRaw = spark.read.parquet("c:\\work\\project\\data\\raw\\datapoint\\vendor_hours\\").cache()
+# dfRaw.printSchema()
+# dfRaw.show(20,False)
 # print(dfRaw.count())
 
 
@@ -21,8 +22,8 @@ dfRaw.show(20,False)
 # print(dfRaw.count())
 
 # transform
-# dfRaw = spark.read.parquet("c:\\work\\project\\data\\transform\\datapoint\\vendor_hours\\").cache()
-# dfRaw.show(20,False)
+dfRaw = spark.read.parquet("c:\\work\\project\\data\\transform\\vendor_hours\\").cache()
+dfRaw.show(20,False)
 # print(dfRaw.count())
 
 
