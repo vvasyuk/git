@@ -18,6 +18,7 @@ val camelCore  = "org.apache.camel" % "camel-core" % "3.6.0"
 val camelScala = "org.apache.camel" % "camel-scala" % "2.25.2"
 val os         = "com.lihaoyi" %% "os-lib" % "0.7.2"
 val upickle    = "com.lihaoyi" % "upickle_native0.4_2.13" % "1.2.3"
+val cats       = "org.typelevel" %% "cats-effect" % "3.0.0"
 
-libraryDependencies ++= Seq(scopt, scalaXml, typeSafe, scalaArm, sparkJava, http, wireMock, scalaMock, scalaTest, mockito, camelCore, camelScala, os, upickle)
+libraryDependencies ++= Seq(scopt, scalaXml, typeSafe, scalaArm, sparkJava, http, wireMock, scalaMock, scalaTest, mockito, camelCore, camelScala, os, upickle, cats)
 //libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8" % Test
