@@ -4,6 +4,75 @@ import time
 
 spark = SparkSession.builder.config("spark.sql.warehouse.dir", "file:///C:/temp").appName("PopularMovies").getOrCreate()
 
+# raw oracle
+dfUsers = spark.read.parquet("c:\\work\\project\\data\\raw\\datapoint\\users_levels_assign\\")
+#dfProjects.filter(col("ROLE_ADDED_AS") == "PPMD").show(100,False)
+
+# raw levels wdap
+dfWpLevels = spark.read.parquet("c:\\work\\project\\data\\raw\\wdap\\levels\\").select(col("id"), col("name"))
+# dfLevels.show(20,False)
+
+# raw users wdap
+#dfWpUsers = spark.read.parquet("c:\\work\\project\\data\\raw\\wdap\\users\\")#.select(col("id"),col("login"))
+#dfUsers.show(20,False)
+
+
+# logic
+dfLevelsJoin = dfUsers.join(dfWpLevels, dfUsers['levels'] == dfWpLevels['name'], 'left').cache()
+dfLevelsJoined = dfLevelsJoin.filter(col('name').isNotNull())
+dfLevelsJoinedNot = dfLevelsJoin.filter(col('name').isNull())
+
+# dfLevelsJoined.show(5,False)
+rows = dfLevelsJoinedNot.agg(concat_ws(",", expr("sort_array(collect_list(levels))")).alias("agg_list")).collect()
+
+print("errors")
+for row in rows:
+    print(row['agg_list'])
+
+# dfLevelsJoined.show(1000,False)
+
+
+
+
+
+
+
+
+
+
+
+
+
+# +-------------------------+------------------+--------------------------+---------------+
+# |LEVELS                   |LAST_FIRST_NAME   |UPDATE_DATE               |ROLE_ADDED_AS  |
+# +-------------------------+------------------+--------------------------+---------------+
+# |FDA                      |Vera,Hewitt       |2021-03-30 21:37:37.866277|EFA SECTOR LEAD|
+# |FDA                      |Vera,Hewitt       |2021-03-30 21:38:13.806152|EFA SECTOR LEAD|
+# |Anoka-Hennepin Independen|Oliver,Wright     |2021-03-30 21:37:37.866277|EFA SECTOR LEAD|
+# |Engagements              |Mathis,Joanne     |2021-03-30 21:37:37.83855 |EFA SECTOR LEAD|
+
+# |CAL00529.00.01.01.0110|Nicole,Rose      |2021-03-30 21:37:37.742058|Engagement Manager|
+# |AIR00113.02.02        |Adora,Nathan     |2021-03-30 21:37:37.742058|Engagement Manager|
+# |LSC00022.00.01        |Javier,Thornton  |2021-03-30 21:37:37.742058|Engagement Manager|
+# |PEN00279.00.02        |Vicky,Dixon      |2021-03-30 21:37:37.742058|Engagement Manager|
+
+# |LOU00142.00.01.01.0110|Payne,Una        |2021-03-30 21:37:37.724179|PPMD         |
+# |FED00235.00.01        |Milford,Claire   |2021-03-30 21:37:37.724179|PPMD         |
+# |USA11004.00.01        |Edmunds,Trevor   |2021-03-30 21:37:37.724179|PPMD         |
+# |NAV11734.04.02.01     |Allan,Elizabeth  |2021-03-30 21:37:37.724179|PPMD         |
+# +----------------------+-----------------+--------------------------+-------------+
+
+#dfProjects.select(col("ROLE_ADDED_AS")).distinct().show(100,False)
+# +------------------+
+# |ROLE_ADDED_AS     |
+# +------------------+
+# |PPMD              |
+# |EFA SECTOR LEAD   |
+# |Engagement Manager|
+# +------------------+
+# dfProjects.printSchema()
+
+
 ## logic
 # dfProjects = spark.read.parquet("C:\\work\\project\\docs\\users_levels_assign\\data\\projects_ppmd").cache()
 # dfProjectsPPMD = dfProjects.filter((col('PPMD_ID').isNotNull()) & (col('PPMD_ID') != ' '))
@@ -19,8 +88,8 @@ spark = SparkSession.builder.config("spark.sql.warehouse.dir", "file:///C:/temp"
 # groupedUnioned.show(10,False)
 
 ## logic2
-dfProjects = spark.read.parquet("c:\\work\\project\\data\\master\\datapoint\\levels\\").filter(col('wap_id').isNotNull()).cache()
-dfProjects.printSchema()
+# dfProjects = spark.read.parquet("c:\\work\\project\\data\\master\\datapoint\\levels\\").filter(col('wap_id').isNotNull()).cache()
+# dfProjects.printSchema()
 # print(dfProjects.count())    # 38?
 
 # dfProjectsPPMD = dfProjects.filter((col('PPMD_ID').isNotNull()) & (col('PPMD_ID') != ' '))\
@@ -34,35 +103,35 @@ dfProjects.printSchema()
 # dfProjectsPM.show(10,False)
 
 ### new cols
-dfProjectsPM = dfProjects.filter((col('ppmd_del_id').isNotNull()) & (col('ppmd_del_id') != ' ') & (col('ppmd_del_id') != ''))\
-     .groupBy("ppmd_del_id").agg(concat_ws(",", expr("sort_array(collect_list(wap_id))")).alias("agg_list")).cache()
-print(dfProjectsPM.count())
-dfProjectsPM.show(10,False)
-
-dfProjectsPM = dfProjects.filter((col('pm_del_id').isNotNull()) & (col('pm_del_id') != ' ') & (col('pm_del_id') != ''))\
-     .groupBy("pm_del_id").agg(concat_ws(",", expr("sort_array(collect_list(wap_id))")).alias("agg_list")).cache()
-print(dfProjectsPM.count())
-dfProjectsPM.show(10,False)
-
-dfProjectsPM = dfProjects.filter((col('efa_id').isNotNull()) & (col('efa_id') != ' ') & (col('efa_id') != ''))\
-     .groupBy("efa_id").agg(concat_ws(",", expr("sort_array(collect_list(wap_id))")).alias("agg_list")).cache()
-print(dfProjectsPM.count())
-dfProjectsPM.show(10,False)
-
-dfProjectsPM = dfProjects.filter((col('lcsp_id').isNotNull()) & (col('lcsp_id') != ' ') & (col('lcsp_id') != ''))\
-     .groupBy("lcsp_id").agg(concat_ws(",", expr("sort_array(collect_list(wap_id))")).alias("agg_list")).cache()
-print(dfProjectsPM.count())
-dfProjectsPM.show(10,False)
-
-dfProjectsPM = dfProjects.filter((col('sectorlead_id').isNotNull()) & (col('sectorlead_id') != ' ') & (col('sectorlead_id') != ''))\
-     .groupBy("sectorlead_id").agg(concat_ws(",", expr("sort_array(collect_list(wap_id))")).alias("agg_list")).cache()
-print(dfProjectsPM.count())
-dfProjectsPM.show(10,False)
-
-dfProjectsPM = dfProjects.filter((col('efa_acct_id').isNotNull()) & (col('efa_acct_id') != ' ') & (col('efa_acct_id') != ''))\
-     .groupBy("efa_acct_id").agg(concat_ws(",", expr("sort_array(collect_list(wap_id))")).alias("agg_list")).cache()
-print(dfProjectsPM.count())
-dfProjectsPM.show(10,False)
+# dfProjectsPM = dfProjects.filter((col('ppmd_del_id').isNotNull()) & (col('ppmd_del_id') != ' ') & (col('ppmd_del_id') != ''))\
+#      .groupBy("ppmd_del_id").agg(concat_ws(",", expr("sort_array(collect_list(wap_id))")).alias("agg_list")).cache()
+# print(dfProjectsPM.count())
+# dfProjectsPM.show(10,False)
+#
+# dfProjectsPM = dfProjects.filter((col('pm_del_id').isNotNull()) & (col('pm_del_id') != ' ') & (col('pm_del_id') != ''))\
+#      .groupBy("pm_del_id").agg(concat_ws(",", expr("sort_array(collect_list(wap_id))")).alias("agg_list")).cache()
+# print(dfProjectsPM.count())
+# dfProjectsPM.show(10,False)
+#
+# dfProjectsPM = dfProjects.filter((col('efa_id').isNotNull()) & (col('efa_id') != ' ') & (col('efa_id') != ''))\
+#      .groupBy("efa_id").agg(concat_ws(",", expr("sort_array(collect_list(wap_id))")).alias("agg_list")).cache()
+# print(dfProjectsPM.count())
+# dfProjectsPM.show(10,False)
+#
+# dfProjectsPM = dfProjects.filter((col('lcsp_id').isNotNull()) & (col('lcsp_id') != ' ') & (col('lcsp_id') != ''))\
+#      .groupBy("lcsp_id").agg(concat_ws(",", expr("sort_array(collect_list(wap_id))")).alias("agg_list")).cache()
+# print(dfProjectsPM.count())
+# dfProjectsPM.show(10,False)
+#
+# dfProjectsPM = dfProjects.filter((col('sectorlead_id').isNotNull()) & (col('sectorlead_id') != ' ') & (col('sectorlead_id') != ''))\
+#      .groupBy("sectorlead_id").agg(concat_ws(",", expr("sort_array(collect_list(wap_id))")).alias("agg_list")).cache()
+# print(dfProjectsPM.count())
+# dfProjectsPM.show(10,False)
+#
+# dfProjectsPM = dfProjects.filter((col('efa_acct_id').isNotNull()) & (col('efa_acct_id') != ' ') & (col('efa_acct_id') != ''))\
+#      .groupBy("efa_acct_id").agg(concat_ws(",", expr("sort_array(collect_list(wap_id))")).alias("agg_list")).cache()
+# print(dfProjectsPM.count())
+# dfProjectsPM.show(10,False)
 
 #
 # dfUnioned = dfProjectsPPMD.union(dfProjectsPM)\

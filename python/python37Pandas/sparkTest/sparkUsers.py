@@ -44,6 +44,6 @@ spark = SparkSession.builder.config("spark.sql.warehouse.dir", "file:///C:/temp"
 
 
 # transform
-dfRaw = spark.read.parquet("c:\\work\\project\\data\\transform\\users\\")
-dfRaw.show(20,False)
+# dfRaw = spark.read.parquet("c:\\work\\project\\data\\transform\\users\\")
+# dfRaw.show(20,False)
 # print(dfRaw.count())
