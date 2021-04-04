@@ -39,8 +39,8 @@ spark = SparkSession.builder.config("spark.sql.warehouse.dir", "file:///C:/temp"
 # dfJoined.show(10,False)
 
 # master
-# dfRaw = spark.read.parquet("c:\\work\\project\\data\\master\\datapoint\\users\\")
-# dfRaw.show(20,False)
+dfRaw = spark.read.parquet("c:\\work\\project\\data\\master\\datapoint\\users\\")
+dfRaw.show(20,False)
 
 
 # transform

@@ -17,5 +17,8 @@ df = spark.createDataFrame(
     ['id','col1','col2']
 )
 
-df.groupBy("id").agg(concat_ws(",", expr("sort_array(collect_list(col1))")).alias("agg_list"))\
-    .show(10,False)
+# df.groupBy("id").agg(concat_ws(",", expr("sort_array(collect_list(col1))")).alias("agg_list"))\
+#     .show(10,False)
+
+collected = df.filter(col("id")==0).groupBy("id").agg(concat_ws(",", expr("sort_array(collect_list(col1))")).alias("agg_list")).collect()
+print(len(collected))
