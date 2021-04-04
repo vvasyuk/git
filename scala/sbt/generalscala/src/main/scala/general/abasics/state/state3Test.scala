@@ -35,11 +35,20 @@ object state3Test {
 //    println(s"Total Distance: ${result._2}") //35
   }
 
+  // State class has a run field which is a a function - S => (S,A)
   case class State[S, A](run: S => (S, A)) {
-    def flatMap[B](g: A => State[S, B]): State[S, B] = State { (s0: S) =>
+    // flatMap takes a FIP and returns new State with run that expects GolfState as input
+    // makes a functions composition of
+    // this.run and input FIP
+    def flatMap[B](f: A => State[S, B]): State[S, B] = State { (s0: S) =>
       val (s1, a) = run(s0)
-      g(a).run(s1)
+      val r1 = f(a)
+      val r2 = r1.run(s1)
+      r2
     }
+
+    // map takes FIP - A=>B, and returns a new State
+    // by applying FIP to return value (B)
 
 //  def map[B](f: A => B): State[S, B] = flatMap(a => State.point(f(a)))
     def map[B](f: A => B): State[S, B] = State { (s0: S) =>
