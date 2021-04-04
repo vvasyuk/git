@@ -2,12 +2,18 @@ package general.abasics.state
 
 object state3Test {
   def main(args: Array[String]): Unit = {
+    val initState = GolfState(0)
     val s1 = swing(20)
-    val a = s1.run(GolfState(0))
+    val a = s1.run(initState)
     println(a)
 
-    val b = swing(10).flatMap(_ => swing(10)).run(GolfState(0))
+    val b = swing(10).flatMap(_ => swing(10)).run(initState)
     println(b)
+
+    val c = swing(10)
+    val c1 = c.map(a => a+1)
+    val resC = c1.run(initState)
+    println(resC)
 
 //    val stateWithNewDistance: State[GolfState, Int] = for {
 //      _ <- swing(20)
@@ -31,11 +37,15 @@ object state3Test {
 
   case class State[S, A](run: S => (S, A)) {
     def flatMap[B](g: A => State[S, B]): State[S, B] = State { (s0: S) =>
-      println(s0)
       val (s1, a) = run(s0)
       g(a).run(s1)
     }
-    def map[B](f: A => B): State[S, B] = flatMap(a => State.point(f(a)))
+
+//  def map[B](f: A => B): State[S, B] = flatMap(a => State.point(f(a)))
+    def map[B](f: A => B): State[S, B] = State { (s0: S) =>
+      val (s1, a) = run(s0)
+      (s1, f(a))
+    }
   }
   object State {
     def point[S, A](v: A): State[S, A] = State(run = s => (s, v))
