@@ -1,6 +1,35 @@
 package general.abasics.apps
 
 object VendingMachineTest {
+
+//  def loop: IO[Unit] = for {
+//    _ <- putStrLn("Type something: ")
+//    input <- getLine
+//    _ <- putStrLn(s"You said '$input'.")
+//    _ <- if (input == "quit") IO(Unit) else loop //RECURSE
+//  } yield ()
+//  loop.run
+
+//  def mainLoop(gameState: GameState, random: Random): IO[Unit] = for {
+//    _ <- IO { showPrompt() }
+//    userInput <- IO { getUserInput() }
+//    _ <- if (userInput == "H" || userInput == "T") for {
+//      // this first line is a hack; a for-expression must begin with a generat
+//      _ <- IO { println("you said H or T") }
+//      coinTossResult = tossCoin(random)
+//      newNumFlips = gameState.numFlips + 1
+//      newGameState = createNewGameState(userInput, coinTossResult, gameStat
+//        _ <- IO { printGameState(printableFlipResult(coinTossResult
+//        _ <- mainLoop(newGameState, random)
+//      } yield Unit
+//      else for {
+//      _ <- IO { println("did not enter H or T") }
+//    _ <- IO { printGameOver() }
+//    _ <- IO { printGameState(gameState) }
+//    } yield Unit
+//    } yield Unit
+//    mainLoop(s, r).unsafeRunSync()
+
   def main(args: Array[String]): Unit = {
     def session: State = for{
       _ <- insertCoin(10)
@@ -49,4 +78,5 @@ object VendingMachineTest {
   // TODO 1. add refillPepsiStock
   // TODO 2. use seales trait for coins
   // TODO 3. add logic inside session
+  // TODO 4. prompt to insert a coin
 }
