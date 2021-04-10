@@ -13,7 +13,7 @@ object listTest {
     assert(List(1, 2, 3) :+ 4 == List(1, 2, 3, 4))
     assert(0 :: List(1, 2, 3) == List(0, 1, 2, 3))
     assert(List(1, 2, 3).prepended(0) == List(0, 1, 2, 3))
-    assert(List(1, 2, 3).:::(List(1, 2, 3)) == List(1, 2, 3, 1, 2, 3))
+    assert(List(1, 2, 3).:::(List(1, 2, 4)) == List(1, 2, 4, 1, 2, 3))
     assert(List(1, 2, 3).updated(0, 11) == List(11, 2, 3))
 
     // list specific
@@ -35,8 +35,9 @@ object listTest {
     assert(List(1, 2, 2, 3).distinct == List(1, 2, 3))
 
     // Queries
-    assert(List(1, 2, 3).find(_ == 2) == Some(2))
+    assert(List(1, 2, 3, 2).find(_ == 2) == Some(2))
     assert(List(1, 2, 3).exists(_ == 2) == true)
+    val (a, b) = List(1,2,3,2,5).span(_ != 2); assert(a == List(1)); assert(b.drop(1) == List(3,2,5))
 
     // Aggregations
     assert(List(1, 2, 3).mkString(",") == "1,2,3")
