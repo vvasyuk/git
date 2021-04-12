@@ -1,5 +1,6 @@
 package general.abasics.apps
 
+// Modular approach
 object Pizza3Test {
   def main(args: Array[String]): Unit = {
     object PizzaService extends PizzaService
