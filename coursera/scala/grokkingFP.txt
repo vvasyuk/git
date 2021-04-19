@@ -356,7 +356,7 @@
     +---------
     | for comprehension
     +---------
-        - or each element x in xs and for each element y in ys, call the function doSomething(x, y)
+        - for each element x in xs and for each element y in ys, call the function doSomething(x, y)
         - expression after yield defines result of whole expression
         - result is list of type which dictated by yields
             +-------------------------------------------------+
