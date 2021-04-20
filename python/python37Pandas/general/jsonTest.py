@@ -16,3 +16,16 @@ print(v)
 d = json.loads(v)
 date = d['date']
 # print(date)
+
+
+payload = """{
+    "id":"01",
+    "language": "JSON",
+    "edition": "first",
+    "author": "Derrick Mwiti"
+}
+"""
+payloadStr = json.dumps(payload)
+payloadBytesArr = bytes(payloadStr, encoding='utf8')
+print(payloadStr)
+print(payloadBytesArr)

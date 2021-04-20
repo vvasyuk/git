@@ -4,39 +4,44 @@ import time
 
 spark = SparkSession.builder.config("spark.sql.warehouse.dir", "file:///C:/temp").appName("PopularMovies").getOrCreate()
 
+# master
+dfUsers = spark.read.parquet("C:\\work\\project\\data\\master\\datapoint\\users_levels_assign")
+dfUsers.printSchema()
+dfUsers.show(1000,False)
+
 # ### logic
 # raw oracle
-dfUsers = spark.read.parquet("c:\\work\\project\\data\\raw\\datapoint\\users_levels_assign\\")
-# dfUsers.show(1000,False)
-#dfProjects.filter(col("ROLE_ADDED_AS") == "PPMD").show(100,False)
-
-# raw levels wdap
-dfWdapLevels = spark.read.parquet("c:\\work\\project\\data\\raw\\wdap\\levels\\").select(col("id"), col("name"))\
-     .withColumnRenamed("id", "wdap_level_id")\
-     .withColumnRenamed("name", "wdap_level_name")
-# dfLevels.show(20,False)
-
-# raw users wdap
-dfWdapUsers = spark.read.parquet("c:\\work\\project\\data\\raw\\wdap\\users\\").select(col("id"),col("guid"),col("login"),col("roleId")) \
-     .withColumnRenamed("id", "wdap_users_id") \
-     .withColumnRenamed("guid", "wdap_users_guid") \
-     .withColumnRenamed("login", "wdap_users_login")\
-     .withColumnRenamed("roleId", "wdap_users_roleId")
-adminList = ['3','201','202','203','204','205','206']
-dfAdminUsers = dfWdapUsers.filter(col("wdap_users_roleId").isin(adminList))
-
-# oracle users and wdap levels join
-dfLevelsJoin = dfUsers.join(dfWdapLevels, dfUsers['LEVELS'] == dfWdapLevels['wdap_level_name'], 'left').cache()
-dfLevelsJoined = dfLevelsJoin.filter(col('wdap_level_name').isNotNull()).cache()
-dfLevelsJoinedNot = dfLevelsJoin.filter(col('wdap_level_name').isNull()).cache()
-
-# # dfLevelsJoined and wdap users join
-dfLevelsUsersJoin = dfLevelsJoined.join(dfWdapUsers, dfLevelsJoined['EMAIL'] == dfWdapUsers['wdap_users_login'], 'left').cache()
-dfLevelsUsersJoined = dfLevelsUsersJoin.filter(col('wdap_users_login').isNotNull()).cache()
-dfLevelsUsersJoinedNot = dfLevelsUsersJoin.filter(col('wdap_users_login').isNull()).cache()
-
-dfLevelsUsersJoinedNonAdmins = dfLevelsUsersJoined.join(dfAdminUsers, dfLevelsUsersJoined['wdap_users_id'] == dfAdminUsers['wdap_users_id'],'left_anti')
-dfLevelsUsersJoinedNonAdmins.filter(col('wdap_users_id').isin(['1330','1687','1867'])).orderBy(col('wdap_users_id')).show(1000,False)
+# dfUsers = spark.read.parquet("c:\\work\\project\\data\\raw\\datapoint\\users_levels_assign\\")
+# # dfUsers.show(1000,False)
+# #dfProjects.filter(col("ROLE_ADDED_AS") == "PPMD").show(100,False)
+#
+# # raw levels wdap
+# dfWdapLevels = spark.read.parquet("c:\\work\\project\\data\\raw\\wdap\\levels\\").select(col("id"), col("name"))\
+#      .withColumnRenamed("id", "wdap_level_id")\
+#      .withColumnRenamed("name", "wdap_level_name")
+# # dfLevels.show(20,False)
+#
+# # raw users wdap
+# dfWdapUsers = spark.read.parquet("c:\\work\\project\\data\\raw\\wdap\\users\\").select(col("id"),col("guid"),col("login"),col("roleId")) \
+#      .withColumnRenamed("id", "wdap_users_id") \
+#      .withColumnRenamed("guid", "wdap_users_guid") \
+#      .withColumnRenamed("login", "wdap_users_login")\
+#      .withColumnRenamed("roleId", "wdap_users_roleId")
+# adminList = ['3','201','202','203','204','205','206']
+# dfAdminUsers = dfWdapUsers.filter(col("wdap_users_roleId").isin(adminList))
+#
+# # oracle users and wdap levels join
+# dfLevelsJoin = dfUsers.join(dfWdapLevels, dfUsers['LEVELS'] == dfWdapLevels['wdap_level_name'], 'left').cache()
+# dfLevelsJoined = dfLevelsJoin.filter(col('wdap_level_name').isNotNull()).cache()
+# dfLevelsJoinedNot = dfLevelsJoin.filter(col('wdap_level_name').isNull()).cache()
+#
+# # # dfLevelsJoined and wdap users join
+# dfLevelsUsersJoin = dfLevelsJoined.join(dfWdapUsers, dfLevelsJoined['EMAIL'] == dfWdapUsers['wdap_users_login'], 'left').cache()
+# dfLevelsUsersJoined = dfLevelsUsersJoin.filter(col('wdap_users_login').isNotNull()).cache()
+# dfLevelsUsersJoinedNot = dfLevelsUsersJoin.filter(col('wdap_users_login').isNull()).cache()
+#
+# dfLevelsUsersJoinedNonAdmins = dfLevelsUsersJoined.join(dfAdminUsers, dfLevelsUsersJoined['wdap_users_id'] == dfAdminUsers['wdap_users_id'],'left_anti')
+# dfLevelsUsersJoinedNonAdmins.filter(col('wdap_users_id').isin(['1330','1687','1867'])).orderBy(col('wdap_users_id')).show(1000,False)
 # df = dfLevelsUsersJoined\
 #     .groupBy("wdap_users_guid").agg(concat_ws(",", expr("sort_array(collect_list(wdap_level_id))")).alias("ownedLevels"))\
 #     .withColumnRenamed("wdap_users_guid", "guid")
@@ -47,10 +52,22 @@ dfLevelsUsersJoinedNonAdmins.filter(col('wdap_users_id').isin(['1330','1687','18
 # print(dfLevelsUsersJoinedNonAdmins.select(col('wdap_users_id')).distinct().count())
 #dfLevelsUsersJoined.filter(col('wdap_users_id').isin(['801'])).show(5,False)
 
+# raw dp users
+# dfUsers = spark.read.parquet("c:\\work\\project\\data\\raw\\datapoint\\users_levels_assign\\").cache()
+# dfUsers.show(20,False)
+# uniqUsrLevels = dfUsers.select(col("levels")).distinct().count()
+# print(f"\nuniq user levels: {uniqUsrLevels}")
+# uniqUsrEmails = dfUsers.select(col("email")).distinct().count()
+# print(f"\nuniq user emails: {uniqUsrEmails}")
 
-# master result
-df = spark.read.parquet("c:\\work\\project\\data\\master\\datapoint\\users_levels_assign\\")
-df.show(20,False)
+
+# master wdap users
+# dfWdapUsers = spark.read.parquet("c:\\work\\project\\data\\master\\wdap\\users\\")
+# dfWdapUsers.show(20,False)
+
+# raw wdap levels
+# dfWdapLevels = spark.read.parquet("c:\\work\\project\\data\\raw\\wdap\\levels\\")
+# dfWdapLevels.show(20,False)
 
 
 

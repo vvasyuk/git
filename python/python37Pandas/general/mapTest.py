@@ -1,5 +1,42 @@
 
 
+def getPayload(wdap_secret_name,s3_bucket,rowData):
+    payload = {
+        'funcName1': 'func_users_get',
+        'wdap_secret_name': wdap_secret_name,
+        's3_bucket': s3_bucket,
+        'rowData': rowData,
+        'detail1': {
+            'jobName': 'vv_tmp3'
+        }
+    }
+    return payload
+
+data = [
+          {"guid": "BE815D1B06263008E0532A061E0A2F3D", "ownedLevels": "13832,15846"},
+          {"guid": "BE815D1B06563008E0532A061E0A2F3D", "ownedLevels": "44"},
+          {"guid": "BE8711E56A0E99D8E0532A061E0A1962", "ownedLevels": "13123"}
+          ]
+# print(getPayload('a','b',data))
+
+pl = getPayload('a','b',data)
+print(pl)
+
+try:
+    if 'jobName' in pl['detail']:
+        print(pl['detail']['jobName'])
+except KeyError:
+    pass
+
+# if 'detail' in pl:
+#     if 'jobName' in pl['detail']:
+#         print(pl['detail']['jobName'])
+
+if 'funcName' in pl:
+    print('funcName')
+
+if 'funcName1' in pl:
+    print('funcName1')
 
 # a_dict = {'login': 'pswd'}
 # print(type(a_dict))
@@ -22,12 +59,12 @@
 # date = t1['data'].get('date', None)
 # print(date)
 
-a_dict = {'A': 1, 'B': 2}
+# a_dict = {'A': 1, 'B': 2}
 # firstFewpairs = {k: a_dict[k] for k in sorted(a_dict.keys())[:5]}
 # print(firstFewpairs)
 
-firstFewpairs2 = {k: a_dict[k] for k in list(a_dict.keys())[:5]}
-print(firstFewpairs2)
+# firstFewpairs2 = {k: a_dict[k] for k in list(a_dict.keys())[:5]}
+# print(firstFewpairs2)
 
 # a_dict = {'A': 1, 'B': 2}
 # items_view = a_dict.items()

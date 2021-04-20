@@ -1,6 +1,11 @@
 # start_date = 20210201
-l = [20210130,20210131,20210202,20210201,20210203]
+l = [1,2,3,4,5,6,7,8,9,10]
 print(l[0])
+res = [l[i: i+3] for i in range(0, len(l), 3)]
+for i in res:
+    print(i)
+
+
 # l2 = sorted(i for i in l if i >= start_date)
 #
 # print(l2.pop(0))
