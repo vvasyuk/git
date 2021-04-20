@@ -1,0 +1,15 @@
+import base64
+import gzip
+import json
+
+input = 'H4sIAAAAAAAAAJ2T22rjMBCGX0WYhTrgxOdTIBcpm+3FHro0uWuCkOVx4saRhCQ3DaXv0mfpk63s9JDuwkKL76TR//3zz/je2oFSZA2LgwBrbH2dLqb452w+n17MLMfiewbSHOeB56VZnPp+Epvjhq8vJG+FuXHJXrkN2RUlccu1UFSEw31JhDhULaPH2rmWQHamOPAC3/Ui14/c6y8/povZfLGKoyzNAIIky5LIyyNS5XnmZRAAjWJCIiOh2kJRWQtdc/atbjRIZY2vLZCSy2HVHwxvFGfWqsfNboHpruLeqktDDRMv96MsyA0qjr3cfEEYJ16SBH4UeHGUeJkfh2GWpkGSe34WxGEaBF2jujbxaLIznfqJn4XGWZJFaey8xGbkr2dXV5dXK/SLz1u6OW/pFvQYTRnq/SFOaSsllMg+LRig/QYYoqRparZGegPod6svixugGnEBknTNjtHCXCgBtK5qI1H0b1HJQSHGNYK7WuklW0hCoSB0i+wdVxpJoCaBXhw1ROnBeMmeHp8eTXaAlpZ7S6Srido+zw13k+pwI3FYWg4yjgDliYNqhp4rNoSVDcijTPdJUitA8HHdOPy/rulsgrqHuFVmzngN2oZuoIOPs/wg6GHv5d5ge1lrwJpjFdoG3DbaeY7YQSXR8Alkksc98kT6jafCkWg15v2U7eMiTF6A3+EwUSEWRG+wJHsHnfPyMCkOGpRdtFUFcoSx0hJje+Cgs1ZXw+xs8JdFLrQrDnrDmVtwzSmX4NKmNvGdmgzjtDeJiahxtyWn+etWMqSgqUZ4R7bwWmO/biVmZAcO2u6JXKtPGUjS43a9J/yzXd3/g6nZYGULIhWU2ExJcKYM/b2bgfWwevgD8KEfI8wEAAA='
+
+compressed_payload = base64.b64decode(input)
+uncompressed_payload = gzip.decompress(compressed_payload)
+payload = json.loads(uncompressed_payload)
+
+print(payload)
+
+log_events = payload['logEvents']
+for log_event in log_events:
+    print(f'LogEvent: {log_event}')
