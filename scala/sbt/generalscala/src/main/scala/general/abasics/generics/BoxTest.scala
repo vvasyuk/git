@@ -1,6 +1,8 @@
 package generics
 
 object BoxTest {
+  class Box[+T] (val x: T)
+
   def main(args: Array[String]): Unit = {
     val s = new Box[String]("a")
     val i = new Box[Int](1)
