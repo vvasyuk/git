@@ -1,9 +1,11 @@
 # start_date = 20210201
 l = [1,2,3,4,5,6,7,8,9,10]
-print(l[0])
+# print(l[0])
 res = [l[i: i+3] for i in range(0, len(l), 3)]
-for i in res:
-    print(i)
+chunks_cnt = len(res)
+for i in range(chunks_cnt):
+    print(f"\ncalling lambda: {i+1} of {chunks_cnt} times")
+    print(res[i])
 
 
 # l2 = sorted(i for i in l if i >= start_date)
