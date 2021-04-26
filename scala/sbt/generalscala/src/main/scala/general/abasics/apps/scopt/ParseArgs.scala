@@ -1,4 +1,4 @@
-package general.scopt
+package general.abasics.apps.scopt
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter

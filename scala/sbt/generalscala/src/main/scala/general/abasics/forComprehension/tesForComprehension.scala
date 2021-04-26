@@ -1,4 +1,4 @@
-package forComprehension
+package general.abasics.forComprehension
 
 object tesForComprehension {
   def main(args: Array[String]): Unit = {

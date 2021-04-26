@@ -1,4 +1,4 @@
-package xor
+package general.abasics.bitOps
 
 object xorTest {
   def main(args: Array[String]): Unit = {

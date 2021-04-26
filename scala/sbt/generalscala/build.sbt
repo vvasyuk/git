@@ -22,7 +22,8 @@ val os         = "com.lihaoyi" %% "os-lib" % "0.7.2"
 val upickle    = "com.lihaoyi" % "upickle_native0.4_2.13" % "1.2.3"
 val cats       = "org.typelevel" %% "cats-effect" % "3.0.0"
 val quickLense = "com.softwaremill.quicklens" %% "quicklens" % "1.6.1"
-val actors     = "com.typesafe.akka" %% "akka-actor" % "2.6.14"
 
-libraryDependencies ++= Seq(scopt, scalaXml, typeSafe, scalaArm, sparkJava, http, wireMock, scalaMock, scalaTest, scalactic, scalaCheck, mockito, camelCore, camelScala, os, upickle, cats, quickLense, actors)
+
+
+libraryDependencies ++= Seq(scopt, scalaXml, typeSafe, scalaArm, sparkJava, http, wireMock, scalaMock, scalaTest, scalactic, scalaCheck, mockito, camelCore, camelScala, os, upickle, cats, quickLense)
 //libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8" % Test

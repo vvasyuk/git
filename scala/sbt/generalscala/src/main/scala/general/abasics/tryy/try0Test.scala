@@ -1,8 +1,8 @@
-package tryy
+package general.abasics.tryy
 
 import scala.util.{Failure, Try}
 
-object tryTest {
+object try0Test {
   def main(args: Array[String]): Unit = {
     Try(func(true))
       .onF(e => println(e))

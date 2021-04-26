@@ -1,4 +1,4 @@
-package implicitt
+package general.abasics.`implicit`
 
 object implicitTest {
   def main(args: Array[String]): Unit = {

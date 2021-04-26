@@ -1,4 +1,4 @@
-package general.camel
+package general.abasics.apps.camel
 
 import org.apache.camel.CamelContext
 import org.apache.camel.builder.RouteBuilder

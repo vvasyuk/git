@@ -244,3 +244,6 @@
 ###########
 #Type System  (Programming Scala - Scalability)
 ###########
+  - variance under inheritence
+    [+A] -> if List[String] is subtype of List[AnyRef]  - variance is covariant
+    [-A] -> Function1(-C,+C) is contravariant in its first type parameter, and so Function1[Any, Any] is a subtype of Function1[String, Any].

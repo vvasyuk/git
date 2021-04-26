@@ -34,9 +34,22 @@ object VendingMachineTest {
     def session: State = for{
       _ <- insertCoin(10)
       _ <- insertCoin(15)
+      _ <- insertCoin(10)
       _ <- givePepsi(1)
       change <- reset
     } yield change
+
+//    def session: State = insertCoin(10)
+//      .flatMap(_ =>
+//        insertCoin(15)
+//          .flatMap(_ =>
+//            givePepsi(1)
+//              .flatMap(_ =>
+//                reset
+//                  .map(change => change)
+//              )
+//          )
+//      )
 
     val initial = VM(0, 1,1)
     val r = session.run(initial)
