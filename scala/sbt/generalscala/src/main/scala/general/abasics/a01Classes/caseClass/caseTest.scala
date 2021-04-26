@@ -1,4 +1,4 @@
-package general.abasics.caseClass
+package general.abasics.a01Classes.caseClass
 
 object caseTest {
   def main(args: Array[String]): Unit = {

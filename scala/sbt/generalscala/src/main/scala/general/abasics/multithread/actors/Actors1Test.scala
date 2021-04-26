@@ -1,7 +1,6 @@
-package general.abasics.actors
+package general.abasics.multithread.actors
 
 import akka.actor.{Actor, ActorSystem, Props}
-import scala.io.StdIn
 
 object Actors1Test {
   case class Hello(msg:String)

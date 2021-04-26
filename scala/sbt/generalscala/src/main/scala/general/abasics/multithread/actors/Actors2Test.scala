@@ -1,5 +1,7 @@
-package general.abasics.actors
+package general.abasics.multithread.actors
+
 import akka.actor.{Actor, ActorSystem, Props}
+
 import scala.io.StdIn
 
 object Actors2Test {

@@ -1,4 +1,4 @@
-package general.abasics.state
+package general.abasics.monads.state
 
 object state4Test {
 

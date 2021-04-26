@@ -1,4 +1,4 @@
-package general.abasics.abstractClass
+package general.abasics.a01Classes.abstractClass
 
 abstract class Pet (name: String) {
   def speak: Unit = println(s"My name is $name")

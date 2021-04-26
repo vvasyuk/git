@@ -1,4 +1,4 @@
-package general.abasics.caseClass
+package general.abasics.a01Classes.caseClass
 
 abstract class Topping(val mass: Int)
 case class Mozzarella() extends Topping(100)

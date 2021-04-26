@@ -1,4 +1,4 @@
-package general.abasics.ioAndState
+package general.abasics.monads.ioAndState
 
 import cats.data.StateT
 import cats.effect.IO

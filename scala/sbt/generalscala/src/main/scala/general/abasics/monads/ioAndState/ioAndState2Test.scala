@@ -1,21 +1,17 @@
-package general.abasics.ioAndState
+package general.abasics.monads.ioAndState
 
 import cats.data.StateT
 import cats.effect.IO
 import cats.effect.unsafe.implicits.global
 
-object ioAndStateT3Test {
+object ioAndState2Test {
   def main(args: Array[String]): Unit = {
-    val forExpression: StateT[IO, IntState, Int] = for {
-      _ <- add(2)
-      _ <- add(3)
-      x <- multiply(10)
-    } yield x
-
-    val res = forExpression.run(IntState(1))
-    // res.map(t => println(t))
-    val res1 = res.unsafeRunSync()
-    println(res1)
+    println("start")
+    val a = add(1)              // StateT[IO,IntState,Int]
+    val a1 = a.run(IntState(1)) // IO[(IntState, Int)]
+    //a1.map(x => println(x))
+    val a2 = a1.unsafeRunSync()
+    println(a2)
   }
 
   case class IntState(i: Int)

@@ -1,4 +1,4 @@
-package general.abasics.caseClass
+package general.abasics.a01Classes.caseClass
 
 object testPizza {
   def main(args: Array[String]): Unit = {

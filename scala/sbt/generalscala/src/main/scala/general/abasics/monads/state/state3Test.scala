@@ -1,4 +1,4 @@
-package general.abasics.state
+package general.abasics.monads.state
 
 object state3Test {
   def main(args: Array[String]): Unit = {

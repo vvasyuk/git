@@ -62,7 +62,7 @@ postfix operator                // method after the object ("7 toLong")
 -Bitwise operations
 1 & 2   // 1 (0001) and 2 (0010) = 0 (0000)
 1 | 2   // 1 (0001) and 2 (0010) = 3 (0011)
-1 ˆ 3   // 1 (0001) and 2 (0010) = 2 (0010)
+1 ˆ 3   // 1 (0001) and 3 (0011) = 2 (0010)
 ~1      // inverts each bit in 1 (0001), yielding -2, which in binary looks like 11111111111111111111111111111110.
 1 << 2  // 4
 
