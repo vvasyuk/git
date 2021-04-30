@@ -1,4 +1,11 @@
 
+map = {
+    "data": [
+          {"guid": "BE815D1B06263008E0532A061E0A2F3D", "ownedLevels": "13832,15846"},
+          {"guid": "BE815D1B06563008E0532A061E0A2F3D", "ownedLevels": "44"},
+          {"guid": "BE8711E56A0E99D8E0532A061E0A1962", "ownedLevels": "13123"}
+          ]
+}
 
 def getPayload(wdap_secret_name,s3_bucket,rowData):
     payload = {

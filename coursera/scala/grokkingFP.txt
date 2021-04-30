@@ -1018,6 +1018,249 @@
             +-----------------------------------------------------------------------------------------------+                                                       
 
 
+####################
+# IO as values
+####################
+    - problem: currency exchange when rate is trending (0.81, 0.82, 0.85), given exchangeTable API which fetch given cur to all other curs
+        example: users wants to exhange 1000 USD to EUR but only when 3 prev rates are increasing (trending)
+
+    - using only IO
+        as FP devs we will use:
+        1. value class
+            +--------------------------------------------------+
+            | case class Currency(name: String) extends AnyVal |
+            +--------------------------------------------------+
+        2. external data available through input IO action
+            +------------------------------------------------------------------+
+            | def exchangeTable(from: Currency): IO[Map[Currency, BigDecimal]] |
+            +------------------------------------------------------------------+
+        3. bottom-up approach (start implementing small functions)
+            function to decide whether seq is trending
+            +----------------------------------------------------------------------------+              +--------------------------------------------------------------+
+            | def trending(rates: List[BigDecimal]): Boolean                             |  //          | def trending(rates: List[BigDecimal]): Boolean = {           |
+            | trending(List.empty)                                                       |  // false    |     rates.size > 1 &&                                        |
+            | trending(List(BigDecimal(1), BigDecimal(2), BigDecimal(3), BigDecimal(8))) |  // true     |     rates.zip(rates.drop(1))                                 |
+            | trending(List(BigDecimal(1), BigDecimal(4), BigDecimal(3), BigDecimal(8))) |  // false    |         .forall(ratePair => ratePair match {                 |
+            +----------------------------------------------------------------------------+              |             case (previousRate, rate) => rate > previousRate |
+                                                                                                        |         })                                                   |
+                                                                                                        | }                                                            |
+                                                                                                        +--------------------------------------------------------------+
+            function to extract single currency from table                              v1                                                                      v2
+            +-----------------------------------------------------------------------+   +--------------------------------------------------------------------+  +----------------------------------------------------------------+  
+            | val usdExchangeTables = List(                                         |   | def extractSingleCurrencyRate(currencyToExtract: Currency)         |  | def extractSingleCurrencyRate(currencyToExtract: Currency)     |
+            |     Map(Currency(“EUR”) -> BigDecimal(0.82)),                         |   |     (table: Map[Currency, BigDecimal]): Option[BigDecimal] = {     |  |     (table: Map[Currency, BigDecimal]): Option[BigDecimal] = { |
+            |     Map(Currency(“EUR”) -> BigDecimal(0.83)),                         |   |         table.filter(kv => kv match {                              |  |         table.get(currencyToExtract)                           |
+            |     Map(Currency(“JPY”) -> BigDecimal(104))                           |   |             case (currency, rate) => currency == currencyToExtract |  | }                                                              |
+            | )                                                                     |   |         }).values.headOption                                       |  +----------------------------------------------------------------+
+            | usdExchangeTables.map(extractSingleCurrencyRate(Currency(“EUR”))))    |   |     }                                                              |
+            | // List(Some(BigDecimal(0.82)), Some(BigDecimal(0.83)), None)         |   +--------------------------------------------------------------------+   
+            +-----------------------------------------------------------------------+
+
+        4. linking all together
+            +-----------------------------------------------------------------------+   +------------------------------------------------------------------------------------------------------+
+            | def lastRates(from: Currency, to: Currency): IO[List[BigDecimal]] = { |   | def exchangeIfTrending(amount: BigDecimal, from: Currency, to: Currency): IO[Option[BigDecimal]] = { |
+            |     for {                                                             |   |     lastRates(from, to).map(rates => if (trending(rates)) Some(amount * rates.last) else None)       |
+            |         table1 <- retry(exchangeTable(from), 10)                      |   | }                                                                                                    |
+            |         table2 <- retry(exchangeTable(from), 10)                      |   +------------------------------------------------------------------------------------------------------+
+            |         table3 <- retry(exchangeTable(from), 10)                      |
+            |         lastTables = List(table1, table2, table3)                     |
+            |     } yield lastTables.flatMap(extractSingleCurrencyRate(to))         |
+            | }                                                                     |
+            +-----------------------------------------------------------------------+
+        problem - we fetch 3 table and make a decision, instead we would like to fetch thousands of tables and make a decision when its trending
+
+    - using IO with recursion
+        // possible when you call unsafeRunSync the IO value returned that it will run infinitely
+        +------------------------------------------------------------------------------------------------------+    +----------------------------------------------------------------------------------------------+
+        | def exchangeIfTrending(amount: BigDecimal, from: Currency, to: Currency): IO[Option[BigDecimal]] = { |    | def exchangeIfTrending(amount: BigDecimal, from: Currency, to: Currency): IO[BigDecimal] = { |    
+        |     for {                                                                                            |    |     for {                                                                                    |
+        |         rates <- lastRates(from, to)                                                                 |    |         rates <- lastRates(from, to)                                                         |
+        |         result <- if (trending(rates)) IO.pure(Some(amount * rates.last))                            |    |         result <- if (trending(rates)) IO.pure(amount * rates.last)                          |
+        |                     else exchangeIfTrending(amount, from, to)                                        |    |         else exchangeIfTrending(amount, from, to)                                            |
+        |     } yield result                                                                                   |    |     } yield result                                                                           |
+        | }                                                                                                    |    | }                                                                                            |
+        +------------------------------------------------------------------------------------------------------+    +----------------------------------------------------------------------------------------------+
+
+        - change lastRates to make arbitrary number of calls
+        v1                                                                                  v2
+        +-------------------------------------------------------------------------------+   +-------------------------------------------------------------------------------+
+        | def lastRates(from: Currency, to: Currency, n: Int): IO[List[BigDecimal]] = { |   | def lastRates(from: Currency, to: Currency, n: Int): IO[List[BigDecimal]] = { |
+        |     List.range(0, n).map(_ => currencyRate(from, to)).sequence                |   |     if (n < 1) {                                                              |
+        | }                                                                             |   |     IO.pure(List.empty)                                                       |
+        +-------------------------------------------------------------------------------+   |     } else {                                                                  ||     for {                                                                     |
+                                                                                            |         currencyRate <- currencyRate(from, to)                                |
+                                                                                            |         remainingRates <- if (n == 1) IO.pure(List.empty)                     |
+                                                                                            |         else lastRates(from, to, n - 1)                                       |
+                                                                                            |     } yield remainingRates.prepended(currencyRate)                            |
+                                                                                            |     }                                                                         |
+                                                                                            | }                                                                             |
+                                                                                            +-------------------------------------------------------------------------------+
+        -problem - it fetces n rates and makes a decision but we need a sliding windows
+
+    - using IO with Streams
+        -data streams
+            // one function should be responsible for fetching something
+            // one function should be responsible for timeouts, delays between calls, retries
+
+        -streams in imperative languages
+            // executed only after usig a termina operation                         // lazy infinite stream
+            +------------------------------------------------------------------+    +---------------------------------------------------------------------------------+
+            | Stream<Integer> numbers = Stream.of(1, 2, 3);                    |    | Stream<Integer> infiniteNumbers = Stream.iterate(0, i -> i + 1);                |
+            | static Stream<Integer> oddNumbers(Stream<Integer> numbers) {     |    | Stream<Integer> infiniteOddNumbers = oddNumbers(infiniteNumbers);               |
+            |     return numbers.filter(n -> n % 2 != 0);                      |    | // infiniteOddNumbers.collect(Collectors.toList());                             |
+            | }                                                                |    | Stream<Integer> limitedStream = infiniteOddNumbers.limit(3);                    |
+            | Stream<Integer> oddNumbers = oddNumbers(numbers);                |    | List<Integer> limitedResult = limitedStream.collect(Collectors.toList());       |
+            | List<Integer> result = oddNumbers.collect(Collectors.toList());  |    +---------------------------------------------------------------------------------+
+            +------------------------------------------------------------------+
+        
+        - functional stream
+            +----------------------------------------------------------+    +---------------------------------------+   +---------------------------------------+   +-------------------------------+
+            | import fs2.Stream                                        |    | val stream1 = Stream(1, 2, 3)         |   | val stream4 = stream1.append(stream1) |   | val stream5 = stream4.take(4) |
+            | val numbers = Stream(1, 2, 3)                            |    | val stream2 = Stream(4, 5, 6)         |   | stream4.toList                        |   | stream5.toList                |
+            | val oddNumbers = numbers.filter(_ % 2 != 0)              |    | val stream3 = stream1.append(stream2) |   | // List(1, 2, 3, 1, 2, 3)             |   | // List(1, 2, 3, 1)           |
+            | oddNumbers.toList                       // List(1, 3)    |    | stream3.toList                        |   +---------------------------------------+   +-------------------------------+
+            | numbers.toList                          // List(1, 2, 3) |    | // List(1, 2, 3, 4, 5, 6)             |
+            | oddNumbers.map(_ + 17).take(1).toList   // List(18)      |    +---------------------------------------+
+            +----------------------------------------------------------+
+            -recursive stream                           -stream functions
+            +---------------------------------------+   +--------------------------------------+        +------------------------------------------------------+
+            | def numbers(): Stream[Pure, Int] = {  |   | val numbers = Stream(1, 2, 3).repeat |        | Stream(1).repeat.take(3).toList                      |    // 1,1,1
+            |     Stream(1, 2, 3).append(numbers()) |   | numbers.take(8).toList               |        | Stream(1).append(Stream(0, 1).repeat).take(4).toList |    // 1,0,1,0
+            | }                                     |   | // List(1, 2, 3, 1, 2, 3, 1, 2)      |        | Stream(2).map(_ * 13).repeat.take(1).toList          |    // 26
+            | val infinite123s = numbers()          |   +--------------------------------------+        | Stream(13).filter(_ % 2 != 0).repeat.take(2).toList  |    // 13, 13
+            | infinite123s.take(8).toList           |   // repeat call append and itself recursively    +------------------------------------------------------+
+            | // List(1, 2, 3, 1, 2, 3, 1, 2)       |
+            +---------------------------------------+
+
+        // we can have streams of IO values that will be automatically executed, on demand, when someone else consumes elements from the stream
+            // delays execution of side effect                              // if we dont know upfront how many times we need to roll dice
+            // we can now use it in for comprhension to call it twice, etc  // cast the die until we get 6
+            +----------------------------------------------------------+    +---------------------------------------------------------------+
+            | static int castTheDieImpure() {                          |    | val dieCast: Stream[IO, Int] = Stream.eval(castTheDie())      |   // stream of a single IO value, eval executes IO when consumer requests
+            |     System.out.println(“The die is cast”);               |    | val oneDieCastProgram: IO[List[Int]] = dieCast.compile.toList |   // .compile.toList on the dieCast stream, we transform it to another value: IO[List[Int]]
+            |     Random rand = new Random();                          |    +---------------------------------------------------------------+
+            |     return rand.nextInt(6) + 1;                          |    +-----------------------------------+
+            | }                                                        |    | oneDieCastProgram.unsafeRunSync() |
+            | def castTheDie(): IO[Int] = IO.delay(castTheDieImpure()) |    | The die is cast                   |    
+            +----------------------------------------------------------+    | // List(4)                        |
+                                                                            +-----------------------------------+
+        -infinite stream of IO based values
+            // will run infinitely
+            +------------------------------------------------------------------------------+    +------------------------------------------------------------------------------+
+            | val infiniteDieCasts: Stream[IO, Int] = Stream.eval(castTheDie()).repeat     |    | val firstThreeCasts: IO[List[Int]] = infiniteDieCasts.take(3).compile.toList |
+            | val infiniteDieCastsProgram: IO[List[Int]] = infiniteDieCasts.compile.toList |    | firstThreeCasts.unsafeRunSync()                                              |
+            |//val infiniteDieCastsProgram: IO[Unit] = infiniteDieCasts.compile.drain      |    | The die is cast                                                              |
+            | infiniteDieCastsProgram.unsafeRunSync()                                      |    | The die is cast                                                              |    
+            +------------------------------------------------------------------------------+    | The die is cast                                                              |
+                                                                                                | //List(6, 2, 6)                                                              |
+                                                                                                +------------------------------------------------------------------------------+
+            // filter
+            +---------------------------------------------------------------------------------+
+            | val six: IO[List[Int]] = infiniteDieCasts.filter(_ == 6).take(1).compile.toList |
+            | six.unsafeRunSync()                                                             |
+            | The die is cast                                                                 |
+            | The die is cast                                                                 |
+            | The die is cast                                                                 |
+            | The die is cast                                                                 |
+            | //List(6)                                                                       |
+            +---------------------------------------------------------------------------------+
+
+        - original problem
+            // need to have a sliding windows
+            // need to put timeouts between calls
+
+            - infinite stream of exchange tables
+            +---------------------------------------------------------------------+
+            | def rates(from: Currency, to: Currency): Stream[IO, BigDecimal] = { |
+            |     Stream.eval(exchangeTable(from))                                | // Stream.eval function to create a single-element stream that uses the provided IO action to produce a single BigDecimal
+            |         .repeat                                                     | // make stream infinite
+            |         .map(extractSingleCurrencyRate(to))                         | // map each value in a stream to extract a single rate
+            |         .unNone                                                     | // filtering nones from a stream of options
+            | }                                                                   |
+            +---------------------------------------------------------------------+
+
+            - exception handling
+            +----------------------------------------------------------------------------------------------------------------------------------+
+            | val year: Stream[IO, Int] = Stream.eval(IO.pure(996))                                                                            |
+            | val noYear: Stream[IO, Int] = Stream.raiseError[IO](new Exception("no year"))                                                    |
+            |                                                                                                                                  |
+            | val stream1 = year.orElse(Stream.eval(IO.delay(2020)))                              // Stream[IO, Int]                           |
+            | val stream2 = noYear.orElse(Stream.eval(IO.delay(2020)))                            // Stream[IO, Int]                           |
+            | val stream3 = year.orElse(Stream.raiseError[IO](new Exception("can't recover")))    // Stream[IO, Int]                           |
+            | val stream4 = noYear.orElse(Stream.raiseError[IO](new Exception("can't recover")))  // Stream[IO, Int]                           |
+            | stream1.compile.toList.unsafeRunSync()                                              // 996                                       |
+            | stream2.compile.toList.unsafeRunSync()                                              // 2020                                      |
+            | stream3.compile.toList.unsafeRunSync()                                              // 996                                       |
+            | stream4.compile.toList.unsafeRunSync()                                              // Exception in thread "main": can't recover |
+            +----------------------------------------------------------------------------------------------------------------------------------+
+
+            - rates with error handling                                                             - if we want 3 - take 3
+            // dont fail recover with the given fallback stream (which is exactly the same one)
+            +---------------------------------------------------------------------+                 +--------------------------------------------------------------------------------------+
+            | def rates(from: Currency, to: Currency): Stream[IO, BigDecimal] = { |                 | val firstThreeRates = rates(Currency(“USD”), Currency(“EUR”)).take(3).compile.toList |
+            |     Stream.eval(exchangeTable(from))                                |                 | // O[List[BigDecimal]]                                                               |
+            |         .repeat                                                     |                 +--------------------------------------------------------------------------------------+
+            |         .map(extractSingleCurrencyRate(to))                         |
+            |         .unNone                                                     |
+            |         .orElse(rates(from, to))                                    | 
+            | }                                                                   |
+            +---------------------------------------------------------------------+
+
+            -sliding window
+            +----------------------------------------------------------------------------------------------+                                                    // rates
+            | def exchangeIfTrending(amount: BigDecimal, from: Currency, to: Currency): IO[BigDecimal] = { |                                                    +------+    +------+    +------+    +------+
+            |     rates(from, to)                                                                          |                                                    | 0.86 | -> | 0.78 | -> | 0.80 | -> | 0.87 |
+            |         .sliding(3)                                                                          |    // sliding windows of 3 rates (uses a Queue)    +------+    +------+    +------+    +------+
+            |         .map(_.toList)                                                                       |                                                    // sliding
+            |         .filter(trending)                                                                    |    // Stream[IO, List[BigDecimal]]                 +----------------+    +----------------+
+            |         .map(_.last)                                                                         |                                                    | 0.86 0.78 0.80 | -> | 0.78 0.80 0.87 |
+            |         .take(1)                                                                             |                                                    +----------------+    +----------------+
+            |         .compile                                                                             |                                                    // .filter(trending)
+            |         .lastOrError                                                                         |                                                    +----------------+
+            |         .map(_ * amount)                                                                     |                                                    | 0.78 0.80 0.87 |
+            | }                                                                                            |                                                    +----------------+
+            +----------------------------------------------------------------------------------------------+                                                    //.map(_.last)
+            - waiting between calls
+            // ticks is a Stream value that represents a stream that emits Unit values (()) every 1 second, once executed
+            +-----------------------------------------------------+
+            | val firstThreeRates: IO[List[(BigDecimal, Unit)]] = |
+            |     rates(Currency(“USD”), Currency(“EUR”))         |
+            |         .zip(ticks).take(3).compile.toList          | // When we zip two streams, we need to wait for an element from both streams to produce an element of the combined stream
+            |         firstThreeRates.unsafeRunSync()             |
+            | // List((0.80,()), (0.79,()), (0.82,()))            |
+            +-----------------------------------------------------+
+
+            - zip strems
+            +----------------------------------------------------------------------------------------------+
+            | def exchangeIfTrending(amount: BigDecimal, from: Currency, to: Currency): IO[BigDecimal] = { |
+            |     rates(from, to)                                                                          |
+            |         .zipLeft(ticks)                                                                      |
+            |         .sliding(3)                                                                          |
+            |         .map(_.toList)                                                                       |
+            |         .filter(trending)                                                                    |
+            |         .map(_.last)                                                                         |
+            |         .take(1)                                                                             |
+            |         .compile                                                                             |
+            |         .lastOrError                                                                         |
+            |         .map(_ * amount)                                                                     |
+            | }                                                                                            |
+            +----------------------------------------------------------------------------------------------+
+           
+         
+
+
+
+
+
+          
+
+
+
+
+            
+      
+       
+
 
 
 
