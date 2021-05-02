@@ -81,22 +81,24 @@ postfix operator                // method after the object ("7 toLong")
 ###############
 # Functional Objects
 ###############
-class Rational(n: Int, d: Int) {                    // primary constructor will be created with these two params
+class Rational(n: Int, d: Int, val visible = 0) {   // primary constructor will be created with these two params
     require(d != 0)                                 // class body code will be added to primary constructor (precondition of the primary constructor that d must be non-zero)
     private val g = gcd(n.abs, d.abs)
-    val numer = n / g
-    val denom = d / g
+    val numer = n / g                               // n, d not visible, cause theya re constructor params
+    val denom = d / g                               // need to prefix them with val or add fields as here
     def this(n: Int) = this(n, 1)                   // auxiliary constructors invokes the primary constructor
     def + (that: Rational): Rational =              // simply that.d will not work because d is not accessible outside object where they invoked, so we added numer, denum fields
         new Rational(numer * that.denom + 
         that.numer * denom,denom * that.denom)
     def + (i: Int): Rational =
         new Rational(numer + i * denom, denom)
-    def (that: Rational): Rational =
-        new Rational(numer * that.denom that.numer* 
-        denom,denom * that.denom)
-    def (i: Int): Rational =
-        new Rational(numer i* denom, denom)
+    def - (that: Rational): Rational =
+      new Rational(
+        numer * that.denom - that.numer * denom,
+        denom * that.denom
+      )
+    def - (i: Int): Rational =
+      new Rational(numer - i * denom, denom)
     def * (that: Rational): Rational =
         new Rational(numer * that.numer, denom * 
         that.denom)
