@@ -1,429 +1,429 @@
 ###############
 # Classes and Objects
 ###############
-class ChecksumAccumulator {
-    private var sum = 0
-    def add(b: Byte): Unit = { sum += b }
-    def checksum(): Int = ~(sum & 0xFF) + 1
-}
-
--Singleton objects
-import scala.collection.mutable
-object ChecksumAccumulator {
-    private val cache = mutable.Map.empty[String, Int]
-    def calculate(s: String): Int =
-        if (cache.contains(s))
-            cache(s)
-        else {
-            val acc = new ChecksumAccumulator
-            for (c <s)
-            acc.add(c.toByte)
-            val cs = acc.checksum()
-            cache += (s >
-            cs)
-            cs
-        }
-}
-
--A Scala application
-import ChecksumAccumulator.calculate
-object Summer {
-    def main(args: Array[String]) = {
-        for (arg <args)
-            println(arg + ": " + calculate(arg))
+    class ChecksumAccumulator {
+        private var sum = 0
+        def add(b: Byte): Unit = { sum += b }
+        def checksum(): Int = ~(sum & 0xFF) + 1
     }
-}
-
--The App trait
-import ChecksumAccumulator.calculate
-object FallWinterSpringSummer extends App {
-    for (season <List("fall", "winter", "spring"))
-        println(season + ": " + calculate(season))
-}
+    
+    -Singleton objects
+    import scala.collection.mutable
+    object ChecksumAccumulator {
+        private val cache = mutable.Map.empty[String, Int]
+        def calculate(s: String): Int =
+            if (cache.contains(s))
+                cache(s)
+            else {
+                val acc = new ChecksumAccumulator
+                for (c <s)
+                acc.add(c.toByte)
+                val cs = acc.checksum()
+                cache += (s >
+                cs)
+                cs
+            }
+    }
+    
+    -A Scala application
+    import ChecksumAccumulator.calculate
+    object Summer {
+        def main(args: Array[String]) = {
+            for (arg <args)
+                println(arg + ": " + calculate(arg))
+        }
+    }
+    
+    -The App trait
+    import ChecksumAccumulator.calculate
+    object FallWinterSpringSummer extends App {
+        for (season <List("fall", "winter", "spring"))
+            println(season + ": " + calculate(season))
+    }
 
 
 ###############
 # Basic Types and Operations
 ###############
--Basic types
-Byte    8-bit (-2^7 to 2^7)
-Short   16-bit (-2^15 to 2^15)
-Int     32-bit (-2^31 to 2^31)
-Long    64-bit (-2^63 to 2^63)
-Char    16-bit (-2^15 to 2^15)
-String  seq of chars
-Float   32-bit IEEE 754 single-precision float
-Double  63-bit IEEE 754 single-precision float
-Boolean true or false
+    -Basic types
+    Byte    8-bit (-2^7 to 2^7)
+    Short   16-bit (-2^15 to 2^15)
+    Int     32-bit (-2^31 to 2^31)
+    Long    64-bit (-2^63 to 2^63)
+    Char    16-bit (-2^15 to 2^15)
+    String  seq of chars
+    Float   32-bit IEEE 754 single-precision float
+    Double  63-bit IEEE 754 single-precision float
+    Boolean true or false
 
--Character literals
-val hex = 0x5       // hex: Int = 5
-val hex2 = 0x00FF   // hex: Int = 255
-val a = 'A'         // a: Char = A
-val d = '\u0041'    // d: Char = A
-val f = '\u0044'    // f: Char = D
-val B\u0041\u0044 = 1   //BAD: Int = 1
+    -Character literals
+    val hex = 0x5       // hex: Int = 5
+    val hex2 = 0x00FF   // hex: Int = 255
+    val a = 'A'         // a: Char = A
+    val d = '\u0041'    // d: Char = A
+    val f = '\u0044'    // f: Char = D
+    val B\u0041\u0044 = 1   //BAD: Int = 1
 
--String interpolation
-val name = "reader"         // println(s"Hello, $name!")
-s"The answer is ${6 * 7}."  // res0: String = The answer is 42.
+    -String interpolation
+    val name = "reader"         // println(s"Hello, $name!")
+    s"The answer is ${6 * 7}."  // res0: String = The answer is 42.
 
-infix operator                  // method between the object and the parameter ("7 + 2")
-prefix operator (only +,-,!,~)  // method before the object on which you are invoking the method (-7, !found). "-2.0" transformed into (2.0).unary_-
-postfix operator                // method after the object ("7 toLong")
+    infix operator                  // method between the object and the parameter ("7 + 2")
+    prefix operator (only +,-,!,~)  // method before the object on which you are invoking the method (-7, !found). "-2.0" transformed into (2.0).unary_-
+    postfix operator                // method after the object ("7 toLong")
 
--Bitwise operations
-1 & 2   // 1 (0001) and 2 (0010) = 0 (0000)
-1 | 2   // 1 (0001) and 2 (0010) = 3 (0011)
-1 ˆ 3   // 1 (0001) and 3 (0011) = 2 (0010)
-~1      // inverts each bit in 1 (0001), yielding -2, which in binary looks like 11111111111111111111111111111110.
-1 << 2  // 4
+    -Bitwise operations
+    1 & 2   // 1 (0001) and 2 (0010) = 0 (0000)
+    1 | 2   // 1 (0001) and 2 (0010) = 3 (0011)
+    1 ˆ 3   // 1 (0001) and 3 (0011) = 2 (0010)
+    ~1      // inverts each bit in 1 (0001), yielding -2, which in binary looks like 11111111111111111111111111111110.
+    1 << 2  // 4
 
--Operator precedence and associativity
-* / %
-+ :
-= !
-< >
-&
-ˆ
-|
-(all letters)
-(all assignment operators)
+    -Operator precedence and associativity
+    * / %
+    + :
+    = !
+    < >
+    &
+    ˆ
+    |
+    (all letters)
+    (all assignment operators)
 
-- any method that ends in a ‘:’ character is invoked on its right operand, passing in the left operand
-a * b   //a.*(b)
-a:::b   //b.:::(a)
+    - any method that ends in a ‘:’ character is invoked on its right operand, passing in the left operand
+    a * b   //a.*(b)
+    a:::b   //b.:::(a)
 
--Equality
-in Java == compares: Primitives->value, ReferenceTypes->reference equality
-in Java == compares check the left side for null. If it is not null, call the equals method. Since equals is a method, the precise comparison you get depends on the type of the left-hand argument
+    -Equality
+    in Java == compares: Primitives->value, ReferenceTypes->reference equality
+    in Java == compares check the left side for null. If it is not null, call the equals method. Since equals is a method, the precise comparison you get depends on the type of the left-hand argument
 
 ###############
 # Functional Objects
 ###############
-class Rational(n: Int, d: Int, val visible = 0) {   // primary constructor will be created with these two params
-    require(d != 0)                                 // class body code will be added to primary constructor (precondition of the primary constructor that d must be non-zero)
-    private val g = gcd(n.abs, d.abs)
-    val numer = n / g                               // n, d not visible, cause theya re constructor params
-    val denom = d / g                               // need to prefix them with val or add fields as here
-    def this(n: Int) = this(n, 1)                   // auxiliary constructors invokes the primary constructor
-    def + (that: Rational): Rational =              // simply that.d will not work because d is not accessible outside object where they invoked, so we added numer, denum fields
-        new Rational(numer * that.denom + 
-        that.numer * denom,denom * that.denom)
-    def + (i: Int): Rational =
-        new Rational(numer + i * denom, denom)
-    def - (that: Rational): Rational =
-      new Rational(
-        numer * that.denom - that.numer * denom,
-        denom * that.denom
-      )
-    def - (i: Int): Rational =
-      new Rational(numer - i * denom, denom)
-    def * (that: Rational): Rational =
-        new Rational(numer * that.numer, denom * 
-        that.denom)
-    def * (i: Int): Rational =
-        new Rational(numer * i, denom)
-    def / (that: Rational): Rational =
-        new Rational(numer * that.denom, denom * 
-        that.numer)
-    def / (i: Int): Rational =
-        new Rational(numer, denom * i)
-    override def toString = numer + "/" + denom     // override default override
-    private def gcd(a: Int, b: Int): Int =
-        if (b == 0) a else gcd(b, a % b)
-}
+    class Rational(n: Int, d: Int, val visible = 0) {   // primary constructor will be created with these two params
+        require(d != 0)                                 // class body code will be added to primary constructor (precondition of the primary constructor that d must be non-zero)
+        private val g = gcd(n.abs, d.abs)
+        val numer = n / g                               // n, d not visible, cause theya re constructor params
+        val denom = d / g                               // need to prefix them with val or add fields as here
+        def this(n: Int) = this(n, 1)                   // auxiliary constructors invokes the primary constructor
+        def + (that: Rational): Rational =              // simply that.d will not work because d is not accessible outside object where they invoked, so we added numer, denum fields
+            new Rational(numer * that.denom + 
+            that.numer * denom,denom * that.denom)
+        def + (i: Int): Rational =
+            new Rational(numer + i * denom, denom)
+        def - (that: Rational): Rational =
+          new Rational(
+            numer * that.denom - that.numer * denom,
+            denom * that.denom
+          )
+        def - (i: Int): Rational =
+          new Rational(numer - i * denom, denom)
+        def * (that: Rational): Rational =
+            new Rational(numer * that.numer, denom * 
+            that.denom)
+        def * (i: Int): Rational =
+            new Rational(numer * i, denom)
+        def / (that: Rational): Rational =
+            new Rational(numer * that.denom, denom * 
+            that.numer)
+        def / (i: Int): Rational =
+            new Rational(numer, denom * i)
+        override def toString = numer + "/" + denom     // override default override
+        private def gcd(a: Int, b: Int): Int =
+            if (b == 0) a else gcd(b, a % b)
+    }
 
--Implicit conversions
-r * 2   // works
-2 * r   // does not work, 2 is Int - not method that takes Rational argument
-implicit def intToRational(x: Int) = new Rational(x)
+    -Implicit conversions
+    r * 2   // works
+    2 * r   // does not work, 2 is Int - not method that takes Rational argument
+    implicit def intToRational(x: Int) = new Rational(x)
 
 
 ###############
 # Built-in Control Structures
 ###############
--If expressions
-val filename = if (!args.isEmpty) args(0) else "default.txt"
+    -If expressions
+    val filename = if (!args.isEmpty) args(0) else "default.txt"
 
--While loops
-def gcdLoop(x: Long, y: Long): Long = {
-    var a = x
-    var b = y
-    while (a != 0) {
-        val temp = a
-        a = b % a
-        b = temp
+    -While loops
+    def gcdLoop(x: Long, y: Long): Long = {
+        var a = x
+        var b = y
+        while (a != 0) {
+            val temp = a
+            a = b % a
+            b = temp
+        }
+        b
     }
-    b
-}
 
-while ((line = readLine()) != "")   // This doesn't work! (line = readLine()) retunrs Unit
-    println("Read: " + line)
+    while ((line = readLine()) != "")   // This doesn't work! (line = readLine()) retunrs Unit
+        println("Read: " + line)
 
--For expressions
-for (file <- filesHere)             // for file in filesHere
-    println(file)
-for (i <- 1 to 4)                   //
-    println("Iteration " + i)
--Filtering
-for (
-    file <- filesHere
-    if file.isFile
-    if file.getName.endsWith(".scala")
-) println(file)
--Nested iteration
-def fileLines(file: java.io.File) =
-    scala.io.Source.fromFile(file).getLines().toList
-def grep(pattern: String) =
+    -For expressions
+    for (file <- filesHere)             // for file in filesHere
+        println(file)
+    for (i <- 1 to 4)                   //
+        println("Iteration " + i)
+    -Filtering
     for (
         file <- filesHere
-        if file.getName.endsWith(".scala");
-        line <- fileLines(file)
-        if line.trim.matches(pattern)
-    ) println(file + ": " + line.trim)
-grep(".*gcd.*")
--Producing a new collection
-def scalaFiles =                    // type of the resulting collection is based on the kind of collections processed in the iteration clauses
-    for {
-        file <- filesHere
+        if file.isFile
         if file.getName.endsWith(".scala")
-    } yield file                    // In this case the result is an Array[File], because filesHere is an array and the type of the yielded expression is File
+    ) println(file)
+    -Nested iteration
+    def fileLines(file: java.io.File) =
+        scala.io.Source.fromFile(file).getLines().toList
+    def grep(pattern: String) =
+        for (
+            file <- filesHere
+            if file.getName.endsWith(".scala");
+            line <- fileLines(file)
+            if line.trim.matches(pattern)
+        ) println(file + ": " + line.trim)
+    grep(".*gcd.*")
+    -Producing a new collection
+    def scalaFiles =                    // type of the resulting collection is based on the kind of collections processed in the iteration clauses
+        for {
+            file <- filesHere
+            if file.getName.endsWith(".scala")
+        } yield file                    // In this case the result is an Array[File], because filesHere is an array and the type of the yielded expression is File
 
--Exception handling with try expressions
-val half =
-    if (n % 2 == 0)
-        n / 2                       // One branch of an if computes a value, while the other throws an exception and computes Nothing
-    else
-        throw new RuntimeException("n must be even")    // If n is not even, an exception will be thrown before half can be initialized to anything at all
+    -Exception handling with try expressions
+    val half =
+        if (n % 2 == 0)
+            n / 2                       // One branch of an if computes a value, while the other throws an exception and computes Nothing
+        else
+            throw new RuntimeException("n must be even")    // If n is not even, an exception will be thrown before half can be initialized to anything at all
 
--Catching exception
-try {
-    val f = new FileReader("input.txt")
-    // Use and close file
-} catch {
-    case ex: FileNotFoundException => // Handle missing file
-    case ex: IOException => // Handle other I/O error
-}
-
--The finally clause
-val file = new FileReader("input.txt")
-try {
-    // Use the file
-} finally {
-    file.close() // Be sure to close the file
-}
-
--Yielding a value
-def urlFor(path: String) =
+    -Catching exception
     try {
-        new URL(path)
+        val f = new FileReader("input.txt")
+        // Use and close file
     } catch {
-        case e: MalformedURLException =>
-        new URL("http://www.scalalang.org") // this one is returned if eexception is thrown and cought
+        case ex: FileNotFoundException => // Handle missing file
+        case ex: IOException => // Handle other I/O error
     }
 
--Match expressions
-val firstArg = if (!args.isEmpty) args(0) else ""
-val friend = firstArg match {
-    case "salt" => "pepper"
-    case "chips" => "salsa"
-    case "eggs" => "bacon"
-    case _ => "huh?"
-}
-println(friend)
+    -The finally clause
+    val file = new FileReader("input.txt")
+    try {
+        // Use the file
+    } finally {
+        file.close() // Be sure to close the file
+    }
 
--Living without break and continue
-var i = 0
-var foundIt = false
-while (i < args.length && !foundIt) {
-    if (!args(i).startsWith("")){
-        if (args(i).endsWith(".scala"))
-            foundIt = true
+    -Yielding a value
+    def urlFor(path: String) =
+        try {
+            new URL(path)
+        } catch {
+            case e: MalformedURLException =>
+            new URL("http://www.scalalang.org") // this one is returned if eexception is thrown and cought
         }
-    i = i + 1
-}
--get ird of vars
-def searchFrom(i: Int): Int =
-    if (i >= args.length) 1
-    else if (args(i).startsWith("")) searchFrom(i + 1)
-    else if (args(i).endsWith(".scala")) i
-    else searchFrom(i + 1)
-val i = searchFrom(0)
+
+    -Match expressions
+    val firstArg = if (!args.isEmpty) args(0) else ""
+    val friend = firstArg match {
+        case "salt" => "pepper"
+        case "chips" => "salsa"
+        case "eggs" => "bacon"
+        case _ => "huh?"
+    }
+    println(friend)
+
+    -Living without break and continue
+    var i = 0
+    var foundIt = false
+    while (i < args.length && !foundIt) {
+        if (!args(i).startsWith("")){
+            if (args(i).endsWith(".scala"))
+                foundIt = true
+            }
+        i = i + 1
+    }
+    -get ird of vars
+    def searchFrom(i: Int): Int =
+        if (i >= args.length) 1
+        else if (args(i).startsWith("")) searchFrom(i + 1)
+        else if (args(i).endsWith(".scala")) i
+        else searchFrom(i + 1)
+    val i = searchFrom(0)
 
 
 ###############
 # Functions and Closures
 ###############
--Methods
-object LongLines {
-    def processFile(filename: String, width: Int) = {
-        val source = Source.fromFile(filename)
-        for (line <- source.getLines())
-            processLine(filename, width, line)
-    }
-    private def processLine(filename: String,width: Int, line: String) = {
-        if (line.length > width)
-            println(filename + ": " + line.trim)
-    }
-}
-object FindLongLines {
-    def main(args: Array[String]) = {
-        val width = args(0).toInt
-        for (arg <args.drop(1))
-            LongLines.processFile(arg, width)
-    }
-}
-
--Local functions
-object LongLines {
-    def processFile(filename: String, width: Int) = {
-        def processLine(line: String) = {
-            if (line.length > width)                // local functions can access the parameters of their enclosing function
+    -Methods
+    object LongLines {
+        def processFile(filename: String, width: Int) = {
+            val source = Source.fromFile(filename)
+            for (line <- source.getLines())
+                processLine(filename, width, line)
+        }
+        private def processLine(filename: String,width: Int, line: String) = {
+            if (line.length > width)
                 println(filename + ": " + line.trim)
         }
-        val source = Source.fromFile(filename)
-        for (line <-source.getLines())
-            processLine(line)
     }
-}
+    object FindLongLines {
+        def main(args: Array[String]) = {
+            val width = args(0).toInt
+            for (arg <args.drop(1))
+                LongLines.processFile(arg, width)
+        }
+    }
 
--First-class functions
-// A function literal is compiled into a class that when instantiated at runtime is a function value
-// function literals exist in the source code
-// function values exist as objects at runtime
-// Every function value is an instance of some class that extends one of several FunctionN traits in package scala
+    -Local functions
+    object LongLines {
+        def processFile(filename: String, width: Int) = {
+            def processLine(line: String) = {
+                if (line.length > width)                // local functions can access the parameters of their enclosing function
+                    println(filename + ": " + line.trim)
+            }
+            val source = Source.fromFile(filename)
+            for (line <-source.getLines())
+                processLine(line)
+        }
+    }
 
-(x: Int) => x + 1                   // function literal
-var increase = (x: Int) => x + 1    // Function values are objects, so you can store them in variables
-increase(10)                        // you can call them
+    -First-class functions
+    // A function literal is compiled into a class that when instantiated at runtime is a function value
+    // function literals exist in the source code
+    // function values exist as objects at runtime
+    // Every function value is an instance of some class that extends one of several FunctionN traits in package scala
 
--Short forms of function literals
-someNumbers.filter(x => x > 0)
+    (x: Int) => x + 1                   // function literal
+    var increase = (x: Int) => x + 1    // Function values are objects, so you can store them in variables
+    increase(10)                        // you can call them
 
--Placeholder syntax
-someNumbers.filter(_ > 0)
-val f = (_: Int) + (_: Int)     // f: (Int, Int) => Int = <function2>
-f(5, 10)
+    -Short forms of function literals
+    someNumbers.filter(x => x > 0)
 
--Partially applied functions
-// Although the previous examples substitute underscores in place of individual parameters, you can also replace an entire parameter list with an underscore
-// when you invoke a function, passing in any needed arguments, you apply that function to the arguments
-// given
-def sum(a: Int, b: Int, c: Int) = a + b + c
-// You could apply the function sum to the arguments 1, 2, and 3 like this
-sum(1, 2, 3)
+    -Placeholder syntax
+    someNumbers.filter(_ > 0)
+    val f = (_: Int) + (_: Int)     // f: (Int, Int) => Int = <function2>
+    f(5, 10)
 
-// partially applied function is an expression in which you don’t supply all of the arguments needed by the function. Instead, you supply some, or none
-val a = sum _       // partially applied function expression involving sum, in which you supply none of the three required args
-a(1, 2, 3)          // Scala compiler translates the expression a(1, 2, 3) into an invocation of the function value’s apply method, passing in the three arguments 1, 2, and 3.
+    -Partially applied functions
+    // Although the previous examples substitute underscores in place of individual parameters, you can also replace an entire parameter list with an underscore
+    // when you invoke a function, passing in any needed arguments, you apply that function to the arguments
+    // given
+    def sum(a: Int, b: Int, c: Int) = a + b + c
+    // You could apply the function sum to the arguments 1, 2, and 3 like this
+    sum(1, 2, 3)
 
-val b = sum(1, _: Int, 3)   // you can also express a partially applied function by supplying only some of the required arguments
-b(2)                        // res13: Int = 6
+    // partially applied function is an expression in which you don’t supply all of the arguments needed by the function. Instead, you supply some, or none
+    val a = sum _       // partially applied function expression involving sum, in which you supply none of the three required args
+    a(1, 2, 3)          // Scala compiler translates the expression a(1, 2, 3) into an invocation of the function value’s apply method, passing in the three arguments 1, 2, and 3.
 
--Closures
-(x: Int) => x + more        // A function object that captures free variables, and is said to be "closed" over the variables visible at the time it is created.
-var more = 1
-val addMore = (x: Int) => x + more  // addMore: Int => Int = <function1>
-addMore(10)                         // res16: Int = 11
-more = 9999                         // What happens if more changes after the closure is created? In Scala, the answer is that the closure sees the change
-addMore(10)                         // res17: Int = 10009
+    val b = sum(1, _: Int, 3)   // you can also express a partially applied function by supplying only some of the required arguments
+    b(2)                        // res13: Int = 6
 
-val someNumbers = List(11,10,5,0, 5, 10)
-var sum = 0
-someNumbers.foreach(sum += _)       // sum = 11
+    -Closures
+    (x: Int) => x + more        // A function object that captures free variables, and is said to be "closed" over the variables visible at the time it is created.
+    var more = 1
+    val addMore = (x: Int) => x + more  // addMore: Int => Int = <function1>
+    addMore(10)                         // res16: Int = 11
+    more = 9999                         // What happens if more changes after the closure is created? In Scala, the answer is that the closure sees the change
+    addMore(10)                         // res17: Int = 10009
 
--Special function call forms
+    val someNumbers = List(11,10,5,0, 5, 10)
+    var sum = 0
+    someNumbers.foreach(sum += _)       // sum = 11
 
--Repeated parameters
-def echo(args: String*) = for (arg <args) println(arg)  // echo("hello", "world!")
-echo(Array("What's", "up", "doc?"))                     // error: type mismatch found : Array[String] required: String. fix: echo(arr: _*)
-// This notation tells the compiler to pass each element of arr as its own argument to echo, rather than all of it as a single argument.
+    -Special function call forms
 
--Named arguments
-def speed(distance: Float, time: Float): Float = distance / time    // speed(distance = 100, time = 10)
+    -Repeated parameters
+    def echo(args: String*) = for (arg <args) println(arg)  // echo("hello", "world!")
+    echo(Array("What's", "up", "doc?"))                     // error: type mismatch found : Array[String] required: String. fix: echo(arr: _*)
+    // This notation tells the compiler to pass each element of arr as its own argument to echo, rather than all of it as a single argument.
 
--Default parameter values
-def printTime2(out: java.io.PrintStream = Console.out, divisor: Int = 1) =
-    out.println("time = " + System.currentTimeMillis()/divisor)
+    -Named arguments
+    def speed(distance: Float, time: Float): Float = distance / time    // speed(distance = 100, time = 10)
 
--Tail recursion
-// Functions like approximate, which call themselves as their last action, are called tail recursive. The Scala compiler detects tail recursion and replaces it with a jump back to the beginning of the function, after updating the function parameters with the new values.
-def approximate(guess: Double): Double =
-    if (isGoodEnough(guess)) guess
-    else approximate(improve(guess))
+    -Default parameter values
+    def printTime2(out: java.io.PrintStream = Console.out, divisor: Int = 1) =
+        out.println("time = " + System.currentTimeMillis()/divisor)
+
+    -Tail recursion
+    // Functions like approximate, which call themselves as their last action, are called tail recursive. The Scala compiler detects tail recursion and replaces it with a jump back to the beginning of the function, after updating the function parameters with the new values.
+    def approximate(guess: Double): Double =
+        if (isGoodEnough(guess)) guess
+        else approximate(improve(guess))
 
 
 ###############
 # Control Abstraction
 ###############
--Reducing code duplication
-object FileMatcher {
-    private def filesHere = (new java.io.File(".")).listFiles
-    def filesEnding(query: String) =
-        for (file <-filesHere; if file.getName.endsWith(query))
-            yield file
-    def filesContaining(query: String) =                            // function works just like filesEnding only difference is that this function uses contains instead of endsWith
-        for (file <-filesHere; if file.getName.contains(query))
-        yield file            
-            
-}
-// While you cannot pass around a method name as a value, you can get the same effect by passing around a function value
-def filesMatching(query: String, matcher: (String, String) => Boolean) = {      // uses matcher to check the file name against the query
-    for (file <-filesHere; if matcher(file.getName, query))
-        yield file
-}
-def filesEnding(query: String) = filesMatching(query, _.endsWith(_))
+    -Reducing code duplication
+    object FileMatcher {
+        private def filesHere = (new java.io.File(".")).listFiles
+        def filesEnding(query: String) =
+            for (file <-filesHere; if file.getName.endsWith(query))
+                yield file
+        def filesContaining(query: String) =                            // function works just like filesEnding only difference is that this function uses contains instead of endsWith
+            for (file <-filesHere; if file.getName.contains(query))
+            yield file            
 
-// full simplified version
-object FileMatcher {
-    private def filesHere = (new java.io.File(".")).listFiles
-    private def filesMatching(matcher: String => Boolean) =
-        for (file <-filesHere; if matcher(file.getName))
-            yield file
-    def filesEnding(query: String) = filesMatching(_.endsWith(query))
-    def filesContaining(query: String) = filesMatching(_.contains(query))
-    def filesRegex(query: String) = filesMatching(_.matches(query))
-}
-
--Simplifying client code
-def containsNeg(nums: List[Int]) = nums.exists(_ < 0)
-def containsOdd(nums: List[Int]) = nums.exists(_ % 2 == 1)
-
--Currying
-def curriedSum(x: Int)(y: Int) = x + y      // curriedSum: (x: Int)(y: Int)Int
-curriedSum(1)(2)                            // res5: Int = 3; two traditional function invocations back to back; The first function invocation takes a single Int parameter named x, and returns a function value for the second function
-val onePlus = curriedSum(1)_                // placeholder for the second parameter list
-onePlus(2)                                  // res7: Int = 3
-
--Writing new control structures
-def twice(op: Double => Double, x: Double) = op(op(x))
-twice(_ + 1, 5)                             // res9: Double = 7.0
-// Any time you find a control pattern repeated in multiple parts of your code, you should think about implementing it as a new control structure
-// Consider now a more widely used coding pattern: open a resource, operate on it, and then close the resource
-// loan pattern: (because a control-abstraction function, such as withPrintWriter, opens a resource and “loans” it to a function)
-def withPrintWriter(file: File, op: PrintWriter => Unit) = {
-    val writer = new PrintWriter(file)
-    try {
-        op(writer)
-    } finally {
-        writer.close()                      // impossible to forget to close the file
     }
-}
-withPrintWriter(new File("date.txt"), writer => writer.println(new java.util.Date))
+    // While you cannot pass around a method name as a value, you can get the same effect by passing around a function value
+    def filesMatching(query: String, matcher: (String, String) => Boolean) = {      // uses matcher to check the file name against the query
+        for (file <-filesHere; if matcher(file.getName, query))
+            yield file
+    }
+    def filesEnding(query: String) = filesMatching(query, _.endsWith(_))
 
--By-name parameters
-// you want to implement an assertion construct called myAssert
-var assertionsEnabled = true
-def myAssert(predicate: () => Boolean) =
-    if (assertionsEnabled && !predicate())
-        throw new AssertionError
-myAssert(() => 5 > 3)
-// By-name parameters exist precisely so you can remove () => part
-def byNameAssert(predicate: => Boolean) =
-    if (assertionsEnabled && !predicate)
-        throw new AssertionError
-byNameAssert(5 > 3)                         // function value will be created whose apply method will evaluate 5 > 3, and this function value will be passed to byNameAssert
+    // full simplified version
+    object FileMatcher {
+        private def filesHere = (new java.io.File(".")).listFiles
+        private def filesMatching(matcher: String => Boolean) =
+            for (file <-filesHere; if matcher(file.getName))
+                yield file
+        def filesEnding(query: String) = filesMatching(_.endsWith(query))
+        def filesContaining(query: String) = filesMatching(_.contains(query))
+        def filesRegex(query: String) = filesMatching(_.matches(query))
+    }
+
+    -Simplifying client code
+    def containsNeg(nums: List[Int]) = nums.exists(_ < 0)
+    def containsOdd(nums: List[Int]) = nums.exists(_ % 2 == 1)
+
+    -Currying
+    def curriedSum(x: Int)(y: Int) = x + y      // curriedSum: (x: Int)(y: Int)Int
+    curriedSum(1)(2)                            // res5: Int = 3; two traditional function invocations back to back; The first function invocation takes a single Int parameter named x, and returns a function value for the second function
+    val onePlus = curriedSum(1)_                // placeholder for the second parameter list
+    onePlus(2)                                  // res7: Int = 3
+
+    -Writing new control structures
+    def twice(op: Double => Double, x: Double) = op(op(x))
+    twice(_ + 1, 5)                             // res9: Double = 7.0
+    // Any time you find a control pattern repeated in multiple parts of your code, you should think about implementing it as a new control structure
+    // Consider now a more widely used coding pattern: open a resource, operate on it, and then close the resource
+    // loan pattern: (because a control-abstraction function, such as withPrintWriter, opens a resource and “loans” it to a function)
+    def withPrintWriter(file: File, op: PrintWriter => Unit) = {
+        val writer = new PrintWriter(file)
+        try {
+            op(writer)
+        } finally {
+            writer.close()                      // impossible to forget to close the file
+        }
+    }
+    withPrintWriter(new File("date.txt"), writer => writer.println(new java.util.Date))
+
+    -By-name parameters
+    // you want to implement an assertion construct called myAssert
+    var assertionsEnabled = true
+    def myAssert(predicate: () => Boolean) =
+        if (assertionsEnabled && !predicate())
+            throw new AssertionError
+    myAssert(() => 5 > 3)
+    // By-name parameters exist precisely so you can remove () => part
+    def byNameAssert(predicate: => Boolean) =
+        if (assertionsEnabled && !predicate)
+            throw new AssertionError
+    byNameAssert(5 > 3)                         // function value will be created whose apply method will evaluate 5 > 3, and this function value will be passed to byNameAssert
 
 
 ###############
