@@ -1,4 +1,4 @@
-package general.abasics.functions.funcValue
+package general.abasics.a03Functions.funcValue
 
 object Test {
   //https://alvinalexander.com/scala/how-to-use-functions-as-variables-values-in-scala-fp

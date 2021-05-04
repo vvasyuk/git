@@ -1,4 +1,4 @@
-package general.abasics.functions.functionalComposition
+package general.abasics.a03Functions.functionalComposition
 
 // function that will only work for a subset of possible input values
 // or you want to define a series of functions that only work for a subset of input values,

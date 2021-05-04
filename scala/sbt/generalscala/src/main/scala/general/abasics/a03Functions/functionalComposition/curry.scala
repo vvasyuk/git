@@ -1,4 +1,4 @@
-package general.abasics.functions.functionalComposition
+package general.abasics.a03Functions.functionalComposition
 
 object curry {
   def curryTest: Unit ={

@@ -1,4 +1,4 @@
-package general.abasics.a01Classes
+package general.abasics.a01Classes.classes
 
 class Rational(n: Int, d: Int, val visible: Int = 0) {                  // primary constructor will be created with these two params
   require(d != 0)                                 // class body code will be added to primary constructor (precondition of the primary constructor that d must be non-zero)
