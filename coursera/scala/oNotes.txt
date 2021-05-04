@@ -45,7 +45,20 @@ object FallWinterSpringSummer extends App {
 ###############
 # Basic Types and Operations
 ###############
+-Basic types
+Byte    8-bit (-2^7 to 2^7)
+Short   16-bit (-2^15 to 2^15)
+Int     32-bit (-2^31 to 2^31)
+Long    64-bit (-2^63 to 2^63)
+Char    16-bit (-2^15 to 2^15)
+String  seq of chars
+Float   32-bit IEEE 754 single-precision float
+Double  63-bit IEEE 754 single-precision float
+Boolean true or false
+
 -Character literals
+val hex = 0x5       // hex: Int = 5
+val hex2 = 0x00FF   // hex: Int = 255
 val a = 'A'         // a: Char = A
 val d = '\u0041'    // d: Char = A
 val f = '\u0044'    // f: Char = D
@@ -77,6 +90,13 @@ postfix operator                // method after the object ("7 toLong")
 (all letters)
 (all assignment operators)
 
+- any method that ends in a ‘:’ character is invoked on its right operand, passing in the left operand
+a * b   //a.*(b)
+a:::b   //b.:::(a)
+
+-Equality
+in Java == compares: Primitives->value, ReferenceTypes->reference equality
+in Java == compares check the left side for null. If it is not null, call the equals method. Since equals is a method, the precise comparison you get depends on the type of the left-hand argument
 
 ###############
 # Functional Objects
