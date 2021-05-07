@@ -23,7 +23,7 @@ object FunctionsClosuresTest {
     }
   }
   //Local functions
-  object LongLines {
+  object LongLines2 {
     def processFile(filename: String, width: Int) = {
       def processLine(line: String) = {
         if (line.length > width)                // local functions can access the parameters of their enclosing function
@@ -97,7 +97,7 @@ object FunctionsClosuresTest {
 
   //Tail recursion
   // Functions like approximate, which call themselves as their last action, are called tail recursive. The Scala compiler detects tail recursion and replaces it with a jump back to the beginning of the function, after updating the function parameters with the new values.
-  def approximate(guess: Double): Double =
-    if (isGoodEnough(guess)) guess
-    else approximate(improve(guess))
+//  def approximate(guess: Double): Double =
+//    if (isGoodEnough(guess)) guess
+//    else approximate(improve(guess))
 }

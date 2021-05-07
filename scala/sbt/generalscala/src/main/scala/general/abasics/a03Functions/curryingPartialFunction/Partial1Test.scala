@@ -1,8 +1,9 @@
-package general.abasics.a03Functions.partialFunction
+package general.abasics.a03Functions.curryingPartialFunction
 
 // a function defined as (Int) => String takes any Int and returns a String.
-// a Partial Function is only defined for certain values of the defined type. A Partial Function (Int) => String might not accept every Int.
-object partial1Test {
+// a Partial Function is only defined for certain values of the defined type.
+// A Partial Function (Int) => String might not accept every Int.
+object Partial1Test {
 
   case class PhoneExt(name: String, ext: Int)
 

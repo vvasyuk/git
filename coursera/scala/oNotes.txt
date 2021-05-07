@@ -98,6 +98,7 @@
     in Java == compares: Primitives->value, ReferenceTypes->reference equality
     in Java == compares check the left side for null. If it is not null, call the equals method. Since equals is a method, the precise comparison you get depends on the type of the left-hand argument
 
+
 ###############
 # Functional Objects
 ###############
@@ -358,43 +359,42 @@
 # Control Abstraction
 ###############
     -Reducing code duplication
-    object FileMatcher {
-        private def filesHere = (new java.io.File(".")).listFiles
-        def filesEnding(query: String) =
-            for (file <-filesHere; if file.getName.endsWith(query))
-                yield file
-        def filesContaining(query: String) =                            // function works just like filesEnding only difference is that this function uses contains instead of endsWith
-            for (file <-filesHere; if file.getName.contains(query))
-            yield file            
+    // function works just like filesEnding only difference is that this        // While you cannot pass around a method name as a value, you can get the same 
+    function uses contains instead of endsWith                                  effect by passing around a function value
+    +----------------------------------------------------------------------+    +----------------------------------------------------------------------------------+
+    | object FileMatcher {                                                 |    | def filesMatching(query: String, matcher: (String, String) => Boolean) = {       |    // uses matcher to check the file name against the query
+    |     private def filesHere = (new java.io.File(".")).listFiles        |    |     for (file <-filesHere; if matcher(file.getName, query))                      |
+    |                                                                      |    |         yield file                                                               |
+    |     def filesEnding(query: String) =                                 |    | }                                                                                |
+    |         for (file <-filesHere; if file.getName.endsWith(query))      |    | def filesEnding(query: String) = filesMatching(query, _.endsWith(_))             |
+    |             yield file                                               |    +----------------------------------------------------------------------------------+
+    |                                                                      |
+    |     def filesContaining(query: String) =                             |
+    |         for (file <-filesHere; if file.getName.contains(query))      |
+    |         yield file                                                   |
+    |     }                                                                |
+    +----------------------------------------------------------------------+
 
-    }
-    // While you cannot pass around a method name as a value, you can get the same effect by passing around a function value
-    def filesMatching(query: String, matcher: (String, String) => Boolean) = {      // uses matcher to check the file name against the query
-        for (file <-filesHere; if matcher(file.getName, query))
-            yield file
-    }
-    def filesEnding(query: String) = filesMatching(query, _.endsWith(_))
-
-    // full simplified version
-    object FileMatcher {
-        private def filesHere = (new java.io.File(".")).listFiles
-        private def filesMatching(matcher: String => Boolean) =
-            for (file <-filesHere; if matcher(file.getName))
-                yield file
-        def filesEnding(query: String) = filesMatching(_.endsWith(query))
-        def filesContaining(query: String) = filesMatching(_.contains(query))
-        def filesRegex(query: String) = filesMatching(_.matches(query))
-    }
-
-    -Simplifying client code
-    def containsNeg(nums: List[Int]) = nums.exists(_ < 0)
-    def containsOdd(nums: List[Int]) = nums.exists(_ % 2 == 1)
+    // full simplified version                                                      -Simplifying client code
+    +---------------------------------------------------------------------------+   +------------------------------------------------------------+
+    | object FileMatcher {                                                      |   | def containsNeg(nums: List[Int]) = nums.exists(_ < 0)      |
+    |     private def filesHere = (new java.io.File(".")).listFiles             |   | def containsOdd(nums: List[Int]) = nums.exists(_ % 2 == 1) |
+    |     private def filesMatching(matcher: String => Boolean) =               |   +------------------------------------------------------------+
+    |         for (file <-filesHere; if matcher(file.getName))                  |
+    |             yield file                                                    |
+    |     def filesEnding(query: String) = filesMatching(_.endsWith(query))     |
+    |     def filesContaining(query: String) = filesMatching(_.contains(query)) |
+    |     def filesRegex(query: String) = filesMatching(_.matches(query))       |
+    | }                                                                         |
+    +---------------------------------------------------------------------------+
 
     -Currying
-    def curriedSum(x: Int)(y: Int) = x + y      // curriedSum: (x: Int)(y: Int)Int
-    curriedSum(1)(2)                            // res5: Int = 3; two traditional function invocations back to back; The first function invocation takes a single Int parameter named x, and returns a function value for the second function
-    val onePlus = curriedSum(1)_                // placeholder for the second parameter list
-    onePlus(2)                                  // res7: Int = 3
+    +----------------------------------------+
+    | def curriedSum(x: Int)(y: Int) = x + y |  // curriedSum: (x: Int)(y: Int)Int
+    | curriedSum(1)(2)                       |  // res5: Int = 3; two traditional function invocations back to back; The first function invocation takes a single Int parameter named x, and returns a function value for the second function
+    | val onePlus = curriedSum(1)_           |  // placeholder for the second parameter list
+    | onePlus(2)                             |  // res7: Int = 3
+    +----------------------------------------+                             
 
     -Writing new control structures
     def twice(op: Double => Double, x: Double) = op(op(x))
@@ -429,481 +429,481 @@
 ###############
 # Composition and Inheritance
 ###############
--A two-dimensional layout library
-// ibrary for building and rendering two-dimensional layout elements
-val column1 = elem("hello") above elem("***")
-val column2 = elem("***") above elem("world")
-column1 beside column2
-result:
-hello ***
-*** world
+    -A two-dimensional layout library
+    // ibrary for building and rendering two-dimensional layout elements
+    val column1 = elem("hello") above elem("***")
+    val column2 = elem("***") above elem("world")
+    column1 beside column2
+    result:
+    hello ***
+    *** world
 
--Abstract classes
-abstract class Element {
-    def contents: Array[String]     // no abstract modifier, method abstract if no implementation
-}
-
--Defining parameterless methods
-// if function has no params - use no braces (if only this function does no side-effect)
-abstract class Element {
-    def contents: Array[String]
-    def height: Int = contents.length                               // notice no braces
-    def width: Int = if (height == 0) 0 else contents(0).length
-}
-
--Extending classes
-class ArrayElement(conts: Array[String]) extends Element {          // inherit all non-private members from class Element
-    def contents: Array[String] = conts                             // private members of the superclass are not inherited in a subclass
-}
-// hieararchy is next ArrayElement<-Element<-AnyRef
-val ae = new ArrayElement(Array("hello", "world"))
-ae.width                                            // res0: Int = 5
-val e: Element = new ArrayElement(Array("hello"))
-
--Overriding methods and fields
-// fields and methods belong to the same namespace - possible for a field to override a parameterless method
-class ArrayElement(conts: Array[String]) extends Element {
-    val contents: Array[String] = conts                     // val here overrides def in abstract
-}
-
--Defining parametric fields
-// can remove const param by combining the parameter and the field in a single parametric field definition
-class ArrayElement(val contents: Array[String]) extends Element         // val defines at the same time a parameter and field with the same name (with var it can be reassignable)
-
--Invoking superclass constructors
-// element consisting of a single line given by a string
-class LineElement(s: String) extends ArrayElement(Array(s)) {           // Array(s) passed to primary constructor of a parent class (like in java)
-    override def width = s.length
-    override def height = 1
-}
-
--Using override modifiers
-// Scala requires override modifier for all members that override a concrete member in a parent class
-
--Polymorphism and dynamic binding
-class UniformElement(ch: Char,override val width: Int,override val height: Int) extends Element {
-    private val line = ch.toString * width
-    def contents = Array.fill(height)(line)
-}
-val e1: Element = new ArrayElement(Array("hello", "world"))
-val ae: ArrayElement = new LineElement("hello")
-val e2: Element = ae
-val e3: Element = new UniformElement('x', 2, 3)
-// method invocations on variables and expressions are dynamically bound (determined at run time based on the class of the object)
-
--Declaring final members
-
--Using composition and inheritance
-// previous version, LineElement had an inheritance relationship with ArrayElement, from which it inherited contents
-// It now has a composition relationship with Array: it holds a reference to an array
-class LineElement(s: String) extends Element {
-    val contents = Array(s)
-    override def width = s.length
-    override def height = 1
-}
-
--Implementing above, beside, and toString
-// above first version
-def above(that: Element): Element =
-    new ArrayElement(this.contents ++ that.contents)
-
-// beside
-def beside(that: Element): Element = new ArrayElement(
-    for (
-        (line1, line2) <- this.contents zip that.contents       // this.contents and that.contents, are transformed into an array of pairs (as Tuple2s are called) using the zip operator
-    ) yield line1 + line2
-)
-
-// toString
-override def toString = contents mkString "\n"
-
--Defining a factory object
-// A straightforward solution is to create a companion object of class Element and make this the factory object for layout elements
-object Element {
-    def elem(contents: Array[String]): Element = new ArrayElement(contents)
-    def elem(chr: Char, width: Int, height: Int): Element = new UniformElement(chr, width, height)
-    def elem(line: String): Element = new LineElement(line)
-}
-
--Heighten and widen
-import Element.elem
-abstract class Element {
-    def contents: Array[String]
-    def width: Int = contents(0).length
-    def height: Int = contents.length
-    def above(that: Element): Element = {
-        val this1 = this widen that.width
-        val that1 = that widen this.width
-        elem(this1.contents ++ that1.contents)
+    -Abstract classes
+    abstract class Element {
+        def contents: Array[String]     // no abstract modifier, method abstract if no implementation
     }
-    def beside(that: Element): Element = {
-        val this1 = this heighten that.height
-        val that1 = that heighten this.height
-        elem(
-            for ((line1, line2) <- this1.contents zip that1.contents)
-                yield line1 + line2)
+
+    -Defining parameterless methods
+    // if function has no params - use no braces (if only this function does no side-effect)
+    abstract class Element {
+        def contents: Array[String]
+        def height: Int = contents.length                               // notice no braces
+        def width: Int = if (height == 0) 0 else contents(0).length
     }
-    def widen(w: Int): Element =
-        if (w <= width) this
-        else {
-        val left = elem(' ', (w - width) / 2, height)
-        val right = elem(' ', w - width - left.width, height)
-        left beside this beside right
-        }
-    def heighten(h: Int): Element =
-    if (h <= height) this
-    else {
-        val top = elem(' ', width, (h - height) / 2)
-        val bot = elem(' ', width, h - height - top.height)
-        top above this above bot
+
+    -Extending classes
+    class ArrayElement(conts: Array[String]) extends Element {          // inherit all non-private members from class Element
+        def contents: Array[String] = conts                             // private members of the superclass are not inherited in a subclass
     }
+    // hieararchy is next ArrayElement<-Element<-AnyRef
+    val ae = new ArrayElement(Array("hello", "world"))
+    ae.width                                            // res0: Int = 5
+    val e: Element = new ArrayElement(Array("hello"))
+
+    -Overriding methods and fields
+    // fields and methods belong to the same namespace - possible for a field to override a parameterless method
+    class ArrayElement(conts: Array[String]) extends Element {
+        val contents: Array[String] = conts                     // val here overrides def in abstract
+    }
+
+    -Defining parametric fields
+    // can remove const param by combining the parameter and the field in a single parametric field definition
+    class ArrayElement(val contents: Array[String]) extends Element         // val defines at the same time a parameter and field with the same name (with var it can be reassignable)
+
+    -Invoking superclass constructors
+    // element consisting of a single line given by a string
+    class LineElement(s: String) extends ArrayElement(Array(s)) {           // Array(s) passed to primary constructor of a parent class (like in java)
+        override def width = s.length
+        override def height = 1
+    }
+
+    -Using override modifiers
+    // Scala requires override modifier for all members that override a concrete member in a parent class
+
+    -Polymorphism and dynamic binding
+    class UniformElement(ch: Char,override val width: Int,override val height: Int) extends Element {
+        private val line = ch.toString * width
+        def contents = Array.fill(height)(line)
+    }
+    val e1: Element = new ArrayElement(Array("hello", "world"))
+    val ae: ArrayElement = new LineElement("hello")
+    val e2: Element = ae
+    val e3: Element = new UniformElement('x', 2, 3)
+    // method invocations on variables and expressions are dynamically bound (determined at run time based on the class of the object)
+
+    -Declaring final members
+
+    -Using composition and inheritance
+    // previous version, LineElement had an inheritance relationship with ArrayElement, from which it inherited contents
+    // It now has a composition relationship with Array: it holds a reference to an array
+    class LineElement(s: String) extends Element {
+        val contents = Array(s)
+        override def width = s.length
+        override def height = 1
+    }
+
+    -Implementing above, beside, and toString
+    // above first version
+    def above(that: Element): Element =
+        new ArrayElement(this.contents ++ that.contents)
+
+    // beside
+    def beside(that: Element): Element = new ArrayElement(
+        for (
+            (line1, line2) <- this.contents zip that.contents       // this.contents and that.contents, are transformed into an array of pairs (as Tuple2s are called) using the zip operator
+        ) yield line1 + line2
+    )
+
+    // toString
     override def toString = contents mkString "\n"
-}
 
+    -Defining a factory object
+    // A straightforward solution is to create a companion object of class Element and make this the factory object for layout elements
+    object Element {
+        def elem(contents: Array[String]): Element = new ArrayElement(contents)
+        def elem(chr: Char, width: Int, height: Int): Element = new UniformElement(chr, width, height)
+        def elem(line: String): Element = new LineElement(line)
+    }
 
--Putting it all together
-import Element.elem
-object Spiral {
-    val space = elem(" ")
-    val corner = elem("+")
-    def spiral(nEdges: Int, direction: Int): Element = {
-        if (nEdges == 1)
-            elem("+")
+    -Heighten and widen
+    import Element.elem
+    abstract class Element {
+        def contents: Array[String]
+        def width: Int = contents(0).length
+        def height: Int = contents.length
+        def above(that: Element): Element = {
+            val this1 = this widen that.width
+            val that1 = that widen this.width
+            elem(this1.contents ++ that1.contents)
+        }
+        def beside(that: Element): Element = {
+            val this1 = this heighten that.height
+            val that1 = that heighten this.height
+            elem(
+                for ((line1, line2) <- this1.contents zip that1.contents)
+                    yield line1 + line2)
+        }
+        def widen(w: Int): Element =
+            if (w <= width) this
+            else {
+            val left = elem(' ', (w - width) / 2, height)
+            val right = elem(' ', w - width - left.width, height)
+            left beside this beside right
+            }
+        def heighten(h: Int): Element =
+        if (h <= height) this
         else {
-            val sp = spiral(nEdges - 1, (direction + 3) % 4)
-            def verticalBar = elem('|', 1, sp.height)
-            def horizontalBar = elem('-', sp.width, 1)
-            if (direction == 0)                                         // bottom to up
-                (corner beside horizontalBar) above (sp beside space)
-            else if (direction == 1)                                    // right to left
-                (sp above space) beside (corner above verticalBar)
-            else if (direction == 2)                                    // top to bottom
-                (space beside sp) above (horizontalBar beside corner)
-            else                                                        // right to left
-                (verticalBar above corner) beside (space above sp)
+            val top = elem(' ', width, (h - height) / 2)
+            val bot = elem(' ', width, h - height - top.height)
+            top above this above bot
+        }
+        override def toString = contents mkString "\n"
+    }
+
+
+    -Putting it all together
+    import Element.elem
+    object Spiral {
+        val space = elem(" ")
+        val corner = elem("+")
+        def spiral(nEdges: Int, direction: Int): Element = {
+            if (nEdges == 1)
+                elem("+")
+            else {
+                val sp = spiral(nEdges - 1, (direction + 3) % 4)
+                def verticalBar = elem('|', 1, sp.height)
+                def horizontalBar = elem('-', sp.width, 1)
+                if (direction == 0)                                         // bottom to up
+                    (corner beside horizontalBar) above (sp beside space)
+                else if (direction == 1)                                    // right to left
+                    (sp above space) beside (corner above verticalBar)
+                else if (direction == 2)                                    // top to bottom
+                    (space beside sp) above (horizontalBar beside corner)
+                else                                                        // right to left
+                    (verticalBar above corner) beside (space above sp)
+            }
+        }
+        def main(args: Array[String]) = {
+            val nSides = args(0).toInt
+            println(spiral(nSides, 0))
         }
     }
-    def main(args: Array[String]) = {
-        val nSides = args(0).toInt
-        println(spiral(nSides, 0))
-    }
-}
 
 
 ###############
 # Scala’s Hierarchy
 ###############
--Scala’s class hierarchy
-//top of the hierarchy is class Any, methods:
-final def ==(that: Any): Boolean
-final def !=(that: Any): Boolean
-def equals(that: Any): Boolean
-def ##: Int
-def hashCode: Int
-def toString: String
-// methods min, max, until, to, and abs are all defined in a class scala.runtime.RichInt, and there is an implicit conversion from class Int to RichInt. The conversion is applied whenever a method is invoked on an Int that is undefined in Int but defined in RichInt.
-#########################################################################################################
-#+---+                                                                                                  #
-#|any|                                                                                                  #
-#+---+                                                                                                  #
-#|    +------+                                                                                  +------+#
-#+----+anyVal+-+--------+--------+--------+--------+--------+--------+--------+--------+<-------+Nothng|#
-#|    +------+ |        |        |        |        |        |        |        |        |        +------+#
-#|             +------+ +------+ +------+ +------+ +------+ +------+ +------+ +------+ +------+         #
-#|             |Double| |Float | |Long  | |Int   | |Short | |Byte  | |Char  | |Bolean| |Unit  |         #
-#|             +------+ +------+ +------+ +------+ +------+ +------+ +------+ +------+ +------+         #
-#|                                                                                                      #
-#|                                                                                                      #
-#|    +------+                                     +------+                                             #
-#+----+anyRef+-+--------+--------+--------+<-------+Null  |                                             #
-#     +------+ |        |        |        |        +------+                                             #
-#              +------+ +------+ +------+ +------+                                                      #
-#              |Itrble+<+Seq   +<+List  | |Option|                                                      #
-#              +------+ +------+ +------+ +------+                                                      #
-#########################################################################################################
+    -Scala’s class hierarchy
+    //top of the hierarchy is class Any, methods:
+    final def ==(that: Any): Boolean
+    final def !=(that: Any): Boolean
+    def equals(that: Any): Boolean
+    def ##: Int
+    def hashCode: Int
+    def toString: String
+    // methods min, max, until, to, and abs are all defined in a class scala.runtime.RichInt, and there is an implicit conversion from class Int to RichInt. The conversion is applied whenever a method is invoked on an Int that is undefined in Int but defined in RichInt.
+    #########################################################################################################
+    #+---+                                                                                                  #
+    #|any|                                                                                                  #
+    #+---+                                                                                                  #
+    #|    +------+                                                                                  +------+#
+    #+----+anyVal+-+--------+--------+--------+--------+--------+--------+--------+--------+<-------+Nothng|#
+    #|    +------+ |        |        |        |        |        |        |        |        |        +------+#
+    #|             +------+ +------+ +------+ +------+ +------+ +------+ +------+ +------+ +------+         #
+    #|             |Double| |Float | |Long  | |Int   | |Short | |Byte  | |Char  | |Bolean| |Unit  |         #
+    #|             +------+ +------+ +------+ +------+ +------+ +------+ +------+ +------+ +------+         #
+    #|                                                                                                      #
+    #|                                                                                                      #
+    #|    +------+                                     +------+                                             #
+    #+----+anyRef+-+--------+--------+--------+<-------+Null  |                                             #
+    #     +------+ |        |        |        |        +------+                                             #
+    #              +------+ +------+ +------+ +------+                                                      #
+    #              |Itrble+<+Seq   +<+List  | |Option|                                                      #
+    #              +------+ +------+ +------+ +------+                                                      #
+    #########################################################################################################
 
--How primitives are implemented
-// class AnyRef defines an additional eq method, which cannot be overridden and is implemented as reference equality (i.e., it behaves like == in Java for reference types).
-val x = new String("abc")
-val y = new String("abc")
-x == y                      // res13: Boolean = true
-x eq y                      // res14: Boolean = false
-x ne y                      // res15: Boolean = true
+    -How primitives are implemented
+    // class AnyRef defines an additional eq method, which cannot be overridden and is implemented as reference equality (i.e., it behaves like == in Java for reference types).
+    val x = new String("abc")
+    val y = new String("abc")
+    x == y                      // res13: Boolean = true
+    x eq y                      // res14: Boolean = false
+    x ne y                      // res15: Boolean = true
 
--Bottom types
-// Null is a subclass of every reference class
-// Nothing is a subtype of every other type
-val i: Int = null               // error: an expression of type Null is ineligible for implicit conversion
-def error(message: String): Nothing =
-    throw new RuntimeException(message)     // return type of error is Nothing
-    
-def divide(x: Int, y: Int): Int =
-    if (y != 0) x / y
-    else error("can't divide by zero")      // Because Nothing is a subtype of Int, the type of the whole conditional is Int, as required.
+    -Bottom types
+    // Null is a subclass of every reference class
+    // Nothing is a subtype of every other type
+    val i: Int = null               // error: an expression of type Null is ineligible for implicit conversion
+    def error(message: String): Nothing =
+        throw new RuntimeException(message)     // return type of error is Nothing
 
--Defining your own value classes
-// must have exactly one parameter and it must have nothing inside it except defs
-class Dollars(val amount: Int) extends AnyVal {
-    override def toString() = "$" + amount
-}
-val money = new Dollars(1000000)        // money: Dollars = $1000000; money.amount  -> res16: Int = 1000000
+    def divide(x: Int, y: Int): Int =
+        if (y != 0) x / y
+        else error("can't divide by zero")      // Because Nothing is a subtype of Int, the type of the whole conditional is Int, as required.
+
+    -Defining your own value classes
+    // must have exactly one parameter and it must have nothing inside it except defs
+    class Dollars(val amount: Int) extends AnyVal {
+        override def toString() = "$" + amount
+    }
+    val money = new Dollars(1000000)        // money: Dollars = $1000000; money.amount  -> res16: Int = 1000000
 
 
 ###############
 # Traits
 ###############
--How traits work
-trait Philosophical {                                   // default superclass of AnyRef
-    def philosophize() = {
-        println("I consume memory, therefore I am!")
+    -How traits work
+    trait Philosophical {                                   // default superclass of AnyRef
+        def philosophize() = {
+            println("I consume memory, therefore I am!")
+        }
     }
-}
-class Frog extends Philosophical {
-    override def toString = "green"
-}
-val frog = new Frog          // frog: Frog = green
-frog.philosophize()          // I consume memory, therefore I am!
-// can mix a trait into a class that explicitly extends a superclass
-class Animal
-class Frog extends Animal with Philosophical {
-    override def toString = "green"
-    override def philosophize() = {                         // override method in trait
-        println("It ain't easy being " + toString + "!")
+    class Frog extends Philosophical {
+        override def toString = "green"
     }
-}
-val phrog: Philosophical = new Frog                         // phrog: Philosophical = green
-phrog.philosophize()                                        // It ain't easy being green!
+    val frog = new Frog          // frog: Frog = green
+    frog.philosophize()          // I consume memory, therefore I am!
+    // can mix a trait into a class that explicitly extends a superclass
+    class Animal
+    class Frog extends Animal with Philosophical {
+        override def toString = "green"
+        override def philosophize() = {                         // override method in trait
+            println("It ain't easy being " + toString + "!")
+        }
+    }
+    val phrog: Philosophical = new Frog                         // phrog: Philosophical = green
+    phrog.philosophize()                                        // It ain't easy being green!
 
--Thin versus rich interfaces
-// One major use of traits is to automatically add methods to a class
+    -Thin versus rich interfaces
+    // One major use of traits is to automatically add methods to a class
 
--Example: Rectangular objects
-class Point(val x: Int, val y: Int)
-trait Rectangular {
-    def topLeft: Point
-    def bottomRight: Point
-    def left = topLeft.x
-    def right = bottomRight.x
-    def width = right - left
-    // and many more geometric methods...
-}
-abstract class Component extends Rectangular {
-    // other methods...
-}
-class Rectangle(val topLeft: Point, val bottomRight: Point) extends Rectangular {
-    // other methods...
-}
-val rect = new Rectangle(new Point(1, 1), new Point(10, 10))
-rect.left               // res2: Int = 1
-rect.right              // res3: Int = 10
+    -Example: Rectangular objects
+    class Point(val x: Int, val y: Int)
+    trait Rectangular {
+        def topLeft: Point
+        def bottomRight: Point
+        def left = topLeft.x
+        def right = bottomRight.x
+        def width = right - left
+        // and many more geometric methods...
+    }
+    abstract class Component extends Rectangular {
+        // other methods...
+    }
+    class Rectangle(val topLeft: Point, val bottomRight: Point) extends Rectangular {
+        // other methods...
+    }
+    val rect = new Rectangle(new Point(1, 1), new Point(10, 10))
+    rect.left               // res2: Int = 1
+    rect.right              // res3: Int = 10
 
--The Ordered trait
-class Rational(n: Int, d: Int) extends Ordered[Rational] {
-    // ...
-    def compare(that: Rational) =                               //  define a compare method 
-        (this.numer * that.denom) - (that.numer * this.denom)   // zero - same, negative - receiver less than argument, positive - receiver greater than argument
-}
-new Rational(1, 2) < new Rational(1, 3)         // res5: Boolean = false
+    -The Ordered trait
+    class Rational(n: Int, d: Int) extends Ordered[Rational] {
+        // ...
+        def compare(that: Rational) =                               //  define a compare method 
+            (this.numer * that.denom) - (that.numer * this.denom)   // zero - same, negative - receiver less than argument, positive - receiver greater than argument
+    }
+    new Rational(1, 2) < new Rational(1, 3)         // res5: Boolean = false
 
--Traits as stackable modifications
-abstract class IntQueue {
-    def get(): Int
-    def put(x: Int)
-}
-class BasicIntQueue extends IntQueue {
-    private val buf = new ArrayBuffer[Int]
-    def get() = buf.remove(0)
-    def put(x: Int) = { buf += x }              // adds elements to the other end
-}
-val queue = new BasicIntQueue
-queue.put(10)
-queue.put(20)
-queue.get()                                     // res9: Int = 10
-queue.get()                                     // res10: Int = 20
-trait Doubling extends IntQueue {
-    abstract override def put(x: Int) = { super.put(2 * x) }        // super calls in a trait are dynamically bound, the super call in trait Doubling will work so long as the trait is mixed in after another trait or class that gives a concrete definition to the method
-}
-class MyQueue extends BasicIntQueue with Doubling
-val queue = new MyQueue
-queue.put(10)
-queue.get()                                     // res12: Int = 20
-trait Incrementing extends IntQueue {
-    abstract override def put(x: Int) = { super.put(x + 1) }
-}
-trait Filtering extends IntQueue {
-    abstract override def put(x: Int) = {if (x >= 0) super.put(x)}
-}
-val queue = (new BasicIntQueue with Incrementing with Filtering)    // method in the +trait furthest to the right is called first. If that method calls super, it invokes the method in the next trait to its left, and so on
+    -Traits as stackable modifications
+    abstract class IntQueue {
+        def get(): Int
+        def put(x: Int)
+    }
+    class BasicIntQueue extends IntQueue {
+        private val buf = new ArrayBuffer[Int]
+        def get() = buf.remove(0)
+        def put(x: Int) = { buf += x }              // adds elements to the other end
+    }
+    val queue = new BasicIntQueue
+    queue.put(10)
+    queue.put(20)
+    queue.get()                                     // res9: Int = 10
+    queue.get()                                     // res10: Int = 20
+    trait Doubling extends IntQueue {
+        abstract override def put(x: Int) = { super.put(2 * x) }        // super calls in a trait are dynamically bound, the super call in trait Doubling will work so long as the trait is mixed in after another trait or class that gives a concrete definition to the method
+    }
+    class MyQueue extends BasicIntQueue with Doubling
+    val queue = new MyQueue
+    queue.put(10)
+    queue.get()                                     // res12: Int = 20
+    trait Incrementing extends IntQueue {
+        abstract override def put(x: Int) = { super.put(x + 1) }
+    }
+    trait Filtering extends IntQueue {
+        abstract override def put(x: Int) = {if (x >= 0) super.put(x)}
+    }
+    val queue = (new BasicIntQueue with Incrementing with Filtering)    // method in the +trait furthest to the right is called first. If that method calls super, it invokes the method in the next trait to its left, and so on
 
--Why not multiple inheritance?
-// When you instantiate a class with new, Scala takes the class, and all of its inherited classes and traits, and puts them in a single, linear order.
-// Then, whenever you call super inside one of those classes, the invoked method is the next one up the chain. If all of the methods but the last call super, the net result is stackable behavior.
+    -Why not multiple inheritance?
+    // When you instantiate a class with new, Scala takes the class, and all of its inherited classes and traits, and puts them in a single, linear order.
+    // Then, whenever you call super inside one of those classes, the invoked method is the next one up the chain. If all of the methods but the last call super, the net result is stackable behavior.
 
--To trait or not to trait?
-// If the behavior will not be reused, then make it a concrete class.
-// If it might be reused in multiple, unrelated classes, make it a trait
-// If you want to inherit from it in Java code, use an abstract class
-// If you plan to distribute it in compiled form, and you expect outside groups to write classes inheriting from it, you might lean towards using an abstract class
-// If you still do not know, after considering the above, then start by making it as a trait
+    -To trait or not to trait?
+    // If the behavior will not be reused, then make it a concrete class.
+    // If it might be reused in multiple, unrelated classes, make it a trait
+    // If you want to inherit from it in Java code, use an abstract class
+    // If you plan to distribute it in compiled form, and you expect outside groups to write classes inheriting from it, you might lean towards using an abstract class
+    // If you still do not know, after considering the above, then start by making it as a trait
 
 
 ###############
 # Packages and Imports
 ###############
--Putting code in packages
-package bobsrockets.navigation
-class Navigator
-// C# style
-package bobsrockets.navigation {
+    -Putting code in packages
+    package bobsrockets.navigation
     class Navigator
-}
-
--Concise access to related code
-// In file launch.scala
-package launch {
-    class Booster3
-}
-// In file bobsrockets.scala
-package bobsrockets {
-    package navigation {
-        package launch {
-            class Booster1
-        }
-        class MissionControl {
-            val booster1 = new launch.Booster1
-            val booster2 = new bobsrockets.launch.Booster2
-            val booster3 = new _root_.launch.Booster3           // gives you the top-level launch package
-        }
+    // C# style
+    package bobsrockets.navigation {
+        class Navigator
     }
+
+    -Concise access to related code
+    // In file launch.scala
     package launch {
-        class Booster2
+        class Booster3
     }
-}
-
--Imports
-import bobsdelights.Fruit                       // easy access to Fruit
-import bobsdelights._                           // easy access to all members of bobsdelights
-import bobsdelights.Fruits._                    // easy access to all members of Fruits
-import Fruits.{Apple, Orange}                   // selective
-import Fruits.{Apple => McIntosh, Orange}       // Apple object is renamed to McIntosh
-import Fruits.{Pear => _, _}                    // except pear
-
-package bobsdelights
-abstract class Fruit(
-    val name: String,
-    val color: String
-)
-object Fruits {
-    object Apple extends Fruit("apple", "red")
-    object Orange extends Fruit("orange", "orange")
-    object Pear extends Fruit("pear", "yellowish")
-    val menu = List(Apple, Orange, Pear)
-}
-
--Implicit imports
-//  added to the top of every source file with extension ".scala"
-import java.lang._      // everything in the java.lang package
-import scala._          // everything in the scala package
-import Predef._         // everything in the Predef object
-
--Access modifiers
-// Private members - visible only inside the class or object that contains the member definition (Outter class sees no private memeber of inner)
-// Protected members - accessible from subclasses of the class in which the member is defined (not packge as in java)
-// Public members - default - accessed from anywhere
-
--Package objects
-// Any kind of definition that you can put inside a class can also be at the top level of a package (method you’d like to be in scope for an entire package)
-// Each package is allowed to have one package object. Any definitions placed in a package object are considered members of the package itself.
-// In file bobsdelights/package.scala
-package object bobsdelights {
-    def showFruit(fruit: Fruit) = {
-        import fruit._
-        println(name + "s are " + color)
-    }
-}
-// In file PrintMenu.scala
-package printmenu
-import bobsdelights.Fruits
-import bobsdelights.showFruit
-object PrintMenu {
-    def main(args: Array[String]) = {
-        for (fruit <- Fruits.menu) {
-            showFruit(fruit)
+    // In file bobsrockets.scala
+    package bobsrockets {
+        package navigation {
+            package launch {
+                class Booster1
+            }
+            class MissionControl {
+                val booster1 = new launch.Booster1
+                val booster2 = new bobsrockets.launch.Booster2
+                val booster3 = new _root_.launch.Booster3           // gives you the top-level launch package
+            }
+        }
+        package launch {
+            class Booster2
         }
     }
-}
+
+    -Imports
+    import bobsdelights.Fruit                       // easy access to Fruit
+    import bobsdelights._                           // easy access to all members of bobsdelights
+    import bobsdelights.Fruits._                    // easy access to all members of Fruits
+    import Fruits.{Apple, Orange}                   // selective
+    import Fruits.{Apple => McIntosh, Orange}       // Apple object is renamed to McIntosh
+    import Fruits.{Pear => _, _}                    // except pear
+
+    package bobsdelights
+    abstract class Fruit(
+        val name: String,
+        val color: String
+    )
+    object Fruits {
+        object Apple extends Fruit("apple", "red")
+        object Orange extends Fruit("orange", "orange")
+        object Pear extends Fruit("pear", "yellowish")
+        val menu = List(Apple, Orange, Pear)
+    }
+
+    -Implicit imports
+    //  added to the top of every source file with extension ".scala"
+    import java.lang._      // everything in the java.lang package
+    import scala._          // everything in the scala package
+    import Predef._         // everything in the Predef object
+
+    -Access modifiers
+    // Private members - visible only inside the class or object that contains the member definition (Outter class sees no private memeber of inner)
+    // Protected members - accessible from subclasses of the class in which the member is defined (not packge as in java)
+    // Public members - default - accessed from anywhere
+
+    -Package objects
+    // Any kind of definition that you can put inside a class can also be at the top level of a package (method you’d like to be in scope for an entire package)
+    // Each package is allowed to have one package object. Any definitions placed in a package object are considered members of the package itself.
+    // In file bobsdelights/package.scala
+    package object bobsdelights {
+        def showFruit(fruit: Fruit) = {
+            import fruit._
+            println(name + "s are " + color)
+        }
+    }
+    // In file PrintMenu.scala
+    package printmenu
+    import bobsdelights.Fruits
+    import bobsdelights.showFruit
+    object PrintMenu {
+        def main(args: Array[String]) = {
+            for (fruit <- Fruits.menu) {
+                showFruit(fruit)
+            }
+        }
+    }
 
 
 ###############
 # Assertions and Tests
 ###############
--Assertions
-def above(that: Element): Element = {
-    val this1 = this widen that.width
-    val that1 = that widen this.width
-    assert(this1.width == that1.width)
-    elem(this1.contents ++ that1.contents)
-}
-
-private def widen(w: Int): Element =
-    if (w <= width)
-        this
-    else {
-        val left = elem(' ', (w - width) / 2, height)
-        var right = elem(' ', w - width - left.width, height)
-        left beside this beside right
-    } ensuring (w <= _.width)                                   // underscore is a placeholder for the one argument passed to the predicate, the Element result of the widen method
-    //  If the width passed as w to widen is less than or equal to the width of the result Element, the predicate will result in true
-
--Testing in Scala
-import org.scalatest.FunSuite
-import Element.elem
-class ElementSuite extends FunSuite {                   // central concept in ScalaTest is the suite - collection of tests
-    test("elem result should have passed width") {      // specify the name of the test as a string between the parentheses and the test code itself between curly braces
-        val ele = elem('x', 2, 3)                       // test code is a function passed as a by-name parameter to test, which registers it for later execution
-        assert(ele.width == 2)
+    -Assertions
+    def above(that: Element): Element = {
+        val this1 = this widen that.width
+        val that1 = that widen this.width
+        assert(this1.width == that1.width)
+        elem(this1.contents ++ that1.contents)
     }
-}
 
--Informative failure reports
-val caught =
-    intercept[ArithmeticException] {
-        1 / 0
-    }
-assert(caught.getMessage == "/ by zero")
+    private def widen(w: Int): Element =
+        if (w <= width)
+            this
+        else {
+            val left = elem(' ', (w - width) / 2, height)
+            var right = elem(' ', w - width - left.width, height)
+            left beside this beside right
+        } ensuring (w <= _.width)                                   // underscore is a placeholder for the one argument passed to the predicate, the Element result of the widen method
+        //  If the width passed as w to widen is less than or equal to the width of the result Element, the predicate will result in true
 
--Tests as specifications
-import org.scalatest._
-class TVSetSpec extends FeatureSpec with GivenWhenThen {
-    feature("TV power button") {
-        scenario("User presses power button when TV is off") {
-            Given("a TV set that is switched off")
-            When("the power button is pressed")
-            Then("the TV should switch on")
-            pending
+    -Testing in Scala
+    import org.scalatest.FunSuite
+    import Element.elem
+    class ElementSuite extends FunSuite {                   // central concept in ScalaTest is the suite - collection of tests
+        test("elem result should have passed width") {      // specify the name of the test as a string between the parentheses and the test code itself between curly braces
+            val ele = elem('x', 2, 3)                       // test code is a function passed as a by-name parameter to test, which registers it for later execution
+            assert(ele.width == 2)
         }
     }
-}
 
--Property-based testing
-import org.scalatest.WordSpec
-import org.scalatest.prop.PropertyChecks
-import org.scalatest.MustMatchers._
-import Element.elem
-class ElementSpec extends WordSpec with PropertyChecks {
-    "elem result" must {
-        "have passed width" in {
-            forAll { (w: Int) =>
-                whenever (w > 0) {
-                    elem('x', w, 3).width must equal (w)
+    -Informative failure reports
+    val caught =
+        intercept[ArithmeticException] {
+            1 / 0
+        }
+    assert(caught.getMessage == "/ by zero")
+
+    -Tests as specifications
+    import org.scalatest._
+    class TVSetSpec extends FeatureSpec with GivenWhenThen {
+        feature("TV power button") {
+            scenario("User presses power button when TV is off") {
+                Given("a TV set that is switched off")
+                When("the power button is pressed")
+                Then("the TV should switch on")
+                pending
+            }
+        }
+    }
+
+    -Property-based testing
+    import org.scalatest.WordSpec
+    import org.scalatest.prop.PropertyChecks
+    import org.scalatest.MustMatchers._
+    import Element.elem
+    class ElementSpec extends WordSpec with PropertyChecks {
+        "elem result" must {
+            "have passed width" in {
+                forAll { (w: Int) =>
+                    whenever (w > 0) {
+                        elem('x', w, 3).width must equal (w)
+                    }
                 }
             }
         }
     }
-}
 
--Organizing and running tests
-scalac -cp scalatest.jar TVSetSpec.scala
+    -Organizing and running tests
+    scalac -cp scalatest.jar TVSetSpec.scala
 
 
 ###############
