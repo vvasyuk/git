@@ -479,6 +479,7 @@
 
     -Using override modifiers
     // Scala requires override modifier for all members that override a concrete member in a parent class
+    // if client created a hidden method (no override) and later you added hidden in superclass - code wont copile saying override keyword is needed
 
     -Polymorphism and dynamic binding
     class UniformElement(ch: Char,override val width: Int,override val height: Int) extends Element {
@@ -492,6 +493,8 @@
     // method invocations on variables and expressions are dynamically bound (determined at run time based on the class of the object)
 
     -Declaring final members
+    // final on method - method cannot be overriden
+    // fnal on class - entire class not be subclassed
 
     -Using composition and inheritance
     // previous version, LineElement had an inheritance relationship with ArrayElement, from which it inherited contents
