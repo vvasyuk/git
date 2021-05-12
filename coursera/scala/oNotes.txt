@@ -292,29 +292,38 @@
     | addMore(10)                        |  // res17: Int = 10009
     +------------------------------------+
 
-    val someNumbers = List(11,10,5,0, 5, 10)
-    var sum = 0
-    someNumbers.foreach(sum += _)       // sum = 11
+    +------------------------------------------+
+    | val someNumbers = List(11,10,5,0, 5, 10) |
+    | var sum = 0                              |
+    | someNumbers.foreach(sum += _)            |    // sum = 11
+    +------------------------------------------+
 
     -Special function call forms
-
     -Repeated parameters
-    def echo(args: String*) = for (arg <args) println(arg)  // echo("hello", "world!")
-    echo(Array("What's", "up", "doc?"))                     // error: type mismatch found : Array[String] required: String. fix: echo(arr: _*)
+    +----------------------------------------------------------+
+    | def echo(args: String*) = for (arg <args) println(arg)   |    // echo("hello", "world!")
+    | echo(Array("What's", "up", "doc?"))                      |    // error: type mismatch found : Array[String] required: String. fix: echo(arr: _*)
+    +----------------------------------------------------------+
     // This notation tells the compiler to pass each element of arr as its own argument to echo, rather than all of it as a single argument.
 
     -Named arguments
-    def speed(distance: Float, time: Float): Float = distance / time    // speed(distance = 100, time = 10)
-
+    +------------------------------------------------------------------+
+    | def speed(distance: Float, time: Float): Float = distance / time |    // speed(distance = 100, time = 10)
+    +------------------------------------------------------------------+
+    
     -Default parameter values
-    def printTime2(out: java.io.PrintStream = Console.out, divisor: Int = 1) =
-        out.println("time = " + System.currentTimeMillis()/divisor)
+    +----------------------------------------------------------------------------+
+    | def printTime2(out: java.io.PrintStream = Console.out, divisor: Int = 1) = |
+    |     out.println("time = " + System.currentTimeMillis()/divisor)            |
+    +----------------------------------------------------------------------------+
 
     -Tail recursion
     // Functions like approximate, which call themselves as their last action, are called tail recursive. The Scala compiler detects tail recursion and replaces it with a jump back to the beginning of the function, after updating the function parameters with the new values.
-    def approximate(guess: Double): Double =
-        if (isGoodEnough(guess)) guess
-        else approximate(improve(guess))
+    +------------------------------------------+
+    | def approximate(guess: Double): Double = |
+    |     if (isGoodEnough(guess)) guess       |
+    |     else approximate(improve(guess))     |
+    +------------------------------------------+
 
 
 ###############
@@ -359,136 +368,142 @@
     +----------------------------------------+                             
 
     -Writing new control structures
-    def twice(op: Double => Double, x: Double) = op(op(x))
-    twice(_ + 1, 5)                             // res9: Double = 7.0
+    +--------------------------------------------------------+
+    | def twice(op: Double => Double, x: Double) = op(op(x)) |
+    | twice(_ + 1, 5)                                        |  // res9: Double = 7.0
+    +--------------------------------------------------------+
+                            
     // Any time you find a control pattern repeated in multiple parts of your code, you should think about implementing it as a new control structure
     // Consider now a more widely used coding pattern: open a resource, operate on it, and then close the resource
     // loan pattern: (because a control-abstraction function, such as withPrintWriter, opens a resource and “loans” it to a function)
-    def withPrintWriter(file: File, op: PrintWriter => Unit) = {
-        val writer = new PrintWriter(file)
-        try {
-            op(writer)
-        } finally {
-            writer.close()                      // impossible to forget to close the file
-        }
-    }
-    withPrintWriter(new File("date.txt"), writer => writer.println(new java.util.Date))
+    +-------------------------------------------------------------------------------------+
+    | def withPrintWriter(file: File, op: PrintWriter => Unit) = {                        |
+    |     val writer = new PrintWriter(file)                                              |
+    |     try {                                                                           |
+    |         op(writer)                                                                  |
+    |     } finally {                                                                     |
+    |         writer.close()                                                              | // impossible to forget to close the file
+    |     }                                                                               |
+    | }                                                                                   |
+    | withPrintWriter(new File("date.txt"), writer => writer.println(new java.util.Date)) |
+    +-------------------------------------------------------------------------------------+
 
     -By-name parameters
-    // you want to implement an assertion construct called myAssert
-    var assertionsEnabled = true
-    def myAssert(predicate: () => Boolean) =
-        if (assertionsEnabled && !predicate())
-            throw new AssertionError
-    myAssert(() => 5 > 3)
-    // By-name parameters exist precisely so you can remove () => part
-    def byNameAssert(predicate: => Boolean) =
-        if (assertionsEnabled && !predicate)
-            throw new AssertionError
-    byNameAssert(5 > 3)                         // function value will be created whose apply method will evaluate 5 > 3, and this function value will be passed to byNameAssert
+    // you want to implement an assertion construct     // By-name parameters exist precisely so you can remove () => part
+    called myAssert                                     // function value will be created whose apply method will evaluate 5 > 3, and this function value will be passed to byNameAssert
+    +--------------------------------------------+      +-------------------------------------------+      
+    | var assertionsEnabled = true               |      | def byNameAssert(predicate: => Boolean) = |
+    | def myAssert(predicate: () => Boolean) =   |      |     if (assertionsEnabled && !predicate)  |
+    |     if (assertionsEnabled && !predicate()) |      |         throw new AssertionError          |
+    |         throw new AssertionError           |      | byNameAssert(5 > 3)                       |
+    | myAssert(() => 5 > 3)                      |      +-------------------------------------------+
+    +--------------------------------------------+
 
 
 ###############
 # Composition and Inheritance
 ###############
     -A two-dimensional layout library
-    // ibrary for building and rendering two-dimensional layout elements
-    val column1 = elem("hello") above elem("***")
-    val column2 = elem("***") above elem("world")
-    column1 beside column2
-    result:
-    hello ***
-    *** world
+    // library for building and rendering two-dimensional layout elements
+    +-----------------------------------------------+   +-----------+
+    | val column1 = elem("hello") above elem("***") |   | result:   |
+    | val column2 = elem("***") above elem("world") |   | hello *** |
+    | column1 beside column2                        |   | *** world |
+    +-----------------------------------------------+   +-----------+
 
     -Abstract classes
-    abstract class Element {
-        def contents: Array[String]     // no abstract modifier, method abstract if no implementation
-    }
+    // no abstract modifier, method abstract 
+    if no implementation
+    +---------------------------------+
+    | abstract class Element {        |
+    |     def contents: Array[String] |
+    | }                               |
+    +---------------------------------+
 
     -Defining parameterless methods
     // if function has no params - use no braces (if only this function does no side-effect)
-    abstract class Element {
-        def contents: Array[String]
-        def height: Int = contents.length                               // notice no braces
-        def width: Int = if (height == 0) 0 else contents(0).length
-    }
+    // notice no braces
+    +----------------------------------------------------------------------+
+    | abstract class Element {                                             |
+    |     def contents: Array[String]                                      |
+    |     def height: Int = contents.length                                |
+    |     def width: Int = if (height == 0) 0 else contents(0).length      |
+    | }                                                                    |
+    +----------------------------------------------------------------------+
+
 
     -Extending classes
-    class ArrayElement(conts: Array[String]) extends Element {          // inherit all non-private members from class Element
-        def contents: Array[String] = conts                             // private members of the superclass are not inherited in a subclass
-    }
+    // inherit all non-private members from class Element
+    // private members of the superclass are not inherited in a subclass
+    +----------------------------------------------------------------------+    +----------------------------------------------------------------------+
+    | class ArrayElement(conts: Array[String]) extends Element {           |    | val ae = new ArrayElement(Array("hello", "world"))                   |
+    |     def contents: Array[String] = conts                              |    | ae.width                                            // res0: Int = 5 |
+    | }                                                                    |    | val e: Element = new ArrayElement(Array("hello"))                    |
+    +----------------------------------------------------------------------+    +----------------------------------------------------------------------+
     // hieararchy is next ArrayElement<-Element<-AnyRef
-    val ae = new ArrayElement(Array("hello", "world"))
-    ae.width                                            // res0: Int = 5
-    val e: Element = new ArrayElement(Array("hello"))
 
-    -Overriding methods and fields
-    // fields and methods belong to the same namespace - possible for a field to override a parameterless method
-    class ArrayElement(conts: Array[String]) extends Element {
-        val contents: Array[String] = conts                     // val here overrides def in abstract
-    }
+    -Overriding methods and fields                                      -Defining parametric fields
+    // fields and methods belong to the same namespace -                // can remove const param by combining the parameter and the field
+     possible for a field to override a parameterless method            in a single parametric field definition
+    // val here overrides def in abstract                               // val defines at the same time a parameter and field with the same name (with var it can be reassignable)
+    +--------------------------------------------------------------+    +-----------------------------------------------------------------+    
+    | class ArrayElement(conts: Array[String]) extends Element {   |    | class ArrayElement(val contents: Array[String]) extends Element |
+    |     val contents: Array[String] = conts                      |    +-----------------------------------------------------------------+
+    | }                                                            |    
+    +--------------------------------------------------------------+
 
-    -Defining parametric fields
-    // can remove const param by combining the parameter and the field in a single parametric field definition
-    class ArrayElement(val contents: Array[String]) extends Element         // val defines at the same time a parameter and field with the same name (with var it can be reassignable)
-
-    -Invoking superclass constructors
-    // element consisting of a single line given by a string
-    class LineElement(s: String) extends ArrayElement(Array(s)) {           // Array(s) passed to primary constructor of a parent class (like in java)
-        override def width = s.length
-        override def height = 1
-    }
+    -Invoking superclass constructors                                               -Using composition and inheritance
+    // element consisting of a single line given by a string                        // previous version, LineElement had an inheritance relationship with ArrayElement, from which it inherited contents
+    // Array(s) passed to primary constructor of a parent class (like in java)      // It now has a composition relationship with Array: it holds a reference to an array
+    +--------------------------------------------------------------------------+    +------------------------------------------------+
+    | class LineElement(s: String) extends ArrayElement(Array(s)) {            |    | class LineElement(s: String) extends Element { |
+    |     override def width = s.length                                        |    |     val contents = Array(s)                    |
+    |     override def height = 1                                              |    |     override def width = s.length              |
+    | }                                                                        |    |     override def height = 1                    |
+    +--------------------------------------------------------------------------+    | }                                              |
+                                                                                    +------------------------------------------------+
 
     -Using override modifiers
     // Scala requires override modifier for all members that override a concrete member in a parent class
     // if client created a hidden method (no override) and later you added hidden in superclass - code wont copile saying override keyword is needed
 
     -Polymorphism and dynamic binding
-    class UniformElement(ch: Char,override val width: Int,override val height: Int) extends Element {
-        private val line = ch.toString * width
-        def contents = Array.fill(height)(line)
-    }
-    val e1: Element = new ArrayElement(Array("hello", "world"))
-    val ae: ArrayElement = new LineElement("hello")
-    val e2: Element = ae
-    val e3: Element = new UniformElement('x', 2, 3)
     // method invocations on variables and expressions are dynamically bound (determined at run time based on the class of the object)
+    +---------------------------------------------------------------------------------------------------+
+    | class UniformElement(ch: Char,override val width: Int,override val height: Int) extends Element { |
+    |     private val line = ch.toString * width                                                        |
+    |     def contents = Array.fill(height)(line)                                                       |
+    | }                                                                                                 |
+    | val e1: Element = new ArrayElement(Array("hello", "world"))                                       |
+    | val ae: ArrayElement = new LineElement("hello")                                                   |
+    | val e2: Element = ae                                                                              |
+    | val e3: Element = new UniformElement('x', 2, 3)                                                   |
+    +---------------------------------------------------------------------------------------------------+
 
     -Declaring final members
     // final on method - method cannot be overriden
     // fnal on class - entire class not be subclassed
 
-    -Using composition and inheritance
-    // previous version, LineElement had an inheritance relationship with ArrayElement, from which it inherited contents
-    // It now has a composition relationship with Array: it holds a reference to an array
-    class LineElement(s: String) extends Element {
-        val contents = Array(s)
-        override def width = s.length
-        override def height = 1
-    }
-
-    -Implementing above, beside, and toString
-    // above first version
-    def above(that: Element): Element =
-        new ArrayElement(this.contents ++ that.contents)
-
-    // beside
-    def beside(that: Element): Element = new ArrayElement(
-        for (
-            (line1, line2) <- this.contents zip that.contents       // this.contents and that.contents, are transformed into an array of pairs (as Tuple2s are called) using the zip operator
-        ) yield line1 + line2
-    )
-
-    // toString
-    override def toString = contents mkString "\n"
+    // beside                                                               -Implementing above, beside, and toString
+    // this.contents and that.contents, are transformed into an array of    // above first version
+    pairs (as Tuple2s are called) using the zip operator                    +------------------------------------------------------+
+    +------------------------------------------------------------------+    | def above(that: Element): Element =                  |
+    | def beside(that: Element): Element = new ArrayElement(           |    |     new ArrayElement(this.contents ++ that.contents) |
+    |     for (                                                        |    +------------------------------------------------------+
+    |         (line1, line2) <- this.contents zip that.contents        |    // toString
+    |     ) yield line1 + line2                                        |    +------------------------------------------------+
+    | )                                                                |    | override def toString = contents mkString "\n" |
+    +------------------------------------------------------------------+    +------------------------------------------------+
 
     -Defining a factory object
     // A straightforward solution is to create a companion object of class Element and make this the factory object for layout elements
-    object Element {
-        def elem(contents: Array[String]): Element = new ArrayElement(contents)
-        def elem(chr: Char, width: Int, height: Int): Element = new UniformElement(chr, width, height)
-        def elem(line: String): Element = new LineElement(line)
-    }
+    +----------------------------------------------------------------------------------------------------+
+    | object Element {                                                                                   |
+    |     def elem(contents: Array[String]): Element = new ArrayElement(contents)                        |
+    |     def elem(chr: Char, width: Int, height: Int): Element = new UniformElement(chr, width, height) |
+    |     def elem(line: String): Element = new LineElement(line)                                        |
+    | }                                                                                                  |
+    +----------------------------------------------------------------------------------------------------+
 
     -Heighten and widen                                                          -Putting it all together
     +-----------------------------------------------------------------------+    +------------------------------------------------------------------------------------------+
