@@ -1,98 +1,84 @@
 ###############
 # Classes and Objects
 ###############
-    class ChecksumAccumulator {
-        private var sum = 0
-        def add(b: Byte): Unit = { sum += b }
-        def checksum(): Int = ~(sum & 0xFF) + 1
-    }
-    
-    -Singleton objects
-    import scala.collection.mutable
-    object ChecksumAccumulator {
-        private val cache = mutable.Map.empty[String, Int]
-        def calculate(s: String): Int =
-            if (cache.contains(s))
-                cache(s)
-            else {
-                val acc = new ChecksumAccumulator
-                for (c <s)
-                acc.add(c.toByte)
-                val cs = acc.checksum()
-                cache += (s >
-                cs)
-                cs
-            }
-    }
-    
-    -A Scala application
-    import ChecksumAccumulator.calculate
-    object Summer {
-        def main(args: Array[String]) = {
-            for (arg <args)
-                println(arg + ": " + calculate(arg))
-        }
-    }
-    
-    -The App trait
-    import ChecksumAccumulator.calculate
-    object FallWinterSpringSummer extends App {
-        for (season <List("fall", "winter", "spring"))
-            println(season + ": " + calculate(season))
-    }
+                                                 -A Scala application                                    -The App trait
++---------------------------------------------+ +--------------------------------------------------+    +----------------------------------------------------+
+| class ChecksumAccumulator {                 | | import ChecksumAccumulator.calculate             |    | import ChecksumAccumulator.calculate               |
+|     private var sum = 0                     | | object Summer {                                  |    | object FallWinterSpringSummer extends App {        |
+|     def add(b: Byte): Unit = { sum += b }   | |     def main(args: Array[String]) = {            |    |     for (season <List("fall", "winter", "spring")) |
+|     def checksum(): Int = ~(sum & 0xFF) + 1 | |         for (arg <args)                          |    |         println(season + ": " + calculate(season)) |
+| }                                           | |             println(arg + ": " + calculate(arg)) |    | }                                                  |
++---------------------------------------------+ |     }                                            |    +----------------------------------------------------+
+                                                | }                                                |
+-Singleton objects                              +--------------------------------------------------+
++--------------------------------------------------------+
+| import scala.collection.mutable                        |
+| object ChecksumAccumulator {                           |
+|     private val cache = mutable.Map.empty[String, Int] |
+|     def calculate(s: String): Int =                    |
+|         if (cache.contains(s))                         |
+|             cache(s)                                   |
+|         else {                                         |
+|             val acc = new ChecksumAccumulator          |
+|             for (c <s)                                 |
+|             acc.add(c.toByte)                          |
+|             val cs = acc.checksum()                    |
+|             cache += (s >                              |
+|             cs)                                        |
+|             cs                                         |
+|         }                                              |
+| }                                                      |
++--------------------------------------------------------+
 
 
 ###############
 # Basic Types and Operations
 ###############
-    -Basic types
-    Byte    8-bit (-2^7 to 2^7)
-    Short   16-bit (-2^15 to 2^15)
-    Int     32-bit (-2^31 to 2^31)
-    Long    64-bit (-2^63 to 2^63)
-    Char    16-bit (-2^15 to 2^15)
-    String  seq of chars
-    Float   32-bit IEEE 754 single-precision float
-    Double  63-bit IEEE 754 single-precision float
-    Boolean true or false
-
-    -Character literals
-    val hex = 0x5       // hex: Int = 5
-    val hex2 = 0x00FF   // hex: Int = 255
-    val a = 'A'         // a: Char = A
-    val d = '\u0041'    // d: Char = A
-    val f = '\u0044'    // f: Char = D
-    val B\u0041\u0044 = 1   //BAD: Int = 1
+    -Basic types                                        -Character literals
+    +------------------------------------------------+  +---------------------------------------+
+    | Byte    8-bit (-2^7 to 2^7)                    |  |val hex = 0x5       // hex: Int = 5    |
+    | Short   16-bit (-2^15 to 2^15)                 |  |val hex2 = 0x00FF   // hex: Int = 255  |
+    | Int     32-bit (-2^31 to 2^31)                 |  |val a = 'A'         // a: Char = A     |
+    | Long    64-bit (-2^63 to 2^63)                 |  |val d = '\u0041'    // d: Char = A     |
+    | Char    16-bit (-2^15 to 2^15)                 |  |val f = '\u0044'    // f: Char = D     |
+    | String  seq of chars                           |  |val B\u0041\u0044 = 1   //BAD: Int = 1 |
+    | Float   32-bit IEEE 754 single-precision float |  +---------------------------------------+
+    | Double  63-bit IEEE 754 single-precision float |
+    | Boolean true or false                          |
+    +------------------------------------------------+
 
     -String interpolation
-    val name = "reader"         // println(s"Hello, $name!")
-    s"The answer is ${6 * 7}."  // res0: String = The answer is 42.
+    +-----------------------------------------------------------------+
+    | val name = "reader"         // println(s"Hello, $name!")        |
+    | s"The answer is ${6 * 7}."  // res0: String = The answer is 42. |
+    +-----------------------------------------------------------------+
 
     infix operator                  // method between the object and the parameter ("7 + 2")
     prefix operator (only +,-,!,~)  // method before the object on which you are invoking the method (-7, !found). "-2.0" transformed into (2.0).unary_-
     postfix operator                // method after the object ("7 toLong")
 
     -Bitwise operations
-    1 & 2   // 1 (0001) and 2 (0010) = 0 (0000)
-    1 | 2   // 1 (0001) and 2 (0010) = 3 (0011)
-    1 ˆ 3   // 1 (0001) and 3 (0011) = 2 (0010)
-    ~1      // inverts each bit in 1 (0001), yielding -2, which in binary looks like 11111111111111111111111111111110.
-    1 << 2  // 4
+    +--------------------------------------------------------------------------------------------------------------------+
+    | 1 & 2   // 1 (0001) and 2 (0010) = 0 (0000)                                                                        |
+    | 1 | 2   // 1 (0001) and 2 (0010) = 3 (0011)                                                                        |
+    | 1 ˆ 3   // 1 (0001) and 3 (0011) = 2 (0010)                                                                        |
+    | ~1      // inverts each bit in 1 (0001), yielding -2, which in binary looks like 11111111111111111111111111111110. |
+    | 1 << 2  // 4                                                                                                       |
+    +--------------------------------------------------------------------------------------------------------------------+
 
-    -Operator precedence and associativity
-    * / %
-    + :
-    = !
-    < >
-    &
-    ˆ
-    |
-    (all letters)
-    (all assignment operators)
 
-    - any method that ends in a ‘:’ character is invoked on its right operand, passing in the left operand
-    a * b   //a.*(b)
-    a:::b   //b.:::(a)
+    -Operator precedence and associativity  - any method that ends in a ‘:’ character is invoked on its right operand, passing in the left operand
+    +----------------------------+          +--------------------+
+    | * / %                      |          | a * b   //a.*(b)   |
+    | + :                        |          | a:::b   //b.:::(a) |
+    | = !                        |          +--------------------+
+    | < >                        |
+    | &                          |
+    | ˆ                          |
+    | |                          |
+    | (all letters)              |
+    | (all assignment operators) |
+    +----------------------------+
 
     -Equality
     in Java == compares: Primitives->value, ReferenceTypes->reference equality

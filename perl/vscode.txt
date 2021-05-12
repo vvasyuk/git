@@ -1,4 +1,6 @@
 vscode-command-runner
+    // last working
+    "wrap": "$cmdOutput = ('${selectedTextList}\n' -replace '\"', '\\\"')| Out-String; perl D:\\work\\tryout\\perl\\vsCodeBoxWrap.pl $cmdOutput\n"
 
     "command-runner.commands": {
         //"wrap": "echo '${selectedTextList}'"
