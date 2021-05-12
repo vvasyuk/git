@@ -548,12 +548,15 @@
 ###############
     -Scala’s class hierarchy
     //top of the hierarchy is class Any, methods:
-    final def ==(that: Any): Boolean    // cannot be overriden by subclasses
-    final def !=(that: Any): Boolean
-    def equals(that: Any): Boolean      // behaviour of == can be changed by overring equals
-    def ##: Int
-    def hashCode: Int
-    def toString: String
+    +--------------------------------------+
+    | final def ==(that: Any): Boolean     |    // cannot be overriden by subclasses
+    | final def !=(that: Any): Boolean     |
+    | def equals(that: Any): Boolean       |    // behaviour of == can be changed by overring equals
+    | def ##: Int                          |
+    | def hashCode: Int                    |
+    | def toString: String                 |
+    +--------------------------------------+
+
     // methods min, max, until, to, and abs are all defined in a class scala.runtime.RichInt, and there is an implicit conversion from class Int to RichInt. 
     //The conversion is applied whenever a method is invoked on an Int that is undefined in Int but defined in RichInt.
     #########################################################################################################
