@@ -431,7 +431,6 @@
     | }                                                                    |
     +----------------------------------------------------------------------+
 
-
     -Extending classes
     // inherit all non-private members from class Element
     // private members of the superclass are not inherited in a subclass
@@ -581,12 +580,11 @@
 
     -How primitives are implemented
     // class AnyRef defines an additional eq method, which cannot be overridden and is implemented as reference equality (i.e., it behaves like == in Java for reference types).
-<<<<<<< HEAD
     +---------------------------+
     | val x = new String("abc") |
     | val y = new String("abc") |
     | x == y                    |   // res13: Boolean = true
-    | x eq y                    |   // res14: Boolean = false
+    | x eq y                    |   // res14: Boolean = false (eq checks for reference equality)
     | x ne y                    |   // res15: Boolean = true
     +---------------------------+
 
@@ -601,24 +599,6 @@
     | def error(message: String): Nothing =    |
     |     throw new RuntimeException(message)  |    
     +------------------------------------------+
-=======
-    val x = new String("abc")
-    val y = new String("abc")
-    x == y                      // res13: Boolean = true
-    x eq y                      // res14: Boolean = false (eq checks for reference equality)
-    x ne y                      // res15: Boolean = true
-
-    -Bottom types
-    // Null is a subclass of every reference class
-    // Nothing is a subtype of every other type
-    val i: Int = null               // error: an expression of type Null is ineligible for implicit conversion
-    def error(message: String): Nothing =
-        throw new RuntimeException(message)     // return type of error is Nothing
-
-    def divide(x: Int, y: Int): Int =
-        if (y != 0) x / y
-        else error("can't divide by zero")      // Because Nothing is a subtype of Int, the type of the whole conditional is Int, as required.
->>>>>>> 37fa3d4 (upd)
 
     -Defining your own value classes
     // must have exactly one parameter and it must have nothing inside it except defs
@@ -633,6 +613,9 @@
 ###############
 # Traits
 ###############
+    // traits encapsulate field and method definition which can be reused by mixin them into classes
+    // when you write super.tostring in class you know exactly what method will be called
+    // when you write super.tostring in trait - method implementation to invoke is defined by mixed in (stackable modification)
     -How traits work
     // default superclass of AnyRef
     +------------------------------------------------------------+  +-------------------------------------+
@@ -656,68 +639,72 @@
                                        
     -Thin versus rich interfaces
     // One major use of traits is to automatically add methods to a class
+    // rich interface has many metods, adding concrete method to trait makes it rich interface
 
-    -Example: Rectangular objects
-    class Point(val x: Int, val y: Int)
-    trait Rectangular {
-        def topLeft: Point
-        def bottomRight: Point
-        def left = topLeft.x
-        def right = bottomRight.x
-        def width = right - left
-        // and many more geometric methods...
-    }
-    abstract class Component extends Rectangular {
-        // other methods...
-    }
-    class Rectangle(val topLeft: Point, val bottomRight: Point) extends Rectangular {
-        // other methods...
-    }
-    val rect = new Rectangle(new Point(1, 1), new Point(10, 10))
-    rect.left               // res2: Int = 1
-    rect.right              // res3: Int = 10
+    // rich interface example (note 3 methods defined in terms of <)    -fix
+    +---------------------------------------------------------------+   +---------------------------------------------------------------+
+    | class Rational(n: Int, d: Int):                               |   | class Rational(n: Int, d: Int) extends Ordered[Rational]:     |
+    | // ...                                                        |   | // ...                                                        |
+    |     def < (that: Rational) =                                  |   |     def compare(that: Rational) =                             |   +--------------------------------+
+    |         this.numer * that.denom < that.numer * this.denom     |   |         (this.numer * that.denom) - (that.numer * this.denom) |   | val half = new Rational(1, 2)  |
+    |     def > (that: Rational) = that < this                      |   +---------------------------------------------------------------+   | val third = new Rational(1, 3) |
+    |     def <= (that: Rational) = (this < that) || (this == that) |   0           - same                                                  | half < third // false          |
+    |     def >= (that: Rational) = (this > that) || (this == that) |   negative    - receiver less than argument                           | half > third // true           |
+    +---------------------------------------------------------------+   positive    - receiver is greater than argument                     +--------------------------------+
 
-    -The Ordered trait
-    class Rational(n: Int, d: Int) extends Ordered[Rational] {
-        // ...
-        def compare(that: Rational) =                               //  define a compare method 
-            (this.numer * that.denom) - (that.numer * this.denom)   // zero - same, negative - receiver less than argument, positive - receiver greater than argument
-    }
-    new Rational(1, 2) < new Rational(1, 3)         // res5: Boolean = false
+    - Traits as stackable modifications
+    // traits allow you to stack modifications with each other
 
-    -Traits as stackable modifications
-    abstract class IntQueue {
-        def get(): Int
-        def put(x: Int)
-    }
-    class BasicIntQueue extends IntQueue {
-        private val buf = new ArrayBuffer[Int]
-        def get() = buf.remove(0)
-        def put(x: Int) = { buf += x }              // adds elements to the other end
-    }
-    val queue = new BasicIntQueue
-    queue.put(10)
-    queue.put(20)
-    queue.get()                                     // res9: Int = 10
-    queue.get()                                     // res10: Int = 20
-    trait Doubling extends IntQueue {
-        abstract override def put(x: Int) = { super.put(2 * x) }        // super calls in a trait are dynamically bound, the super call in trait Doubling will work so long as the trait is mixed in after another trait or class that gives a concrete definition to the method
-    }
-    class MyQueue extends BasicIntQueue with Doubling
-    val queue = new MyQueue
-    queue.put(10)
-    queue.get()                                     // res12: Int = 20
-    trait Incrementing extends IntQueue {
-        abstract override def put(x: Int) = { super.put(x + 1) }
-    }
-    trait Filtering extends IntQueue {
-        abstract override def put(x: Int) = {if (x >= 0) super.put(x)}
-    }
-    val queue = (new BasicIntQueue with Incrementing with Filtering)    // method in the +trait furthest to the right is called first. If that method calls super, it invokes the method in the next trait to its left, and so on
+    // basic queue
+    +-------------------------------+   +----------------------------------------------+    +---------------------------+
+    | val queue = new BasicIntQueue |   | import scala.collection.mutable.ArrayBuffer  |    | abstract class IntQueue:  |
+    | queue.put(10)                 |   | class BasicIntQueue extends IntQueue:        |    |     def get(): Int        |
+    | queue.put(20)                 |   |     private val buf = ArrayBuffer.empty[Int] |    |     def put(x: Int): Unit |
+    | queue.get() // 10             |   |     def get() = buf.remove(0)                |    +---------------------------+
+    | queue.get() // 20             |   |     def put(x: Int) = buf += x               |    
+    +-------------------------------+   +----------------------------------------------+    
+    // stacking
+    // when you extend IntQueue - you can only be mixed in a class that also extends IntQueues
+    // trait Doubling makes a super call for method in abstract class (classes cannot do that)
+    // super call in trait are dynamically bound
+    // super call in trait will work because trait will be mixed in after another trait or concrete class method implementation
+    +-----------------------------------------------------------------------+   +---------------------------------------------------+   +---------------------------------------------+
+    | trait Doubling extends IntQueue:                                      |   | class MyQueue extends BasicIntQueue with Doubling |   | val queue = new BasicIntQueue with Doubling |
+    |     abstract override def put(x: Int) = super.put(2 * x)              |   | val queue = new MyQueue                           |   | queue.put(10)                               |
+    | trait Incrementing extends IntQueue:                                  |   | queue.put(10)                                     |   | queue.get() // 20                           |
+    |     abstract override def put(x: Int) = super.put(x + 1)              |   | queue.get() // 20                                 |   +---------------------------------------------+
+    | trait Filtering extends IntQueue:                                     |   +---------------------------------------------------+
+    |     abstract override def put(x: Int) = if x >= 0 then super.put(x)   |
+    +-----------------------------------------------------------------------+
+    // order of mixins is important - traits further to the right take effect first
+    +------------------------------------+  +------------------------------------+
+    | val queue = new BasicIntQueue with |  | val queue = new BasicIntQueue with |
+    |   Incrementing with Filtering      |  |     Filtering with Incrementing    |
+    | queue.put(-1)                      |  | queue.put(-1)                      |
+    | queue.put(0)                       |  | queue.put(0)                       |
+    | queue.put(1)                       |  | queue.put(1)                       |
+    | queue.get() // 1                   |  | queue.get() // 0                   |
+    | queue.get() // 2                   |  | queue.get() // 1                   |
+    +------------------------------------+  | queue.get() // 2                   |
+                                            +------------------------------------+
 
-    -Why not multiple inheritance?
+    - why not multiple inheritence
+    // if you define put method in two traits which version will be called? but in scala - they are stacked
     // When you instantiate a class with new, Scala takes the class, and all of its inherited classes and traits, and puts them in a single, linear order.
     // Then, whenever you call super inside one of those classes, the invoked method is the next one up the chain. If all of the methods but the last call super, the net result is stackable behavior.
+
+    - Trait parameters
+    +---------------------------------------+   +-----------------------------------------------+
+    | trait Philosophical(message: String): |   | class Frog extends Animal with                |
+    |     def philosophize = message        |   |     Philosophical("I croak, therefore I am!") |
+    +---------------------------------------+   | class Duck extends Animal with                |
+                                                |     Philosophical("I quack, therefore I am!") |
+                                                |                                               |
+                                                | val frog = new Frog                           |
+                                                | frog.philosophize // I croak, therefore I am! |
+                                                | val duck = new Duck                           |
+                                                | duck.philosophize // I quack, therefore I am! |
+                                                +-----------------------------------------------+
 
     -To trait or not to trait?
     // If the behavior will not be reused, then make it a concrete class.
@@ -731,54 +718,51 @@
 # Packages and Imports
 ###############
     -Putting code in packages
-    package bobsrockets.navigation
-    class Navigator
-    // C# style
-    package bobsrockets.navigation {
-        class Navigator
-    }
+    +----------------------------------+
+    | package bobsrockets.navigation   |
+    | class Navigator                  |
+    | // C# style                      |
+    | package bobsrockets.navigation { |
+    |     class Navigator              |
+    | }                                |
+    +----------------------------------+
 
     -Concise access to related code
-    // In file launch.scala
-    package launch {
-        class Booster3
-    }
-    // In file bobsrockets.scala
-    package bobsrockets {
-        package navigation {
-            package launch {
-                class Booster1
-            }
-            class MissionControl {
-                val booster1 = new launch.Booster1
-                val booster2 = new bobsrockets.launch.Booster2
-                val booster3 = new _root_.launch.Booster3           // gives you the top-level launch package
-            }
-        }
-        package launch {
-            class Booster2
-        }
-    }
+    // Multiple packages in the same file                   // Concise access to classes and packages.                      // Accessing hidden package names
+    +-----------------------------------------------------+ +------------------------------------------------------------+  +------------------------------------------------------------+
+    | package bobsrockets:                                | | package bobsrockets:                                       |  | // In file launch.scala                                    |
+    |     package navigation:                             | |     package navigation:                                    |  | package launch:                                            |
+    |         // In package bobsrockets.navigation        | |         class Navigator:                                   |  |     class Booster3                                         |
+    |         class Navigator                             | |         // No need to say bobsrockets.navigation.StarMap   |  | // In file bobsrockets.scala                               |
+    |     package launch:                                 | |         val map = new StarMap                              |  | package bobsrockets:                                       |
+    |         // In package bobsrockets.navigation.launch | |         class StarMap                                      |  |     package launch:                                        |
+    |         class Booster                               | |     class Ship:                                            |  |         class Booster2                                     |
+    +-----------------------------------------------------+ |         // No need to say bobsrockets.navigation.Navigator |  |     package navigation:                                    |
+    //Symbols in enclosing packages not automatically       |         val nav = new navigation.Navigator                 |  |         package launch:                                    |
+      available                                             |     package fleets:                                        |  |             class Booster1                                 |
+    +-----------------------------------------------+       |         class Fleet:                                       |  |         class MissionControl:                              |
+    | package bobsrockets:                          |       |             // No need to say bobsrockets.Ship             |  |             val booster1 = new launch.Booster1             |
+    |     class Ship                                |       |             def addShip = new Ship                         |  |             val booster2 = new bobsrockets.launch.Booster2 |
+    | package bobsrockets.fleets:                   |       +------------------------------------------------------------+  |             val booster3 = new _root_.launch.Booster3      |
+    |     class Fleet:                              |                                                                       +------------------------------------------------------------+
+    |     // Doesn't compile! Ship is not in scope. |
+    |     def addShip = new Ship                    |                                                       
+    +-----------------------------------------------+
 
     -Imports
-    import bobsdelights.Fruit                       // easy access to Fruit
-    import bobsdelights._                           // easy access to all members of bobsdelights
-    import bobsdelights.Fruits._                    // easy access to all members of Fruits
-    import Fruits.{Apple, Orange}                   // selective
-    import Fruits.{Apple => McIntosh, Orange}       // Apple object is renamed to McIntosh
-    import Fruits.{Pear => _, _}                    // except pear
-
-    package bobsdelights
-    abstract class Fruit(
-        val name: String,
-        val color: String
-    )
-    object Fruits {
-        object Apple extends Fruit("apple", "red")
-        object Orange extends Fruit("orange", "orange")
-        object Pear extends Fruit("pear", "yellowish")
-        val menu = List(Apple, Orange, Pear)
-    }
+    +-----------------------------------------------------+ +-----------------------------------------------------------------------------------------------+
+    | package bobsdelights                                | | import bobsdelights.Fruit                       // easy access to Fruit                       |
+    | abstract class Fruit(                               | | import bobsdelights._                           // easy access to all members of bobsdelights |
+    |     val name: String,                               | | import bobsdelights.Fruits._                    // easy access to all members of Fruits       |
+    |     val color: String                               | | import Fruits.{Apple, Orange}                   // selective                                  |
+    | )                                                   | | import Fruits.{Apple => McIntosh, Orange}       // Apple object is renamed to McIntosh        |
+    | object Fruits {                                     | | import Fruits.{Pear => _, _}                    // except pear                                |
+    |     object Apple extends Fruit("apple", "red")      | +-----------------------------------------------------------------------------------------------+
+    |     object Orange extends Fruit("orange", "orange") |
+    |     object Pear extends Fruit("pear", "yellowish")  |
+    |     val menu = List(Apple, Orange, Pear)            |
+    | }                                                   |
+    +-----------------------------------------------------+
 
     -Implicit imports
     //  added to the top of every source file with extension ".scala"
@@ -787,32 +771,66 @@
     import Predef._         // everything in the Predef object
 
     -Access modifiers
-    // Private members - visible only inside the class or object that contains the member definition (Outter class sees no private memeber of inner)
-    // Protected members - accessible from subclasses of the class in which the member is defined (not packge as in java)
+    // Private members - visible only inside the class  // Protected members - accessible from subclasses of the 
+     or object that contains the member definition       class in which the member is defined (not packge as in java)
+    (Outter class sees no private memeber of inner)     +-----------------------------------------------------+
+    +---------------------------------------------+     | package p:                                          |
+    | class Outer:                                |     |     class Super:                                    |
+    |     class Inner:                            |     |         protected def f = "f"                       |
+    |     private def f = "f"                     |     |     class Sub extends Super:                        |
+    |     class InnerMost:                        |     |         f                                           |
+    |         f // OK                             |     |     class Other:                                    |
+    | (new Inner).f // error: f is not accessible |     |         (new Super).f // error: f is not accessible |
+    +---------------------------------------------+     +-----------------------------------------------------+
     // Public members - default - accessed from anywhere
+
+    - Scope of protection
+    +-------------------------------------------------------+
+    | package bobsrockets                                   |
+    | package navigation:                                   |
+    |     private[bobsrockets] class Navigator:             |   no access               modifier public access
+    |         protected[navigation] def useStarChart() = {} |   private[bobsrockets]    access within outer package
+    |         class LegOfJourney:                           |   private[navigation]     same as package visibility in Java
+    |             private[Navigator] val distance = 100     |   private[Navigator]      same as private in Java
+    | package launch:                                       |   private[LegOfJourney]   same as private in Scala
+    |     import navigation.*                               |
+    |     object Vehicle:                                   |
+    |         private[launch] val guide = new Navigator     |
+    +-------------------------------------------------------+
+
+    - Visibility and companion objects
+    // Accessing private members of companion classes and objects
+    +--------------------------------------------+
+    | class Rocket:                              |
+    |     import Rocket.fuel                     |
+    |     private def canGoHomeAgain = fuel > 20 |
+    | object Rocket:                             |
+    |     private def fuel = 10                  |
+    |     def chooseStrategy(rocket: Rocket) =   |
+    |         if rocket.canGoHomeAgain then      |
+    |             goHome()                       |
+    |         else                               |
+    |             pickAStar()                    |
+    |         def goHome() = {}                  |
+    |         def pickAStar() = {}               |
+    +--------------------------------------------+
 
     -Package objects
     // Any kind of definition that you can put inside a class can also be at the top level of a package (method you’d like to be in scope for an entire package)
     // Each package is allowed to have one package object. Any definitions placed in a package object are considered members of the package itself.
-    // In file bobsdelights/package.scala
-    package object bobsdelights {
-        def showFruit(fruit: Fruit) = {
-            import fruit._
-            println(name + "s are " + color)
-        }
-    }
-    // In file PrintMenu.scala
-    package printmenu
-    import bobsdelights.Fruits
-    import bobsdelights.showFruit
-    object PrintMenu {
-        def main(args: Array[String]) = {
-            for (fruit <- Fruits.menu) {
-                showFruit(fruit)
-            }
-        }
-    }
-
+    // In file bobsdelights/package.scala           // In file PrintMenu.scala
+    +------------------------------------------+    +---------------------------------------+
+    | package object bobsdelights {            |    | package printmenu                     |
+    |     def showFruit(fruit: Fruit) = {      |    | import bobsdelights.Fruits            |
+    |         import fruit._                   |    | import bobsdelights.showFruit         |
+    |         println(name + "s are " + color) |    | object PrintMenu {                    |
+    |     }                                    |    |     def main(args: Array[String]) = { |
+    | }                                        |    |         for (fruit <- Fruits.menu) {  |
+    +------------------------------------------+    |             showFruit(fruit)          |
+                                                    |         }                             |
+                                                    |     }                                 |
+                                                    | }                                     |
+                                                    +---------------------------------------+
 
 ###############
 # Assertions and Tests
