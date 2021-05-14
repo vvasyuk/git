@@ -581,6 +581,7 @@
 
     -How primitives are implemented
     // class AnyRef defines an additional eq method, which cannot be overridden and is implemented as reference equality (i.e., it behaves like == in Java for reference types).
+<<<<<<< HEAD
     +---------------------------+
     | val x = new String("abc") |
     | val y = new String("abc") |
@@ -600,6 +601,24 @@
     | def error(message: String): Nothing =    |
     |     throw new RuntimeException(message)  |    
     +------------------------------------------+
+=======
+    val x = new String("abc")
+    val y = new String("abc")
+    x == y                      // res13: Boolean = true
+    x eq y                      // res14: Boolean = false (eq checks for reference equality)
+    x ne y                      // res15: Boolean = true
+
+    -Bottom types
+    // Null is a subclass of every reference class
+    // Nothing is a subtype of every other type
+    val i: Int = null               // error: an expression of type Null is ineligible for implicit conversion
+    def error(message: String): Nothing =
+        throw new RuntimeException(message)     // return type of error is Nothing
+
+    def divide(x: Int, y: Int): Int =
+        if (y != 0) x / y
+        else error("can't divide by zero")      // Because Nothing is a subtype of Int, the type of the whole conditional is Int, as required.
+>>>>>>> 37fa3d4 (upd)
 
     -Defining your own value classes
     // must have exactly one parameter and it must have nothing inside it except defs
