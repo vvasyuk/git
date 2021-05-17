@@ -7,4 +7,4 @@ spark = SparkSession.builder.config("spark.sql.warehouse.dir", "file:///C:/temp"
 # transform
 dfTransform = spark.read.parquet("C:\\work\\project\\bugs\\prod_11_gl_cost").cache()
 print(dfTransform.count())
-dfTransform.show(10000,False)
+dfTransform.show(100,False)

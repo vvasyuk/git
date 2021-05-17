@@ -834,6 +834,241 @@
 
 
 ###############
+# Case Classes and Pattern Matching
+###############
+    -need to write a library that manipulates arithmetic expressions
+    //Defining case classes
+    +--------------------------------------------------------------------------+
+    | trait Expr                                                               |
+    | case class Var(name: String) extends Expr                                |    // case modifier makes the Scala compiler add some syntactic conveniences to your class
+    | case class Num(number: Double) extends Expr                              |    // 1. adds a factory method with the name of the class (new not needed)
+    | case class UnOp(operator: String, arg: Expr) extends Expr                |    // 2. arguments in the parameter list of a case class implicitly get a val prefix, so they are maintained as fields
+    | case class BinOp(operator: String, left: Expr, right: Expr) extends Expr |    // 3. you get methods toString, hashCode,  equals, copy to your class
+    +--------------------------------------------------------------------------+
+
+    -Pattern matching
+    // The simplifyTop function, which does a pattern match.
+    +-----------------------------------------------------------+
+    | def simplifyTop(expr: Expr): Expr =                       |   // A match expression is evaluated by trying each of the patterns in the order they 
+    |   expr match                                              |   // constructor pattern looks like UnOp("-", e). This pattern matches all values of type UnOp whose first argument matches "-" and whose second argument matches e
+    |     case UnOp("-", UnOp("-", e)) => e // Double negation  |
+    |     case BinOp("+", e, Num(0)) => e // Adding zero        |   // e - a variable that is bound within the associated pattern
+    |     case BinOp("*", e, Num(1)) => e // Multiplying by one |   // wildcard pattern (_) also matches every value
+    |     case _ => expr                                        |
+    +-----------------------------------------------------------+
+    
+    -match compared to switch
+    // match is an expression in Scala (i.e., it always results in a value)
+    // Scala’s alternative expressions never “fall through” into the next case
+    // Third, if none of the patterns match, an exception named MatchError is thrown
+
+    -Kinds of patterns
+    -Constant patterns                          -Wildcard patterns                                              -Variable patterns
+    +--------------------------------------+    // dont care about elements of binary operation                 // somethingElse - default case for all other values
+    | def describe(x: Any) =               |    // handle the default case                                      +------------------------------------------------------+
+    |     x match                          |    +-----------------------------------------------------------+   | expr match                                           |
+    |         case 5 => "five"             |    | expr match                                                |   |     case 0 => "zero"                                 |
+    |         case true => "truth"         |    |     case BinOp(_, _, _) => s" is a binary operation"      |   |     case somethingElse => s"not zero "               |
+    |         case "hello" => "hi!"        |    |     case _ => "It's something else"                       |   +------------------------------------------------------+
+    |         case Nil => "the empty list" |    +-----------------------------------------------------------+
+    |         case _ => "something else"   |
+    +--------------------------------------+
+
+    -Variable patterns                                          // E does not match Pi                                                                                  
+    // somethingElse - default case for all other values        // how does scala know that Pi is constant imported and not
+    +------------------------------------------------------+    // variable that stands for selector value itself?
+    | expr match                                           |    // if name starts with lower case - its pattern var, others are constants                                                   // `pi` interpreted as a constant, not as a variable
+    |     case 0 => "zero"                                 |    +-------------------------------------------------------+   +---------------------------------------------------------+     +--------------------------------------------+
+    |     case somethingElse => s"not zero $somethingElse" |    | import math.{E, Pi} // E (2.71828. . . ),Pi (3.14159) |   | val pi = math.Pi                                        |     | E match                                    |
+    +------------------------------------------------------+    | E match                                               |   | E match                                                 |     |     case `pi` => s"strange math? Pi = " |
+                                                                |     case Pi => s"strange math? Pi = "                 |   |     case pi => s"strange math? Pi = "                   |     |     case _ => "OK"                         |
+                                                                |     case _ => "OK"                                    |   | val res1: String = strange math? Pi = 2.718281828459045 |     | res4: String = OK                          |
+                                                                | val res0: String = OK                                 |   +---------------------------------------------------------+     +--------------------------------------------+
+                                                                +-------------------------------------------------------+
+
+    -Constructor patterns                                   -Sequence patterns                                              -Tuple patterns                                 -Typed patterns
+    // if BinOp is case class - first check if object is    // three-element list starting with zero                        // matches an arbitrary 3-tuple                 +-------------------------------------+
+     of case class, then check constructor params match     // matches 1 and any number of elements within a sequence       +-----------------------------------------+     | def generalSize(x: Any) =           |
+    +--------------------------------------------------+    // _* matches 1 and any number of elements within a sequence    | def tupleDemo(obj: Any) = obj match     |     |     x match                         |
+    | expr match                                       |    +---------------------------------------------+                 |     case (a, b, c) => s"matched "       |     |         case s: String => s.length  |
+    |     case BinOp("+", e, Num(0)) => "a deep match" |    | xs match                                    |                 |     case _ => ""                        |     |         case m: Map[_, _] => m.size |
+    |     case _ => ""                                 |    |     case List(0, _, _) => "found it"        |                 +-----------------------------------------+     |         case _ => -1                |
+    +--------------------------------------------------+    |     case List(1, _*) => println("found it") |                                                                 +-------------------------------------+
+                                                            |     case _ => ""                            |
+                                                            +---------------------------------------------+
+
+    -Type erasure
+    // wont work                                // will owrk with Arrays
+    // no information about type arguments is   // element type of an array is stored with the array value, so you can pattern match on it
+    maintained at runtime                       +-------------------------------------+ +--------------------------------------------------------+
+    // no way to determine at runtime whether   | def isStringArray(x: Any) = x match | | isStringArray(Array("abc"))     // res21: String = yes |
+    given Map has  two Int arguments            |     case a: Array[String] => "yes"  | | isStringArray(Array(1, 2, 3))   // res22: String = no  |
+    +-----------------------------------+       |     case _ => "no"                  | +--------------------------------------------------------+
+    | def isIntIntMap(x: Any) = x match |       +-------------------------------------+
+    |     case m: Map[Int, Int] => true |       
+    |     case _ => false               |       
+    +-----------------------------------+       
+
+    -Variable binding
+    // variable-binding pattern with e as the variable and UnOp("abs", _) as the pattern
+    // If the entire pattern match succeeds, then the portion that matched the UnOp("abs", _) part is made available as variable e
+    +--------------------------------------------------+
+    | expr match                                       |
+    |     case UnOp("abs", e @ UnOp("abs", _)) => e    |    // looks for the absolute value operation being applied twice in a row
+    |     case _ =>                                    |
+    +--------------------------------------------------+
+
+    -Pattern guards
+    // pattern variable may only appear once in a pattern           // A match expression with a pattern guard.
+    // error: x is already defined as value x                       +--------------------------------------------------------------+    +----------------------------------------------------+
+    +----------------------------------------------------------+    | def simplifyAdd(e: Expr) = e match                           |    | // match only positive integers                    |
+    | def simplifyAdd(e: Expr) = e match                       |    |     case BinOp("+", x, y) if x == y => BinOp("*", x, Num(2)) |    | case n: Int if 0 < n => ...                        |
+    |     case BinOp("+", x, x) => BinOp("*", x, Number(2))    |    |     case _ => e                                              |    | // match only strings starting with the letter ‘a' |
+    |     case _ => e                                          |    +--------------------------------------------------------------+    | case s: String if s(0) == 'a' => ...               |
+    +----------------------------------------------------------+                                                                        +----------------------------------------------------+
+
+    -Pattern overlaps
+    // If you wrote them in the other order, then the catch-all case would be run in favor of the more specific rules
+    +------------------------------------------------------------------------------------------+
+    | def simplifyAll(expr: Expr): Expr = expr match                                           |
+    |     case UnOp("-",UnOp("-",e))      =>simplifyAll(e) // '-'is its own inverse            |
+    |     case BinOp("+", e, Number(0))   =>simplifyAll(e) // '0' is a neutral element for ‘+' |
+    |     case BinOp("*", e, Number(1))   =>simplifyAll(e) // '1' is a neutral element for ‘*' |
+    |     case UnOp(op, e)                =>UnOp(op, simplifyAll(e))                           |
+    |     case BinOp(op, l, r)            =>BinOp(op, simplifyAll(l), simplifyAll(r))          |
+    |     case _ => expr                                                                       |
+    +------------------------------------------------------------------------------------------+
+
+    -Sealed classes
+    // How can you ever feel safe that you covered all the cases in pattern matching?           +----------------------------------------------------------------------------------+
+    // A sealed class cannot have any new subclasses added except the ones in the same file     |     def describe(e: Expr): String = e match // warning: match is not exhaustive! |
+    // you only need to worry about the subclasses you already know about                       |         case Number(_) => "a number"        // missing combination UnOp          |
+    +-------------------------------------------------------------------------+                 |         case Var(_) => "a variable"         // missing combination BinOp         |
+    | sealed trait Expr                                                       |                 +----------------------------------------------------------------------------------+
+    | case class Var(name: String) extends Expr                               | // no warning                                                       // or this
+    | case class Num(number: Double) extends Expr                             | +---------------------------------------------------------------+   +-------------------------------------------------------+
+    | case class UnOp(operator: String, arg: Expr) extends Expr               | | def describe(e: Expr): String = e match                       |   | def describe(e: Expr): String = (e: @unchecked) match |
+    | case class BinOp(operator: String,left: Expr, right: Expr) extends Expr | |     case Num(_) => "a number"                                 |   |     case Number(_) => "a number"                      |
+    +-------------------------------------------------------------------------+ |     case Var(_) => "a variable"                               |   |     case Var(_) => "a variable"                       |
+                                                                                |     case _ => throw new RuntimeException // Should not happen |   +-------------------------------------------------------+
+                                                                                +---------------------------------------------------------------+
+
+    -Pattern matching Options
+    +-------------------------------------------------------------+ +---------------------------------------+   +----------------------------------------------+
+    | val capitals = Map("France" -> "Paris", "Japan" -> "Tokyo") | | def show(x: Option[String]) = x match |   | show(capitals.get("Japan"))         // Tokyo |
+    | capitals.get("France")      // Some(Paris)                  | |     case Some(s) => s                 |   | show(capitals.get("France"))        // Paris |
+    | capitals.get("North Pole")  // None                         | |     case None => "?"                  |   | show(capitals.get("North Pole"))    // ?     |
+    +-------------------------------------------------------------+ +---------------------------------------+   +----------------------------------------------+
+      
+    -Patterns everywhere
+    -Patterns in variable definitions
+    +------------------------------------------------+
+    | val myTuple = (123, "abc")                     |
+    | val (number, string) = myTuple                 |  // number: Int = 123; string: String = abc
+    | val exp = new BinOp("*", Number(5), Number(1)) |
+    | val BinOp(op, left, right) = exp               |  // op: String = *; left: Expr = Number(5.0); right: Expr = Number(1.0)
+    +------------------------------------------------+
+
+    -Case sequences as partial functions
+    // A sequence of cases (i.e., alternatives) in curly braces can be used anywhere a      // Akka actors receive method to be defined as a series of cases
+     function literal can be used                                                           +---------------------------------------------------------------------+
+    // case sequence is a function literal, only more general                               | var sum = 0                                                         |
+    // each case is an entry point to the function, and the parameters are specified        | def receive =                                                       |
+     with the pattern the body of each entry point is the right-hand side of the case       |     case Data(byte) => sum += byte                                  |
+    +---------------------------------------+                                               |     case GetChecksum(requester) => val checksum = ~(sum & 0xFF) + 1 |
+    | val withDefault: Option[Int] => Int = |   // withDefault(Some(10))    // 10           |     requester ! checksum                                            |
+    |     case Some(x) => x                 |   // withDefault(None)        // 0            +---------------------------------------------------------------------+
+    |     case None => 0                    |
+    +---------------------------------------+
+
+    - a sequence of cases gives you a partial function
+    // partial f that returns 2nd element of list                   // second try with partial type (no warn)                                       // literal { case x :: y :: _ => y }
+    // warn that the match is not exhaustive                        +------------------------------------------------------------------------+      +--------------------------------------+
+    // (List[Int] => Int) - includes all functions (and partial)    | val second: PartialFunction[List[Int],Int] = case x :: y :: _ => y     |      | new PartialFunction[List[Int], Int]: |
+    +------------------------------------------------------+        +------------------------------------------------------------------------+      |     def apply(xs: List[Int]) =       |
+    | val second: List[Int] => Int = case x :: y :: _ => y |        // partial function has isDefined method                                        |         xs match                     |
+    +------------------------------------------------------+        second.isDefinedAt(List(5,6,7))     // true                                     |             case x :: y :: _ => y    |
+                                                                    second.isDefinedAt(List())          // false                                    |     def isDefinedAt(xs: List[Int]) = |
+                                                                                                                                                    |         xs match                     |
+    -Patterns in for expressions                                                                                                                    |             case x :: y :: _ => true |
+    // for expression retrieves all key/value pairs from the capitals map                                                                           |             case _ => false          |
+    +----------------------------------------+                                                                                                      +--------------------------------------+
+    | for (country, city) <- capitals yield  |
+    |     "The capital of  is "              |
+    +----------------------------------------+
+    // the second element None in the results list does not match the pattern Some(fruit); therefore it does not show up in the output.
+    +---------------------------------------------------------+
+    | val results = List(Some("apple"), None, Some("orange")) |
+    | for (Some(fruit) <results)                              |
+    |     println(fruit)              // apple, orange        |
+    +---------------------------------------------------------+
+    
+    -A larger example
+    +-------------------------+
+    |                      x  |
+    | x/(x+1)     -->     --- |
+    |                     x+1 |
+    +-------------------------+
+    // concentrate on horizontal layout
+    +----------------------------------------------------------------------+
+    | BinOp("+",                                                           |
+    |     BinOp("*",                                                       |
+    |         BinOp("+", Var("x"), Var("y")),                              |
+    |         Var("z")),                                                   |
+    |     Number(1))                                                       |
+    | // code needs to know about the relative precedence of each operator |
+    | Map( "|" > 0, "||" > 0, "&" > 1, "&&" > 1, ... )                     |
+    +----------------------------------------------------------------------+
+
+    +--------------------------------------------------------------------------+    +--------------------------------------------------------------+    // A mapping from operators to their precedence
+    | package org.stairwaybook.expr                                            |    | class ExprFormatter {                                        |    +------------------------------------------+
+    | import org.stairwaybook.layout.Element.elem                              |    |     // Contains operators in groups of increasing precedence |    | private val precedence = {               |
+    | sealed abstract class Expr                                               |    |     private val opGroups =                                   |    |     val assocs =                         |
+    | case class Var(name: String) extends Expr                                |    |         Array(                                               |    |         for                              |
+    | case class Number(num: Double) extends Expr                              |    |             Set("|", "||"),                                  |    |             i <- 0 until opGroups.length |
+    | case class UnOp(operator: String, arg: Expr) extends Expr                |    |             Set("&", "&&"),                                  |    |             op <- opGroups(i)            |
+    | case class BinOp(operator: String, left: Expr, right: Expr) extends Expr |    |             Set("ˆ"),                                        |    |         yield op -> i                    |
+    +--------------------------------------------------------------------------+    |             Set("==", "!="),                                 |    |     assocs.toMap                         |
+                                                                                    |             Set("<", "<=", ">", ">="),                       |    | }                                        |
+                                                                                    |             Set("+", ""),                                    |    +------------------------------------------+
+                                                                                    |             Set("*", "%")                                    |
+                                                                                    |         )                                                    |
+                                                                                    +--------------------------------------------------------------+
+
+    +---------------------------------------------------------------------------------------+
+    | private val unaryPrecedence = opGroups.length                                         |
+    | private val fractionPrecedence = 1                                                    |
+    | import org.stairwaybook.layout.Element                                                |
+    |     private def format(e: Expr, enclPrec: Int): Element =                             |
+    |         e match {                                                                     |
+    |             case Var(name) => elem(name)                                              |   // 1.If the expression is a variable, the result is an element formed from the variable’s name.
+    |             case Number(num) =>                                                       |
+    |                 def stripDot(s: String) =                                             |   // 2.cleans up the display of a floating-point number by stripping any ".0" suffix from a string
+    |                     if (s endsWith ".0") s.substring(0, s.length 2)                   |
+    |                     else s                                                            |
+    |                 elem(stripDot(num.toString))                                          |
+    |             case UnOp(op, arg) => elem(op) beside format(arg, unaryPrecedence)        |   // 3.if arg is a binary operation (but not a fraction) it will always be displayed in parentheses
+    |             case BinOp("/", left, right) =>                                           |   // 4.If the expression is a fraction, an intermediate result frac is formed by placing the formatted
+    |                 val top = format(left, fractionPrecedence)                            |   // operands left and right on top of each other, separated by an horizontal line element
+    |                 val bot = format(right, fractionPrecedence)                           |
+    |                 val line = elem('',top.width max bot.width, 1)                        |
+    |                 val frac = top above line above bot                                   |
+    |                 if (enclPrec != fractionPrecedence) frac                              |
+    |                 else elem(" ") beside frac beside elem(" ")                           |
+    |             case BinOp(op, left, right) =>                                            |   // applies for all other binary operations
+    |                 val opPrec = precedence(op)                                           |   +-------------------------------------------------------------------------------------------+
+    |                 val l = format(left, opPrec)                                          |   | import org.stairwaybook.expr._                                                            |
+    |                 val r = format(right, opPrec + 1)                                     |   | object Express extends App {                                                              |         1
+    |                 val oper = l beside elem(" " + op + " ") beside r                     |   |     val f = new ExprFormatter                                                             | -->     - * (x + 1)
+    |                 if (enclPrec <= opPrec) oper                                          |   |     val e1 = BinOp("*", BinOp("/", Number(1), Number(2)),BinOp("+", Var("x"), Number(1))) |         2
+    |                 else elem("(") beside oper beside elem(")")                           |   |     println(f.format(e1)+ "\n\n")                                                         |
+    |         }                                                                             |   | }                                                                                         |
+    |     def format(e: Expr): Element = format(e, 0)                                       |   +-------------------------------------------------------------------------------------------+
+    | }                                                                                     |
+    +---------------------------------------------------------------------------------------+
+
+
+###############
 # Assertions and Tests
 ###############
     -Assertions
@@ -903,324 +1138,6 @@
 
     -Organizing and running tests
     scalac -cp scalatest.jar TVSetSpec.scala
-
-
-###############
-# Case Classes and Pattern Matching
-###############
-    -A simple example
-    abstract class Expr
-    case class Var(name: String) extends Expr
-    case class Number(num: Double) extends Expr
-    case class UnOp(operator: String, arg: Expr) extends Expr
-    case class BinOp(operator: String, left: Expr, right: Expr) extends Expr
-
-    -Case classes
-    // can do Var("x") instead on new Var("x")
-    val v = Var("x")
-    val op = BinOp("+", Number(1), v)
-    // all arguments in the parameter list of a case class implicitly get a val prefix, so they are maintained as fields
-    v.name                      // res0: String = x
-    op.left                     // res1: Expr = Number(1.0)
-    // compiler adds “natural” implementations of methods toString, hashCode, and equals
-    // compiler adds a copy method
-    op.copy(operator = "-")     // res4: BinOp = BinOp(-,Number(1.0),Var(x))
-
-    -Pattern matching
-    simplifyTop(UnOp("-", UnOp("-", Var("x"))))
-    // A constant pattern like "+" or 1 matches values that are equal to the constant with respect to ==
-    // A variable pattern like e matches every value
-
-    def simplifyTop(expr: Expr): Expr = expr match {                // A match expression is evaluated by trying each of the patterns in the order they are written
-        case UnOp("-", UnOp("-", e)) => e // Double negation        // constructor pattern looks like UnOp("-", e). This pattern matches all values of type UnOp whose first argument matches "-" and whose second argument matches e
-        case BinOp("+", e, Number(0)) => e // Adding zero           // e - a variable that is bound within the associated pattern
-        case BinOp("*", e, Number(1)) => e // Multiplying by one
-        case _ => expr                                              // wildcard pattern (_) also matches every value
-    }
-
-    -match compared to switch
-    // match is an expression in Scala (i.e., it always results in a value)
-    // Scala’s alternative expressions never “fall through” into the next case
-    // Third, if none of the patterns match, an exception named MatchError is thrown
-
-    -Kinds of patterns
-    -Wildcard patterns
-    expr match {
-        case BinOp(op, left, right) => println(expr + " is a binary operation")
-        case _ =>                                                                   // handle the default case
-    }
-    expr match {
-        case BinOp(_, _, _) => println(expr + " is a binary operation")             // dont care about elements of binary operation
-        case _ => println("It's something else")
-    }
-
-    -Constant patterns
-    def describe(x: Any) = x match {
-        case 5 => "five"
-        case true => "truth"
-        case "hello" => "hi!"
-        case Nil => "the empty list"
-        case _ => "something else"
-    }
-    describe(5)                  // res6: String = five
-    describe(true)               // res7: String = truth
-    describe("hello")            // res8: String = hi!
-    describe(Nil)                // res9: String = the empty list
-    describe(List(1,2,3))        // res10: String = something else
-
-    -Variable patterns
-    expr match {
-        case 0 => "zero"
-        case somethingElse => "not zero: " + somethingElse      // default case for all other values
-    }
-
-    import math.{E, Pi}
-    E match {
-        case Pi => "strange math? Pi = " + Pi   // name starting with a lowercase letter is taken to be a pattern variable; all other references are taken to be constants
-        case _ => "OK"
-    }
-    // res11: String = OK                       // As expected, E does not match Pi, so the "strange math" case is not used.
-    val pi = math.Pi                            // pi: Double = 3.141592653589793
-    scala> E match {
-        case pi => "strange math? Pi = " + pi   // res12: String = strange math? Pi = 2.718281828459045
-    }
-    // and you are not allowed to add a default case cause variable pattern is default
-    E match {
-        case pi => "strange math? Pi = " + pi
-        case _ => "OK"                          // <console>:12: warning: unreachable code case _ => "OK"
-    }
-    // You can still use a lowercase name for a pattern constant if the constant is a field of some object, you can prefix it with a qualifier
-    // 1. pi is a variable pattern, but this.pi or obj.pi are constants
-    // 2. you can alternatively enclose the variable name in back ticks
-    E match {
-        case `pi` => "strange math? Pi = " + pi
-        case _ => "OK"                          // res14: String = OK
-    }
-
-    -Constructor patterns
-    // Scala patterns support deep matches
-    expr match {
-        case BinOp("+", e, Number(0)) => println("a deep match")        // if BinOp is case class - first check if object is member of case class, then check constructor parameters match
-        case _ =>
-    }
-
-    -Sequence patterns
-    expr match {
-        case List(0, _, _) => println("found it")       // three-element list starting with zero
-        case List(1, _*) => println("found it")         // matches 1 and any number of elements within a sequence
-        case _ =>
-    }
-
-    -Tuple patterns
-    def tupleDemo(expr: Any) =
-        expr match {
-            case (a, b, c) => println("matched " + a + b + c)       // matches an arbitrary 3-tuple
-            case _ =>
-        }
-    tupleDemo(("a ", 3, "-tuple"))                                  // matched a 3-tuple
-
-    -Typed patterns
-    def generalSize(x: Any) = x match {
-        case s: String => s.length
-        case m: Map[_, _] => m.size
-        case _ => -1
-    }
-
-    -Type erasure
-    // no information about type arguments is maintained at runtime
-    // there is no way to determine at runtime whether a given Map object has been created with two Int arguments
-    def isIntIntMap(x: Any) = x match {
-        case m: Map[Int, Int] => true       // warning: non-variable type argument Int in type pattern is unchecked since it is eliminated by erasure
-        case _ => false
-    }
-    scala> isIntIntMap(Map(1 -> 1))                 // res19: Boolean = true
-    scala> isIntIntMap(Map("abc" -> "abc"))         // res20: Boolean = true
-    // exception is Array because type is stored in array
-    def isStringArray(x: Any) = x match {
-        case a: Array[String] => "yes"
-        case _ => "no"
-    }
-    isStringArray(Array("abc"))                     // res21: String = yes
-    isStringArray(Array(1, 2, 3))                   // res22: String = no
-
-    -Variable binding
-    // variable-binding pattern with e as the variable and UnOp("abs", _) as the pattern
-    // If the entire pattern match succeeds, then the portion that matched the UnOp("abs", _) part is made available as variable e
-    expr match {
-        case UnOp("abs", e @ UnOp("abs", _)) => e   // looks for the absolute value operation being applied twice in a row
-        case _ =>
-    }
-
-    -Pattern guards
-    // pattern variable may only appear once in a pattern
-    def simplifyAdd(e: Expr) = e match {
-        case BinOp("+", x, x) => BinOp("*", x, Number(2))   // error: x is already defined as value x
-        case _ => e
-    }
-    // reformulate
-    def simplifyAdd(e: Expr) = e match {
-        case BinOp("+", x, y) if x == y => BinOp("*", x, Number(2))     // pattern guard goes after if
-        case _ => e
-    }
-
-    -Pattern overlaps
-    // If you wrote them in the other order, then the catch-all case would be run in favor of the more specific rules
-    def simplifyAll(expr: Expr): Expr = expr match {
-        case UnOp("-",UnOp("-",e))      =>simplifyAll(e) // '-'is its own inverse
-        case BinOp("+", e, Number(0))   =>simplifyAll(e) // '0' is a neutral element for ‘+'
-        case BinOp("*", e, Number(1))   =>simplifyAll(e) // '1' is a neutral element for ‘*'
-        case UnOp(op, e)                =>UnOp(op, simplifyAll(e))
-        case BinOp(op, l, r)            =>BinOp(op, simplifyAll(l), simplifyAll(r))
-        case _ => expr
-    }
-
-    -Sealed classes
-    // How can you ever feel safe that you covered all the cases in pattern matching?
-    // A sealed class cannot have any new subclasses added except the ones in the same file
-    // you only need to worry about the subclasses you already know about
-    sealed abstract class Expr
-    case class Var(name: String) extends Expr
-    case class Number(num: Double) extends Expr
-    case class UnOp(operator: String, arg: Expr) extends Expr
-    case class BinOp(operator: String, left: Expr, right: Expr) extends Expr
-    def describe(e: Expr): String = e match {       // warning: match is not exhaustive!
-        case Number(_) => "a number"                // missing combination UnOp
-        case Var(_) => "a variable"                 // missing combination BinOp
-    }
-    // no warning
-    def describe(e: Expr): String = (e: @unchecked) match {
-        case Number(_) => "a number"
-        case Var(_) => "a variable"
-        case _ => throw new RuntimeException        // or this
-    }
-
-    -The Option type
-    // Option two forms: Some(x) and None object
-    val capitals = Map("France" >"Paris", "Japan" >"Tokyo")
-    capitals get "France"                           // res23: Option[String] = Some(Paris)
-    capitals get "North Pole"                       // res24: Option[String] = None
-    def show(x: Option[String]) = x match {
-        case Some(s) => s
-        case None => "?"
-    }
-    show(capitals get "Japan")               // res25: String = Tokyo
-    show(capitals get "France")              // res26: String = Paris
-    show(capitals get "North Pole")          // res27: String = ?
-
-    -Patterns everywhere
-    -Patterns in variable definitions
-    val myTuple = (123, "abc")
-    val (number, string) = myTuple          // number: Int = 123; string: String = abc
-    val exp = new BinOp("*", Number(5), Number(1))
-    val BinOp(op, left, right) = exp        // op: String = *; left: Expr = Number(5.0); right: Expr = Number(1.0)
-
-    -Case sequences as partial functions
-    val withDefault: Option[Int] => Int = { // A sequence of cases (i.e., alternatives) in curly braces can be used anywhere a function literal can be used
-        case Some(x) => x                   // case sequence is a function literal, only more general
-        case None => 0
-    }
-    withDefault(Some(10))            // res28: Int = 10
-    withDefault(None)                // res29: Int = 0
-    // Akka actors library allows its receive method to be defined as a series of cases
-    var sum = 0
-    def receive = {
-        case Data(byte)             =>sum += byte
-        case GetChecksum(requester) =>val checksum = ~(sum & 0xFF) + 1
-        requester ! checksum
-    }
-    // sequence of cases gives you a partial function If you apply such a function on a value it does not support,it will generate a run-time exception
-    // warning: match is not exhaustive! missing combination Nil
-    val second: List[Int] => Int = {
-        case x :: y :: _ => y       // will succeed if you pass it a three-element list
-    }
-    second(List(5, 6, 7))           // res24: Int = 6
-    second(List())                  // scala.MatchError: List()
-
-    -Patterns in for expressions
-    // for expression retrieves all key/value pairs from the capitals map
-    for ((country, city) <capitals)
-        println("The capital of " + country + " is " + city)
-    // the second element None in the results list does not match the pattern Some(fruit); therefore it does not show up in the output.
-    val results = List(Some("apple"), None, Some("orange"))
-    for (Some(fruit) <results)
-        println(fruit)              // apple, orange
-
-    -A larger example
-                         x
-    x/(x+1)     -->     ---      
-                        x+1
-    // concentrate on horizontal layout
-    BinOp("+",
-        BinOp("*",
-            BinOp("+", Var("x"), Var("y")),
-            Var("z")),
-        Number(1))
-    // code needs to know about the relative precedence of each operator
-    Map( "|" > 0, "||" > 0, "&" > 1, "&&" > 1, ... )
-
-    package org.stairwaybook.expr
-    import org.stairwaybook.layout.Element.elem
-    sealed abstract class Expr
-    case class Var(name: String) extends Expr
-    case class Number(num: Double) extends Expr
-    case class UnOp(operator: String, arg: Expr) extends Expr
-    case class BinOp(operator: String, left: Expr, right: Expr) extends Expr
-    class ExprFormatter {
-        // Contains operators in groups of increasing precedence
-        private val opGroups =
-            Array(
-                Set("|", "||"),
-                Set("&", "&&"),
-                Set("ˆ"),
-                Set("==", "!="),
-                Set("<", "<=", ">", ">="),
-                Set("+", ""),
-                Set("*", "%")
-            )
-    // A mapping from operators to their precedence
-        private val precedence = {
-            val assocs =
-                for {
-                    i <- 0 until opGroups.length
-                    op <- opGroups(i)
-                } yield op -> i
-            assocs.toMap
-        }
-    private val unaryPrecedence = opGroups.length
-    private val fractionPrecedence = 1
-    import org.stairwaybook.layout.Element
-        private def format(e: Expr, enclPrec: Int): Element =
-            e match {
-                case Var(name) => elem(name)                                            // 1.If the expression is a variable, the result is an element formed from the variable’s name.
-                case Number(num) => 
-                    def stripDot(s: String) =                                           // 2.cleans up the display of a floating-point number by stripping any ".0" suffix from a string
-                        if (s endsWith ".0") s.substring(0, s.length 2)
-                        else s
-                    elem(stripDot(num.toString))
-                case UnOp(op, arg) => elem(op) beside format(arg, unaryPrecedence)      // 3.if arg is a binary operation (but not a fraction) it will always be displayed in parentheses
-                case BinOp("/", left, right) =>                                         // 4.If the expression is a fraction, an intermediate result frac is formed by placing the formatted 
-                    val top = format(left, fractionPrecedence)                          // operands left and right on top of each other, separated by an horizontal line element
-                    val bot = format(right, fractionPrecedence)                         // 
-                    val line = elem('',top.width max bot.width, 1)
-                    val frac = top above line above bot
-                    if (enclPrec != fractionPrecedence) frac
-                    else elem(" ") beside frac beside elem(" ")
-                case BinOp(op, left, right) =>                                          // applies for all other binary operations
-                    val opPrec = precedence(op)
-                    val l = format(left, opPrec)
-                    val r = format(right, opPrec + 1)
-                    val oper = l beside elem(" " + op + " ") beside r
-                    if (enclPrec <= opPrec) oper
-                    else elem("(") beside oper beside elem(")")
-            }
-        def format(e: Expr): Element = format(e, 0)
-    }
-    import org.stairwaybook.expr._
-    object Express extends App {
-        val f = new ExprFormatter                                                                           1          
-        val e1 = BinOp("*", BinOp("/", Number(1), Number(2)),BinOp("+", Var("x"), Number(1)))       -->     - * (x + 1)
-        println(f.format(e1)+ "\n\n")                                                                       2          
-    }
 
 
 ###############
