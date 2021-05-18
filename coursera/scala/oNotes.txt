@@ -1069,75 +1069,101 @@
 
 
 ###############
-# Assertions and Tests
+# Enums
 ###############
-    -Assertions
-    def above(that: Element): Element = {
-        val this1 = this widen that.width
-        val that1 = that widen this.width
-        assert(this1.width == that1.width)
-        elem(this1.contents ++ that1.contents)
-    }
+    // type that’s restricted to a finite set of named values                           +---------------------------------------------+
+    // values are called the cases of the EDT                                           | import Direction.{North, South, East, West} | // invert(North) // South
+    +-----------------------------------+                                               | def invert(dir: Direction): Direction =     |
+    | enum Direction:                   |   // generate a sealed class named Direction  |   dir match                                 |
+    |     case North, East, South, West |   // and a companion object with 4 vals       |     case North => South                     |
+    +-----------------------------------+                                               |     case East => West                       |
+                                                                                        |     case South => North                     |
+    // enumarated because assosiates Int with each case                                 |     case West => East                       |
+    +----------------------+                                                            +---------------------------------------------+
+    | North.ordinal   // 0 |    // also in companion object values method generated         // valueOf in companion object - converts string to instance of enum type
+    | East.ordinal    // 1 |    +-----------------------------------------------------+     +-------------------------------------+
+    | South.ordinal   // 2 |    | Direction.values // Array(North, East, South, West) |     | Direction.valueOf("North") // North |
+    | West.ordinal    // 3 |    +-----------------------------------------------------+     +-------------------------------------+
+    +----------------------+
+    -EDT value parameters
+    +----------------------------------------+  +----------------------+
+    | enum Direction(val degrees: Int):      |  | import Direction.*   |
+    |     case North extends Direction(0)    |  | North.degrees // 0   |
+    |     case East extends Direction(90)    |  | South.degrees // 180 |
+    |     case South extends Direction(180)  |  +----------------------+
+    |     case West extends Direction(270)   |
+    +----------------------------------------+
+    -Define own methods in EDT                                          // if define companion object - scala will still
+    +-------------------------------------+                                provide values, valueOf methods if not provided in object
+    | enum Direction(val degrees: Int):   | // North.invert // South    +--------------------------------------------------+    +----------------------------------------------------+
+    | def invert: Direction =             | // East.invert // West      | object Direction:                                |    | def allButNearest(degrees: Int): List[Direction] = |
+    |   this match                        |                             | def nearestTo(degrees: Int): Direction =         |    |   val nearest = Direction.nearestTo(degrees)       |
+    |     case North => South             |                             |   val rem = degrees % 360                        |    |   Direction.values.toList.filter(_ != nearest)     |
+    |     case East => West               |                             |   val angle = if rem < 0 then rem + 360 else rem |    | allButNearest(42) // List(East, South, West)       |
+    |     case South => North             |                             |   val (ne, se, sw, nw) = (45, 135, 225, 315)     |    +----------------------------------------------------+
+    |     case West => East               |                             |   angle match                                    |
+    |     case North extends Direction(0) |                             |     case a if a > nw || a <= ne => North         |
+    | case East extends Direction(90)     |                             |     case a if a > ne && a <= se => East          |
+    | case South extends Direction(180)   |                             |     case a if a > se && a <= sw => South         |
+    | case West extends Direction(270)    |                             |     case a if a > sw && a <= nw => West          |
+    +-------------------------------------+                             +--------------------------------------------------+
+    // cannot define methods for the individual cases
 
-    private def widen(w: Int): Element =
-        if (w <= width)
-            this
-        else {
-            val left = elem(' ', (w - width) / 2, height)
-            var right = elem(' ', w - width - left.width, height)
-            left beside this beside right
-        } ensuring (w <= _.width)                                   // underscore is a placeholder for the one argument passed to the predicate, the Element result of the widen method
-        //  If the width passed as w to widen is less than or equal to the width of the result Element, the predicate will result in true
+    -Algebraic data types                       - ADT with method                                   // for each ADT case with params - compiler 
+    // (ADT) is a data type composed of         +------------------------------------------------+  // will generate case class in companion object
+       a finite set of cases                    | enum Eastwood[+G, +B]:                         |  +-------------------------------------------------------------------+
+    // sealed family of case classes forms      |     def map[G2](f: G => G2): Eastwood[G2, B] = |  | // Generated sealed trait (the "enum type")                       |
+       an ADT so long as at least one of        |       this match                               |  | sealed trait Eastwood[+G, +B]                                     |
+       the cases takes parameters.              |         case Good(g) => Good(f(g))             |  | object Eastwood: // Generated companion object                    |
+    +----------------------------+              |         case Bad(b) => Bad(b)                  |  |     // Generated case classes                                     |
+    | enum Eastwood[+G, +B]:     |              |         case Ugly(ex) => Ugly(ex)              |  |     case class Good[+G, +B](g: G) extends Eastwood[G, B]          |
+    |   case Good(g: G)          |              |     case Good(g: G)                            |  |     case class Bad[+G, +B](b: B) extends Eastwood[G, B]           |
+    |   case Bad(b: B)           |              |     case Bad(b: B)                             |  |     case class Ugly[+G, +B](ex: Throwable) extends Eastwood[G, B] |
+    |   case Ugly(ex: Throwable) |              |     case Ugly(ex: Throwable)                   |  +-------------------------------------------------------------------+
+    +----------------------------+              +------------------------------------------------+  // Good(42)
+                                                // val eastWood = Good(41)                          // val res0: Eastwood[Int, Nothing] = Good(42)
+                                                // eastWood.map(n => n + 1) // Good(42)      
+    - linked list type whose empty list object is named Nada and whose cons cell class is named Yada                                                       
+    +----------------------------------------------------------+
+    | enum Seinfeld[+E]:                                       |
+    |     def ::[E2 >: E](o: E2): Seinfeld[E2] = Yada(o, this) |    // val xs = 1 :: 2 :: 3 :: Nada
+    |     case Yada(head: E, tail: Seinfeld[E])                |    // val xs: Seinfeld[Int] = Yada(1,Yada(2,Yada(3,Nada)))
+    |     case Nada                                            |
+    +----------------------------------------------------------+
 
-    -Testing in Scala
-    import org.scalatest.FunSuite
-    import Element.elem
-    class ElementSuite extends FunSuite {                   // central concept in ScalaTest is the suite - collection of tests
-        test("elem result should have passed width") {      // specify the name of the test as a string between the parentheses and the test code itself between curly braces
-            val ele = elem('x', 2, 3)                       // test code is a function passed as a by-name parameter to test, which registers it for later execution
-            assert(ele.width == 2)
-        }
-    }
+    -Generalized ADTs
+    // (GADTs) are ADTs in which the sealed trait takes a type parameter that is filled in by the cases
+    +--------------------------------------------------------------+    +---------------------------------------------+
+    | enum Literal[T]:                                             |    | import Literal.*                            | // valueOfLiteral(BooleanLit(true)) // true: Boolean
+    |     case IntLit(value: Int) extends Literal[Int]             |    | def valueOfLiteral[T](lit: Literal[T]): T = | // valueOfLiteral(IntLit(42)) // 42: Int
+    |     case LongLit(value: Long) extends Literal[Long]          |    |     lit match                               |
+    |     case CharLit(value: Char) extends Literal[Char]          |    |         case IntLit(n) => n                 |
+    |     case FloatLit(value: Float) extends Literal[Float]       |    |         case LongLit(m) => m                |
+    |     case DoubleLit(value: Double) extends Literal[Double]    |    |         case CharLit(c) => c                |
+    |     case BooleanLit(value: Boolean) extends Literal[Boolean] |    |         case FloatLit(f) => f               |
+    |     case StringLit(value: String) extends Literal[String]    |    |         case DoubleLit(d) => d              |
+    +--------------------------------------------------------------+    |         case BooleanLit(b) => b             |
+                                                                        |         case StringLit(s) => s              |
+                                                                        +---------------------------------------------+
+    - What makes ADTs algebraic
+    // "algebraic" because they embody the algebraic laws of addition and multiplication
+    // Boolean has two possible values, true and false
+    // two inhabitants of type Boolean, cardinality of Boolean, therefore, is 2
 
-    -Informative failure reports
-    val caught =
-        intercept[ArithmeticException] {
-            1 / 0
-        }
-    assert(caught.getMessage == "/ by zero")
+    // TrafficLight cardinality is 3    
+    +-----------------------------+     // Byte cardinality - 256 (2^8)
+    | enum TrafficLight:          |     // Int cardinality - 42949672962 (2^32)
+    |     case Red, Yellow, Green |     // String cardinalitt - infinite
+    +-----------------------------+
 
-    -Tests as specifications
-    import org.scalatest._
-    class TVSetSpec extends FeatureSpec with GivenWhenThen {
-        feature("TV power button") {
-            scenario("User presses power button when TV is off") {
-                Given("a TV set that is switched off")
-                When("the power button is pressed")
-                Then("the TV should switch on")
-                pending
-            }
-        }
-    }
-
-    -Property-based testing
-    import org.scalatest.WordSpec
-    import org.scalatest.prop.PropertyChecks
-    import org.scalatest.MustMatchers._
-    import Element.elem
-    class ElementSpec extends WordSpec with PropertyChecks {
-        "elem result" must {
-            "have passed width" in {
-                forAll { (w: Int) =>
-                    whenever (w > 0) {
-                        elem('x', w, 3).width must equal (w)
-                    }
-                }
-            }
-        }
-    }
-
-    -Organizing and running tests
-    scalac -cp scalatest.jar TVSetSpec.scala
+    // Sum type                                                                         // product type
+    // can combine types into new composite ones, its called Sum type                   +-----------------------------------+
+    +---------------------+ // cardinality of Glad[T] is equal to cardinality of T      | case class Both[A, B](a: A, b: B) |
+    | enum Hope[+T]:      | // Hope[Byte] - 256 + 1(Sad)                                +-----------------------------------+
+    |     case Glad(o: T) | // Hope[Boolean] - 2 + 1(Sad)                               // Both type allows you to gather together two values of types A and B
+    |     case Sad        |                                                             // How many inhabitants does Both[A, B] have? 
+    +---------------------+                                                             // product of the cardinalities of its constituent types, A and B
+                                                                                        // Both[TrafficLight, Boolean] is 3 * 2, or 6
 
 
 ###############
@@ -1145,239 +1171,296 @@
 ###############
     -List literals
     // lists are immutable, lists have a recursive structure, whereas arrays are flat
-    val fruit = List("apples", "oranges", "pears")
-    val nums = List(1, 2, 3, 4)
-    val empty = List()
+    +------------------------------------------------+
+    | val fruit = List("apples", "oranges", "pears") |
+    | val nums = List(1, 2, 3, 4)                    |
+    | val empty = List()                             |
+    +------------------------------------------------+
 
     -The List type
     // The list type in Scala is covariant
     // if S is a subtype of T, then List[S] is a subtype of List[T]
     // List[String] is a subtype of List[Object]
-    val fruit: List[String] = List("apples", "oranges", "pears")
-    val nums: List[Int] = List(1, 2, 3,
-    val empty: List[Nothing] = List()       // Because lists are covariant, it follows that List[Nothing] is a subtype of List[T]
-    val xs: List[String] = List()           // List() is also of type List[String]!        
+    +--------------------------------------------------------------+
+    | val fruit: List[String] = List("apples", "oranges", "pears") |
+    | val nums: List[Int] = List(1, 2, 3, 4)                       |
+    | val empty: List[Nothing] = List()                            |    // Because lists are covariant, it follows that List[Nothing] is a subtype of List[T]
+    | val xs: List[String] = List()                                |    // List() is also of type List[String]!
+    +--------------------------------------------------------------+
 
     -Constructing lists
     // lists are built from two fundamental building blocks, Nil and :: (pronounced "cons")
     // x :: xs represents a list whose first element is x, followed by (the elements of) list xs
-    val fruit = "apples" :: ("oranges" :: ("pears" :: Nil))
-    val nums = 1 :: 2 :: 3 :: 4 :: Nil
+    +---------------------------------------------------------+
+    | val fruit = "apples" :: ("oranges" :: ("pears" :: Nil)) |
+    | val nums = 1 :: 2 :: 3 :: 4 :: Nil                      |
+    +---------------------------------------------------------+
 
     -Basic operations on lists
     head    // returns the first element of a list
     tail    // returns a list consisting of all elements except the first
     isEmpty // returns true if the list is empty
     // insertion sort - sort a non-empty list x :: xs, sort the remainder xs and insert the first element x at the right position in the result
-    def isort(xs: List[Int]): List[Int] =
-        if (xs.isEmpty) Nil
-        else insert(xs.head, isort(xs.tail))
-    def insert(x: Int, xs: List[Int]): List[Int] =
-        if (xs.isEmpty || x <= xs.head) x :: xs
-        else xs.head :: insert(x, xs.tail)
+    +------------------------------------------------+
+    | def isort(xs: List[Int]): List[Int] =          |
+    |     if (xs.isEmpty) Nil                        |
+    |     else insert(xs.head, isort(xs.tail))       |
+    | def insert(x: Int, xs: List[Int]): List[Int] = |
+    |     if (xs.isEmpty || x <= xs.head) x :: xs    |
+    |     else xs.head :: insert(x, xs.tail)         |
+    +------------------------------------------------+
 
     -List patterns
     val List(a, b, c) = fruit       // match on all elements of a list (a: String = apples ,b: String = oranges ,c: String = pears)
     val a :: b :: rest = fruit      // (a: String = apples, b: String = oranges, rest: List[String] = List(pears))
     // sorting
-    def isort(xs: List[Int]): List[Int] = xs match {
-        case List()     => List()
-        case x :: xs1   => insert(x, isort(xs1))
-    }
-    def insert(x: Int, xs: List[Int]): List[Int] = xs match {
-        case List()     => List(x)
-        case y :: ys    => if (x <= y) x :: xs else y :: insert(x, ys)
-    }
+    +--------------------------------------------------+
+    | def isort(xs: List[Int]): List[Int] =            |
+    |   xs match                                       |
+    |     case List() => List()                        |
+    |     case x :: xs1 => insert(x, isort(xs1))       |
+    |   def insert(x: Int, xs: List[Int]): List[Int] = |
+    |     xs match                                     |
+    |       case List() => List(x)                     |
+    |       case y :: ys => if x <= y then x :: xs     |
+    |                       else y :: insert(x, ys)    |
+    +--------------------------------------------------+
+
 
     -First-order methods on class List
     // A method is first-order if it does not take any functions as arguments
 
-    -Concatenating two lists
-    List(1, 2) ::: List(3, 4, 5)        // res0: List[Int] = List(1, 2, 3, 4, 5)
+    -Concatenating two lists    
+    +------------------------------+
+    | List(1, 2) ::: List(3, 4, 5) |    // res0: List[Int] = List(1, 2, 3, 4, 5)
+    +------------------------------+
 
     -The Divide and Conquer principle
     // implementing concatenation
-    def append[T](xs: List[T], ys: List[T]): List[T] =
-        xs match {
-            case List() => ys
-            case x :: xs1 => x :: append(xs1, ys)
-    }
+    +----------------------------------------------------+
+    | def append[T](xs: List[T], ys: List[T]): List[T] = |
+    |   xs match                                         |
+    |     case List() => ys                              |
+    |     case x :: xs1 => x :: append(xs1, ys)          |
+    +----------------------------------------------------+
 
     -Taking the length of a list: length
-    List(1, 2, 3).length            // res3: Int = 3 (needs to traverse the whole list)
-
+    +----------------------+
+    | List(1, 2, 3).length |    // res3: Int = 3 (needs to traverse the whole list)
+    +----------------------+
+    
     -Accessing the end of a list: init and last
-    val abcde = List('a', 'b', 'c', 'd', 'e')
-    abcde.last                      // res4: Char = e   (need to traverse the whole list to compute their result)
-    abcde.init                      // res5: List[Char] = List(a, b, c, d)  (need to traverse the whole list to compute their result)
-
+    +-------------------------------------------+
+    | val abcde = List('a', 'b', 'c', 'd', 'e') |
+    | abcde.last                                |   // res4: Char = e   (need to traverse the whole list to compute their result)
+    | abcde.init                                |   // res5: List[Char] = List(a, b, c, d)  (need to traverse the whole list to compute their result)
+    +-------------------------------------------+
+                      
     -Reversing lists: reverse
     abcde.reverse
     // Reverse could be implemented using concatenation (:::)
     // complexity is quadratic, compared to the standard reversal of a mutable, linked list, which has linear complexity
-    def rev[T](xs: List[T]): List[T] = xs match {
-        case List() => xs
-        case x :: xs1 => rev(xs1) ::: List(x)
-    }
+    +-----------------------------------------------+
+    | def rev[T](xs: List[T]): List[T] =            |
+    |     xs match                                  |
+    |         case List() => xs                     |
+    |         case x :: xs1 => rev(xs1) ::: List(x) |
+    +-----------------------------------------------+
 
     -Prefixes and suffixes: drop, take, and splitAt
-    abcde take 2         // res8: List[Char] = List(a, b)
-    abcde drop 2         // res9: List[Char] = List(c, d, e)
-    abcde splitAt 2      // res10: (List[Char], List[Char]) = (List(a, b),List(c, d, e))
-
+    +-----------------+
+    | abcde take 2    | // res8: List[Char] = List(a, b)
+    | abcde drop 2    | // res9: List[Char] = List(c, d, e)
+    | abcde splitAt 2 | // res10: (List[Char], List[Char]) = (List(a, b),List(c, d, e))
+    +-----------------+
+    
     -Element selection: apply and indices
-    abcde apply 2                       // res11: Char = c (rare in Scala)
-    abcde(2)                            // res12: Char = c (rare in Scala)
-    abcde.indices                       // res13: scala.collection.immutable.Range = Range(0, 1, 2, 3, 4)
+    +---------------+
+    | abcde apply 2 |   // res11: Char = c (rare in Scala)
+    | abcde(2)      |   // res12: Char = c (rare in Scala)
+    | abcde.indices |   // res13: scala.collection.immutable.Range = Range(0, 1, 2, 3, 4)
+    +---------------+
 
     -Flattening a list of lists: flatten
-    List(List(1, 2), List(3), List(), List(4, 5)).flatten   // res14: List[Int] = List(1, 2, 3, 4, 5)
-    fruit.map(_.toCharArray).flatten                        // res15: List[Char] = List(a, p, p, l, e, s, o, r, a, n, g, e,s, p, e, a, r, s)
-
+    +-------------------------------------------------------+
+    | List(List(1, 2), List(3), List(), List(4, 5)).flatten |   // res14: List[Int] = List(1, 2, 3, 4, 5)
+    | fruit.map(_.toCharArray).flatten                      |   // res15: List[Char] = List(a, p, p, l, e, s, o, r, a, n, g, e,s, p, e, a, r, s)
+    +-------------------------------------------------------+
+                 
     -Zipping lists: zip and unzip
     // takes two lists and forms a list of pairs
-    abcde.indices zip abcde                                 // res17: scala.collection.immutable.IndexedSeq[(Int, Char)] = Vector((0,a), (1,b), (2,c), (3,d), (4,e))
-    val zipped = abcde zip List(1, 2, 3)                    // zipped: List[(Char, Int)] = List((a,1), (b,2), (c,3))
-    abcde.zipWithIndex                                      // res18: List[(Char, Int)] = List((a,0), (b,1), (c,2), (d,3), (e,4))
-    zipped.unzip                                            // res19: (List[Char], List[Int]) = (List(a, b, c),List(1, 2, 3))
+    +---------------------------------------+
+    | abcde.indices zip abcde               |   // res17: scala.collection.immutable.IndexedSeq[(Int, Char)] = Vector((0,a), (1,b), (2,c), (3,d), (4,e))
+    | val zipped = abcde zip List(1, 2, 3)  |   // zipped: List[(Char, Int)] = List((a,1), (b,2), (c,3))
+    | abcde.zipWithIndex                    |   // res18: List[(Char, Int)] = List((a,0), (b,1), (c,2), (d,3), (e,4))
+    | zipped.unzip                          |   // res19: (List[Char], List[Int]) = (List(a, b, c),List(1, 2, 3))
+    +---------------------------------------+
 
     -Displaying lists: toString and mkString
-    abcde.toString                                          // res20: String = List(a, b, c, d, e)
-    abcde mkString ("[", ",", "]")                          // res21: String = [a,b,c,d,e]
-    abcde mkString ""                                       // res22: String = abcde
-    abcde.mkString                                          // res23: String = abcde
-    abcde mkString                                          // ("List(", ", ", ")")  res24: String = List(a, b, c, d, e)
-    val buf = new StringBuilder
-    abcde addString (buf, "(", ";", ")")                    // res25: StringBuilder = (a;b;c;d;e)
+    +--------------------------------------+
+    | abcde.toString                       |    // res20: String = List(a, b, c, d, e)
+    | abcde mkString ("[", ",", "]")       |    // res21: String = [a,b,c,d,e]
+    | abcde mkString ""                    |    // res22: String = abcde
+    | abcde.mkString                       |    // res23: String = abcde
+    | abcde mkString                       |    // ("List(", ", ", ")")  res24: String = List(a, b, c, d, e)
+    | val buf = new StringBuilder          |    
+    | abcde addString (buf, "(", ";", ")") |    // res25: StringBuilder = (a;b;c;d;e)
+    +--------------------------------------+
 
     -Converting lists: iterator, toArray, copyToArray
-    val arr = abcde.toArray                                 // arr: Array[Char] = Array(a, b, c, d, e)
-    arr.toList                                              // res26: List[Char] = List(a, b, c, d, e)
-    val arr2 = new Array[Int](10)                           // arr2: Array[Int] = Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-    List(1, 2, 3) copyToArray (arr2, 3)
-    arr2                                                    // res28: Array[Int] = Array(0, 0, 0, 1, 2, 3, 0, 0, 0, 0)
-    val it = abcde.iterator
-    it.next                                                 // res29: Char = a
-    it.next                                                 // res30: Char = b
+    +-------------------------------------+
+    | val arr = abcde.toArray             | // arr: Array[Char] = Array(a, b, c, d, e)
+    | arr.toList                          | // res26: List[Char] = List(a, b, c, d, e)
+    | val arr2 = new Array[Int](10)       | // arr2: Array[Int] = Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+    | List(1, 2, 3) copyToArray (arr2, 3) | 
+    | arr2                                | // res28: Array[Int] = Array(0, 0, 0, 1, 2, 3, 0, 0, 0, 0)
+    | val it = abcde.iterator             | 
+    | it.next                             | // res30: Char = b
+    | it.next                             | // res29: Char = a
+    +-------------------------------------+
 
     -Example: Merge sort
-    def msort[T](less: (T, T) => Boolean)(xs: List[T]): List[T] = {
-        def merge(xs: List[T], ys: List[T]): List[T] =
-            (xs, ys) match {
-                case (Nil, _) => ys
-                case (_, Nil) => xs
-                case (x :: xs1, y :: ys1) =>
-                    if (less(x, y)) x :: merge(xs1, ys)
-                    else y :: merge(xs, ys1)
-        }
-        val n = xs.length / 2
-        if (n == 0) xs
-        else {
-            val (ys, zs) = xs splitAt n
-            merge(msort(less)(ys), msort(less)(zs))
-        }
-    }
-    msort((x: Int, y: Int) => x < y)(List(5, 7, 1, 3))      // res31: List[Int] = List(1, 3, 5, 7)
-    val intSort = msort((x: Int, y: Int) => x < y) _
-    val reverseIntSort = msort((x: Int, y: Int) => x > y) _
-    val mixedInts = List(4, 1, 9, 0, 5, 8, 3, 6, 2, 7)
-    intSort(mixedInts)                                      // res0: List[Int] = List(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
-    reverseIntSort(mixedInts)                               // res1: List[Int] = List(9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+    +---------------------------------------------------------------------------+   +----------------------------------------------------------+
+    | def msort[T](less: (T, T) => Boolean)(xs: List[T]): List[T] =             |   | msort((x: Int, y: Int) => x < y)(List(5, 7, 1, 3))       |    // res31: List[Int] = List(1, 3, 5, 7)
+    |   def merge(xs: List[T], ys: List[T]): List[T] =                          |   | val intSort = msort((x: Int, y: Int) => x < y) _         |
+    |    (xs, ys) match                                                         |   | val reverseIntSort = msort((x: Int, y: Int) => x > y) _  |
+    |       case (Nil, _) => ys                                                 |   | val mixedInts = List(4, 1, 9, 0, 5, 8, 3, 6, 2, 7)       |
+    |       case (_, Nil) => xs                                                 |   | intSort(mixedInts)                                       |    // res0: List[Int] = List(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+    |       case (x :: xs1, y :: ys1) => if less(x, y) then x :: merge(xs1, ys) |   | reverseIntSort(mixedInts)                                |    // res1: List[Int] = List(9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+    |                                    else y :: merge(xs, ys1)               |   +----------------------------------------------------------+
+    |   val n = xs.length / 2                                                   |
+    |   if n == 0 then xs                                                       |
+    |   else                                                                    |
+    |     val (ys, zs) = xs.splitAt(n)                                          |
+    |     merge(msort(less)(ys), msort(less)(zs))                               |
+    +---------------------------------------------------------------------------+
 
     -Higher-order methods on class List
     -Mapping over lists: map, flatMap and foreach
-    List(1, 2, 3) map (_ + 1)                               // res32: List[Int] = List(2, 3, 4)
-    val words = List("the", "quick", "brown", "fox")        // words: List[String] = List(the, quick, brown, fox)
-    words map (_.length)                                    // res33: List[Int] = List(3, 5, 5, 3)
-    words map (_.toList.reverse.mkString)                   // res34: List[String] = List(eht, kciuq, nworb, xof)
-    words map (_.toList)                                    // res35: List[List[Char]] = List(List(t, h, e), List(q, u, i, c, k), List(b, r, o, w, n), List(f, o, x))
-    words flatMap (_.toList)                                // res36: List[Char] = List(t, h, e, q, u, i, c, k, b, r, o, w, n, f, o, x)
+    +--------------------------------------------------+
+    | List(1, 2, 3) map (_ + 1)                        |    // res32: List[Int] = List(2, 3, 4)
+    | val words = List("the", "quick", "brown", "fox") |    // words: List[String] = List(the, quick, brown, fox)
+    | words map (_.length)                             |    // res33: List[Int] = List(3, 5, 5, 3)
+    | words map (_.toList.reverse.mkString)            |    // res34: List[String] = List(eht, kciuq, nworb, xof)
+    | words map (_.toList)                             |    // res35: List[List[Char]] = List(List(t, h, e), List(q, u, i, c, k), List(b, r, o, w, n), List(f, o, x))
+    | words flatMap (_.toList)                         |    // res36: List[Char] = List(t, h, e, q, u, i, c, k, b, r, o, w, n, f, o, x)
+    +--------------------------------------------------+
     // 1. generate a list of integers from 1 (including) until 5 (excluding),
     // 2. a second time to generate a list of integers from 1 until i, for each value of i taken from the first list
     // 3. The map in this expression generates a list of tuples (i; j)
-    List.range(1, 5) flatMap (i => List.range(1, i) map (j => (i, j)))      // res37: List[(Int, Int)] = List((2,1), (3,1), (3,2), (4,1),(4,2), (4,3))
-    var sum = 0
-    List(1, 2, 3, 4, 5) foreach (sum += _)
-    sum                                                      // res39: Int = 15
+    +--------------------------------------------------------------------+
+    | List.range(1, 5) flatMap (i => List.range(1, i) map (j => (i, j))) |  // res37: List[(Int, Int)] = List((2,1), (3,1), (3,2), (4,1),(4,2), (4,3))
+    | var sum = 0                                                        |
+    | List(1, 2, 3, 4, 5) foreach (sum += _)                             |
+    | sum                                                                |  // res39: Int = 15
+    +--------------------------------------------------------------------+
 
     -Filtering lists: filter, partition, find, takeWhile, dropWhile, and span
-    List(1, 2, 3, 4, 5) filter (_ % 2 == 0)                 // res40: List[Int] = List(2, 4)
-    words filter (_.length == 3)                            // res41: List[String] = List(the, fox)
-    // partition method is like filter but returns a pair of lists (for true,false)
-    List(1, 2, 3, 4, 5) partition (_ % 2 == 0)              // res42: (List[Int], List[Int]) = (List(2, 4),List(1, 3, 5))
-    // find method is also similar to filter, but it returns the first element satisfying a given predicate
-    List(1, 2, 3, 4, 5) find (_ % 2 == 0)                   // res43: Option[Int] = Some(2)
-    scala> List(1, 2, 3, 4, 5) find (_ <= 0)                // res44: Option[Int] = None
-    // takeWhile and dropWhile operators also take a predicate - takes/drops longest prefix
-    List(1, 2, 3, 4, 5) takeWhile (_ > 0)                   // res45: List[Int] = List(1, 2, 3)
-    words dropWhile (_ startsWith "t")                      // res46: List[String] = List(quick, brown, fox)
-    // span method combines takeWhile and dropWhile in one operation, just like splitAt combines take and drop
-    List(1, 2, 3, 4, 5) span (_ > 0)                        // res47: (List[Int], List[Int]) = (List(1, 2, 3),List(4, 5))
-
+    +--------------------------------------------------------------------------+
+    | List(1, 2, 3, 4, 5) filter (_ % 2 == 0)                                  |    // res40: List[Int] = List(2, 4)
+    | words filter (_.length == 3)                                             |    // res41: List[String] = List(the, fox)
+    |                                                                          |
+    | // partition method is like filter but returns                           |
+    | // a pair of lists (for true,false)                                      |
+    | List(1, 2, 3, 4, 5) partition (_ % 2 == 0)                               |    // res42: (List[Int], List[Int]) = (List(2, 4),List(1, 3, 5))
+    |                                                                          |
+    | // find method is also similar to filter, but                            |
+    | // it returns the first element satisfying a given predicate             |
+    | List(1, 2, 3, 4, 5) find (_ % 2 == 0)                                    |    // res43: Option[Int] = Some(2)
+    | scala> List(1, 2, 3, 4, 5) find (_ <= 0)                                 |    // res44: Option[Int] = None
+    |                                                                          |
+    | // takeWhile and dropWhile operators also take                           |
+    | // a predicate - takes/drops longest prefix                              |
+    | List(1, 2, 3, -4, 5) takeWhile (_ > 0)                                   |    // res45: List[Int] = List(1, 2, 3)
+    | words dropWhile (_ startsWith "t")                                       |    // res46: List[String] = List(quick, brown, fox)
+    |                                                                          |
+    | // span method combines takeWhile and dropWhile in one                   |
+    | // operation, just like splitAt combines take and drop                   |
+    | List(1, 2, 3, -4, 5) span (_ > 0)                                        |    // res47: (List[Int], List[Int]) = (List(1, 2, 3),List(4, 5))
+    +--------------------------------------------------------------------------+
+                        
     -Predicates over lists: forall and exists
     // forall p takes as arguments a list xs and a predicate p. Its result is true if all elements in the list satisfy p
-    def hasZeroRow(m: List[List[Int]]) =
-        m exists (row => row forall (_ == 0))
-    hasZeroRow(diag3)                                       // res48: Boolean = false
-
+    +-------------------------------------------+
+    | def hasZeroRow(m: List[List[Int]]) =      |
+    |     m exists (row => row forall (_ == 0)) |
+    | hasZeroRow(diag3)                         |   // res48: Boolean = false
+    +-------------------------------------------+
+               
     -Folding lists: /: and :\
-    // fold left operation “(z /: xs) (op)” involves three objects: a start value z, a list xs, and a binary operation op
-    // (z /: List(a, b, c)) (op) equals op(op(op(z, a), b), c)
-    //      op              // def foldLeft[A, B](xs: Seq[A], z: B)(op: (B, A) => B): B = {     //List(1, 2, 3).foldLeft(0)(_ + _)
-    //     /  \             //   def f(xs: Seq[A], acc: B): B = xs match {                      // ((0 + 1) + 2) + 3
-    //    op   c            //     case Seq()   => acc                                          // = 6
-    //   /  \               //     case x +: xs => f(xs, op(acc, x))
-    //  op   b              //   }
-    // /  \                 //   f(xs, z)
-    //z    a                // }
-    ("" /: words) (_ + " " + _)                             // res49: String = " the quick brown fox"
-    // (List(a, b, c) :\ z) (op) equals op(a, op(b, op(c, z)))
-    //  op                  //List(1, 2, 3).foldRight(0)(_ + _)
-    // /  \                 // 1 + (2 + (3 + 0))
-    //a   op                // = 6
-    //   /  \               final def foldRight[B](z: B)(f: (A, B) => B): B = this match {
-    //  b   op                case Nil => z
-    //     /  \               case Cons(head, tail) => f(head, tail.foldRight(z)(f))
-    //    c    z            }
+    // fold left operation "xs.foldLeft(z)(op)" involves three objects: a start value z, a list xs, and a binary operation op
+    // List(a, b, c).foldLeft(z)(op) equals op(op(op(z, a), b), c)
+    +------------+  +--------------------------------------------------------------+    +----------------------------------+
+    |       op   |  | def foldLeft[A, B](xs: Seq[A], z: B)(op: (B, A) => B): B = { |    | List(1, 2, 3).foldLeft(0)(_ + _) |
+    |      /  \  |  |   def f(xs: Seq[A], acc: B): B = xs match {                  |    |  ((0 + 1) + 2) + 3               |
+    |     op   c |  |     case Seq()   => acc                                      |    |  = 6                             |
+    |    /  \    |  |     case x +: xs => f(xs, op(acc, x))                        |    +----------------------------------+
+    |   op   b   |  |   }                                                          |
+    |  /  \      |  |   f(xs, z)                                                   |
+    | z    a     |  | }                                                            |
+    +------------+  +--------------------------------------------------------------+
+
+    // List(a, b, c).foldRight(z)(op) equals op(a, op(b, op(c, z)))
+    +------------+  +----------------------------------------------------------------+    +-----------------------------------+
+    |   op       |  | final def foldRight[B](z: B)(f: (A, B) => B): B = this match { |    | List(1, 2, 3).foldRight(0)(_ + _) |
+    |  /  \      |  |   case Nil => z                                                |    |  1 + (2 + (3 + 0))                |
+    | a   op     |  |   case Cons(head, tail) => f(head, tail.foldRight(z)(f))       |    |  = 6                              |
+    |    /  \    |  | }                                                              |    +-----------------------------------+
+    |   b   op   |  +----------------------------------------------------------------+
+    |      /  \  |
+    |     c    z |
+    +------------+
     // concatenates all elements in a list of lists
-    def flattenLeft[T](xss: List[List[T]]) = (List[T]() /: xss) (_ ::: _)
-    def flattenRight[T](xss: List[List[T]]) = (xss :\ List[T]()) (_ ::: _)      // more efficient, because flattenLeft(xss) copies the first element list xss.head n􀀀1 times, where n is the length of the list xss
+    +------------------------------------------------------------------------+
+    | def flattenLeft[T](xss: List[List[T]]) = (List[T]() /: xss) (_ ::: _)  |
+    | def flattenRight[T](xss: List[List[T]]) = (xss :\ List[T]()) (_ ::: _) |  // more efficient, because flattenLeft(xss) copies the first element list xss.head n􀀀1 times, where n is the length of the list xss
+    +------------------------------------------------------------------------+
 
     -Example: List reversal using fold
-    def reverseLeft[T](xs: List[T]) = (List[T]() /: xs) {(ys, y) => y :: ys}
+    +---------------------------------------------------------------------------------+
+    | def reverseLeft[T](xs: List[T]) = xs.foldLeft(List[T]()) { (ys, y) => y :: ys } |
+    +---------------------------------------------------------------------------------+
 
     -Sorting lists: sortWith
-    List(1, 3, 4, 2, 6) sortWith (_ < _)                // res51: List[Int] = List(3, 1, 2, 4, 6)
-    words sortWith (_.length > _.length)                // res52: List[String] = List(quick, brown, the, fox)
+    +--------------------------------------+
+    | List(1, 3, 4, 2, 6) sortWith (_ < _) |    // res51: List[Int] = List(3, 1, 2, 4, 6)
+    | words sortWith (_.length > _.length) |    // res52: List[String] = List(quick, brown, the, fox)
+    +--------------------------------------+
 
-    -Methods of the List object
-    -Creating lists from their elements: List.apply
-    List.apply(1, 2, 3)                                 // res53: List[Int] = List(1, 2, 3)
-
-    -Creating a range of numbers: List.range
-    List.range(1, 5)                                    // res54: List[Int] = List(1, 2, 3, 4)
-    List.range(1, 9, 2)                                 // res55: List[Int] = List(1, 3, 5, 7)
-    List.range(9, 1, 3)                                 // res56: List[Int] = List(9, 6, 3)
+    -Methods of the List object                                         -Creating a range of numbers: List.range
+    -Creating lists from their elements: List.apply                     +---------------------+
+    +----------------------+                                            | List.range(1, 5)    | // res54: List[Int] = List(1, 2, 3, 4)
+    | List.apply(1, 2, 3)  |    // res53: List[Int] = List(1, 2, 3)     | List.range(1, 9, 2) | // res55: List[Int] = List(1, 3, 5, 7)
+    +----------------------+                                            | List.range(9, 1, 3) | // res56: List[Int] = List(9, 6, 3)    
+                                                                        +---------------------+
 
     -Creating uniform lists: List.fill
-    List.fill(5)('a')                                   // res57: List[Char] = List(a, a, a, a, a)
-    List.fill(3)("hello")                               // res58: List[String] = List(hello, hello, hello)
-    // multidimensional lists
-    List.fill(2, 3)('b')                                // res59: List[List[Char]] = List(List(b, b, b), List(b, b, b))
+    +---------------------------+
+    | List.fill(5)('a')         |   // res57: List[Char] = List(a, a, a, a, a)
+    | List.fill(3)("hello")     |   // res58: List[String] = List(hello, hello, hello)
+    | // multidimensional lists |
+    | List.fill(2, 3)('b')      |   // res59: List[List[Char]] = List(List(b, b, b), List(b, b, b))
+    +---------------------------+
 
     -Tabulating a function: List.tabulate
     // tabulate method creates a list whose elements are computed according to a supplied function
-    val squares = List.tabulate(5)(n => n * n)          // squares: List[Int] = List(0, 1, 4, 9, 16)
-
+    +--------------------------------------------+
+    | val squares = List.tabulate(5)(n => n * n) |  // squares: List[Int] = List(0, 1, 4, 9, 16)
+    +--------------------------------------------+
+    
     -Concatenating multiple lists: List.concat
-    List.concat(List('a', 'b'), List('c'))              // res60: List[Char] = List(a, b, c)
-    List.concat(List(), List('b'), List('c'))           // res61: List[Char] = List(b, c)
-    List.concat()                                       // res62: List[Nothing] = List()
+    +-------------------------------------------+
+    | List.concat(List('a', 'b'), List('c'))    |   // res60: List[Char] = List(a, b, c)
+    | List.concat(List(), List('b'), List('c')) |   // res61: List[Char] = List(b, c)
+    | List.concat()                             |   // res62: List[Nothing] = List()
+    +-------------------------------------------+
 
     -Processing multiple lists together
-    (List(10, 20), List(3, 4, 5)).zipped.map(_ * _)                 // res63: List[Int] = List(30, 80)
-    (List("abc", "de"), List(3, 2)).zipped.forall(_.length == _)    // res64: Boolean = true
-    (List("abc", "de"), List(3, 2)).zipped.exists(_.length != _)    // res65: Boolean = false
+    +--------------------------------------------------------------+
+    | (List(10, 20), List(3, 4, 5)).zipped.map(_ * _)              |    // res63: List[Int] = List(30, 80)
+    | (List("abc", "de"), List(3, 2)).zipped.forall(_.length == _) |    // res64: Boolean = true
+    | (List("abc", "de"), List(3, 2)).zipped.exists(_.length != _) |    // res65: Boolean = false
+    +--------------------------------------------------------------+
 
 
 ###############
@@ -1578,6 +1661,80 @@
     longest._1                  // res53: String = quick
     longest._2                  // res54: Int = 1
     val (word, idx) = longest   // word: String = quick;  idx: Int = 1
+
+
+###############
+# Assertions and Tests
+###############
+    -Assertions
+    def above(that: Element): Element = {
+        val this1 = this widen that.width
+        val that1 = that widen this.width
+        assert(this1.width == that1.width)
+        elem(this1.contents ++ that1.contents)
+    }
+
+    private def widen(w: Int): Element =
+        if (w <= width)
+            this
+        else {
+            val left = elem(' ', (w - width) / 2, height)
+            var right = elem(' ', w - width - left.width, height)
+            left beside this beside right
+        } ensuring (w <= _.width)                                   // underscore is a placeholder for the one argument passed to the predicate, the Element result of the widen method
+        //  If the width passed as w to widen is less than or equal to the width of the result Element, the predicate will result in true
+
+    -Testing in Scala
+    import org.scalatest.FunSuite
+    import Element.elem
+    class ElementSuite extends FunSuite {                   // central concept in ScalaTest is the suite - collection of tests
+        test("elem result should have passed width") {      // specify the name of the test as a string between the parentheses and the test code itself between curly braces
+            val ele = elem('x', 2, 3)                       // test code is a function passed as a by-name parameter to test, which registers it for later execution
+            assert(ele.width == 2)
+        }
+    }
+
+    -Informative failure reports
+    val caught =
+        intercept[ArithmeticException] {
+            1 / 0
+        }
+    assert(caught.getMessage == "/ by zero")
+
+    -Tests as specifications
+    import org.scalatest._
+    class TVSetSpec extends FeatureSpec with GivenWhenThen {
+        feature("TV power button") {
+            scenario("User presses power button when TV is off") {
+                Given("a TV set that is switched off")
+                When("the power button is pressed")
+                Then("the TV should switch on")
+                pending
+            }
+        }
+    }
+
+    -Property-based testing
+    import org.scalatest.WordSpec
+    import org.scalatest.prop.PropertyChecks
+    import org.scalatest.MustMatchers._
+    import Element.elem
+    class ElementSpec extends WordSpec with PropertyChecks {
+        "elem result" must {
+            "have passed width" in {
+                forAll { (w: Int) =>
+                    whenever (w > 0) {
+                        elem('x', w, 3).width must equal (w)
+                    }
+                }
+            }
+        }
+    }
+
+    -Organizing and running tests
+    scalac -cp scalatest.jar TVSetSpec.scala
+
+
 
 
 ###############
