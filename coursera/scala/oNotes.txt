@@ -1462,6 +1462,22 @@
     | (List("abc", "de"), List(3, 2)).zipped.exists(_.length != _) |    // res65: Boolean = false
     +--------------------------------------------------------------+
 
+    -Understanding Scala’s type inference algorithm
+    +-------------------------------------------+       +----------------------------------------------+
+    | msort((x: Char, y: Char) => x > y)(abcde) |   vs  | abcde.sortWith(_ > _) // List(e, d, c, b, a) |
+    +-------------------------------------------+       +----------------------------------------------+
+    // wont work                // scala type inference is flow based
+    +---------------------+     // in m(args) first check to see if m has known type
+    | msort(_ > _)(abcde) |     // in abcde.sortWith(_ > _) - type of abcde is List[Char], sorWith can work with that, so param types are known no need in explicit
+    +---------------------+     // msort(_ > _)(abcde) - takes argument of type (T,T) => Boolean where T is as yet unknown. Type inference here first checks method argument to determine proper instance type of method
+                                   when it type checks function _ > _ it fails
+                                // solutions
+                                // 1. msort[Char](_ > _)(abcde)
+                                // 2. def msortSwapped[T](xs: List[T])(less: (T, T) => Boolean): List[T] =
+                                // msortSwapped(abcde)(_ > _)
+    
+
+
 
 ###############
 # Working with Other Collections
