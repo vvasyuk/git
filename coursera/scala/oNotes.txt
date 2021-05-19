@@ -1482,119 +1482,103 @@
 ###############
     -Sequences
     // Lists, Arrays, List buffers, Array buffers, StringOps
-    -Lists
-    // fast add to start of list, but they do not provide fast access to arbitrary indexes because the implementation must iterate through the list linearly
-    val colors = List("red", "blue", "green")
-    colors.head                                     // res0: String = red
-    colors.tail                                     // res1: List[String] = List(blue, green)
+    -Lists                                                  -Arrays
+    // fast add to start of list (prepended)                // efficiently access/update an element at an arbitrary position
+    // not fast access to arbitrary indexes                 +--------------------------------------+
+    // because will need to iterate the list linearly       | val fiveInts = new Array[Int](5)     |    // fiveInts: Array[Int] = Array(0, 0, 0, 0, 0)
+    +-------------------------------------------+           | val fiveToOne = Array(5, 4, 3, 2, 1) |    // fiveToOne: Array[Int] = Array(5, 4, 3, 2, 1)
+    | val colors = List("red", "blue", "green") |           | fiveInts(0) = fiveToOne(4)           |
+    | colors.head   // res0: String = red       |           | fiveInts                             |    // res3: Array[Int] = Array(1, 0, 0, 0, 0)
+    | colors.tail   // res1: List(blue, green)  |           +--------------------------------------+
+    +-------------------------------------------+                           
 
-    -Arrays
-    // efficiently access an element at an arbitrary position
-    val fiveInts = new Array[Int](5)                // fiveInts: Array[Int] = Array(0, 0, 0, 0, 0)
-    val fiveToOne = Array(5, 4, 3, 2, 1)            // fiveToOne: Array[Int] = Array(5, 4, 3, 2, 1)
-    fiveInts(0) = fiveToOne(4)
-    fiveInts                                        // res3: Array[Int] = Array(1, 0, 0, 0, 0)
-
-    -List buffers
-    // mutable object, more efficiently when you need to append
-    // += append
-    // +=: prepand
-    import scala.collection.mutable.ListBuffer
-    import scala.collection.mutable.ListBuffer
-    val buf = new ListBuffer[Int]
-    buf += 1
-    buf += 2                                            // res5: buf.type = ListBuffer(1, 2)
-    buf                                                 // res6: scala.collection.mutable.ListBuffer[Int] = ListBuffer(1, 2)
-    3 +=: buf                                           // res7: buf.type = ListBuffer(3, 1, 2)
-    buf.toList                                          // res8: List[Int] = List(3, 1, 2)
-
-    -Array buffers
-    // like an array, except that you can additionally add and remove elements from the beginning and end of the sequence
-    import scala.collection.mutable.ArrayBuffer
-    val buf = new ArrayBuffer[Int]()
-    buf += 12                                           // res9: buf.type = ArrayBuffer(12)
-    buf += 15                                           // res10: buf.type = ArrayBuffer(12, 15)
-    buf                                                 // res11: scala.collection.mutable.ArrayBuffer[Int] = ArrayBuffer(12, 15)
-    buf.length                                          // res12: Int = 2
-    buf(0)                                              // res13: Int = 12
-
-    -Strings (via StringOps)
-    def hasUpperCase(s: String) = s.exists(_.isUpper)
-    hasUpperCase("Robert Frost")                        // res14: Boolean = true
-    hasUpperCase("e e cummings")                        // res15: Boolean = false
-
-    -Sets and maps
-    object Predef {
-        type Map[A, +B] = collection.immutable.Map[A, B]
-        type Set[A] = collection.immutable.Set[A]
-        val Map = collection.immutable.Map
-        val Set = collection.immutable.Set
-        // ...
-    }
+    -List buffers                                           -Array buffers
+    // mutable, more efficiently when you need to append    // like an array, except that you can additionally add and
+    // += append    (constant)                              // remove elements from the beginning and end of the sequence
+    // +=: prepand  (constant)                              +------------------------------------------------------+
+    +--------------------------------------------------+    | import scala.collection.mutable.ArrayBuffer          |
+    | import scala.collection.mutable.ListBuffer       |    | val buf = new ArrayBuffer[Int]()                     |
+    | import scala.collection.mutable.ListBuffer       |    | buf += 12   // res9: buf.type = ArrayBuffer(12)      |
+    | val buf = new ListBuffer[Int]                    |    | buf += 15   // res10: buf.type = ArrayBuffer(12, 15) |
+    | buf += 1    // res: buf.type = ListBuffer(1)     |    | buf.length  // res12: Int = 2                        |
+    | buf += 2    // res: buf.type = ListBuffer(1,2)   |    | buf(0)      // res13: Int = 12                       |
+    | 3 +=: buf   // res: buf.type = ListBuffer(3,1,2) |    +------------------------------------------------------+
+    | buf.toList                                       |    
+    +--------------------------------------------------+    -Sets and maps  
+                                                            // when say Map or Set - these types are taken from Predef immutable map/set
+    -Strings (via StringOps)                                +------------------------------------------------------+
+    // because String has no exists method, StringOps will  | object Predef {                                      |
+       be used                                              |     type Map[A, +B] = collection.immutable.Map[A, B] |
+    +---------------------------------------------------+   |     type Set[A] = collection.immutable.Set[A]        |
+    | def hasUpperCase(s: String) = s.exists(_.isUpper) |   |     val Map = collection.immutable.Map               |
+    | hasUpperCase("Robert Frost")  // res14: = true    |   |     val Set = collection.immutable.Set               |
+    | hasUpperCase("e e cummings")  // res15: = false   |   | }                                                    |
+    +---------------------------------------------------+   +------------------------------------------------------+
 
     -Using sets
-    val text = "See Spot run. Run, Spot. Run!"
-    val wordsArray = text.split("[ !,.]+")              // wordsArray: Array[String] = Array(See, Spot, run, Run, Spot, Run)
-    val words = mutable.Set.empty[String]               // words: scala.collection.mutable.Set[String] = Set()
-    for (word <wordsArray)
-        words += word.toLowerCase
-    words                                               // res17: scala.collection.mutable.Set[String] = Set(see, run, spot)
+    +--------------------------------------------+
+    | val text = "See Spot run. Run, Spot. Run!" |
+    | val wordsArray = text.split("[ !,.]+")     |  // wordsArray: Array[String] = Array(See, Spot, run, Run, Spot, Run)
+    | val words = mutable.Set.empty[String]      |  // words: scala.collection.mutable.Set[String] = Set()
+    |                                            |
+    | for word <- wordsArray do                  |
+    |     words += word.toLowerCase              |
+    | words                                      |  // res17: scala.collection.mutable.Set[String] = Set(see, run, spot)
+    |                                            |
+    | val nums = Set(1, 2, 3)                    |  // Creates an immutable set (nums.toString returns Set(1, 2, 3))
+    | nums + 5                                   |  // Adds an element (returns Set(1, 2, 3, 5))
+    | nums - 3                                   |  // Removes an element (returns Set(1, 2))
+    | nums ++ List(5, 6)                         |  // Adds multiple elements (returns Set(1, 2, 3, 5, 6))
+    | nums -- List(1, 2)                         |  // Removes multiple elements (returns Set(3))
+    | nums & Set(1, 3, 5, 7)                     |  // Takes the intersection of two sets (returns Set(1, 3))
+    | nums.size                                  |  // Returns the size of the set (returns 3)
+    | nums.contains(3)                           |  // Checks for inclusion (returns true)
+    | import scala.collection.mutable            |  // Makes the mutable collections easy to access
+    | val words = mutable.Set.empty[String]      |  // Creates an empty, mutable set (words.toString returns Set())
+    | words += "the"                             |  // Adds an element (words.toString returns Set(the))
+    | words -= "the"                             |  // Removes an element, if it exists (words.toString returns Set())
+    | words ++= List("do", "re", "mi")           |  // Adds multiple elements (words.toString returns Set(do, re, mi))
+    | words --= List("do", "re")                 |  // Removes multiple elements (words.toString returns Set(mi))
+    | words.clear                                |  // Removes all elements (words.toString returns Set())
+    +--------------------------------------------+
 
-    val nums = Set(1, 2, 3)                             // Creates an immutable set (nums.toString returns Set(1, 2, 3))
-    nums + 5                                            // Adds an element (returns Set(1, 2, 3, 5))
-    nums - 3                                            // Removes an element (returns Set(1, 2))
-    nums ++ List(5, 6)                                  // Adds multiple elements (returns Set(1, 2, 3, 5, 6))
-    nums -- List(1, 2)                                  // Removes multiple elements (returns Set(3))
-    nums & Set(1, 3, 5, 7)                              // Takes the intersection of two sets (returns Set(1, 3))
-    nums.size                                           // Returns the size of the set (returns 3)
-    nums.contains(3)                                    // Checks for inclusion (returns true)
-    import scala.collection.mutable                     // Makes the mutable collections easy to access
-    val words = mutable.Set.empty[String]               // Creates an empty, mutable set (words.toString returns Set())
-    words += "the"                                      // Adds an element (words.toString returns Set(the))
-    words -= "the"                                      // Removes an element, if it exists (words.toString returns Set())
-    words ++= List("do", "re", "mi")                    // Adds multiple elements (words.toString returns Set(do, re, mi))
-    words --= List("do", "re")                          // Removes multiple elements (words.toString returns Set(mi))
-    words.clear                                         // Removes all elements (words.toString returns Set())
+    -Using maps                                           // Putting it all together, here is a method that counts the
+    +--------------------------------------------------+     number of times each word occurs in a string
+    | val map = mutable.Map.empty[String, Int]         |  +--------------------------------------------------------+
+    | map("hello") = 1                                 |  | def countWords(text: String) =                         |
+    | map("there") = 2                                 |  |     val counts = mutable.Map.empty[String, Int]        |
+    | map               // Map(hello -> 1, there -> 2) |  |     for rawWord <- text.split("[ ,!.]+") do            |
+    | map("hello")      // res21: Int = 1              |  |         val word = rawWord.toLowerCase                 |
+    +--------------------------------------------------+  |         val oldCount =                                 |
+                                                          |             if counts.contains(word) then counts(word) |
+                                                          |             else 0                                     |
+                                                          |         counts += (word -> (oldCount + 1))             |
+                                                          |     counts                                             |
+                                                          | countWords("See Spot run! Run, Spot. Run!")            |
+                                                          | // res22: mutable.Map(spot -> 2, see -> 1, run -> 3)   |
+                                                          +--------------------------------------------------------+
 
-    -Using maps
-    val map = mutable.Map.empty[String, Int]
-    map("hello") = 1
-    map("there") = 2
-    map                                                 // res20: scala.collection.mutable.Map[String,Int] = Map(hello -> 1, there -> 2)
-    map("hello")                                        // res21: Int = 1
-    // Putting it all together, here is a method that counts the number of times each word occurs in a string
-    def countWords(text: String) = {
-        val counts = mutable.Map.empty[String, Int]
-        for (rawWord <- text.split("[ ,!.]+")) {
-            val word = rawWord.toLowerCase
-            val oldCount =
-                if (counts.contains(word)) counts(word)
-                else 0
-            counts += (word -> (oldCount + 1))
-        }
-        counts
-    }
-    countWords("See Spot run! Run, Spot. Run!")         // res22: scala.collection.mutable.Map[String,Int] = Map(spot -> 2, see -> 1, run -> 3)
-
-    val nums = Map("i" -> 1, "ii" ->2)          // Creates an immutable map (nums.toString returns Map(i -> 1, ii -> 2))
-    nums + ("vi" -> 6)                          // Adds an entry (returns Map(i -> 1, ii -> 2, vi -> 6))
-    nums - "ii"                                 // Removes an entry (returns Map(i ->1))
-    nums ++ List("iii" -> 3, "v" -> 5)          // Adds multiple entries (returns Map(i -> 1, ii -> 2, iii -> 3, v -> 5))
-    nums -- List("i", "ii")                     // Removes multiple entries (returns Map())
-    nums.size                                   // Returns the size of the map (returns 2)
-    nums.contains("ii")                         // Checks for inclusion (returns true)
-    nums("ii")                                  // Retrieves the value at a specified key (returns 2)
-    nums.keys                                   // Returns the keys (returns an Iterable over the strings "i" and "ii")
-    nums.keySet                                 // Returns the keys as a set (returns Set(i, ii))
-    nums.values                                 // Returns the values (returns an Iterable over the integers 1 and 2)
-    nums.isEmpty                                // Indicates whether the map is empty
-    (returns false)
-    import scala.collection.mutable             // Makes the mutable collections easy to access
-    val words = mutable.Map.empty[String, Int]  // Creates an empty, mutable map
-    words += ("one" -> 1)                       // Adds a map entry from "one" to 1 (words.toString returns Map(one -> 1))
-    words -= "one"                              // Removes a map entry, if it exists (words.toString returns Map())
-    words ++= List("one" -> 1, "two" -> 2, "three" -> 3)    // Adds multiple map entries (words.toString returns Map(one -> 1, two -> 2, three -> 3))
-    words --= List("one", "two")                // Removes multiple objects (words.toString returns Map(three -> 3))
+    +------------------------------------------------------+
+    | val nums = Map("i" -> 1, "ii" ->2)                   |    // Creates an immutable map (nums.toString returns Map(i -> 1, ii -> 2))
+    | nums + ("vi" -> 6)                                   |    // Adds an entry (returns Map(i -> 1, ii -> 2, vi -> 6))
+    | nums - "ii"                                          |    // Removes an entry (returns Map(i ->1))
+    | nums ++ List("iii" -> 3, "v" -> 5)                   |    // Adds multiple entries (returns Map(i -> 1, ii -> 2, iii -> 3, v -> 5))
+    | nums -- List("i", "ii")                              |    // Removes multiple entries (returns Map())
+    | nums.size                                            |    // Returns the size of the map (returns 2)
+    | nums.contains("ii")                                  |    // Checks for inclusion (returns true)
+    | nums("ii")                                           |    // Retrieves the value at a specified key (returns 2)
+    | nums.keys                                            |    // Returns the keys (returns an Iterable over the strings "i" and "ii")
+    | nums.keySet                                          |    // Returns the keys as a set (returns Set(i, ii))
+    | nums.values                                          |    // Returns the values (returns an Iterable over the integers 1 and 2)
+    | nums.isEmpty                                         |    // Indicates whether the map is empty
+    | (returns false)                                      |
+    | import scala.collection.mutable                      |    // Makes the mutable collections easy to access
+    | val words = mutable.Map.empty[String, Int]           |    // Creates an empty, mutable map
+    | words += ("one" -> 1)                                |    // Adds a map entry from "one" to 1 (words.toString returns Map(one -> 1))
+    | words -= "one"                                       |    // Removes a map entry, if it exists (words.toString returns Map())
+    | words ++= List("one" -> 1, "two" -> 2, "three" -> 3) |    // Adds multiple map entries (words.toString returns Map(one -> 1, two -> 2, three -> 3))
+    | words --= List("one", "two")                         |    // Removes multiple objects (words.toString returns Map(three -> 3))
+    +------------------------------------------------------+
 
     -Default sets and maps
     // mutable Set/Map use HashSet/HashMap
