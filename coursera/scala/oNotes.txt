@@ -1477,8 +1477,6 @@
                                 // msortSwapped(abcde)(_ > _)
     
 
-
-
 ###############
 # Working with Other Collections
 ###############
@@ -1749,8 +1747,6 @@
 
     -Organizing and running tests
     scalac -cp scalatest.jar TVSetSpec.scala
-
-
 
 
 ###############
