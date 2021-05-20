@@ -1667,58 +1667,129 @@
 ###############
 # Mutable Objects
 ###############
-    -What makes an object mutable
-    class BankAccount {
-        private var bal: Int = 0
-        def balance: Int = bal
-        def deposit(amount: Int) = {
-            require(amount > 0)
-            bal += amount
-        }
-        def withdraw(amount: Int): Boolean =
-            if (amount > bal) false
-            else {
-            bal -= amount
-            true
-        }
-    }
-    val account = new BankAccount
-    account deposit 100
-    account withdraw 80             // res1: Boolean = true
-    account withdraw 80             // res2: Boolean = false
+    -What makes an object mutable                       - var not always indicates that object is mutable
+    +----------------------------------------------+    // caching example
+    | class BankAccount:                           |    +-----------------------------------------------------------+
+    |     private var bal: Int = 0                 |    | class Keyed:                                              |
+    |     def balance: Int = bal                   |    |     def computeKey: Int = ... // this will take some time |
+    |     def deposit(amount: Int): Unit =         |    |                                                           |
+    |         require(amount > 0)                  |    | class MemoKeyed extends Keyed:                            |
+    |         bal += amount                        |    |     private var keyCache: Option[Int] = None              |
+    |     def withdraw(amount: Int): Boolean =     |    |     override def computeKey: Int =                        |
+    |         if amount > bal then false           |    |         if !keyCache.isDefined then                       |
+    |         else                                 |    |             keyCache = Some(super.computeKey)             |
+    |             bal -= amount                    |    |         keyCache.get                                      |
+    |             true                             |    +-----------------------------------------------------------+
+    |                                              |
+    | val account = new BankAccount                |
+    | account deposit 100                          |
+    | account withdraw 80 // res1: Boolean = true  |
+    | account withdraw 80 // res2: Boolean = false |
+    +----------------------------------------------+
 
     -Reassignable variables and properties
     // in scala every var that is a non-private member of some object implicitly defines a getter and a setter method with it.
     // getter of a var x is just named "x", while its setter is named "x_="
-    var hour = 12                   // generates a getter, “hour”, and setter, “hour_=”, in addition to a reassignable field
-    class Time {
-        private[this] var h = 12
-        private[this] var m = 0
-        def hour: Int = h
-        def hour_= (x: Int) = {         // when you call t.hour=25 - "hour_" will be cassed
-            require(0 <= x && x < 24)
-            h = x
-        }
-        def minute = m
-        def minute_= (x: Int) = {
-            require(0 <= x && x < 60)
-            m = x
-        }
-    }
-    // define a getter and a setter without an associated field
-    class Thermometer {
-        var celsius: Float = _                                          // "= _" - sets to default (0) value
-        def fahrenheit = celsius * 9 / 5 + 32                           // convert from celsius
-        def fahrenheit_= (f: Float) = {celsius = (f 32)* 5 / 9}         // convert to celsius
-        override def toString = fahrenheit + "F/" + celsius + "C"
-    }
+    +---------------+
+    | var hour = 12 |   // generates a getter, “hour”, and setter, “hour_=”, in addition to a reassignable field
+    +---------------+
+    // below is rewritten to   \                                        // can modify methods
+    +--------------------+      +----------------------------------+    +-----------------------------------+
+    | class Time:        |      | class Time:                      |    | class Time:                       |
+    |     var hour = 12  |  ->  |     private var h = 12           |    |     private var h = 12            |
+    |     var minute = 0 |      |     private var m = 0            |    |     private var m = 0             |
+    +--------------------+      |     def hour: Int = h            |    |     def hour: Int = h             |
+                                |     def hour_=(x: Int) = h = x   |    |     def hour_=(x: Int) =          |   // when you call t.hour=25 - "hour_" will be cassed
+                                |     def minute: Int = m          |    |         require(0 <= x && x < 24) |
+                                |     def minute_=(x: Int) = m = x |    |         h = x                     |
+                                +----------------------------------+    |     def minute = m                |
+                                                                        |     def minute_=(x: Int) =        |
+                                                                        |         require(0 <= x && x < 60) |
+                                                                        |         m = x                     |
+                                                                        +-----------------------------------+
+    // Defining a getter and setter without an associated field
+    +-----------------------------------------------------------+                                                   +-------------------------+
+    | import scala.compiletime.uninitialized                    |                                                   | val t = new Thermometer |
+    | class Thermometer:                                        |                                                   | t // 32.0F/0.0C         |
+    |     var celsius: Float = uninitialized                    |   // uninitialized - sets to default (0) value    | t.celsius = 100         |
+    |     def fahrenheit = celsius * 9 / 5 + 32                 |   // convert from celsius                         | t // 212.0F/100.0C      |
+    |     def fahrenheit_=(f: Float) =                          |   // convert to celsius                           | t.fahrenheit = -40      |
+    |         celsius = (f - 32) * 5 / 9                        |                                                   | t // -40.0F/-40.0C      |
+    |     override def toString = s"${fahrenheit}F/${celsius}C" |                                                   +-------------------------+
+    +-----------------------------------------------------------+                                                   
 
     -Case study: Discrete event simulation
     -A language for digital circuits
     -The Simulation API
     -Circuit Simulation
 
-    -Type Parameterization
+    -A language for digital circuits
+    // digital circuit is built from wires and function boxes               // basic function boxes (or gates):
+    // wires carry signals, which are transformed by function boxes          - inverter, which negates its signal
+    // function boxes. Signals are represented by booleans: true for         - and-gate, which sets its output to the conjunction of its inputs
+       signal-on and false for signal-off                                    - or-gate, which sets its output to the disjunction of its inputs
+
+    +-----------------------------------------------------+
+    | val a, b, c = new Wire                              |
+    | def inverter(input: Wire, output: Wire): Unit       | // construct the gates as a side effect
+    | def andGate(a1: Wire, a2: Wire, output: Wire): Unit | // instead of returning the constructed gates as a result
+    | def orGate(o1: Wire, o2: Wire, output: Wire): Unit  |
+    +-----------------------------------------------------+
+
+    // The halfAdder method                                     // The fullAdder (one-bit) method
+    +-----------------------------------------------------+     +---------------------------------------------------------------------+
+    | def halfAdder(a: Wire, b: Wire, s: Wire, c: Wire) = |     | def fullAdder(a: Wire, b: Wire, cin: Wire, sum: Wire, cout: Wire) = | // cin - carry in
+    |     val d, e = new Wire                             |     |     val s, c1, c2 = new Wire                                        |
+    |     orGate(a, b, d)                                 |     |     halfAdder(a, cin, s, c1)                                        |
+    |     andGate(a, b, c)                                |     |     halfAdder(b, s, sum, c2)                                        |
+    |     inverter(c, e)                                  |     |     orGate(c1, c2, cout)                                            |
+    |     andGate(d, e, s)                                |     +---------------------------------------------------------------------+
+    +-----------------------------------------------------+
+
+    -The Simulation API
+    // The Simulation class
+    +------------------------------------------------------------------------------+
+    | abstract class Simulation:                                                   |
+    |     type Action = () => Unit                                                 |    // think of it as a more readable name for type () => Unit
+    |     case class WorkItem(time: Int, action: Action)                           |
+    |     private var curtime = 0                                                  |
+    |     def currentTime: Int = curtime                                           |    // public accessor method
+    |     private var agenda: List[WorkItem] = List()                              |    // keeps an agenda of all remaining work items
+    |                                                                              |
+    |     private def insert(ag: List[WorkItem], item: WorkItem): List[WorkItem] = |    // updates agenda
+    |         if ag.isEmpty || item.time < ag.head.time then item :: ag            |
+    |         else ag.head :: insert(ag.tail, item)                                |
+    |                                                                              |
+    |     def afterDelay(delay: Int)(block: => Unit) =                             |    // only way to add a work item to the agenda
+    |         val item = WorkItem(currentTime + delay, () => block)                |    // curried function, currying can be used to make method calls look more like built-in syntax
+    |         agenda = insert(agenda, item)                                        |
+    |                                                                              |
+    |     private def next() =                                                     |
+    |         (agenda: @unchecked) match                                           |
+    |             case item :: rest =>                                             |    // removes the front item from the current agenda, 
+    |                 agenda = rest                                                |    // sets the simulated time curtime to the work item’s time, and executes the work item’s action
+    |                 curtime = item.time                                          |
+    |                 item.action()                                                |
+    |     def run() =                                                              |    // repeatedly takes the first item in the agenda, removes it from the agenda and executes it
+    |         afterDelay(0) {                                                      |
+    |             println("*** simulation started, time = " +                      |
+    |             currentTime + " ***")                                            |
+    |         }                                                                    |
+    |         while !agenda.isEmpty do next()                                      |
+    +------------------------------------------------------------------------------+
+
+    +----------------------------------+    // by-name parameters are not evaluated when passed to a method
+    | afterDelay(delay) { count += 1 } |    // would be incremented only when the simulation framework calls the action stored in the work item
+    +----------------------------------+
+
+
+
+    -Circuit Simulation
+
+
+###############
+# Type Parameterization
+###############
     -Functional queues
     // A functional queue is a data structure with three operations:
     // head     returns the first element of the queue
@@ -1983,7 +2054,6 @@
 
     -Organizing and running tests
     scalac -cp scalatest.jar TVSetSpec.scala
-
 
 
 ###############
