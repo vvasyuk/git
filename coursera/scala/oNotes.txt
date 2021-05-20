@@ -1782,9 +1782,62 @@
     | afterDelay(delay) { count += 1 } |    // would be incremented only when the simulation framework calls the action stored in the work item
     +----------------------------------+
 
-
-
     -Circuit Simulation
+    // wire class
+    +-----------------------------------------------------------+
+    | package org.stairwaybook.simulation                       |
+    | abstract class BasicCircuitSimulation extends Simulation: |
+    |     def InverterDelay: Int                                |
+    |     def AndGateDelay: Int                                 |
+    |     def OrGateDelay: Int                                  |
+    |                                                           |
+    |     class Wire:                                           |
+    |         private var sigVal = false                        |   // state of wire, current signal
+    |         private var actions: List[Action] = List.empty    |   // state of wire, actions attached to wire
+    |         def getSignal = sigVal                            |
+    |         def setSignal(s: Boolean) =                       |
+    |             if s != sigVal then                           |   // new value stored when signal changes
+    |                 sigVal = s                                |   // all actions attached are executed
+    |                 actions.foreach(_())                      |   // applies function _() to each element of actions 
+    |         def addAction(a: Action) =                        |   // _() short for f => f() - takes a function, applies it to empty param list
+    |             actions = a :: actions                        |
+    |             a()                                           |
+    |                                                           |
+    |     def inverter(input: Wire, output: Wire) =             |
+    |         def invertAction() =                              |
+    |             val inputSig = input.getSignal                |
+    |             afterDelay(InverterDelay) {                   |
+    |                 output setSignal !inputSig                |
+    |             }                                             |
+    |         input addAction invertAction                      |
+    |                                                           |
+    |     def andGate(a1: Wire, a2: Wire, output: Wire) =       |
+    |         def andAction() =                                 |
+    |             val a1Sig = a1.getSignal                      |
+    |             val a2Sig = a2.getSignal                      |
+    |             afterDelay(AndGateDelay) {                    |
+    |                 output setSignal (a1Sig & a2Sig)          |
+    |             }                                             |
+    |         a1 addAction andAction                            |
+    |         a2 addAction andAction                            |
+    |                                                           |
+    | def orGate(o1: Wire, o2: Wire, output: Wire) =            |
+    |     def orAction() =                                      |
+    |         val o1Sig = o1.getSignal                          |
+    |         val o2Sig = o2.getSignal                          |
+    |         afterDelay(OrGateDelay) {                         |
+    |             output setSignal (o1Sig | o2Sig)              |
+    |         }                                                 |
+    |     o1 addAction orAction                                 |
+    |     o2 addAction orAction                                 |
+    |                                                           |
+    | def probe(name: String, wire: Wire) =                     |
+    |     def probeAction() =                                   |
+    |         println(name + " " + currentTime +                |
+    |         " new-value = " + wire.getSignal)                 |
+    |     wire addAction probeAction                            |
+    +-----------------------------------------------------------+
+
 
 
 ###############
