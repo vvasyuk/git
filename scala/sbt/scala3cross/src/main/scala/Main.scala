@@ -19,21 +19,7 @@ object Main {
       case BinOp("*", e, Num(1)) => e // Multiplying by one
       case _ => expr
 
-  object Predef:
-  type Map[A, +B] = collection.immutable.Map[A, B]
-  type Set[A] = collection.immutable.Set[A]
-  val Map = collection.immutable.Map
-  val Set = collection.immutable.Set
-  // ...
-  end Predef
+
 }
 
-object Predef{
-  type Map[A, +B] = collection.immutable.Map[A, B]
-  type Set[A] = collection.immutable.Set[A]
-  val Map = collection.immutable.Map
-  val Set = collection.immutable.Set
-}
-sdf
-fdsgzgf
 

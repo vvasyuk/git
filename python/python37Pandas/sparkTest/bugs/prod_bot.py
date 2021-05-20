@@ -32,8 +32,8 @@ with ddd as
 FROM dfd
   left outer join dfw
     on dfd.empl_email = dfw.login
-where dfw.roleid != dfd.wdap_role)
-/* and dfw.roleid not in ('3','201','202','203','204','205','206')) */
+where dfw.roleid != dfd.wdap_role
+and dfw.roleid not in ('3','201','202','203','204','205','206'))
 select
   '20210519' as action_date,
   'ADD' as action,
