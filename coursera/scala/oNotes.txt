@@ -2167,78 +2167,6 @@
 
 
 ###############
-# Assertions and Tests
-###############
-    -Assertions
-    def above(that: Element): Element = {
-        val this1 = this widen that.width
-        val that1 = that widen this.width
-        assert(this1.width == that1.width)
-        elem(this1.contents ++ that1.contents)
-    }
-
-    private def widen(w: Int): Element =
-        if (w <= width)
-            this
-        else {
-            val left = elem(' ', (w - width) / 2, height)
-            var right = elem(' ', w - width - left.width, height)
-            left beside this beside right
-        } ensuring (w <= _.width)                                   // underscore is a placeholder for the one argument passed to the predicate, the Element result of the widen method
-        //  If the width passed as w to widen is less than or equal to the width of the result Element, the predicate will result in true
-
-    -Testing in Scala
-    import org.scalatest.FunSuite
-    import Element.elem
-    class ElementSuite extends FunSuite {                   // central concept in ScalaTest is the suite - collection of tests
-        test("elem result should have passed width") {      // specify the name of the test as a string between the parentheses and the test code itself between curly braces
-            val ele = elem('x', 2, 3)                       // test code is a function passed as a by-name parameter to test, which registers it for later execution
-            assert(ele.width == 2)
-        }
-    }
-
-    -Informative failure reports
-    val caught =
-        intercept[ArithmeticException] {
-            1 / 0
-        }
-    assert(caught.getMessage == "/ by zero")
-
-    -Tests as specifications
-    import org.scalatest._
-    class TVSetSpec extends FeatureSpec with GivenWhenThen {
-        feature("TV power button") {
-            scenario("User presses power button when TV is off") {
-                Given("a TV set that is switched off")
-                When("the power button is pressed")
-                Then("the TV should switch on")
-                pending
-            }
-        }
-    }
-
-    -Property-based testing
-    import org.scalatest.WordSpec
-    import org.scalatest.prop.PropertyChecks
-    import org.scalatest.MustMatchers._
-    import Element.elem
-    class ElementSpec extends WordSpec with PropertyChecks {
-        "elem result" must {
-            "have passed width" in {
-                forAll { (w: Int) =>
-                    whenever (w > 0) {
-                        elem('x', w, 3).width must equal (w)
-                    }
-                }
-            }
-        }
-    }
-
-    -Organizing and running tests
-    scalac -cp scalatest.jar TVSetSpec.scala
-
-
-###############
 # Abstract Members
 ###############
     -A quick tour of abstract members                               // example implementation
@@ -2496,6 +2424,79 @@
         val Dollar = make(100)
         val CurrencyUnit = Dollar
     }
+
+
+###############
+# Assertions and Tests
+###############
+    -Assertions
+    def above(that: Element): Element = {
+        val this1 = this widen that.width
+        val that1 = that widen this.width
+        assert(this1.width == that1.width)
+        elem(this1.contents ++ that1.contents)
+    }
+
+    private def widen(w: Int): Element =
+        if (w <= width)
+            this
+        else {
+            val left = elem(' ', (w - width) / 2, height)
+            var right = elem(' ', w - width - left.width, height)
+            left beside this beside right
+        } ensuring (w <= _.width)                                   // underscore is a placeholder for the one argument passed to the predicate, the Element result of the widen method
+        //  If the width passed as w to widen is less than or equal to the width of the result Element, the predicate will result in true
+
+    -Testing in Scala
+    import org.scalatest.FunSuite
+    import Element.elem
+    class ElementSuite extends FunSuite {                   // central concept in ScalaTest is the suite - collection of tests
+        test("elem result should have passed width") {      // specify the name of the test as a string between the parentheses and the test code itself between curly braces
+            val ele = elem('x', 2, 3)                       // test code is a function passed as a by-name parameter to test, which registers it for later execution
+            assert(ele.width == 2)
+        }
+    }
+
+    -Informative failure reports
+    val caught =
+        intercept[ArithmeticException] {
+            1 / 0
+        }
+    assert(caught.getMessage == "/ by zero")
+
+    -Tests as specifications
+    import org.scalatest._
+    class TVSetSpec extends FeatureSpec with GivenWhenThen {
+        feature("TV power button") {
+            scenario("User presses power button when TV is off") {
+                Given("a TV set that is switched off")
+                When("the power button is pressed")
+                Then("the TV should switch on")
+                pending
+            }
+        }
+    }
+
+    -Property-based testing
+    import org.scalatest.WordSpec
+    import org.scalatest.prop.PropertyChecks
+    import org.scalatest.MustMatchers._
+    import Element.elem
+    class ElementSpec extends WordSpec with PropertyChecks {
+        "elem result" must {
+            "have passed width" in {
+                forAll { (w: Int) =>
+                    whenever (w > 0) {
+                        elem('x', w, 3).width must equal (w)
+                    }
+                }
+            }
+        }
+    }
+
+    -Organizing and running tests
+    scalac -cp scalatest.jar TVSetSpec.scala
+
 
 
 ###############
