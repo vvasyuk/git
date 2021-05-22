@@ -542,72 +542,6 @@
     +-----------------------------------------------------------------------+
 
 
-###############
-# Scala’s Hierarchy
-###############
-    -Scala’s class hierarchy
-    //top of the hierarchy is class Any, methods:
-    +--------------------------------------+
-    | final def ==(that: Any): Boolean     |    // cannot be overriden by subclasses
-    | final def !=(that: Any): Boolean     |
-    | def equals(that: Any): Boolean       |    // behaviour of == can be changed by overring equals
-    | def ##: Int                          |
-    | def hashCode: Int                    |
-    | def toString: String                 |
-    +--------------------------------------+
-
-    // methods min, max, until, to, and abs are all defined in a class scala.runtime.RichInt, and there is an implicit conversion from class Int to RichInt. 
-    //The conversion is applied whenever a method is invoked on an Int that is undefined in Int but defined in RichInt.
-    #########################################################################################################
-    #+---+                                                                                                  #
-    #|any|                                                                                                  #
-    #+---+                                                                                                  #
-    #|    +------+                                                                                  +------+#   // one can define his own value classes
-    #+----+anyVal+-+--------+--------+--------+--------+--------+--------+--------+--------+<-------+Nothng|#
-    #|    +------+ |        |        |        |        |        |        |        |        |        +------+#
-    #|             +------+ +------+ +------+ +------+ +------+ +------+ +------+ +------+ +------+         #
-    #|             |Double| |Float | |Long  | |Int   | |Short | |Byte  | |Char  | |Bolean| |Unit  |         #
-    #|             +------+ +------+ +------+ +------+ +------+ +------+ +------+ +------+ +------+         #
-    #|                                                                                                      #
-    #|                                                                                                      #
-    #|    +------+                                     +------+                                             #
-    #+----+anyRef+-+--------+--------+--------+<-------+Null  |                                             #
-    #     +------+ |        |        |        |        +------+                                             #
-    #              +------+ +------+ +------+ +------+                                                      #
-    #              |Itrble+<+Seq   +<+List  | |Option|                                                      #
-    #              +------+ +------+ +------+ +------+                                                      #
-    #########################################################################################################
-
-    -How primitives are implemented
-    // class AnyRef defines an additional eq method, which cannot be overridden and is implemented as reference equality (i.e., it behaves like == in Java for reference types).
-    +---------------------------+
-    | val x = new String("abc") |
-    | val y = new String("abc") |
-    | x == y                    |   // res13: Boolean = true
-    | x eq y                    |   // res14: Boolean = false (eq checks for reference equality)
-    | x ne y                    |   // res15: Boolean = true
-    +---------------------------+
-
-    -Bottom types                                       // Because Nothing is a subtype of Int, the type of the whole conditional is Int, as required.
-    // Null is a subclass of every reference class      +-----------------------------------------+
-    // Nothing is a subtype of every other type         | def divide(x: Int, y: Int): Int =       |
-    // error: an expression of type Null is ineligible  |     if (y != 0) x / y                   |
-    for implicit conversion                             |     else error("can't divide by zero")  |
-    // return type of error is Nothing                  +-----------------------------------------+
-    +------------------------------------------+        
-    | val i: Int = null                        |
-    | def error(message: String): Nothing =    |
-    |     throw new RuntimeException(message)  |    
-    +------------------------------------------+
-
-    -Defining your own value classes
-    // must have exactly one parameter and it must have nothing inside it except defs
-    +-------------------------------------------------+
-    | class Dollars(val amount: Int) extends AnyVal { |
-    |     override def toString() = "$" + amount      |
-    | }                                               |
-    | val money = new Dollars(1000000)                | // money: Dollars = $1000000; money.amount  -> res16: Int = 1000000
-    +-------------------------------------------------+
 
 
 ###############
@@ -1803,17 +1737,17 @@
     |             actions = a :: actions                        |
     |             a()                                           |
     |                                                           |
-    |     def inverter(input: Wire, output: Wire) =             |
-    |         def invertAction() =                              |
-    |             val inputSig = input.getSignal                |
-    |             afterDelay(InverterDelay) {                   |
-    |                 output setSignal !inputSig                |
+    |     def inverter(input: Wire, output: Wire) =             |   // action is installed on its input wire
+    |         def invertAction() =                              |   // action is invoked once at the time the action is installed, and thereafter every time the signal on the input changes
+    |             val inputSig = input.getSignal                |   // value of the inverter’s output value is set (via setSignal) to the inverse of its input value
+    |             afterDelay(InverterDelay) {                   |   // effect of inverter method - add invertAction to the input wire, when invoked, gets the input signal and installs another action that inverts the output signal into the simulation agenda
+    |                 output setSignal !inputSig                |   // This other action is to be executed after InverterDelay units of simulated time
     |             }                                             |
     |         input addAction invertAction                      |
     |                                                           |
-    |     def andGate(a1: Wire, a2: Wire, output: Wire) =       |
-    |         def andAction() =                                 |
-    |             val a1Sig = a1.getSignal                      |
+    |     def andGate(a1: Wire, a2: Wire, output: Wire) =       |   // effect of the andGate method is to add andAction to both of its input wires a1 and a2
+    |         def andAction() =                                 |   // This action, when invoked, gets both input signals and installs another action that sets the output signal to the conjunction of both input signals
+    |             val a1Sig = a1.getSignal                      |   // This other action is to be executed after AndGateDelay units of simulated time
     |             val a2Sig = a2.getSignal                      |
     |             afterDelay(AndGateDelay) {                    |
     |                 output setSignal (a1Sig & a2Sig)          |
@@ -1831,12 +1765,140 @@
     |     o1 addAction orAction                                 |
     |     o2 addAction orAction                                 |
     |                                                           |
-    | def probe(name: String, wire: Wire) =                     |
-    |     def probeAction() =                                   |
-    |         println(name + " " + currentTime +                |
+    | def probe(name: String, wire: Wire) =                     |   // effect of the probe procedure is to install a probeAction on a given wire
+    |     def probeAction() =                                   |   // installed action is executed every time the wire’s signal changes
+    |         println(name + " " + currentTime +                |   // simply prints the name of the wire (which is passed as first parameter to probe), as well as the current simulated time and the wire’s new value
     |         " new-value = " + wire.getSignal)                 |
     |     wire addAction probeAction                            |
     +-----------------------------------------------------------+
+
+    // Running the simulator
+    +------------------------------------------------+  +-------------------------------------------------------------------------+ +-------------------------------------------+
+    | import org.stairwaybook.simulation.*           |  | package org.stairwaybook.simulation                                     | | import MySimulation.*                     |
+    | object MySimulation extends CircuitSimulation: |  | abstract class CircuitSimulation extends BasicCircuitSimulation:        | | val input1, input2, sum, carry = new Wire |
+    |     def InverterDelay = 1                      |  |     def halfAdder(a: Wire, b: Wire, s: Wire, c: Wire) =                 | | probe("sum", sum)                         |
+    |     def AndGateDelay = 3                       |  |         val d, e = new Wire                                             | | //sum 0 new-value = false                 |
+    |     def OrGateDelay = 5                        |  |         orGate(a, b, d)                                                 | | probe("carry", carry)                     |
+    +------------------------------------------------+  |         andGate(a, b, c)                                                | | //carry 0 new-value = false               |
+                                                        |         inverter(c, e)                                                  | | halfAdder(input1, input2, sum, carry)     |
+                                                        |         andGate(d, e, s)                                                | | input1 setSignal true                     |
+                                                        |     def fullAdder(a: Wire, b: Wire, cin: Wire, sum: Wire, cout: Wire) = | | scala> run()                              |
+                                                        |         val s, c1, c2 = new Wire                                        | | *** simulation started, time = 0 ***      |
+                                                        |         halfAdder(a, cin, s, c1)                                        | | sum 8 new-value = true                    |
+                                                        |         halfAdder(b, s, sum, c2)                                        | | scala> input2 setSignal true              |
+                                                        |         orGate(c1, c2, cout)                                            | | scala> run()                              |
+                                                        +-------------------------------------------------------------------------+ | *** simulation started, time = 8 ***      |
+                                                                                                                                    | carry 11 new-value = true                 |
+                                                                                                                                    | sum 15 new-value = false                  |
+                                                                                                                                    +-------------------------------------------+
+
+
+###############
+# Scala’s Hierarchy
+###############
+    -Scala’s class hierarchy
+    //top of the hierarchy is class Any, methods:
+    +--------------------------------------+
+    | final def ==(that: Any): Boolean     |    // cannot be overriden by subclasses
+    | final def !=(that: Any): Boolean     |
+    | def equals(that: Any): Boolean       |    // behaviour of == can be changed by overring equals
+    | def ##: Int                          |
+    | def hashCode: Int                    |
+    | def toString: String                 |
+    +--------------------------------------+
+
+    // methods min, max, until, to, and abs are all defined in a class scala.runtime.RichInt, and there is an implicit conversion from class Int to RichInt. 
+    //The conversion is applied whenever a method is invoked on an Int that is undefined in Int but defined in RichInt.
+    #########################################################################################################
+    #+---+                                                                                                  #
+    #|any|                                                                                                  #
+    #+---+                                                                                                  #
+    #|    +------+                                                                                  +------+#   // one can define his own value classes
+    #+----+anyVal+-+--------+--------+--------+--------+--------+--------+--------+--------+<-------+Nothng|#   // Int has methods named + and *, and Boolean has methods named || and &&
+    #|    +------+ |        |        |        |        |        |        |        |        |        +------+#   // Value classes also inherit all methods from class Any
+    #|             +------+ +------+ +------+ +------+ +------+ +------+ +------+ +------+ +------+     |   #   // 42.toString // 42
+    #|             |Double| |Float | |Long  | |Int   | |Short | |Byte  | |Char  | |Bolean| |Unit  |     |   #
+    #|             +------+ +------+ +------+ +------+ +------+ +------+ +------+ +------+ +------+     |   #   // nothing signals abnormal termination
+    #|                                                                                                  |   #
+    #|                                                                                                  |   #
+    #|    +------+                                     +------+                                         |   #
+    #+----+anyRef+-+--------+--------+--------+<-------+Null  |<----------------------------------------+   #   // AnyRef is in fact just an alias for class java.lang.Object
+    #     +------+ |        |        |        |        +------+                                             #   // null not compatible with alue classes (cannot assign null to Int)
+    #              +------+ +------+ +------+ +------+                                                      #
+    #              |Itrble+<+Seq   +<+List  | |Option|                                                      #
+    #              +------+ +------+ +------+ +------+                                                      #
+    #########################################################################################################
+
+    -How primitives are implemented
+    // class AnyRef defines an additional eq method, which cannot be overridden and is implemented as reference equality (i.e., it behaves like == in Java for reference types).
+    +---------------------------+   // equality operation == in Scala is designed to be transparent with respect to the type’s representation
+    | val x = new String("abc") |   // For value types, it is the natural (numeric or boolean) equality
+    | val y = new String("abc") |   // For reference types == is treated as an alias of the equals method inherited from Object
+    | x == y                    |   // res13: Boolean = true
+    | x eq y                    |   // res14: Boolean = false (eq checks for reference equality)
+    | x ne y                    |   // res15: Boolean = true
+    +---------------------------+
+
+    -Bottom types                                       // Because Nothing is a subtype of Int, the type of the whole conditional is Int, as required.
+    // Null is a subclass of every reference class      +-----------------------------------------+
+    // Nothing is a subtype of every other type         | def divide(x: Int, y: Int): Int =       |
+    // error: an expression of type Null is ineligible  |     if (y != 0) x / y                   |
+    for implicit conversion                             |     else error("can't divide by zero")  |
+    // return type of error is Nothing                  +-----------------------------------------+
+    +------------------------------------------+        
+    | val i: Int = null     // wond work       |
+    | def error(message: String): Nothing =    |
+    |     throw new RuntimeException(message)  |    
+    +------------------------------------------+
+
+    -Defining your own value classes
+    // must have exactly one parameter and it must have nothing inside it except defs   +----------------------------------------------------+
+    // money: Dollars = $1000000; money.amount  -> res16: Int = 1000000                 | class SwissFrancs(val amount: Int) extends AnyVal: |
+    +------------------------------------------------+                                  |     override def toString = s" CHF"                |  // Even though both Dollars and SwissFrancs are represented as integers at run time, 
+    | class Dollars(val amount: Int) extends AnyVal: |                                  | val dollars: Dollars = new SwissFrancs(1000)       |  // they are distinct types at compile time
+    |     override def toString = "$" + amount       |                                  | // compile error                                   |
+    +------------------------------------------------+                                  +----------------------------------------------------+
+
+    - Avoiding a types monoculture
+    // try to define a new class for each domain concept
+    // Even if such a class is a so-called tiny type with no methods or fields
+    +-----------------------------------------------------------------------------+
+    | class Anchor(val value: String) extends AnyVal                              |
+    | class Style(val value: String) extends AnyVal                               |
+    | class Text(val value: String) extends AnyVal                                |
+    | class Html(val value: String) extends AnyVal                                |
+    | def title(text: Text, anchor: Anchor, style: Style): Html =                 |
+    |     new Html(s"<a id='${anchor.value}'>" +                                  |
+    |         s"<h1 class='${style.value}'>" +                                    |
+    |         text.value +                                                        |
+    | )                                                                           |
+    | title(new Anchor("chap:vcls"), new Style("bold"),new Text("Value Classes")) | // wrong order wont work
+    +-----------------------------------------------------------------------------+
+
+    - Intersection types
+    // can join two or more types with ampersand (&) characters to form an 
+       intersection type, such as Incrementing & Filtering
+    +------------------------------------------------------------+
+    | val q = new BasicIntQueue with Incrementing with Filtering |  // q is initialized with an instance of an anonymous class that extends BasicIntQueue and mixes in Incrementing followed by Filtering
+    | // val q: BasicIntQueue & Incrementing & Filtering = anon$ |  // Its inferred type, BasicIntQueue & Incrementing & Filtering
+    +------------------------------------------------------------+  // , is an intersection type that indicates the object to which q refers is an instance of all three mentioned types: BasicIntQueue, Incrementing, and Filtering
+
+    +--------------------------------------------------+
+    | // Compiles because B & I & F <: I & F           |    // type B & I & F is a subtype of B, I, F, B & I, B & F, I & F, and reflexively, of B & I & F itself
+    | val q2: Incrementing & Filtering = q             |    // order does not matter: type I & F, for example, is equivalent to type F & I
+    | // Compiles because I & F is equivalent to F & I |
+    | val q3: Filtering & Incrementing = q2            |
+    +--------------------------------------------------+
+
+    - Union types
+    +---------------------------------------+    // Scala offers a dual to intersection types called union types, which consist of two or more types joined by pipe (|) characters, such as Plum | Apricot
+    | trait Fruit                           |    // union type indicates that an object is an instance of at least one mentioned type
+    | trait Plum extends Fruit              |    // object of type Plum | Apricot is either an instance of Plum, an instance of Apricot, or both
+    | trait Apricot extends Fruit           |    // Plum | Apricot is a supertype of both Plum and Apricot
+    | trait Pluot extends Plum with Apricot |    // In Scala 3, the least upper bound of any two types is their union; the greatest lower bound is their intersection
+    +---------------------------------------+
+
+
 
 
 
