@@ -1971,54 +1971,59 @@
     +-------------------------------------------------------------------------------+   // when initially empty queue is constructed from successive enqueue ops - trailing list will grow whereas leading list will stay empty
 
     - Information hiding
+    // Queue constructor, takes two lists as parameters. Need to hide this constructor
+
+
 
 
     -Private constructors and factory methods
-    class Queue[T] private (                    // private modifier between the class name and its parameters indicates that the constructor of Queue is private (accessed only from class or companion object)
-        private val leading: List[T],           // primary constructor
-        private val trailing: List[T]           // primary constructor
-    )
-    new Queue(List(1, 2), List(3))                  // error: constructor Queue in class Queue cannot be accessed in object $iw
-    def this() = this(Nil, Nil)                     // build empty queue
-    def this(elems: T*) = this(elems.toList, Nil)   // T* - repeated params
-    // companion object of the class
-    object Queue {
-        def apply[T](xs: T*) = new Queue[T](xs.toList, Nil)     // constructs a queue with initial elements ‘xs'
-    }
-    Queue(1, 2, 3)
+    // In Java, you can hide a constructor by making it private
+    // possible to hide the primary constructor by adding a private modifier in front of the class parameter list
+    +-----------------------------------+
+    | class Queue[T] private (          |   // private modifier between the class name and its parameters indicates that the constructor of Queue is private (accessed only from class or companion object)
+    |     private val leading: List[T], |   // primary constructor
+    |     private val trailing: List[T] |   // primary constructor
+    | )                                 |   // new Queue(List(1, 2), List(3))   // error: constructor Queue in class Queue cannot be accessed in object $iw
+    +-----------------------------------+
 
-    -An alternative: private classes
-    trait Queue[T] {
-        def head: T
-        def tail: Queue[T]
-        def enqueue(x: T): Queue[T]
-    }
-    object Queue {
-        def apply[T](xs: T*): Queue[T] =
-            new QueueImpl[T](xs.toList, Nil)
-        private class QueueImpl[T](private val leading: List[T],private val trailing: List[T]) extends Queue[T] {
-            def mirror =
-                if (leading.isEmpty)
-                    new QueueImpl(trailing.reverse, Nil)
-                else
-                    this
-            def head: T = mirror.leading.head
-            def tail: QueueImpl[T] = {
-                val q = mirror
-                new QueueImpl(q.leading.tail, q.trailing)
-            }
-            def enqueue(x: T) =
-                new QueueImpl(leading, x :: trailing)
-        }
-    }
+    // auxiliary constructor                                                        -An alternative: private classes
+    +-----------------------------------------------+                               // hide the class itself and only export a trait that reveals the public interface of the class
+    | def this() = this(Nil, Nil)                   |   // build empty queue        +---------------------------------------------------------------------------------------------------------------+
+    | def this(elems: T*) = this(elems.toList, Nil) |   // T* - repeated params     | trait Queue[T]:                                                                                               |
+    +-----------------------------------------------+                               |     def head: T                                                                                               |
+                                                                                    |     def tail: Queue[T]                                                                                        |
+    // companion object of the class                                                |     def enqueue(x: T): Queue[T]                                                                               |
+    // xs: T* - constructs a queue with initial elements ‘xs'                       | object Queue:                                                                                                 |
+    +---------------------------------------------------------+                     |     def apply[T](xs: T*): Queue[T] = QueueImpl[T](xs.toList, Nil)                                             |
+    | object Queue:                                           |                     |     private class QueueImpl[T](private val leading: List[T],private val trailing: List[T] ) extends Queue[T]: |
+    |     def apply[T](xs: T*) = new Queue[T](xs.toList, Nil) |                     |         def mirror =                                                                                          |
+    | Queue(1, 2, 3)                                          |                     |             if leading.isEmpty then                                                                           |
+    +---------------------------------------------------------+                     |                 QueueImpl(trailing.reverse, Nil)                                                              |
+                                                                                    |             else                                                                                              |
+                                                                                    |                 this                                                                                          |
+                                                                                    |         def head: T = mirror.leading.head                                                                     |
+                                                                                    |         def tail: QueueImpl[T] =                                                                              |
+                                                                                    |             val q = mirror                                                                                    |
+                                                                                    |             QueueImpl(q.leading.tail, q.trailing)                                                             |
+                                                                                    |         def enqueue(x: T) = QueueImpl(leading, x :: trailing)                                                 |
+                                                                                    +---------------------------------------------------------------------------------------------------------------+
 
     -Variance annotations
     // prev defines Queue is a trait and not a type. Not a type because it takes params, cannot create var of type Queue
-    def doesNotCompile(q: Queue) = {}           // <console>:8: error: class Queue takes type parameters def doesNotCompile(q: Queue) = {}
+    +-----------------------------------+
+    | def doesNotCompile(q: Queue) = {} |   // <console>:8: error: class Queue takes type parameters def doesNotCompile(q: Queue) = {}
+    +-----------------------------------+
     // trait Queue enables you to specify parameterized types, such as Queue[String], Queue[Int], or Queue[AnyRef]:
-    def doesCompile(q: Queue[AnyRef]) = {}      // doesCompile: (q: Queue[AnyRef])Unit
+    +----------------------------------------+
+    | def doesCompile(q: Queue[AnyRef]) = {} |  // doesCompile: (q: Queue[AnyRef])Unit
+    +----------------------------------------+
     // Queue is a trait and Queue[String] is a type; Queue is also called a type constructor because you can construct a type with it by specifying a type parameter
     // term "generic" means you define many specific types with one generically written class or trait. For example, trait Queue defines a generic queue
+
+    // question: should a Queue[String] be considered a subtype of Queue[AnyRef]
+    // question: if S is a subtype of type T, then should Queue[S] be considered a subtype of Queue[T]?
+    // If so, you could say that trait Queue is covariant (or “flexible”) in its type parameter T
+    // In Scala, however, generic types have by default nonvariant (or “rigid”) subtyping
 
     // covariant by putting a plus sign (+) before the type parameter; List is covariant in its type parameter, so List[String] is a subtype of List[Any]
     // contravariant by putting a minus sign (-) before the type parameter; Function1 is contravariant in its first type parameter, and so Function1[Any, Any] is a subtype of Function1[String, Any].
@@ -2026,71 +2031,120 @@
     // in Scala by default generic types are nonvariant - queues with diff element types would never be in relationship
 
     // demand covariant
-    trait Queue[+T] { ... }         // you want Queue[String], for example, to be considered a subtype of Queue[AnyRef]
+    +-------------------------+
+    | trait Queue[+T] { ... } |     // you want Queue[String], for example, to be considered a subtype of Queue[AnyRef]
+    +-------------------------+
+
     // demand contravariant
-    trait Queue[-T] { ... }
-    // example
-    class Cell[T](init: T) {
-        private[this] var current = init
-        def get = current
-        def set(x: T) = { current = x }
-    }
-    // if Cell is covariant - you could do this:
-    val c1 = new Cell[String]("abc")    // creates a cell of strings and stores it in a val named c1
-    val c2: Cell[Any] = c1              // defines a new val, c2, of type Cell[Any], which initialized with c1
-    c2.set(1)                           // oops
-    val s: String = c1.get              // assign 1 to string which is wrong
+    +-------------------------+     // if T is a subtype of type S, this would imply that Queue[S] is a subtype of Queue[T]
+    | trait Queue[-T] { ... } |
+    +-------------------------+
+
+    // example                              
+    // nonvariant class with mutable data   // if Cell is covariant - you could do this:
+    +---------------------------------+     +----------------------------------+    // creates a cell of strings and stores it in a val named c1
+    | class Cell[T](init: T):         |     | val c1 = new Cell[String]("abc") |    // defines a new val, c2, of type Cell[Any], which initialized with c1
+    |     private var current = init  |     | val c2: Cell[Any] = c1           |    // oops
+    |     def get = current           |     | c2.set(1)                        |    // assign 1 to string which is wrong
+    |     def set(x: T) = current = x |     | val s: String = c1.get           |    // Cell of String is not also a Cell of Any
+    +---------------------------------+     +----------------------------------+    // cannot use set with an Int argument on a Cell of String
 
     -Variance and arrays
     // arrays in Java are covariant
     // Java stores the element type of the array at runtime, every time an array element is updated, the new element value is checked against the stored type
-    String[] a1 = { "abc" };
-    Object[] a2 = a1;
-    a2[0] = new Integer(17);             // Exception in thread "main" java.lang.ArrayStoreException:
-    String s = a1[0];                  
-    // this was done becase "void sort(Object[] a, Comparator cmp) { ... }", so that arrays of arbitrary reference types could be passed to this sort method
+    +--------------------------+
+    | String[] a1 = { "abc" }; |
+    | Object[] a2 = a1;        |
+    | a2[0] = new Integer(17); |    // Runtime Exception in thread "main" java.lang.ArrayStoreException:
+    | String s = a1[0];        |    // this was done becase "void sort(Object[] a, Comparator cmp) { ... }", so that arrays of arbitrary reference types could be passed to this sort method
+    +--------------------------+
+    
     // in scala arrays are not covariant
-    val a1 = Array("abc")
-    val a2: Array[Any] = a1             // error: type mismatch; found : Array[String] required: Array[Any]
+    +-------------------------+
+    | val a1 = Array("abc")   |
+    | val a2: Array[Any] = a1 | // error: type mismatch; found : Array[String] required: Array[Any]
+    +-------------------------+
 
     -Checking variance annotations
     // proof that functional classes can be broken with covariance (even with no reassignable field)
     // assume queus are covariant, create a subclass that specializes in Int
-    class StrangeIntQueue extends Queue[Int] {
-        override def enqueue(x: Int) = {
-            println(math.sqrt(x))               // prints out the square root
-            super.enqueue(x)
-        }
-    }
-    val x: Queue[Any] = new StrangeIntQueue     // trangeIntQueue is a subclass of Queue[Int]
-    x.enqueue("abc")                            // oops cannot square root abc
-    // !!!!!
-    // !!!!!
-    // !!!!!
-    // turns out that as soon as a generic parameter type appears as the type of a method parameter, the containing class or trait may not be covariant in that type parameter
-    var x: T                                    // special case (because is treated as a getter method "def x: T" and a setter "def x_ = (y:T)" - setter has a param of T - may not be covariant)
+    +-------------------------------------------+
+    | class StrangeIntQueue extends Queue[Int]: |
+    |     override def enqueue(x: Int) =        |
+    |         println(math.sqrt(x))             |   // prints out the square root for Int
+    |         super.enqueue(x)                  |
+    | val x: Queue[Any] = new StrangeIntQueue   |   // StrangeIntQueue is a subclass of Queue[Int]
+    | x.enqueue("abc")                          |   // oops cannot square root abc
+    +-------------------------------------------+   
+
+    +-------------------------+
+    | def enqueue(x: T) =     | // turns out that as soon as a generic parameter type appears as the type of a method parameter,
+    | ˆˆˆˆ                    |    the containing class or trait may not be covariant in that type parameter
+    | covariant type T occurs | +----------+    // special case (because is treated as a getter method "def x: T" and a setter "def x_ = (y:T)" 
+    | in type T of val        | | var x: T |       - setter has a param of T - may not be covariant)
+    +-------------------------+ +----------+
+
     // compiler checks each use of each of the class’s type parameters
+    // compiler classifies all positions in a class or trait body as positive, negative, or neutral
+    // "position" is any location in the class or trait body where a type parameter may be used
     // + may only be used in positive positions
     // - may only be used in negative positions
     // no variance annotation may be used in any position
-    // class top level position is positive, method type positions are flipped from classes (to negative)
+    // class top level position is positive (type parameter), method type positions are flipped from classes (to negative)
+    +------------------------------------------------------+
+    | abstract class Cat[-T, +U]:                          |
+    |     def meow[W-](volume: T-, listener: Cat[U+, T-]-) |    // W, volume, listener are negative
+    |         : Cat[Cat[U+, T-]-, U+]+                     |
+    +------------------------------------------------------+
 
     -Lower bounds
     // Queue[T] cannot be made covariant in T because T appears as a type of a parameter of the enqueue method, and that’s a negative position
-    class Queue[+T] (private val leading: List[T], private val trailing: List[T] ) {
-        def enqueue[U >: T](x: U) =                                 // T as the lower bound for U. As a result, U is required to be a supertype of T
-            new Queue[U](leading, x :: trailing) // ...
-    }
-    // class Fruit with two subclasses, Apple and Orange. With new class Queue, it is possible to append an Orange to a Queue[Apple]. The result will be a Queue[Fruit].
+    // way to fix this - generalize enqueue by making it polymorphic (i.e., giving the enqueue method itself a type parameter) and using a lower bound for its type parameter
+    +--------------------------------------------------------------------------------+
+    | class Queue[+T] (private val leading: List[T], private val trailing: List[T]): |
+    |     def enqueue[U >: T](x: U) =                                                |  // T as the lower bound for U. As a result, U is required to be a supertype of T
+    |         new Queue[U](leading, x :: trailing)                                   |  // class Fruit with two subclasses, Apple and Orange. 
+    +--------------------------------------------------------------------------------+  // With new class Queue, it is possible to append an Orange to a Queue[Apple]. The result will be a Queue[Fruit].
 
     -Contravariance
-    trait OutputChannel[-T]{        // OutputChannel is defined to be contravariant in T. So an output channel of AnyRefs, say, is a subtype of an output channel of Strings
-        def write(x: T)             // what you can do with an OutputChannel[String]? - writing a String to it, same operation can be done on an OutputChannel[AnyRef].          
-    }                               // you can send any object to an OutputChannel[AnyRef], whereas an OutputChannel[String] requires that the written values are all strings
-    // Liskov Substitution Principle - It is safe to assume that a type T is a subtype of a type U if you can substitute a value of type T wherever a value of type U is required
-    // 
+    +---------------------------+   // OutputChannel is defined to be contravariant in T. So an output channel of AnyRefs, say, is a subtype of an output channel of Strings
+    | trait OutputChannel[-T]:  |   // what you can do with an OutputChannel[String]? - writing a String to it, same operation can be done on an OutputChannel[AnyRef].
+    |     def write(x: T): Unit |   // you can send any object to an OutputChannel[AnyRef], whereas an OutputChannel[String] requires that the written values are all strings
+    +---------------------------+   // Liskov Substitution Principle - It is safe to assume that a type T is a subtype of a type U if you can substitute a value of type T wherever a value of type U is required
+    // function A => B
+    +--------------------------+    
+    | trait Function1[-A, +B]: |
+    |     def apply(x: A): B   |
+    +--------------------------+
+    // Demonstration of function type parameter variance
+    +------------------------------------------------------+    +------+            +----------------+          +--------+
+    | class Publication(val title: String)                 |    | Book |            | Book => AnyRef |          | AnyRef |
+    | class Book(title: String) extends Publication(title) |    +------+            +----------------+          +--------+
+    | object Library:                                      |        |                       ^                       ^
+    |     val books: Set[Book] =                           |        V                       |                       |
+    |         Set(                                         |    +-------------+     +-----------------------+   +--------+    
+    |             Book("Programming in Scala"),            |    | Publication |     | Publication => String |   | String |    
+    |             Book("Walden")                           |    +-------------+     +-----------------------+   +--------+    
+    |         )                                            |    
+    |     def printBookList(info: Book => AnyRef) =        |    // declared as Book, the getTitle we’re passing in takes a Publication
+    |         for book <- books do println(info(book))     |    // only allows to pass a Book into the function, getTitle’s parameter type is Publication
+    | object Customer:                                     |    // every method in Publication is available in Book
+    |     def getTitle(p: Publication): String = p.title   |    
+    |     def main(args: Array[String]): Unit =            |    // printBookList iterate books and invokes function, passes AnyRef returned to println, which invokes toString
+    |         Library.printBookList(getTitle)              |    // this will work with String, as any other subClass of AnyRef
+    +------------------------------------------------------+
 
-    -Object private data
+    // A Person class that mixes in the Ordered trait
+    +------------------------------------------------------------------------------------+
+    | class Person(val firstName: String, val lastName: String) extends Ordered[Person]: |
+    |     def compare(that: Person) =                                                    |
+    |         val lastNameComparison = lastName.compareToIgnoreCase(that.lastName)       |
+    |         if lastNameComparison != 0 then lastNameComparison                         |
+    |         else                                                                       |
+    |             firstName.compareToIgnoreCase(that.firstName)                          |
+    |     override def toString = s"$firstName $lastName"                                |
+    +------------------------------------------------------------------------------------+
+
     -Upper bounds
     // Ordered being mixed into a Person class
     val robert = new Person("Robert", "Jones")
