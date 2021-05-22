@@ -2134,58 +2134,36 @@
     |         Library.printBookList(getTitle)              |    // this will work with String, as any other subClass of AnyRef
     +------------------------------------------------------+
 
-    // A Person class that mixes in the Ordered trait
-    +------------------------------------------------------------------------------------+
-    | class Person(val firstName: String, val lastName: String) extends Ordered[Person]: |
-    |     def compare(that: Person) =                                                    |
-    |         val lastNameComparison = lastName.compareToIgnoreCase(that.lastName)       |
-    |         if lastNameComparison != 0 then lastNameComparison                         |
-    |         else                                                                       |
-    |             firstName.compareToIgnoreCase(that.firstName)                          |
-    |     override def toString = s"$firstName $lastName"                                |
-    +------------------------------------------------------------------------------------+
-
     -Upper bounds
     // Ordered being mixed into a Person class
-    val robert = new Person("Robert", "Jones")
-    val sally = new Person("Sally", "Smith")
-    robert < sally                                  // res0: Boolean = true
-    class Person(val firstName: String, val lastName: String) extends Ordered[Person] {
-        def compare(that: Person) = {
-            val lastNameComparison = lastName.compareToIgnoreCase(that.lastName)
-            if (lastNameComparison != 0)
-                lastNameComparison
-            else
-                firstName.compareToIgnoreCase(that.firstName)
-        }
-        override def toString = firstName + " " + lastName
-    }
+    +------------------------------------------------------------------------------------+  +--------------------------------------------+
+    | class Person(val firstName: String, val lastName: String) extends Ordered[Person]: |  | val robert = new Person("Robert", "Jones") |
+    |     def compare(that: Person) =                                                    |  | val sally = new Person("Sally", "Smith")   |
+    |         val lastNameComparison = lastName.compareToIgnoreCase(that.lastName)       |  | robert < sally                             |  // res0: Boolean = true
+    |         if lastNameComparison != 0 then lastNameComparison                         |  +--------------------------------------------+
+    |         else                                                                       |  +----------------+  // T <: Ordered[T] - T has an upper bound, Ordered[T]
+    |             firstName.compareToIgnoreCase(that.firstName)                          |  | >: lower bound |  
+    |     override def toString = s"$firstName $lastName"                                |  | <: upper bound |  
+    +------------------------------------------------------------------------------------+  +----------------+
+
     // merge with ordered
-    def orderedMergeSort[T <: Ordered[T]](xs: List[T]): List[T] = {         // T <: Ordered[T] - upper bound - you indicate that the type parameter, T, has an upper bound, Ordered[T]
-        def merge(xs: List[T], ys: List[T]): List[T] =                      // This means that the element type of the list passed to orderedMergeSort must be a subtype of Ordered
-            (xs, ys) match {                                                
-                case (Nil, _) => ys
-                case (_, Nil) => xs
-                case (x :: xs1, y :: ys1) =>
-                    if (x < y) x :: merge(xs1, ys)
-                    else y :: merge(xs, ys1)
-            }
-        val n = xs.length / 2
-        if (n == 0) xs
-        else {
-            val (ys, zs) = xs splitAt n
-            merge(orderedMergeSort(ys), orderedMergeSort(zs))
-        }
-    }
-    // you could pass a List[Person] to orderedMergeSort because Person mixes in Ordered
-    val people = List(
-        new Person("Larry", "Wall"),
-        new Person("Anders", "Hejlsberg"),
-        new Person("Guido", "van Rossum"),
-        new Person("Alan", "Kay"),
-        new Person("Yukihiro", "Matsumoto")
-    )
-    val sortedPeople = orderedMergeSort(people)
+    +---------------------------------------------------------------+
+    | def orderedMergeSort[T <: Ordered[T]](xs: List[T]): List[T] = |   // T <: Ordered[T] - upper bound - you indicate that the type parameter, T, has an upper bound, Ordered[T]
+    |     def merge(xs: List[T], ys: List[T]): List[T] =            |   // This means that the element type of the list passed to orderedMergeSort must be a subtype of Ordered
+    |         (xs, ys) match                                        |
+    |             case (Nil, _) => ys                               |   // you could pass a List[Person] to orderedMergeSort because Person mixes in Ordered
+    |             case (_, Nil) => xs                               |   +---------------------------------------------+
+    |             case (x :: xs1, y :: ys1) =>                      |   | val people = List(                          |
+    |                 if x < y then x :: merge(xs1, ys)             |   |     new Person("Larry", "Wall"),            |
+    |                 else y :: merge(xs, ys1)                      |   |     new Person("Anders", "Hejlsberg"),      |
+    |     val n = xs.length / 2                                     |   |     new Person("Guido", "van Rossum"),      |
+    |     if n == 0 then xs                                         |   |     new Person("Alan", "Kay"),              |
+    |     else                                                      |   |     new Person("Yukihiro", "Matsumoto")     |
+    |         val (ys, zs) = xs.splitAt(n)                          |   | )                                           |
+    |         merge(orderedMergeSort(ys), orderedMergeSort(zs))     |   | val sortedPeople = orderedMergeSort(people) |
+    +---------------------------------------------------------------+   +---------------------------------------------+
+
+    // !!! issue - you couldn’t use the orderedMergeSort function to sort a list of integers, because class Int is not a subtype of Ordered[Int]
 
 
 ###############
