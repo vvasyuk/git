@@ -1897,6 +1897,38 @@
     | trait Apricot extends Fruit           |    // Plum | Apricot is a supertype of both Plum and Apricot
     | trait Pluot extends Plum with Apricot |    // In Scala 3, the least upper bound of any two types is their union; the greatest lower bound is their intersection
     +---------------------------------------+
+                                // Fruit is a supertype to both Plum and Apricot, but it is not the nearest common supertype
+    +-------+                   // On an instance of Plum | Apricot, therefore, you can access the members of Fruit (including members it inherits from AnyRef and Any), but you cannot access any members added ineither Plum or Apricot
+    | Fruit |                   +---------------------------------------------------------+
+    +-------+                   | def errorMessage(msg: Int | String): String = msg match | // You could, therefore, directly invoke on msg only methods declared on Any, the sole common supertype of Int and String
+        ^                       |     case n: Int => s"Error number: ${n.abs}"            |
+        |                       |     case s: String => s + "!"                           |
+    +----------------+          +---------------------------------------------------------+
+    | Plum | Apricot |          // union type Plum | Apricot is the nearest common supertype, or least upper bound, of Plum and Apricot
+    +----------------+          // Plum | Apricot union type is a subtype of Fruit
+        ^           ^           +-------------------------------------------------+
+        |           |           | val plumOrApricot: Plum | Apricot = new Plum {} |
+    +------+    +---------+     | val fruit: Fruit = plumOrApricot                | // because Plum | Apricot <: Fruit
+    | Plum |    | Apricot |     | val doesNotCompile: Plum | Apricot = fruit      | // cannot use Fruit where Plum | Apricot is needed
+    +------+    +---------+     +-------------------------------------------------+
+        ^           ^
+        |           |           +--------------------------------------------+
+    +----------------+          | val pluot: Pluot = new Pluot {}            |
+    | Plum & Apricot |          | val plumAndApricot: Plum & Apricot = pluot |  // because Pluot <: Plum & Apricot
+    +----------------+          | val doesNotCompile: Pluot = plumAndApricot |  // cannot use a Plum & Apricot where Pluot is needed
+        ^                       +--------------------------------------------+
+        |                       // On an instance of Plum & Apricot, for example, you can invoke any methods defined in either Plum or Apricot
+    +-------+
+    | Pluot |   // Pluot is a subtype to both Plum and Apricot, but it is not the nearest common subtype
+    +-------+   //intersection type Plum & Apricot is the nearest common subtype, or greatest lower bound, of Plum and Apricot
+    
+    
+
+
+
+
+
+
 
 
 
