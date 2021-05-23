@@ -2169,136 +2169,133 @@
 ###############
 # Abstract Members
 ###############
-    -A quick tour of abstract members                               // example implementation
-    trait Abstract {                                                class Concrete extends Abstract {
-        type T                          // abstract type (T)            type T = String
-        def transform(x: T): T          // abstract method              def transform(x: String) = x + x
-        val initial: T                  // abstract val                 val initial = "hi"
-        var current: T                  // abstract var                 var current = initial
-    }                                                               }
+    // member of a class or trait is abstract if the member does not have a complete definition in the class
+    -A quick tour of abstract members                       // example implementation
+    +----------------------------+                          +--------------------------------------+
+    | trait Abstract:            |                          | class Concrete extends Abstract:     |
+    |     type T                 |  // abstract type (T)    |     type T = String                  |
+    |     def transform(x: T): T |  // abstract method      |     def transform(x: String) = x + x |
+    |     val initial: T         |  // abstract val         |     val initial = "hi"               |
+    |     var current: T         |  // abstract var         |     var current = initial            |
+    +----------------------------+                          +--------------------------------------+
 
     -Type members
     // abstract type in Scala is always a member of some class or trait, such as type T in trait Abstract
     // One reason to use a type member is to define a short, descriptive alias for a type whose real name is more verbose
 
     -Abstract vals
-    val initial: String                 // no value
-    abstract class Fruit {
-        val v: String // ‘v' for value
-        def m: String // ‘m' for method
-    }
-    abstract class Apple extends Fruit {
-        val v: String
-        val m: String // OK to override a ‘def' with a ‘val'
-    }
-    abstract class BadApple extends Fruit {
-        def v: String // ERROR: cannot override a ‘val' with a ‘def'
-        def m: String
-    }
+    // abstract                 // concrete implemented
+    +---------------------+     +--------------------+
+    | val initial: String |     | val initial = "hi" |
+    +---------------------+     +--------------------+
+    // no value
+    +--------------------------------------+    +----------------------------------------------------------+    +------------------------------------------------------------------+
+    | val initial: String                  |    | abstract class Apple extends Fruit {                     |    | abstract class BadApple extends Fruit {                          |
+    | abstract class Fruit {               |    |     val v: String                                        |    |     def v: String // ERROR: cannot override a ‘val' with a ‘def' |
+    |     val v: String // ‘v' for value   |    |     val m: String // OK to override a ‘def' with a ‘val' |    |     def m: String                                                |
+    |     def m: String // ‘m' for method  |    | }                                                        |    | }                                                                |
+    | }                                    |    +----------------------------------------------------------+    +------------------------------------------------------------------+
+    +--------------------------------------+    // abstract val constrains its legal implementation: Any implementation must be a val definition; it may not be a var or a def
 
     -Abstract vars
     // abstract var declares just a name and a type, but not an initial value
-    trait AbstractTime {
-        var hour: Int       // implicitly declare an abstract getter method, hour, and an abstract setter method, hour_=.
-        var minute: Int
-    }
+    
+    // implicitly declare an abstract       // How abstract vars are expanded into getters and setters.
+    getter method, hour, and an abstract    +-------------------------------------------------------+
+    setter method, hour_=.                  | trait AbstractTime:                                   |
+    +---------------------+                 |     def hour: Int // getter for ‘hour'                |
+    | trait AbstractTime: |                 |     def hour_=(x: Int): Unit // setter for ‘hour'     |
+    |     var hour: Int   |                 |     def minute: Int // getter for ‘minute'            |
+    |     var minute: Int |                 |     def minute_=(x: Int): Unit // setter for ‘minute' |
+    +---------------------+                 +-------------------------------------------------------+
 
     -Initializing abstract vals
-    // traits don’t have a constructor to which you could pass parameters
-    // So the usual notion of parameterizing a trait works via abstract vals that are implemented in subclasses
-                                // To instantiate a concrete instance of that trait, you need to implement the  abstract val definitions
-    trait RationalTrait {       new RationalTrait {         // expression yields an instance of an anonymous class
-        val numerArg: Int           val numerArg = 1        // RationalTrait inited before numerArg and denomArg
-        val denomArg: Int           val denomArg = 2
-    }                           }
+    // class parameter argument is evaluated before it is passed to the class constructor (unless the parameter is by-name)
+    // implementing val definition in a subclass, by contrast, is evaluated only after the superclass has been initialized
 
-    -Pre-initialized fields
-    // anonymous classes Pre-initialized fields
-    new {
-        val numerArg = 1 * x        // initialize a field of a subclass before the superclass is called
-        val denomArg = 2 * x
-    } with RationalTrait            // create an instance of RationalTrait - res1: RationalTrait = 1/2
-    // Pre-initialized fields in an object definition.
-    object twoThirds extends {
-        val numerArg = 2            // numerArg inited before RationalTrait is constructed
-        val denomArg = 3
-    } with RationalTrait
-    // Pre-initialized fields in a class definition
-    class RationalClass(n: Int, d: Int) extends {
-        val numerArg = n            // initialized before the superclass constructor is called
-        val denomArg = d
-    } with RationalTrait {
-        def + (that: RationalClass) = new RationalClass(
-            numer * that.denom + that.numer * denom,
-            denom * that.denom
-        )
-    }
+                                // To instantiate a concrete instance of that trait, you need to implement the  abstract val definitions
+    +-----------------------+   +----------------------+
+    | trait RationalTrait:  |   | new RationalTrait:   |    // anonymous class instantiation has an effect analogous to the instance creation new Rational(1, 2)
+    |     val numerArg: Int |   |     val numerArg = 1 |    // expr1 and expr2, are evaluated as part of the initialization of the anonymous class
+    |     val denomArg: Int |   |     val denomArg = 2 |    // but the anonymous class is initialized after the RationalTrait
+    +-----------------------+   +----------------------+    // numerArg and denomArg are not available during the initialization of RationalTrait
+                                +----------------------------+  // expr1 and expr2, are evaluated before class Rational is initialized
+                                | new Rational(expr1, expr2) |  // values of expr1 and expr2 are available for the initialization of class Rational
+                                +----------------------------+
+    // A trait that uses its abstract vals
+    +-----------------------------------------------+   +-----------------------------------------------------------+
+    | trait RationalTrait:                          |   | new RationalTrait:                                        |
+    |     val numerArg: Int                         |   |     val numerArg = 1 * x                                  |
+    |     val denomArg: Int                         |   |     val denomArg = 2 * x                                  |   // because denomArg still had its default value of 0 
+    |     require(denomArg != 0)                    |   | // java.lang.IllegalArgumentException: requirement failed |   // when class RationalTrait was initialized, which caused the require invocation to fail
+    |     private val g = gcd(numerArg, denomArg)   |   +-----------------------------------------------------------+
+    |     val numer = numerArg / g                  |   // how to fix?
+    |     val denom = denomArg / g                  |   // trait parametric fields and lazy vals
+    |     private def gcd(a: Int, b: Int): Int =    |
+    |         if (b == 0) a else gcd(b, a % b)      |
+    |     override def toString = s"$numer/$denom"  |
+    +-----------------------------------------------+
+
+    - Trait parametric fields
+    // lets you compute values for fields of a trait before the trait itself is initialized
+    // define the fields as parametric fields—trait parameters annotated by val
+
+    // A trait that takes parametric fields                         // usage in anonymous class                         // in a class definition
+    +------------------------------------------------------------+  +-------------------------------------------+       +-------------------------------------------------------------------+
+    | trait RationalTrait(val numerArg: Int, val denomArg: Int): |  | scala> new RationalTrait(1 * x, 2 * x) {} |       | class RationalClass(n: Int, d: Int) extends RationalTrait(n, d) { |
+    |     require(denomArg != 0)                                 |  | val res1: RationalTrait = 1/2             |       |     def + (that: RationalClass) = new RationalClass(              |
+    |     private val g = gcd(numerArg, denomArg)                |  +-------------------------------------------+       |         numer * that.denom + that.numer * denom,                  |
+    |     val numer = numerArg / g                               |  // in an object definition                          |         denom * that.denom                                        |
+    |     val denom = denomArg / g                               |  +----------------------------------------------+    |     )                                                             |
+    |     private def gcd(a: Int, b: Int): Int =                 |  | object TwoThirds extends RationalTrait(2, 3) |    | }                                                                 |
+    |         if (b == 0) a else gcd(b, a % b)                   |  +----------------------------------------------+    +-------------------------------------------------------------------+
+    |     override def toString = s"$numer/$denom"               |
+    +------------------------------------------------------------+
 
     -Lazy vals
     // If val is lazy the initializing expression on the right-hand side will only be evaluated the first time the val is used
-    object Demo {
-        val x = { println("initializing x"); "done" }
-    }
-    Demo            // initializing x
-    Demo.x          // res4: String = done
-    // with lazy
-    object Demo {
-        lazy val x = { println("initializing x"); "done" }
-    }
-    Demo            //
-    Demo.x          // initializing x; res6: String = done
+                                                            // with lazy val
+                                                            // initialization of x will be deferred until the first time x is used
+                                                            // unlike a def, a lazy val is never evaluated more than once
+    +---------------------------------------------------+   +-----------------------------------------------------------+
+    | object Demo:                                      |   | object Demo:                                              |
+    |     val x = { println("initializing x"); "done" } |   |     lazy val x = { println("initializing x"); "done" }    |
+    | scala> Demo     // initializing x                 |   | scala> Demo     //                                        |
+    | scala> Demo.x   // res4: String = done            |   | scala> Demo.x   // initializing x; res6: String = done    |
+    +---------------------------------------------------+   +-----------------------------------------------------------+
+
     // similar to the situation where x is defined as a parameterless method, using a def
     // unlike a def, a lazy val is never evaluated more than once
-    trait LazyRationalTrait {
-        val numerArg: Int
-        val denomArg: Int
-        lazy val numer = numerArg / g
-        lazy val denom = denomArg / g
-        override def toString = numer + "/" + denom
-        private lazy val g = {
-            require(denomArg != 0)
-            gcd(numerArg, denomArg)
-        }
-        private def gcd(a: Int, b: Int): Int =
-            if (b == 0) a else gcd(b, a % b)
-    }
-    val x = 2
-    new LazyRationalTrait {         // this one works even though we construct LazyRationalTrait before numerArg/denomArg
-        val numerArg = 1 * x
-        val denomArg = 2 * x        // res7: LazyRationalTrait = 1/2
-    }
-    // 1. A fresh instance of LazyRationalTrait gets created and the initialization code of LazyRationalTrait is run. This initialization code is empty; none of the fields of LazyRationalTrait is initialized yet
-    // 2. Next, the primary constructor of the anonymous subclass defined by the new expression is executed. This involves the initialization of numerArg with 2 and denomArg with 4.
-    // 3. Next, the toString method is invoked on the constructed object by the interpreter, so that the resulting value can be printed.
-    // 4. Next, the numer field is accessed for the first time by the toString method in trait LazyRationalTrait, so its initializer is evaluated.
-    // 5. The initializer of numer accesses the private field, g, so g is evaluated next. This evaluation accesses numerArg and denomArg, which were defined in Step 2.
-    // 6. Next, the toString method accesses the value of denom, which causes denom’s evaluation. The evaluation of denom accesses the values of denomArg and g. The initializer of the g field is not re-evaluated, because it was already evaluated in Step 5.
-    // 7. Finally, the result string "1/2" is constructed and printed.
+
+    +----------------------------------------------+    +--------------------------+
+    | trait LazyRationalTrait:                     |    | val x = 2                |
+    |     val numerArg: Int                        |    | new LazyRationalTrait {  |     // this one works even though we construct LazyRationalTrait before numerArg/denomArg
+    |     val denomArg: Int                        |    |     val numerArg = 1 * x |
+    |     lazy val numer = numerArg / g            |    |     val denomArg = 2 * x |    // res7: LazyRationalTrait = 1/2
+    |     lazy val denom = denomArg / g            |    | }                        |
+    |     override def toString = s"$numer/$denom" |    +--------------------------+
+    |     private lazy val g =                     |    // 1. A fresh instance of LazyRationalTrait gets created and the initialization code of LazyRationalTrait is run. This initialization code is empty; none of the fields of LazyRationalTrait is initialized yet
+    |         require(denomArg != 0)               |    // 2. Next, the primary constructor of the anonymous subclass defined by the new expression is executed. This involves the initialization of numerArg with 2 and denomArg with 4.
+    |         gcd(numerArg, denomArg)              |    // 3. Next, the toString method is invoked on the constructed object by the interpreter, so that the resulting value can be printed.
+    |     private def gcd(a: Int, b: Int): Int =   |    // 4. Next, the numer field is accessed for the first time by the toString method in trait LazyRationalTrait, so its initializer is evaluated.
+    |         if b == 0 then a else gcd(b, a % b)  |    // 5. The initializer of numer accesses the private field, g, so g is evaluated next. This evaluation accesses numerArg and denomArg, which were defined in Step 2.
+    +----------------------------------------------+    // 6. Next, the toString method accesses the value of denom, which causes denom’s evaluation. The evaluation of denom accesses the values of denomArg and g. The initializer of the g field is not re-evaluated, because it was already evaluated in Step 5.
+                                                        // 7. Finally, the result string "1/2" is constructed and printed.
 
     -Abstract types
-    class Food
-    abstract class Animal {
-        def eat(food: Food)
-    }
-    // specialize these two classes to a class of Cows that eat Grass
-    class Grass extends Food
-    class Cow extends Animal {
-        override def eat(food: Grass) = {}          // This won't compile did not override the eat method in class Animal because its parameter type is different
-    }
-    // following script would pass the type checker
-    class Food
-    abstract class Animal {
-        type SuitableFood <: Food                   // Animal can eat only food that’s suitable (upper bound Food)
-        def eat(food: SuitableFood)                 // any concrete instantiation of SuitableFood (in a subclass of Animal) must be a subclass of Food
-    }
-    class Grass extends Food
-    class Cow extends Animal {
-        type SuitableFood = Grass
-        override def eat(food: Grass) = {}
-    }
-    class Fish extends Food
-    val bessy: Animal = new Cow
-    bessy eat (new Fish)                            // error: type mismatch; found : Fish required: bessy.SuitableFood
+    +-------------------------------+   +----------------------------------------+
+    | class Food                    |   | class Grass extends Food               |  // specialize these two classes to a class of Cows that eat Grass
+    | abstract class Animal:        |   | class Cow extends Animal:              |
+    |     def eat(food: Food): Unit |   |     override def eat(food: Grass) = {} |  // This won't compile did not override the eat method in class Animal because its parameter type is different
+    +-------------------------------+   +----------------------------------------+
+    // what kind of Food each Animal eats depends 
+       on the Animal                            // Implementing an abstract type in a subclass
+    +---------------------------------------+   +----------------------------------------+  +-----------------------------+
+    | class Food                            |   | class Grass extends Food               |  | class Fish extends Food     |
+    | abstract class Animal:                |   | class Cow extends Animal:              |  | val bessy: Animal = new Cow |
+    |     type SuitableFood <: Food         |   |     type SuitableFood = Grass          |  | scala> bessy.eat(new Fish)  | // Found: Fish, Required: bessy.SuitableFood
+    |     def eat(food: SuitableFood): Unit |   |     override def eat(food: Grass) = {} |  +-----------------------------+
+    +---------------------------------------+   +----------------------------------------+
 
     -Path-dependent types
     // different paths give rise to different types
