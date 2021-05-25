@@ -2460,19 +2460,160 @@
     |     else xs.head :: insert(x, xs.tail)(lteq)                         |
     +----------------------------------------------------------------------+
 
-
-
-
-
+    // make context parameters
+    +-----------------------------------------------------------+   +----------------------------------------------------------------+  
+    | trait Ord[T]:                                             |   | def isort[T](xs: List[T])(using ord: Ord[T]): List[T] =        |  
+    |     def compare(x: T, y: T): Int                          |   |     if xs.isEmpty then Nil                                     |  
+    |     def lteq(x: T, y: T): Boolean = compare(x, y) < 1     |   |     else insert(xs.head, isort(xs.tail))                       |  
+    +-----------------------------------------------------------+   | def insert[T](x: T, xs: List[T])(using ord: Ord[T]): List[T] = |  
+                                                                    |     if xs.isEmpty || ord.lteq(x, xs.head) then x :: xs         |  
+    +---------------------------------------------+                 |     else xs.head :: insert(x, xs.tail)                         |  
+    | isort(List(10, 2, -10)) // List(-10, 2, 10) |                 +----------------------------------------------------------------+  
+    +---------------------------------------------+
+    +--------------------------------------------------------------+    +-----------------------------------------------------------+
+    | object Ord:                                                  |    | object Ord:                                               |
+    |     // (Not yet idiomatic)                                   |    |     // This is idiomatic                                  |
+    |     given intOrd: Ord[Int] =                                 |    |     given intOrd: Ord[Int] with                           |
+    |         new Ord[Int]:                                        |    |         def compare(x: Int, y: Int) =                     |
+    |             def compare(x: Int, y: Int) =                    |    |             if x == y then 0 else if x > y then 1 else -1 |
+    |               if x == y then 0 else if x > y then 1 else -1  |    +-----------------------------------------------------------+
+    +--------------------------------------------------------------+
+    // With a given Ord[String] declared in the Ord companion, you can now use isort to sort lists of strings
+    +-------------------------------------------------------------------------------+   // If a given value does not take parameters, then that given is initialized the first time it’s accessed, similar to a lazy val
+    | given stringOrd: Ord[String] with                                             |   // If a given value takes parameters, then a new given is created on every access, much like how a def behaves
+    |     def compare(s: String, t: String) = s.compareTo(t)                        |   // Scala compiler transforms givens to lazy vals or defs, additionally marking them as being available for using parameters
+    | isort(List("mango", "jackfruit", "durian")) // List(durian, jackfruit, mango) |
+    +-------------------------------------------------------------------------------+
 
     -Anonymous givens
-    -Parameterized givens as typeclasses
-    -Given imports
-    -Rules for context parameters
-    -When multiple givens apply
-    -Debugging givens
-    
+    // compiler looks for givens by type, and you often don’t need to refer to a given’s term at all, you can declare your given value anonymously
+    // Instead of                                                   //You can write
+    +-------------------------------------------------------------+ +---------------------------------------------------------+
+    | given revIntOrd: Ord[Int] with                              | | given Ord[Int] with                                     |
+    |     def compare(x: Int, y: Int) =                           | |     def compare(x: Int, y: Int) =                       |
+    |         if x == y then 0 else if x > y then -1 else 1       | |         if x == y then 0 else if x > y then -1 else 1   |
+    | given revStringOrd: Ord[String] with                        | | given Ord[String] with                                  |
+    |     def compare(s: String, t: String) = -s.compareTo(t)     | |     def compare(s: String, t: String) = -s.compareTo(t) |
+    +-------------------------------------------------------------+ +---------------------------------------------------------+
 
+    -Parameterized givens as typeclasses
+    // enable lists of instances of the Rational class to be sorted by defining a given Ord[Rational]
+    +------------------------------------------------------------------+    // An insertion sort function that uses Ordering
+    | object Rational:                                                 |    +---------------------------------------------------------------------+
+    |     given rationalOrd: Ord[Rational] with                        |    | def isort[T](xs: List[T])(using Ordering[T]): List[T] =             | //  using the Scala Ordering typeclass
+    |         def compare(x: Rational, y: Rational) =                  |    |     if xs.isEmpty then Nil                                          |
+    |             if x.numer * y.denom < x.denom * y.numer then -1     |    |     else insert(xs.head, isort(xs.tail))                            |
+    |             else if x.numer * y.denom > x.denom * y.numer then 1 |    | def insert[T](x: T, xs: List[T])(using ord: Ordering[T]): List[T] = |
+    |             else 0                                               |    |     if xs.isEmpty || ord.lteq(x, xs.head) then x :: xs              |
+    | isort(List(Rational(4, 5), Rational(1, 2), Rational(2, 3)))      |    |     else xs.head :: insert(x, xs.tail                               |
+    | // List(1/2, 2/3, 4/5)                                           |    +---------------------------------------------------------------------+
+    +------------------------------------------------------------------+
+
+    // Offering given instances of Ord[T] grants those specific types, T, membership into a set of “types that can be sorted,” 
+       despite not sharing any common sortable supertype. This set of types is called a typeclass.
+
+    // Because the isort takes a context parameter of type Ord[T], it is an example of ad hoc polymorphism: 
+       isort can sort lists of certain types, T—the types for which given Ord[T] instances exist—and doesn’t compile for any other types
+
+    // A merge sort function that uses Ordering
+    +--------------------------------------------------------------+
+    | def msort[T](xs: List[T])(using ord: Ordering[T]): List[T] = |    // context parameter of type Ordering[T] provides more information about type T—in this case, how to order Ts
+    |     def merge(xs: List[T], ys: List[T]): List[T] =           |
+    |         (xs, ys) match                                       |
+    |             case (Nil, _) => ys                              |
+    |             case (_, Nil) => xs                              |
+    |             case (x :: xs1, y :: ys1) =>                     |
+    |                 if ord.lt(x, y) then x :: merge(xs1, ys)     |
+    |                 else y :: merge(xs, ys1)                     |
+    |         val n = xs.length / 2                                |
+    |         if n == 0 then xs                                    |
+    |         else                                                 |
+    |             val (ys, zs) = xs.splitAt(n)                     |
+    |             merge(msort(ys), msort(zs))                      |
+    +--------------------------------------------------------------+
+   
+    -Given imports
+    // good practice to place givens in singleton objects that will not be found automatically, requiring users to import them
+    // regular wildcard import syntax does not import givens
+    +---------------------------------------------------------------+    +------------------------------------------------+
+    | object TomsPrefs:                                             |    | // imports only favoriteColor and favoriteFood |
+    |     val favoriteColor = "blue"                                |    | import TomsPrefs.*                             | // imports all members of TomsPrefs, except given members
+    |     def favoriteFood = "steak"                                |    +------------------------------------------------+         +----------------------------------------------------+
+    |     given prompt: PreferredPrompt =                           |                                                               | // imports drink, because it a given of            |
+    |         PreferredPrompt("enjoy> ")                            |   +-------------------------------------------+               | // type PreferredDrink                             |
+    |     given drink: PreferredDrink =                             |   | import TomsPrefs.prompt // imports prompt |               | import TomsPrefs.{given PreferredDrink}            |
+    |         PreferredDrink("red wine")                            |   +-------------------------------------------+               | // imports prefPromptOrd and prefDrinkOrd          |
+    |     given prefPromptOrd: Ordering[PreferredPrompt] with       |                                                               | import TomsPrefs.{given Ordering[PreferredPrompt], |
+    |         def compare(x: PreferredPrompt, y: PreferredPrompt) = |   +-------------------------------------------------------+   | given Ordering[PreferredDrink]}                    |
+    |             x.preference.compareTo(y.preference)              |   | // imports prompt, drink, revIntOrd, and revStringOrd |   | // imports prefPromptOrd and prefDrinkOrd          |
+    |     given prefDrinkOrd: Ordering[PreferredDrink] with         |   | import TomsPrefs.given                                |   | import TomsPrefs.{given Ordering[?]}               |
+    |         def compare(x: PreferredDrink, y: PreferredDrink) =   |   +-------------------------------------------------------+   +----------------------------------------------------+
+    |             x.preference.compareTo(y.preference)              |
+    +---------------------------------------------------------------+
+
+    -Rules for context parameters
+    // Marking rule: Only definitions marked given are available
+    +-------------------------------------------------------------+ // compiler will change greet("Amy") to greet("Amy")(amysPrompt)
+    | given amysPrompt: PreferredPrompt = PreferredPrompt("hi> ") |    only if amysPrompt is marked as given
+    +-------------------------------------------------------------+
+
+    // Visibility rule: An inserted given instance must be in scope as a single identifier, or be associated with a type that is involved in the parameter type
+    +------------------------------------------------------------------+
+    | object Rational:                                                 |    // If the compiler does not find an applicable given in lexical scope, 
+    |     given rationalOrdering: Ordering[Rational] with              |       it will as a second step look for given definitions in the companion object
+    |         def compare(x: Rational, y: Rational) =                  |
+    |             if x.numer * y.denom < x.denom * y.numer then -1     |
+    |             else if x.numer * y.denom > x.denom * y.numer then 1 |
+    |             else 0                                               |
+    +------------------------------------------------------------------+
+
+    // Explicits-first rule: Whenever code type checks as it is written, no givens are attempted
+    // Naming a given
+        The name of a given matters only in two situations: If you want to write it explicitly with the using keyword 
+
+    -When multiple givens apply
+    +--------------------------------------------------------------+    +--------------------------------------+
+    | class PreferredPrompt(val preference: String)                |    | scala> import JillsPrefs.jillsPrompt |    // ambiguous implicit arguments
+    | object Greeter:                                              |    | scala> import JoesPrefs.joesPrompt   |
+    |     def greet(name: String)(using prompt: PreferredPrompt) = |    +--------------------------------------+
+    |         println(s"Welcome, $name. The system is ready.")     |
+    |         println(prompt.preference)                           |    // If one of the available givens is strictly more specific than the others, 
+    | object JillsPrefs:                                           |       however, then the compiler will choose the more specific one
+    |     given jillsPrompt: PreferredPrompt =                     |
+    |         PreferredPrompt("Your wish> ")                       |
+    | object JoesPrefs:                                            |
+    |     given joesPrompt: PreferredPrompt =                      |
+    |         PreferredPrompt("relax> ")                           |
+    +--------------------------------------------------------------+
+
+    -Debugging givens
+    // try passing givens explicitly with using
+    // if helps - visibility rule was preventing the given from being used
+    // see what givens the compiler is inserting. The -Xprint:typer option to the compiler is useful for this
+    +------------------------------------------------------------------+    +-----------------------------------------------------------------+
+    | object Mocha:                                                    |    | scalac -Xprint:typer Mocha.scala                                |
+    |     class PreferredDrink(val preference: String)                 |    | package <empty> {                                               |
+    |     given pref: PreferredDrink = new PreferredDrink("mocha")     |    |     final lazy module val Mocha: Mocha$ = new Mocha$()          |
+    |     def enjoy(name: String)(using drink: PreferredDrink): Unit = |    |         def callEnjoy: Unit = Mocha.enjoy("reader")(Mocha.pref) |
+    |         print(s"Welcome, $name")                                 |    |     final module class Mocha$() extends Object() {              |
+    |         print(". Enjoy a ")                                      |    |         this: Mocha.type =>                                     |
+    |         print(drink.preference)                                  |    |       // ...                                                    |
+    |         println("!")                                             |    |       final lazy given val pref: Mocha.PreferredDrink =         |
+    |     def callEnjoy: Unit = enjoy("reader")                        |    |             new Mocha.PreferredDrink("mocha")                   |
+    +------------------------------------------------------------------+    |       def enjoy(name: String)(using drink:                      |
+                                                                            |             Mocha.PreferredDrink): Unit = {                     |
+                                                                            |           print(                                                |
+                                                                            |             _root_.scala.StringContext.apply(["Welcome,         |
+                                                                            |                 ","" : String]:String*).s([name : Any]:Any*)    |
+                                                                            |           )                                                     |
+                                                                            |           print(". Enjoy a ")                                   |
+                                                                            |           print(drink.preference)                               |
+                                                                            |           println("!")                                          |
+                                                                            |         }                                                       |
+                                                                            |         def callEnjoy: Unit = Mocha.enjoy("reader")(Mocha.pref) |
+                                                                            |     }                                                           |
+                                                                            | }                                                               |
+                                                                            +-----------------------------------------------------------------+
 
 
 ###############
