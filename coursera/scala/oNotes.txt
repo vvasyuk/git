@@ -2407,7 +2407,64 @@
     // another way - contextual params ("givens") - wyou can leave some arguments relying on compiler to fill values
 
     -How it works
+    // compiler sometimes replaces someCall(a) -> someCall(a)(b)
+    // b should be marked as given, param list should begin with using
+
+    // JillsPrefs should be in scope                                    // cannot simply pass param explicitly
+    +--------------------------------------------------------------+    +-----------------------------------------------------------------+
+    | class PreferredPrompt(val preference: String)                |    | Greeter.greet("Jill")(JillsPrefs.prompt)                        |
+    | import JillsPrefs.prompt                                     |    | // method greet in object Greeter does not take more parameters |
+    | object Greeter:                                              |    +-----------------------------------------------------------------+
+    |     def greet(name: String)(using prompt: PreferredPrompt) = |    // indicate you want to fill in a context parameter explicitly
+    |     println(s"Welcome, $name. The system is ready.")         |    +------------------------------------------------+
+    |     println(prompt.preference)                               |    | Greeter.greet("Jill")(using JillsPrefs.prompt) |
+    | object JillsPrefs:                                           |    +------------------------------------------------+
+    |     given prompt: PreferredPrompt =                          |
+    |     PreferredPrompt("Your wish> ")                           |    
+    +--------------------------------------------------------------+
+    // An implicit parameter list with multiple parameters
+    +-------------------------------------------------------------------------------------+
+    | class PreferredPrompt(val preference: String)                                       |
+    | class PreferredDrink(val preference: String)                                        |
+    | object Greeter:                                                                     |
+    |     def greet(name: String)(using prompt: PreferredPrompt, drink: PreferredDrink) = | // using keyword applies to an entire parameter list, not to individual parameters
+    |         println(s"Welcome, $name. The system is ready.")                            | // pass both params explicitly
+    |         print("But while you work, ")                                               | +-------------------------------------------+
+    |         println(s"why not enjoy a cup of ${drink.preference}?")                     | | Greeter.greet("Joe")(using prompt, drink) |
+    |         println(prompt.preference)                                                  | +-------------------------------------------+
+    | object JoesPrefs:                                                                   |
+    |     given prompt: PreferredPrompt =                                                 |
+    |         PreferredPrompt("relax> ")                                                  |
+    |     given drink: PreferredDrink =                                                   |
+    |         PreferredDrink("tea")                                                       |
+    +-------------------------------------------------------------------------------------+
+
     -Parameterized given types
+    // if for insertion sort for list of Ints you will replace Int with T - wont work
+    +------------------------------------------------+
+    | def isort[T](xs: List[T]): List[T] =           |
+    |     if xs.isEmpty then Nil                     |
+    |     else insert(xs.head, isort(xs.tail))       |
+    | def insert[T](x: T, xs: List[T]): List[T] =    |  // Int class defines a <= method
+    |     if xs.isEmpty || x <= xs.head then x :: xs |  // <= not member of T
+    |     else xs.head :: insert(x, xs.tail)         |  // 
+    +------------------------------------------------+
+
+    // first solution - supply compare function
+    +----------------------------------------------------------------------+    +--------------------------------------------------------------------------------------------------------------------------------------+
+    | def isort[T](xs: List[T])(lteq: (T, T) => Boolean): List[T] =        |    | isort(List(4, -10, 10))((x: Int, y: Int) => x <= y)                                                                                  |// List(-10, 4, 10)
+    |     if xs.isEmpty then Nil                                           |    | isort(List("cherry", "blackberry", "apple", "pear"))((x: String, y: String) => x.compareTo(y) <= 0)                                  |// List(apple, blackberry, cherry, pear)
+    |     else insert(xs.head, isort(xs.tail)(lteq))(lteq)                 |    | isort(List(Rational(7, 8), Rational(5, 6), Rational(1, 2)))((x: Rational, y: Rational) =>x.numer * y.denom <= x.denom * y.numer)     |// List(1/2, 5/6, 7/8)
+    | def insert[T](x: T, xs: List[T])(lteq: (T, T) => Boolean): List[T] = |    +--------------------------------------------------------------------------------------------------------------------------------------+
+    |     if xs.isEmpty || lteq(x, xs.head) then x :: xs                   |
+    |     else xs.head :: insert(x, xs.tail)(lteq)                         |
+    +----------------------------------------------------------------------+
+
+
+
+
+
+
     -Anonymous givens
     -Parameterized givens as typeclasses
     -Given imports
