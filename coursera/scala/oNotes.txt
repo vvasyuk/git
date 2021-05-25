@@ -542,8 +542,6 @@
     +-----------------------------------------------------------------------+
 
 
-
-
 ###############
 # Traits
 ###############
@@ -2400,6 +2398,23 @@
                                                                                     |         "JPY" -> 1.144, "CHF" -> 1.0)                  |
                                                                                     |         )                                              |
                                                                                     +--------------------------------------------------------+
+
+
+###############
+# Givens
+###############
+    // function may depend on contextual info(syst propd) - functional answer - pass all as params
+    // another way - contextual params ("givens") - wyou can leave some arguments relying on compiler to fill values
+
+    -How it works
+    -Parameterized given types
+    -Anonymous givens
+    -Parameterized givens as typeclasses
+    -Given imports
+    -Rules for context parameters
+    -When multiple givens apply
+    -Debugging givens
+
 
 
 ###############
