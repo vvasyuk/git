@@ -2722,15 +2722,66 @@
     |         def negationOf(n: Long) = -n                       |
     +------------------------------------------------------------+
 
-
-
-
-
-
     -Extension methods for givens
+    // purpose of the TwosComplement typeclass is to achieve the design goal of enabling extension methods on a specific set of types
+    // Placing extension methods in a singleton
+    +------------------------------------------------------------------+    +----------------------------+  // extension methods represent the main design goal 
+    | object TwosComplementOps:                                        |    | import TwosComplementOps.* |     and the typeclass plays a supporting role
+    |     extension [N](n: N)(using tc: TwosComplement[N])             |    | -42.absOption // Some(42)  |
+    |         def isMinValue: Boolean = tc.equalsMinValue(n)           |    +----------------------------+
+    |         def absOption: Option[N] =                               |    // typeclass is the main goal and extension methods play a supporting role of making the typeclass easier to use
+    |             if !isMinValue then Some(tc.absOf(n)) else None      |    // In such situations, the best home for the extension methods is in the typeclass trait itself
+    |         def negateOption: Option[N] =                            |
+    |             if !isMinValue then Some(tc.negationOf(n)) else None |    // Ord[T] knows how to compare two instances of type T to determine whether one is greater than other
+    +------------------------------------------------------------------+
+
+    +----------------------------------------------------------------+
+    | def insert[T](x: T, xs: List[T])(using ord: Ord[T]): List[T] = |
+    |     if xs.isEmpty || ord.lteq(x, xs.head) then x :: xs         |  // nothing wrong with “ord.lteq(x, x.head)”, but a more natural way to write this would be:
+    |     else xs.head :: insert(x, xs.tail)                         |     x <= x.head // Ah, the clarity!
+    +----------------------------------------------------------------+
+    // enable such <= syntactic sugar
+    // Placing extensions for Ord in a singleton
+    +-------------------------------------------------------+    +-----------------------------------------------------------+
+    | // (Not yet the best design)                          |    | def insert[T](x: T, xs: List[T])(using Ord[T]): List[T] = |
+    | object OrdOps:                                        | -> |     import OrdOps.*                                       |
+    |     extension [T](lhs: T)(using ord: Ord[T])          |    |     if xs.isEmpty || x <= xs.head then x :: xs            |
+    |         def < (rhs: T): Boolean = ord.lt(lhs, rhs)    |    |     else xs.head :: insert(x, xs.tail)                    |
+    |         def <= (rhs: T): Boolean = ord.lteq(lhs, rhs) |    +-----------------------------------------------------------+
+    |         def > (rhs: T): Boolean = ord.gt(lhs, rhs)    |
+    |         def >= (rhs: T): Boolean = ord.gteq(lhs, rhs) |
+    +-------------------------------------------------------+
+    // Placing an extension in a typeclass trait
+    // extension methods will be available wherever a given instance 
+       of the typeclass is being used                                   // no need for import                                           // Typeclass extensions as rewritten by the compiler
+    +--------------------------------------------------------+          +-----------------------------------------------------------+   +--------------------------------------------------------+
+    | trait Ord[T]:                                          |          | def insert[T](x: T, xs: List[T])(using Ord[T]): List[T] = |   | trait Ord[T]:                                          |
+    |     def compare(x: T, y: T): Int                       |          |     if xs.isEmpty || x <= xs.head then x :: xs            |   |     def compare(x: T, y: T): Int                       |
+    |     def lt(x: T, y: T): Boolean = compare(x, y) < 0    |          |     else xs.head :: insert(x, xs.tail)                    |   |     def lt(x: T, y: T): Boolean = compare(x, y) < 0    |
+    |     def lteq(x: T, y: T): Boolean = compare(x, y) <= 0 |          +-----------------------------------------------------------+   |     def lteq(x: T, y: T): Boolean = compare(x, y) <= 0 |
+    |     def gt(x: T, y: T): Boolean = compare(x, y) > 0    |                                                                          |     def gt(x: T, y: T): Boolean = compare(x, y) > 0    |
+    |     def gteq(x: T, y: T): Boolean = compare(x, y) >= 0 |                                                                          |     def gteq(x: T, y: T): Boolean = compare(x, y) >= 0 |
+    |     // (This is the best design)                       |                                                                          |     // With internal extension markers:                |
+    |         extension (lhs: T)                             |                                                                          |     def < (lhs: T)(rhs: T): Boolean = lt(lhs, rhs)     |
+    |             def < (rhs: T): Boolean = lt(lhs, rhs)     |                                                                          |     def <= (lhs: T)(rhs: T): Boolean = lteq(lhs, rhs)  |
+    |             def <= (rhs: T): Boolean = lteq(lhs, rhs)  |                                                                          |     def > (lhs: T)(rhs: T): Boolean = gt(lhs, rhs)     |
+    |             def > (rhs: T): Boolean = gt(lhs, rhs)     |                                                                          |     def >= (lhs: T)(rhs: T): Boolean = gteq(lhs, rhs)  |
+    |             def >= (rhs: T): Boolean = gteq(lhs, rhs)  |                                                                          +--------------------------------------------------------+
+    +--------------------------------------------------------+
+
     -Where Scala looks for extension methods
+    // first checks to see if that method is defined on the object’s class itself
+    // Otherwise, the method call is a candidate compiler error
+    // compiler will search for an extension method or implicit conversion that will heal the candidate error
+    // extension method search phases:
+    // 1. compiler looks in lexical scope
+    // 2. looks in three places: at the members of given instances in lexical scope; at the members of the companion objects of the receiver’s class, superclasses, and supertraits
+    // if more than one applicable extension method - will choose one that is more specific
 
 
+###############
+# Typeclasses
+###############
 
 
 ###############
