@@ -2617,6 +2617,123 @@
 
 
 ###############
+# Extension Methods
+###############
+    -The basics
+    // function that will perform this transformation:  // One can use it like this                     // can we invoke method directly on Strings, like this?:
+    +----------------------------------------+          +------------------------------------------+    +----------------------------------------------------------+
+    | def singleSpace(s: String): String =   |          | singleSpace(s) == singleSpace(t) // true |    | s.singleSpace == t.singleSpace // if only this were true |
+    |     s.trim.split("\\s+").mkString(" ") |          +------------------------------------------+    +----------------------------------------------------------+
+    +----------------------------------------+
+    // defining singleSpace as an extension method
+    +--------------------------------------------+
+    | extension (s: String)                      |  // extension keyword allows you to create the illusion that you’ve added a member function to a class 
+    |     def singleSpace: String =              |     without changing the class itself
+    |         s.trim.split("\\s+").mkString(" ") |  // (s: String) - receiver of the extension method (means that you want to add the method to String)
+    +--------------------------------------------+      // extension method definitions are rewritten in place to methods that take the receiver directly as a parameter
+    +----------------------------------------------+    +----------------------------------------+
+    | s.singleSpace == t.singleSpace // It's true! |    | // With internal extension marker      |  // compiler gives it an internal marker identifying it as an extension method
+    +----------------------------------------------+    | def singleSpace(s: String): String =   |  // if singleSpace is in lexical scope, and is internally marked as an extension method, it can be applied
+                                                        |     s.trim.split("\s+").mkString(" ")  |
+                                                        +----------------------------------------+
+
+    -Generic extensions
+    // list has head and headOption methods                     // list has only tail method, no tailOption
+    +------------------------------------------------------+    +--------------------------------------------------+
+    | List(1, 2, 3).head  // 1                             |    | List(1, 2, 3).tail // List(2, 3)                 |
+    | List.empty.head     // throws NoSuchElementException |    | List.empty.tail // throws NoSuchElementException |
+    | List(1, 2, 3).headOption    // Some(1)               |    +--------------------------------------------------+
+    | List.empty.headOption       // None                  |
+    +------------------------------------------------------+
+    // if you eant tailOption - you could provide it as a generic extension
+    +-----------------------------------------------------+ +----------------------------------------------------+  +----------------------------------------------------+
+    | extension [T](xs: List[T])                          | | List(1, 2, 3).tailOption // Some(List(2, 3))       |  | tailOption[Int](List(1, 2, 3)) // Some(List(2, 3)) |
+    |     def tailOption: Option[List[T]] =               | | List.empty[Int].tailOption // None                 |  +----------------------------------------------------+
+    |         if xs.nonEmpty then Some(xs.tail) else None | | List("A", "B", "C").tailOption // Some(List(B, C)) |
+    +-----------------------------------------------------+ | List.empty[String].tailOption // None              |
+                                                            +----------------------------------------------------+
+
+    -Collective extensions
+    // When you want to add multiple methods to the same type, you can define them together with a collective extension
+    // smallest expressible negative integer is one less than the negation of the largest expressible positive integer
+    +-----------------------------+
+    | Int.MaxValue // 2147483647  | // Some methods on Int can overflow precisely because of this asymmetry between maximum and minimum values
+    | Int.MinValue // -2147483648 | // Int’s abs method computes the absolute value of the integer
+    +-----------------------------+ // absolute value of Int’s minimum value is the 2147483648, but that integer is not expressible as an Int
+    +--------------------------------------------+
+    | Int.MinValue.abs // -2147483648 (overflow) |  // Int’s maximum value, 2147483647, is one less, invoking abs on Int.MinValue overflows and you get back the original MinValue
+    +--------------------------------------------+
+    // method that returns the absolute value of an Int, but detects overflow   +---------------------------------------------+
+    +---------------------------------------------------------+                 | 42.absOption            // Some(42)         |
+    | extension (n: Int)                                      |                 | -42.absOption           // Some(42)         |
+    |     def absOption: Option[Int] =                        |                 | Int.MaxValue.absOption  // Some(2147483647) |
+    |         if n != Int.MinValue then Some(n.abs) else None |                 | Int.MinValue.absOption  // None             |
+    +---------------------------------------------------------+                 +---------------------------------------------+
+    // sibling methods
+    +---------------------------------------------------------+
+    | extension (n: Int)                                      |
+    |     def isMinValue: Boolean = n == Int.MinValue         |
+    |     def absOption: Option[Int] =                        | // Another operation that can overflow at the minimum Int value is negation
+    |         if !isMinValue then Some(n.abs) else None       | +-----------------------------------------+ +--------------------------------------------------+
+    |     def negateOption: Option[Int] =                     | | -Int.MinValue // -2147483648 (overflow) | | -42.negateOption            // Some(42)          |
+    |         if !isMinValue then Some(-n) else None          | +-----------------------------------------+ | 42.negateOption             // Some(-42)         |
+    |     def isMinValue(n: Int): Boolean = n == Int.MinValue |                                             | Int.MaxValue.negateOption   // Some(-2147483647) |
+    |     def absOption(n: Int): Option[Int] =                |                                             | Int.MinValue.negateOption   // None              |
+    |         if !n.isMinValue then Some(n.abs) else None     |                                             +--------------------------------------------------+
+    |     def negateOption(n: Int): Option[Int] =             |
+    |         if !n.isMinValue then Some(-n) else None        |
+    +---------------------------------------------------------+
+
+    -Using a typeclass
+    // Any integral type that is based on twoscomplement arithmetic exhibits this same overflow issue
+    // you could define a separate collective extension for each
+    // you could instead define an extension enabled by a typeclass. 
+    // Such an ad hoc extension would work for any type with a given instance of that typeclass
+    +--------------------------------------------------------+
+    | Long.MinValue.abs   // -9223372036854775808 (overflow) |
+    | -Long.MinValue      // -9223372036854775808 (overflow) |
+    | Short.MinValue.abs  // -32768 (overflow)               |
+    | -Short.MinValue     // -32768 (overflow)               |
+    | Byte.MinValue.abs   // -128 (overflow)                 |
+    | -Byte.MinValue      // -128 (overflow)                 |
+    +--------------------------------------------------------+
+    // define a new typeclass trait specifically for twos-complement integral types
+    +------------------------------------------------------------+
+    | trait TwosComplement[N]:                                   |  // Using a typeclass in an extension.
+    |     def equalsMinValue(n: N): Boolean                      |  +--------------------------------------------------------------+
+    |     def absOf(n: N): N                                     |  | extension [N](n: N)(using tc: TwosComplement[N])             |
+    |     def negationOf(n: N): N                                |  |     def isMinValue: Boolean = tc.equalsMinValue(n)           |
+    | object TwosComplement:                                     |  |     def absOption: Option[N] =                               |
+    |     given tcOfByte: TwosComplement[Byte] with              |  |         if !isMinValue then Some(tc.absOf(n)) else None      |
+    |         def equalsMinValue(n: Byte) = n == Byte.MinValue   |  |     def negateOption: Option[N] =                            |
+    |         def absOf(n: Byte) = n.abs                         |  |         if !isMinValue then Some(tc.negationOf(n)) else None |
+    |         def negationOf(n: Byte) = (-n).toByte              |  +--------------------------------------------------------------+
+    |     given tcOfShort: TwosComplement[Short] with            |
+    |         def equalsMinValue(n: Short) = n == Short.MinValue |  +----------------------------------------------------+
+    |         def absOf(n: Short) = n.abs                        |  | Byte.MaxValue.negateOption // Some(-127)           |
+    |         def negationOf(n: Short) = (-n).toShort            |  | Byte.MinValue.negateOption // None                 |
+    |     given tcOfInt: TwosComplement[Int] with                |  | Long.MaxValue.negateOption // -9223372036854775807 |
+    |         def equalsMinValue(n: Int) = n == Int.MinValue     |  | Long.MinValue.negateOption // None                 |
+    |         def absOf(n: Int) = n.abs                          |  +----------------------------------------------------+
+    |         def negationOf(n: Int) = -n                        |
+    |     given tcOfLong: TwosComplement[Long] with              |
+    |         def equalsMinValue(n: Long) = n == Long.MinValue   |
+    |         def absOf(n: Long) = n.abs                         |
+    |         def negationOf(n: Long) = -n                       |
+    +------------------------------------------------------------+
+
+
+
+
+
+
+    -Extension methods for givens
+    -Where Scala looks for extension methods
+
+
+
+
+###############
 # Assertions and Tests
 ###############
     -Assertions
