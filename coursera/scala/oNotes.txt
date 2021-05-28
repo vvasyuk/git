@@ -2782,6 +2782,94 @@
 ###############
 # Typeclasses
 ###############
+    // if you need to write function that implements behaviour usefull for some types but not other. Options:
+    // 1. define overloaded methods
+    // 2. require class of any instance mixes in trait
+    // 3. more flexible - define a typeclass, write function to work with types for which a given instance of typeclass trait is defined
+
+    - Why typeclasses
+    +-----------------------------------+   // typeclass grouping or set of types
+    | abstract def -(x: Double): Double |   // typeclasses support ad hoc polymorphism - functions can be used with a particular, enumerated set of types
+    | abstract def -(x: Float): Float   |   // ad hoc polymorphism - "-", "+" can be used with certain types
+    | abstract def -(x: Long): Long     |   // pass instances of seven specific types to Int’s minus method
+    | abstract def -(x: Int): Int       |   // think of these seven types as a grouping or set of types accepted by the minus method
+    | abstract def -(x: Char): Int      |
+    | abstract def -(x: Short): Int     |
+    | abstract def -(x: Byte): Int      |
+    +-----------------------------------+                                                                                                                      
+                                                                                                                      
+    // Another way to achieve polymorphism in Scala is with a class hierarchy
+    +-----------------------------------+   +-----------------------------------+
+    | sealed trait RainbowColor         |   | def paint(rc: RainbowColor): Unit |
+    | class Red extends RainbowColor    |   +-----------------------------------+
+    | class Orange extends RainbowColor |   // subtyping polymorphism - all the instances passed to the paint method must mix in trait RainbowColor and adhere any constraints established by its interface
+    | class Yellow extends RainbowColor |   // subtyping enables polymorphism of related types
+    | class Green extends RainbowColor  |   // contrast - types accepted by Int’s "-" method, need not adhere to any common interface
+    | class Blue extends RainbowColor   |   // ad hoc polymorphism approaches such as overloading and typeclasses enable polymorphism of unrelated types
+    | class Indigo extends RainbowColor |
+    | class Violet extends RainbowColor |   // if you mix the Ordered trait into a class and implement the abstract compare method, you inherit implementations of <, >, <=, and >=
+    +-----------------------------------+      limitation - every T you pass must mix in Ordered[T]. Class could already have other compare method, variance conflict
+                                               +-------------------------------------------------------+
+                                               | class Hope[+T <: Ordered[T]] extends Ordered[Hope[T]] |   // covariant type T occurs in invariant position in type
+                                               +-------------------------------------------------------+
+    // Typeclasses solve this problem by defining a separate hierarchy focused on the general concept (serialization or ordering)
+    // typeclass instance uses a type parameter to indicate the type for which it is providing a service - no need to change a type to provide the service for that type
+    // can easily define given typeclass instances for types that reside in libraries that you can’t change
+
+    // A given Ordering instance for Hope[T]
+    +---------------------------------------------------------------------------+
+    | import org.stairwaybook.hope.Hope                                         |   // defines a focused hierarchy devoted to ordering, separate from the types being ordered
+    | object HopeUtils:                                                         |   // although you can’t mix Ordered into Hope, you can define a given instance of Ordering for Hope. works despite Hope being in a library you can’t change
+    |     given hopeOrdering[T](using ord: Ordering[T]): Ordering[Hope[T]] with |   // set of all types T for which given instances of Ordering[T] are defined
+    |         def compare(lh: Hope[T], rh: Hope[T]): Int =                      |   //  standard library provides given instances of Ordered for many types (Int, String, etc)
+    |             import Hope.{Glad, Sad}                                       |   // adds to the Ordering typeclass types of the form Hope[T] for all types T that are also members of the typeclass
+    |             (lh, rh) match                                                |   // Typeclasses support ad hoc polymorphism, because you can write functions that can be used only with types for which given instances of a particular typeclass exists
+    |                 case (Sad, Sad) => 0                                      |
+    |                 case (Sad, _) => -1                                       |
+    |                 case (_, Sad) => +1                                       |
+    |                 case (Glad(lhv), Glad(rhv)) =>                            |
+    |                     ord.compare(lhv, rhv)                                 |
+    +---------------------------------------------------------------------------+
+
+    // typeclasses address the problem that it is difficult, inconvenient, or impossible to jam all services involving a type into the class hierarchy of that type
+    // typeclass approach allows you to instead use a second, separate hierarchy focused just on providing the service
+
+    - Context bounds
+    // A function with a using parameter.
+    +------------------------------------------------------------------------------+
+    | def maxList[T](elements: List[T])                                            |
+    |     (using ordering: Ordering[T]): T =                                       |    // using parameter used to provide more information about a type mentioned explicitly in an earlier parameter list
+    |         elements match                                                       |       in this case, how to order Ts
+    |             case List() => throw new IllegalArgumentException("empty list!") |    // compiler will know T at compile time and can therefore determine whether a given definition of type Ordering[T] is available
+    |             case List(x) => x                                                |
+    |             case x :: rest =>                                                |
+    |                 val maxRest = maxList(rest)(using ordering)                  |
+    |                 if ordering.gt(x, maxRest) then x                            |
+    |                 else maxRest                                                 |
+    +------------------------------------------------------------------------------+
+    // A function that uses a using parameter internally                                // A function with a context bound
+    +------------------------------------------------------------------------------+    +--------------------------------------------------------------------------+
+    | def maxList[T](elements: List[T])                                            |    | def maxList[T : Ordering](elements: List[T]): T =                        |
+    |     (using ordering: Ordering[T]): T =                                       |    |     elements match                                                       |
+    |         elements match                                                       |    |         case List() => throw new IllegalArgumentException("empty list!") |
+    |             case List() => throw new IllegalArgumentException("empty list!") |    |         case List(x) => x                                                |
+    |             case List(x) => x                                                |    |         case x :: rest =>                                                |
+    |             case x :: rest =>                                                |    |             val maxRest = maxList(rest)                                  |
+    |                 val maxRest = maxList(rest)   // Uses the given              |    |             if summon[Ordering[T]].gt(x, maxRest) then x                 |    
+    |                 if ordering.gt(x, maxRest) then x                            |    |             else maxRest                                                 |
+    |                 else maxRest                                                 |    +--------------------------------------------------------------------------+
+    +------------------------------------------------------------------------------+    // Scala lets you leave out the name of this parameter and shorten the method header with a context bound
+
+    +-------------------------------+   // effect of calling summon[Foo] is that the compiler will look for a given definition of type Foo
+    | def summon[T](using t: T) = t |      will then call the summon method with that object
+    +-------------------------------+
+    // you are not so much saying what T is; rather, you are saying that there is some form of ordering associated with T
+    +----------------+  // context bound                                                +-------------------+
+    | [T : Ordering] |  //  First, it introduces a type parameter T as normal           | [T <: Ordered[T]] |   // you are saying that a T is an Ordered[T]
+    +----------------+  // Second, it adds a using parameter of type Ordering[T]        +-------------------+
+    
+    
+    
 
 
 ###############
