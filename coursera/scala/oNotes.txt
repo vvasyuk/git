@@ -2996,457 +2996,6 @@
     +--------------------------------+  +------------------------------------------------+
 
 
-    
-
-
-    
-
-
-###############
-# Assertions and Tests
-###############
-    -Assertions
-    def above(that: Element): Element = {
-        val this1 = this widen that.width
-        val that1 = that widen this.width
-        assert(this1.width == that1.width)
-        elem(this1.contents ++ that1.contents)
-    }
-
-    private def widen(w: Int): Element =
-        if (w <= width)
-            this
-        else {
-            val left = elem(' ', (w - width) / 2, height)
-            var right = elem(' ', w - width - left.width, height)
-            left beside this beside right
-        } ensuring (w <= _.width)                                   // underscore is a placeholder for the one argument passed to the predicate, the Element result of the widen method
-        //  If the width passed as w to widen is less than or equal to the width of the result Element, the predicate will result in true
-
-    -Testing in Scala
-    import org.scalatest.FunSuite
-    import Element.elem
-    class ElementSuite extends FunSuite {                   // central concept in ScalaTest is the suite - collection of tests
-        test("elem result should have passed width") {      // specify the name of the test as a string between the parentheses and the test code itself between curly braces
-            val ele = elem('x', 2, 3)                       // test code is a function passed as a by-name parameter to test, which registers it for later execution
-            assert(ele.width == 2)
-        }
-    }
-
-    -Informative failure reports
-    val caught =
-        intercept[ArithmeticException] {
-            1 / 0
-        }
-    assert(caught.getMessage == "/ by zero")
-
-    -Tests as specifications
-    import org.scalatest._
-    class TVSetSpec extends FeatureSpec with GivenWhenThen {
-        feature("TV power button") {
-            scenario("User presses power button when TV is off") {
-                Given("a TV set that is switched off")
-                When("the power button is pressed")
-                Then("the TV should switch on")
-                pending
-            }
-        }
-    }
-
-    -Property-based testing
-    import org.scalatest.WordSpec
-    import org.scalatest.prop.PropertyChecks
-    import org.scalatest.MustMatchers._
-    import Element.elem
-    class ElementSpec extends WordSpec with PropertyChecks {
-        "elem result" must {
-            "have passed width" in {
-                forAll { (w: Int) =>
-                    whenever (w > 0) {
-                        elem('x', w, 3).width must equal (w)
-                    }
-                }
-            }
-        }
-    }
-
-    -Organizing and running tests
-    scalac -cp scalatest.jar TVSetSpec.scala
-
-
-
-###############
-# Implicit Conversions and Parameters
-###############
-    -Implicit conversions
-    val button = new JButton
-    button.addActionListener(                                   // Scala program that uses Swing must use inner classes just like in Java
-        new ActionListener {
-            def actionPerformed(event: ActionEvent) = {
-                println("pressed!")                             // only new information here
-            }
-        }
-    )
-    // first step is to write an implicit conversion between the two types
-    implicit def function2ActionListener(f: ActionEvent => Unit) =
-        new ActionListener {                                    // one-argument method that takes a function and returns an action listener
-            def actionPerformed(event: ActionEvent) = f(event)
-        }
-    // called directly
-    button.addActionListener(
-        function2ActionListener((_: ActionEvent) => println("pressed!"))
-    )
-    // Because function2ActionListener is marked as implicit, it can be left out and the compiler will insert it automatically
-    button.addActionListener(                                   // compiler first tries to compile it as is, but it sees a type error
-        (_: ActionEvent) => println("pressed!")                 // Before giving up, it looks for an implicit conversion that can repair the problem. In this case, it finds function2ActionListener. It tries that conversion method, sees that it works, and moves on
-    )
-
-    -Rules for implicits
-    // if x + y does not type check, then the compiler might change it to convert(x) + y, where convert is some available implicit conversion
-    // f convert changes x into something that has a + method, then this change might fix a program so that it type checks and runs correctly
-    -Marking rule: Only definitions marked implicit are available
-    // implicit keyword is used to mark which declarations the compiler may use as implicit
-    implicit def intToString(x: Int) = x.toString
-    -Scope rule: An inserted implicit conversion must be in scope as a single identifier, or be associated with the source or target type of the conversion
-    //compiler will not insert a conversion of the form someVariable.convert - you would need to import it, which would make it available as a single identifier
-    object Dollar {                                             // compiler will find such an associated conversion every time it needs to convert from an instance of type Dollar
-        implicit def dollarToEuro(x: Dollar): Euro = ...
-    }
-    class Dollar { ... }
-    -One-at-a-time rule: Only one implicit is inserted
-    // compiler will never rewrite x + y to convert1(convert2(x)) + y.
-    -Explicits-first rule: Whenever code type checks as it is written, no implicits are attempted
-    // compiler will not change code that already works
-    -Naming an implicit conversion
-    // matters if you want to use it explicitly or import something specific
-    -Where implicits are tried
-    // conversions to an expected type, conversions of the receiver of a selection, and implicit parameters
-
-    -Implicit conversion to an expected type
-    // Whenever the compiler sees an X, but needs a Y, it will look for an implicit function that converts X to Y
-    val i: Int = 3.5                                            // error: type mismatch; found : Double(3.5) required: Int
-    implicit def doubleToInt(x: Double) = x.toInt
-    val i: Int = 3.5                                            // i: Int = 3
-
-    -Converting the receiver
-    // suppose you write down obj.doIt, and obj does not have a member named doIt. The compiler will try to insert conversions before giving up
-    -Interoperating with new types
-    class Rational(n: Int, d: Int) {
-    ...
-        def + (that: Rational): Rational = ...
-        def + (that: Int): Rational = ...
-    }
-    val oneHalf = new Rational(1, 2)
-    1 + oneHalf                                                 // error: overloaded method value + with
-    implicit def intToRational(x: Int) = new Rational(x, 1)     // implicit conversion from Int to Rational
-    1 + oneHalf                                                 // res2: Rational = 3/2
-
-    -Simulating new syntax
-    Map(1 -> "one", 2 -> "two", 3 -> "three")
-    package scala
-    object Predef {
-        class ArrowAssoc[A](x: A) {                             // implicit conversion from Any to ArrowAssoc
-            def ->[B](y: B): Tuple2[A, B] = Tuple2(x, y)        // When you write 1 -> "one", the compiler inserts a conversion from 1 to ArrowAssoc so that the -> method can be found.
-        }
-        implicit def any2ArrowAssoc[A](x: A): ArrowAssoc[A] =
-            new ArrowAssoc(x)
-        ...
-    }
-
-    -Implicit classes
-    // for implicit class -compiler generates an implicit conversion from the class’s constructor parameter to the class itself
-    case class Rectangle(width: Int, height: Int)
-    implicit class RectangleMaker(width: Int) {
-        def x(height: Int) = Rectangle(width, height)
-    }
-    // Automatically generated
-    implicit def RectangleMaker(width: Int) =
-        new RectangleMaker(width)
-    // can create points by putting an x in between two integers
-    val myRectangle = 3 x 4                                     // myRectangle: Rectangle = Rectangle(3,4)
-
-    -Implicit parameters
-    // compiler will sometimes replace someCall(a) with someCall(a)(b), or new SomeClass(a) with new SomeClass(a)(b),
-    class PreferredPrompt(val preference: String)
-    object Greeter {
-        def greet(name: String)(implicit prompt: PreferredPrompt) = {   // last parameter list is marked implicit
-            println("Welcome, " + name + ". The system is ready.")
-            println(prompt.preference)
-        }
-    }
-    val bobsPrompt = new PreferredPrompt("relax> ")                     // But you can still provide the prompt explicitly, like this
-    Greeter.greet("Bob")(bobsPrompt)
-    object JoesPrefs {
-        implicit val prompt = new PreferredPrompt("Yes, master> ")      // let the compiler supply the parameter implicitly, you must first define a variable of the expected type, which in this case is PreferredPrompt
-    }
-    import JoesPrefs._
-
-    def maxListImpParm[T](elements: List[T])(implicit ordering: Ordering[T]): T =
-        elements match {
-            case List() => throw new IllegalArgumentException("empty list!")
-            case List(x) => x
-            case x :: rest =>
-            val maxRest = maxListImpParm(rest)(ordering)
-            if (ordering.gt(x, maxRest)) x
-            else maxRest
-        }
-    // standard Scala library provides implicit "ordering" methods for many common types
-    maxListImpParm(List(1,5,10,3))                                      // res9: Int = 10
-    maxListImpParm(List("one", "two", "three"))                         // res11: String = two
-
-    -Context bounds
-    def maxListImpParm[T](elements: List[T])(implicit ordering: Ordering[T]): T =
-        elements match {
-            case List() => throw new IllegalArgumentException("empty list!")
-            case List(x) => x
-            case x :: rest =>
-            val maxRest = maxListImpParm(rest)                          // (ordering) is implicit
-            if (ordering.gt(x, maxRest)) x                              // this ordering is still explicit
-            else maxRest
-        }
-    def implicitly[T](implicit t: T) = t
-    // effect of calling implicitly[Foo] is that the compiler will look for an implicit definition of type Foo. It will then call the implicitly method with that object, which in turn returns the object right back
-    def maxListImpParm[T](elements: List[T])(implicit ordering: Ordering[T]): T =
-        elements match {
-            case List() => throw new IllegalArgumentException("empty list!")
-            case List(x) => x
-            case x :: rest =>
-            val maxRest = maxListImpParm(rest)
-            if (implicitly[Ordering[T]].gt(x, maxRest)) x
-            else maxRest
-        }
-
-    -When multiple conversions apply
-    // If one of the available conversions is strictly more specific than the others, then the compiler will choose the more specific one
-    def printLength(seq: Seq[Int]) = println(seq.length)
-    implicit def intToRange(i: Int) = 1 to i                            // intToRange: (i: Int)scala.collection.immutable.Range.Inclusive
-    implicit def intToDigits(i: Int) =i.toString.toList.map(_.toInt)    // intToDigits: (i: Int)List[Int]
-
-    -Debugging implicits
-    // it helps to write the wrapString conversion explicitly to find out what went wrong
-    // If you are brave, try scala Xprint: typer to get an interactive shell that prints out the post-typing source code it uses internally
-
-
-###############
-# Implementing Lists
-###############
-    -The List class in principle
-    // abstract class List - comes with two subclasses for :: and Nil
-    //            List[+T]                  // lists are covariant [+T] can assign a value of type List[Int] to a variable of type List[Any]
-    //        «sealed abstract»
-    //    ::[T]               Nil
-    //«final case»        «case object»                
-    val xs = List(1, 2, 3)
-    var ys: List[Any] = xs
-    // All list operations can be defined in terms of three basic methods: 
-    def isEmpty: Boolean                    // defined in the subobject Nil and the subclass ::.
-    def head: T
-    def tail: List[T]
-
-    -The Nil object
-    // Nil object inherits from type List[Nothing] because of covariance, this means that Nil is compatible with every instance of the List type
-    case object Nil extends List[Nothing] {
-        override def isEmpty = true
-        def head: Nothing = throw new NoSuchElementException("head of empty list")
-        def tail: List[Nothing] = throw new NoSuchElementException("tail of empty list")
-    }
-
-    -The :: class (pronounced "cons" for "construct")
-    // x :: xs is treated as ::(x, xs) where :: is a case class
-    final case class ::[T](hd: T, tl: List[T]) extends List[T] {
-        def head = hd
-        def tail = tl
-        override def isEmpty: Boolean = false
-    }
-
-    -Some more methods
-    //
-    def length: Int =
-        if (isEmpty) 0 else 1 + tail.length
-    //or:
-    def drop(n: Int): List[T] =
-        if (isEmpty) Nil
-        else if (n <= 0) this
-        else tail.drop(n-1)
-    //or:
-    def map[U](f: T => U): List[U] =
-        if (isEmpty) Nil
-        else f(head) :: tail.map(f)
-
-    -List construction
-    // methods :: and ::: - end in a colon so they bound to the right operand
-    // x :: xs is treated as the method call xs.::(x), not x.::(xs).
-    abstract class Fruit
-    class Apple extends Fruit
-    class Orange extends Fruit
-    val apples = new Apple :: Nil               // apples: List[Apple] = List(Apple@e885c6a)
-    val fruits = new Orange :: apples           // fruits: List[Fruit] = List(Orange@3f51b349, Apple@e885c6a)
-    def ::[U >: T](x: U): List[U] = new scala.::(x, this)       // U is constrained in [U >: T] to be a supertype of the list elem T    
-
-    -The ListBuffer class
-    // typical access pattern for a list is recursive
-    def incAll(xs: List[Int]): List[Int] = xs match {
-        case List() => List()
-        case x :: xs1 => x + 1 :: incAll(xs1)   // not tail recursive (recursive call to incAll above occurs inside a :: operation)
-    }                                           // Therefore each recursive call requires a new stack frame
-    // cannot apply incAll to lists of much more than about 30,000 to 50,000 elements
-    // A very inefficient possibility is to use :::, the list append operator
-    var result = List[Int]()                        // a very inefficient approach
-    for (x <- xs) result = result ::: List(x + 1)   // Because ::: takes time proportional to the length of its first operand, the whole operation takes time proportional to the square of the length of the list
-    result
-    // List buffers let you accumulate the elements of a list. To do this, you use an operation such as “buf += elem”,which appends the element elem at the end of the list buffer buf
-    import scala.collection.mutable.ListBuffer
-    val buf = new ListBuffer[Int]
-    for (x <- xs) buf += x + 1
-    buf.toList
-
-    -The List class in practice
-    // most methods in the real implementation of class List avoid recursion and use loops with list buffers instead
-    final override def map[U](f: T => U): List[U] = {
-        val b = new ListBuffer[U]
-        var these = this
-        while (!these.isEmpty) {
-            b += f(these.head)
-            these = these.tail
-        }
-        b.toList
-    }
-    // The definition of the :: subclass of List.
-    final case class ::[U](hd: U, private[scala] var tl: List[U]) extends List[U] {
-        def head = hd
-        def tail = tl
-        override def isEmpty: Boolean = false
-    }
-
-    -Functional on the outside
-    // lists are purely functional on the “outside” but have an imperative implementation using list buffers on the “inside.”
-    val ys = 1 :: xs        // e tails of lists ys and zs are shared; they point to the same data structure.
-    val zs = 2 :: xs
-    // Scala’s List and ListBuffer is quite similar to what’s done in Java’s pair of classes String and StringBuffer
-
-
-###############
-# For Expressions Revisited
-###############
-    case class Person(name: String,isMale: Boolean, children: Person*)
-    val lara = Person("Lara", false)
-    val bob = Person("Bob", true)
-    val julie = Person("Julie", false, lara, bob)
-    val persons = List(lara, bob, julie)
-    //  say you want to find out the names of all pairs of mothers and their children in that list
-    persons filter (p => !p.isMale) flatMap (p =>(p.children map (c => (p.name, c.name))))      // res0: List[(String, String)] = List((Julie,Lara), (Julie,Bob)) 
-    //  Is there a simpler way?
-    for (p <- persons; if !p.isMale; c <- p.children)
-        yield (p.name, c.name)              // res2: List[(String, String)] = List((Julie,Lara), (Julie,Bob))
-
-    -For expressions
-    for ( seq ) yield expr                  // seq is a sequence of generators, definitions, and filters, with semicolons between successive elements.
-    for (p <- persons; n = p.name; if (n startsWith "To"))      // one generator, one definition, and one filter
-    yield n
-    // or
-    for {
-        p <- persons            // a generator
-        n = p.name              // a definition
-        if (n startsWith "To")  // a filter - filter drops from the iteration all elements for which expr returns false
-    } yield n
-    // several generators
-    for (x <- List(1, 2); y <- List("one", "two"))
-    yield (x, y)                // res3: List[(Int, String)] = List((1,one), (1,two), (2,one), (2,two))
-
-    -The n-queens problem
-    // Given a standard chess-board, place eight queens such that no queen is in check from any other
-    // you need to place a queen in each row each time checking that a newly placed queen is not in check from any other queens
-    // solution can be presented by a list of length k of coordinates (row, column)
-    def queens(n: Int): List[List[(Int, Int)]] = {
-        def placeQueens(k: Int): List[List[(Int, Int)]] =
-            if (k == 0)
-                List(List())
-            else
-                for {
-                    queens <-placeQueens(k-1)
-                    column <-1 to n
-                    queen = (k, column)
-                    if isSafe(queen, queens)
-                } yield queen :: queens
-        placeQueens(n)
-    }
-    def isSafe(queen: (Int, Int), queens: List[(Int, Int)]) =
-        queens forall (q => !inCheck(queen, q))
-    def inCheck(q1: (Int, Int), q2: (Int, Int)) =
-        q1._1 == q2._1 ||               // same row
-        q1._2 == q2._2 ||               // same column
-        (q1._1 q2._
-        1).abs == (q1._2 q2._2).abs     // on diagonal
-
-    -Querying with for expressions
-    // case class Book(title: String, authors: String*)
-    val books: List[Book] =
-        List(
-            Book(
-                "Structure and Interpretation of Computer Programs",
-                "Abelson, Harold", "Sussman, Gerald J."
-            ),
-            Book(
-                "Principles of Compiler Design",
-                "Aho, Alfred", "Ullman, Jeffrey"
-            ),
-            Book(
-                "Programming in Modula2",
-                "Wirth, Niklaus"
-            ),
-            Book(
-                "Elements of ML Programming",
-                "Ullman, Jeffrey"
-            ),
-            Book(
-                "The Java Language Specification", "Gosling, James",
-                "Joy, Bill", "Steele, Guy", "Bracha, Gilad"
-            )
-        )
-    // find the titles of all books whose author’s last name is "Gosling"
-    for (b <-books;a <-b.authors; if a startsWith "Gosling")
-        yield b.title                   // res4: List[String] = List(The Java Language Specification)
-    // find the titles of all books that have the string “Program” in their title
-    for (b <-books; if (b.title indexOf "Program") >= 0)
-        yield b.title                   // res5: List[String] = List(Structure and Interpretation of Computer Programs, Programming in Modula2, Elements of ML Programming)
-    // find the names of all authors who have written at least two books in the database:
-    for (b1 <-books; b2 <-books; if b1 != b2; a1 <-b1.authors; a2 <b2.authors if a1 == a2)
-        yield a1                        // res6: List[String] = List(Ullman, Jeffrey, Ullman, Jeffrey)
-    def removeDuplicates[A](xs: List[A]): List[A] = {
-        if (xs.isEmpty) xs
-        else
-            xs.head :: removeDuplicates(xs.tail filter (x => x != xs.head))
-    }
-    xs.head :: removeDuplicates(
-        for (x <-xs.tail if x != xs.head) yield x
-    )
-
-    -Translation of for expressions
-    -Translating for expressions with one generator
-    for (x <-expr1) yield expr2                     // expr1.map(x => expr2)
-    -Translating for expressions starting with a generator and a filter
-    for (x <-expr1; if expr2) yield expr3           // for (x <-expr1 withFilter (x => expr2)) yield expr3  --> expr1 withFilter (x => expr2) map (x => expr3)
-    -Translating for expressions starting with two generators
-    for (x <-expr1; y <-expr2; seq) yield expr3     // expr1.flatMap(x => for (y <-expr2; seq) yield expr3)
-    for (b1 <-books; b2 <-books if b1 != b2; a1 <-b1.authors; a2 <-b2.authors if a1 == a2)
-        yield a1
-    books flatMap (b1 =>
-        books withFilter (b2 => b1 != b2) flatMap (b2 =>
-            b1.authors flatMap (a1 =>
-                b2.authors withFilter (a2 => a1 == a2) map (a2 =>
-                    a1))))
-
-    -Going the other way
-    object Demo {
-        def map[A, B](xs: List[A], f: A => B): List[B] =
-            for (x <-xs) yield f(x)
-        def flatMap[A, B](xs: List[A], f: A => List[B]): List[B] =
-            for (x <-xs; y <-f(x)) yield y
-        def filter[A](xs: List[A], p: A => Boolean): List[A] =
-            for (x <-xs if p(x)) yield x
-    }
-
-
 ###############
 # Collections in Depth
 ###############
@@ -4011,6 +3560,453 @@
     bit.head                        // res10: Int = 1
     bit.next()                      // res11: Int = 1
     bit.next()                      // res11: Int = 2
+
+
+###############
+# Assertions and Tests
+###############
+    -Assertions
+    def above(that: Element): Element = {
+        val this1 = this widen that.width
+        val that1 = that widen this.width
+        assert(this1.width == that1.width)
+        elem(this1.contents ++ that1.contents)
+    }
+
+    private def widen(w: Int): Element =
+        if (w <= width)
+            this
+        else {
+            val left = elem(' ', (w - width) / 2, height)
+            var right = elem(' ', w - width - left.width, height)
+            left beside this beside right
+        } ensuring (w <= _.width)                                   // underscore is a placeholder for the one argument passed to the predicate, the Element result of the widen method
+        //  If the width passed as w to widen is less than or equal to the width of the result Element, the predicate will result in true
+
+    -Testing in Scala
+    import org.scalatest.FunSuite
+    import Element.elem
+    class ElementSuite extends FunSuite {                   // central concept in ScalaTest is the suite - collection of tests
+        test("elem result should have passed width") {      // specify the name of the test as a string between the parentheses and the test code itself between curly braces
+            val ele = elem('x', 2, 3)                       // test code is a function passed as a by-name parameter to test, which registers it for later execution
+            assert(ele.width == 2)
+        }
+    }
+
+    -Informative failure reports
+    val caught =
+        intercept[ArithmeticException] {
+            1 / 0
+        }
+    assert(caught.getMessage == "/ by zero")
+
+    -Tests as specifications
+    import org.scalatest._
+    class TVSetSpec extends FeatureSpec with GivenWhenThen {
+        feature("TV power button") {
+            scenario("User presses power button when TV is off") {
+                Given("a TV set that is switched off")
+                When("the power button is pressed")
+                Then("the TV should switch on")
+                pending
+            }
+        }
+    }
+
+    -Property-based testing
+    import org.scalatest.WordSpec
+    import org.scalatest.prop.PropertyChecks
+    import org.scalatest.MustMatchers._
+    import Element.elem
+    class ElementSpec extends WordSpec with PropertyChecks {
+        "elem result" must {
+            "have passed width" in {
+                forAll { (w: Int) =>
+                    whenever (w > 0) {
+                        elem('x', w, 3).width must equal (w)
+                    }
+                }
+            }
+        }
+    }
+
+    -Organizing and running tests
+    scalac -cp scalatest.jar TVSetSpec.scala
+
+
+
+###############
+# Implicit Conversions and Parameters
+###############
+    -Implicit conversions
+    val button = new JButton
+    button.addActionListener(                                   // Scala program that uses Swing must use inner classes just like in Java
+        new ActionListener {
+            def actionPerformed(event: ActionEvent) = {
+                println("pressed!")                             // only new information here
+            }
+        }
+    )
+    // first step is to write an implicit conversion between the two types
+    implicit def function2ActionListener(f: ActionEvent => Unit) =
+        new ActionListener {                                    // one-argument method that takes a function and returns an action listener
+            def actionPerformed(event: ActionEvent) = f(event)
+        }
+    // called directly
+    button.addActionListener(
+        function2ActionListener((_: ActionEvent) => println("pressed!"))
+    )
+    // Because function2ActionListener is marked as implicit, it can be left out and the compiler will insert it automatically
+    button.addActionListener(                                   // compiler first tries to compile it as is, but it sees a type error
+        (_: ActionEvent) => println("pressed!")                 // Before giving up, it looks for an implicit conversion that can repair the problem. In this case, it finds function2ActionListener. It tries that conversion method, sees that it works, and moves on
+    )
+
+    -Rules for implicits
+    // if x + y does not type check, then the compiler might change it to convert(x) + y, where convert is some available implicit conversion
+    // f convert changes x into something that has a + method, then this change might fix a program so that it type checks and runs correctly
+    -Marking rule: Only definitions marked implicit are available
+    // implicit keyword is used to mark which declarations the compiler may use as implicit
+    implicit def intToString(x: Int) = x.toString
+    -Scope rule: An inserted implicit conversion must be in scope as a single identifier, or be associated with the source or target type of the conversion
+    //compiler will not insert a conversion of the form someVariable.convert - you would need to import it, which would make it available as a single identifier
+    object Dollar {                                             // compiler will find such an associated conversion every time it needs to convert from an instance of type Dollar
+        implicit def dollarToEuro(x: Dollar): Euro = ...
+    }
+    class Dollar { ... }
+    -One-at-a-time rule: Only one implicit is inserted
+    // compiler will never rewrite x + y to convert1(convert2(x)) + y.
+    -Explicits-first rule: Whenever code type checks as it is written, no implicits are attempted
+    // compiler will not change code that already works
+    -Naming an implicit conversion
+    // matters if you want to use it explicitly or import something specific
+    -Where implicits are tried
+    // conversions to an expected type, conversions of the receiver of a selection, and implicit parameters
+
+    -Implicit conversion to an expected type
+    // Whenever the compiler sees an X, but needs a Y, it will look for an implicit function that converts X to Y
+    val i: Int = 3.5                                            // error: type mismatch; found : Double(3.5) required: Int
+    implicit def doubleToInt(x: Double) = x.toInt
+    val i: Int = 3.5                                            // i: Int = 3
+
+    -Converting the receiver
+    // suppose you write down obj.doIt, and obj does not have a member named doIt. The compiler will try to insert conversions before giving up
+    -Interoperating with new types
+    class Rational(n: Int, d: Int) {
+    ...
+        def + (that: Rational): Rational = ...
+        def + (that: Int): Rational = ...
+    }
+    val oneHalf = new Rational(1, 2)
+    1 + oneHalf                                                 // error: overloaded method value + with
+    implicit def intToRational(x: Int) = new Rational(x, 1)     // implicit conversion from Int to Rational
+    1 + oneHalf                                                 // res2: Rational = 3/2
+
+    -Simulating new syntax
+    Map(1 -> "one", 2 -> "two", 3 -> "three")
+    package scala
+    object Predef {
+        class ArrowAssoc[A](x: A) {                             // implicit conversion from Any to ArrowAssoc
+            def ->[B](y: B): Tuple2[A, B] = Tuple2(x, y)        // When you write 1 -> "one", the compiler inserts a conversion from 1 to ArrowAssoc so that the -> method can be found.
+        }
+        implicit def any2ArrowAssoc[A](x: A): ArrowAssoc[A] =
+            new ArrowAssoc(x)
+        ...
+    }
+
+    -Implicit classes
+    // for implicit class -compiler generates an implicit conversion from the class’s constructor parameter to the class itself
+    case class Rectangle(width: Int, height: Int)
+    implicit class RectangleMaker(width: Int) {
+        def x(height: Int) = Rectangle(width, height)
+    }
+    // Automatically generated
+    implicit def RectangleMaker(width: Int) =
+        new RectangleMaker(width)
+    // can create points by putting an x in between two integers
+    val myRectangle = 3 x 4                                     // myRectangle: Rectangle = Rectangle(3,4)
+
+    -Implicit parameters
+    // compiler will sometimes replace someCall(a) with someCall(a)(b), or new SomeClass(a) with new SomeClass(a)(b),
+    class PreferredPrompt(val preference: String)
+    object Greeter {
+        def greet(name: String)(implicit prompt: PreferredPrompt) = {   // last parameter list is marked implicit
+            println("Welcome, " + name + ". The system is ready.")
+            println(prompt.preference)
+        }
+    }
+    val bobsPrompt = new PreferredPrompt("relax> ")                     // But you can still provide the prompt explicitly, like this
+    Greeter.greet("Bob")(bobsPrompt)
+    object JoesPrefs {
+        implicit val prompt = new PreferredPrompt("Yes, master> ")      // let the compiler supply the parameter implicitly, you must first define a variable of the expected type, which in this case is PreferredPrompt
+    }
+    import JoesPrefs._
+
+    def maxListImpParm[T](elements: List[T])(implicit ordering: Ordering[T]): T =
+        elements match {
+            case List() => throw new IllegalArgumentException("empty list!")
+            case List(x) => x
+            case x :: rest =>
+            val maxRest = maxListImpParm(rest)(ordering)
+            if (ordering.gt(x, maxRest)) x
+            else maxRest
+        }
+    // standard Scala library provides implicit "ordering" methods for many common types
+    maxListImpParm(List(1,5,10,3))                                      // res9: Int = 10
+    maxListImpParm(List("one", "two", "three"))                         // res11: String = two
+
+    -Context bounds
+    def maxListImpParm[T](elements: List[T])(implicit ordering: Ordering[T]): T =
+        elements match {
+            case List() => throw new IllegalArgumentException("empty list!")
+            case List(x) => x
+            case x :: rest =>
+            val maxRest = maxListImpParm(rest)                          // (ordering) is implicit
+            if (ordering.gt(x, maxRest)) x                              // this ordering is still explicit
+            else maxRest
+        }
+    def implicitly[T](implicit t: T) = t
+    // effect of calling implicitly[Foo] is that the compiler will look for an implicit definition of type Foo. It will then call the implicitly method with that object, which in turn returns the object right back
+    def maxListImpParm[T](elements: List[T])(implicit ordering: Ordering[T]): T =
+        elements match {
+            case List() => throw new IllegalArgumentException("empty list!")
+            case List(x) => x
+            case x :: rest =>
+            val maxRest = maxListImpParm(rest)
+            if (implicitly[Ordering[T]].gt(x, maxRest)) x
+            else maxRest
+        }
+
+    -When multiple conversions apply
+    // If one of the available conversions is strictly more specific than the others, then the compiler will choose the more specific one
+    def printLength(seq: Seq[Int]) = println(seq.length)
+    implicit def intToRange(i: Int) = 1 to i                            // intToRange: (i: Int)scala.collection.immutable.Range.Inclusive
+    implicit def intToDigits(i: Int) =i.toString.toList.map(_.toInt)    // intToDigits: (i: Int)List[Int]
+
+    -Debugging implicits
+    // it helps to write the wrapString conversion explicitly to find out what went wrong
+    // If you are brave, try scala Xprint: typer to get an interactive shell that prints out the post-typing source code it uses internally
+
+
+###############
+# Implementing Lists
+###############
+    -The List class in principle
+    // abstract class List - comes with two subclasses for :: and Nil
+    //            List[+T]                  // lists are covariant [+T] can assign a value of type List[Int] to a variable of type List[Any]
+    //        «sealed abstract»
+    //    ::[T]               Nil
+    //«final case»        «case object»                
+    val xs = List(1, 2, 3)
+    var ys: List[Any] = xs
+    // All list operations can be defined in terms of three basic methods: 
+    def isEmpty: Boolean                    // defined in the subobject Nil and the subclass ::.
+    def head: T
+    def tail: List[T]
+
+    -The Nil object
+    // Nil object inherits from type List[Nothing] because of covariance, this means that Nil is compatible with every instance of the List type
+    case object Nil extends List[Nothing] {
+        override def isEmpty = true
+        def head: Nothing = throw new NoSuchElementException("head of empty list")
+        def tail: List[Nothing] = throw new NoSuchElementException("tail of empty list")
+    }
+
+    -The :: class (pronounced "cons" for "construct")
+    // x :: xs is treated as ::(x, xs) where :: is a case class
+    final case class ::[T](hd: T, tl: List[T]) extends List[T] {
+        def head = hd
+        def tail = tl
+        override def isEmpty: Boolean = false
+    }
+
+    -Some more methods
+    //
+    def length: Int =
+        if (isEmpty) 0 else 1 + tail.length
+    //or:
+    def drop(n: Int): List[T] =
+        if (isEmpty) Nil
+        else if (n <= 0) this
+        else tail.drop(n-1)
+    //or:
+    def map[U](f: T => U): List[U] =
+        if (isEmpty) Nil
+        else f(head) :: tail.map(f)
+
+    -List construction
+    // methods :: and ::: - end in a colon so they bound to the right operand
+    // x :: xs is treated as the method call xs.::(x), not x.::(xs).
+    abstract class Fruit
+    class Apple extends Fruit
+    class Orange extends Fruit
+    val apples = new Apple :: Nil               // apples: List[Apple] = List(Apple@e885c6a)
+    val fruits = new Orange :: apples           // fruits: List[Fruit] = List(Orange@3f51b349, Apple@e885c6a)
+    def ::[U >: T](x: U): List[U] = new scala.::(x, this)       // U is constrained in [U >: T] to be a supertype of the list elem T    
+
+    -The ListBuffer class
+    // typical access pattern for a list is recursive
+    def incAll(xs: List[Int]): List[Int] = xs match {
+        case List() => List()
+        case x :: xs1 => x + 1 :: incAll(xs1)   // not tail recursive (recursive call to incAll above occurs inside a :: operation)
+    }                                           // Therefore each recursive call requires a new stack frame
+    // cannot apply incAll to lists of much more than about 30,000 to 50,000 elements
+    // A very inefficient possibility is to use :::, the list append operator
+    var result = List[Int]()                        // a very inefficient approach
+    for (x <- xs) result = result ::: List(x + 1)   // Because ::: takes time proportional to the length of its first operand, the whole operation takes time proportional to the square of the length of the list
+    result
+    // List buffers let you accumulate the elements of a list. To do this, you use an operation such as “buf += elem”,which appends the element elem at the end of the list buffer buf
+    import scala.collection.mutable.ListBuffer
+    val buf = new ListBuffer[Int]
+    for (x <- xs) buf += x + 1
+    buf.toList
+
+    -The List class in practice
+    // most methods in the real implementation of class List avoid recursion and use loops with list buffers instead
+    final override def map[U](f: T => U): List[U] = {
+        val b = new ListBuffer[U]
+        var these = this
+        while (!these.isEmpty) {
+            b += f(these.head)
+            these = these.tail
+        }
+        b.toList
+    }
+    // The definition of the :: subclass of List.
+    final case class ::[U](hd: U, private[scala] var tl: List[U]) extends List[U] {
+        def head = hd
+        def tail = tl
+        override def isEmpty: Boolean = false
+    }
+
+    -Functional on the outside
+    // lists are purely functional on the “outside” but have an imperative implementation using list buffers on the “inside.”
+    val ys = 1 :: xs        // e tails of lists ys and zs are shared; they point to the same data structure.
+    val zs = 2 :: xs
+    // Scala’s List and ListBuffer is quite similar to what’s done in Java’s pair of classes String and StringBuffer
+
+
+###############
+# For Expressions Revisited
+###############
+    case class Person(name: String,isMale: Boolean, children: Person*)
+    val lara = Person("Lara", false)
+    val bob = Person("Bob", true)
+    val julie = Person("Julie", false, lara, bob)
+    val persons = List(lara, bob, julie)
+    //  say you want to find out the names of all pairs of mothers and their children in that list
+    persons filter (p => !p.isMale) flatMap (p =>(p.children map (c => (p.name, c.name))))      // res0: List[(String, String)] = List((Julie,Lara), (Julie,Bob)) 
+    //  Is there a simpler way?
+    for (p <- persons; if !p.isMale; c <- p.children)
+        yield (p.name, c.name)              // res2: List[(String, String)] = List((Julie,Lara), (Julie,Bob))
+
+    -For expressions
+    for ( seq ) yield expr                  // seq is a sequence of generators, definitions, and filters, with semicolons between successive elements.
+    for (p <- persons; n = p.name; if (n startsWith "To"))      // one generator, one definition, and one filter
+    yield n
+    // or
+    for {
+        p <- persons            // a generator
+        n = p.name              // a definition
+        if (n startsWith "To")  // a filter - filter drops from the iteration all elements for which expr returns false
+    } yield n
+    // several generators
+    for (x <- List(1, 2); y <- List("one", "two"))
+    yield (x, y)                // res3: List[(Int, String)] = List((1,one), (1,two), (2,one), (2,two))
+
+    -The n-queens problem
+    // Given a standard chess-board, place eight queens such that no queen is in check from any other
+    // you need to place a queen in each row each time checking that a newly placed queen is not in check from any other queens
+    // solution can be presented by a list of length k of coordinates (row, column)
+    def queens(n: Int): List[List[(Int, Int)]] = {
+        def placeQueens(k: Int): List[List[(Int, Int)]] =
+            if (k == 0)
+                List(List())
+            else
+                for {
+                    queens <-placeQueens(k-1)
+                    column <-1 to n
+                    queen = (k, column)
+                    if isSafe(queen, queens)
+                } yield queen :: queens
+        placeQueens(n)
+    }
+    def isSafe(queen: (Int, Int), queens: List[(Int, Int)]) =
+        queens forall (q => !inCheck(queen, q))
+    def inCheck(q1: (Int, Int), q2: (Int, Int)) =
+        q1._1 == q2._1 ||               // same row
+        q1._2 == q2._2 ||               // same column
+        (q1._1 q2._
+        1).abs == (q1._2 q2._2).abs     // on diagonal
+
+    -Querying with for expressions
+    // case class Book(title: String, authors: String*)
+    val books: List[Book] =
+        List(
+            Book(
+                "Structure and Interpretation of Computer Programs",
+                "Abelson, Harold", "Sussman, Gerald J."
+            ),
+            Book(
+                "Principles of Compiler Design",
+                "Aho, Alfred", "Ullman, Jeffrey"
+            ),
+            Book(
+                "Programming in Modula2",
+                "Wirth, Niklaus"
+            ),
+            Book(
+                "Elements of ML Programming",
+                "Ullman, Jeffrey"
+            ),
+            Book(
+                "The Java Language Specification", "Gosling, James",
+                "Joy, Bill", "Steele, Guy", "Bracha, Gilad"
+            )
+        )
+    // find the titles of all books whose author’s last name is "Gosling"
+    for (b <-books;a <-b.authors; if a startsWith "Gosling")
+        yield b.title                   // res4: List[String] = List(The Java Language Specification)
+    // find the titles of all books that have the string “Program” in their title
+    for (b <-books; if (b.title indexOf "Program") >= 0)
+        yield b.title                   // res5: List[String] = List(Structure and Interpretation of Computer Programs, Programming in Modula2, Elements of ML Programming)
+    // find the names of all authors who have written at least two books in the database:
+    for (b1 <-books; b2 <-books; if b1 != b2; a1 <-b1.authors; a2 <b2.authors if a1 == a2)
+        yield a1                        // res6: List[String] = List(Ullman, Jeffrey, Ullman, Jeffrey)
+    def removeDuplicates[A](xs: List[A]): List[A] = {
+        if (xs.isEmpty) xs
+        else
+            xs.head :: removeDuplicates(xs.tail filter (x => x != xs.head))
+    }
+    xs.head :: removeDuplicates(
+        for (x <-xs.tail if x != xs.head) yield x
+    )
+
+    -Translation of for expressions
+    -Translating for expressions with one generator
+    for (x <-expr1) yield expr2                     // expr1.map(x => expr2)
+    -Translating for expressions starting with a generator and a filter
+    for (x <-expr1; if expr2) yield expr3           // for (x <-expr1 withFilter (x => expr2)) yield expr3  --> expr1 withFilter (x => expr2) map (x => expr3)
+    -Translating for expressions starting with two generators
+    for (x <-expr1; y <-expr2; seq) yield expr3     // expr1.flatMap(x => for (y <-expr2; seq) yield expr3)
+    for (b1 <-books; b2 <-books if b1 != b2; a1 <-b1.authors; a2 <-b2.authors if a1 == a2)
+        yield a1
+    books flatMap (b1 =>
+        books withFilter (b2 => b1 != b2) flatMap (b2 =>
+            b1.authors flatMap (a1 =>
+                b2.authors withFilter (a2 => a1 == a2) map (a2 =>
+                    a1))))
+
+    -Going the other way
+    object Demo {
+        def map[A, B](xs: List[A], f: A => B): List[B] =
+            for (x <-xs) yield f(x)
+        def flatMap[A, B](xs: List[A], f: A => List[B]): List[B] =
+            for (x <-xs; y <-f(x)) yield y
+        def filter[A](xs: List[A], p: A => Boolean): List[A] =
+            for (x <-xs if p(x)) yield x
+    }
+
+
 
 
 ###############
