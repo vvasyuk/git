@@ -2868,7 +2868,137 @@
     | [T : Ordering] |  //  First, it introduces a type parameter T as normal           | [T <: Ordered[T]] |   // you are saying that a T is an Ordered[T]
     +----------------+  // Second, it adds a using parameter of type Ordering[T]        +-------------------+
     
+    -Main methods  
+    // file: echoargs.scala                                                                 // Scala main canly accept any number and types of arguments.
+    +---------------------------------+ // execute as a script                              +-----------------------------------------------------------------+
+    | @main def echo(args: String*) = | // $ scala echoargs.scala Running as a script       | // In file repeat.scala                                         |
+    |     println(args.mkString(" ")) | // Running as a script                              | @main def repeat(word: String, count: Int) =                    |
+    +---------------------------------+                                                     |     val msg =                                                   |
+                                                                                            |         if count > 0 then                                       |
+    // alternative execution as application - compile,                                      |             val words = List.fill(count)(word)                  |
+       start main                                                                           |             words.mkString(" ")                                 |
+    +----------------------------------------+                                              |         else                                                    |
+    | $ scalac echoargs.scala                |                                              |             "Please enter a word and a positive integer count." |
+    | $ scala echo Running as an application |                                              |     println(msg)                                                |
+    | Running as an application              |                                              |                                                                 |
+    +----------------------------------------+                                              | $ scalac repeat.scala                                           |
+                                                                                            | $ scala repeat hello 3                                          |
+    // How does Scala know how to turn the command line string "3" into an Int 3?           | hello hello hello                                               |
+    // It uses a typeclass named FromString, which is member of scala.util.CommandLineParser+-----------------------------------------------------------------+
+    // The FromString typeclass trait                   // magine wanted enhance repeat main with a third command line param - "mood"
+    +--------------------------------------+            +-----------------------------------+
+    | trait FromString[T]:                 |            | // In file moody.scala            |
+    |     def fromString(s: String): T     |            | enum Mood:                        |
+    +--------------------------------------+            |     case Surpised, Angry, Neutral |
+    //A main method that takes a custom type            +-----------------------------------+
+    +-----------------------------------------------------------------------+       // teach compiler to transform command line argument to mood
+    | // In file moody.scala                                                |       // lets do it in mood companion object
+    | val errmsg = "Please enter a word, a positive integer count, and\n" + |       // A given FromString instance for Mood
+    |     "and a mood (one of 'angry', 'surprised', or 'neutral')"          |       +----------------------------------------------------------------------+    +----------------------------------+
+    | @main def repeat(word: String, count: Int, mood: Mood) =              |       | // In file moody.scala                                               |    | $ scalac moody.scala             |
+    |     val msg =                                                         |       | object Mood:                                                         |    | $ scala repeat hello 3 neutral   |
+    |         if count > 0 then                                             |       |     import scala.util.CommandLineParser.FromString                   |    | hello hello hello                |
+    |             val words = List.fill(count)(word.trim)                   |       |     given moodFromString: FromString[Mood] with                      |    | $ scala repeat hello 3 surprised |
+    |             val punc =                                                |       |         def fromString(s: String): Mood =                            |    | hello? hello? hello?             |
+    |                 mood match                                            |       |             s.trim.toLowerCase match                                 |    | $ scala repeat hello 3 angry     |
+    |                     case Mood.Angry => "!"                            |       |                 case "angry" => Mood.Angry                           |    | hello! hello! hello!             |
+    |                     case Mood.Surprised => "?"                        |       |                 case "surprised" => Mood.Surprised                   |    +----------------------------------+
+    |                     case Mood.Neutral => ""                           |       |                 case "neutral" => Mood.Neutral                       |
+    |             val sep = punc + " "                                      |       |                 case _ => throw new IllegalArgumentException(errmsg) |
+    |             words.mkString(sep) + punc                                |       +----------------------------------------------------------------------+
+    |         else errmsg                                                   |
+    |     println(msg)                                                      |
+    +-----------------------------------------------------------------------+
+   
+    - Multiversal equality
+    // in Scala 2 you could compare a string and an option for equality
+    +---------------------------------------------------+
+    | scala> "hello" == Option("hello") // (in Scala 2) |   // Values of types String and Option[String] cannot be compared with == or !=
+    | val res0: Boolean = false                         |   // Scala 3 achieves this improvement in safety through a new feature called multiversal equality
+    +---------------------------------------------------+
+    // how it worked on JVM with Scala 2 when compiler encountered an invocation of == or !=:
+    // 1. checked whether types compared were Java primitive types
+          if yes - compiler emmited special Java bytecode for efficient comparison
+          if one side only is primitive - it would box it
+    // 2. if both sides are refs:
+          compiler emmited code to identify if left side is null
+          compiler emmited code to identify if right side is null, ensuring that invocatin of == could not throw NullPointException
+    // 3. calls equals on left side passing right operand (knowing its not null)          
+
+    // Scala 3 compiler performs the exact same steps as Scala 2 - after making sure comparison should be allowed by looking for a given instance of 
+    +-------------------------------+   // CanEqual just gives permission to use == and != for an equality comparison of types L and R
+    | sealed trait CanEqual[-L, -R] |   // is contravariant in both params, because of this type CanEqual[Any, Any] is a subtype of any other type
+    +-------------------------------+
+    // if a given instance of CanEqual[Int, Int] is needed to permit an equality comparison of two Ints, 
+       a given instance of CanEqual[Any, Any] will suffice, because CanEqual[Any, Any] is a subtype of CanEqual[Int, Int]
+    +-----------------------------------------------+
+    | object CanEqual:                              |   // Because of this fact, CanEqual is defined as a sealed trait with just one instance, 
+    |     object derived extends CanEqual[Any, Any] |      which has the universally applicable type CanEqual[Any, Any]
+    +-----------------------------------------------+
+    // example
+    // works be default in Scala 3 because types are same   // but because also by default Scala 3 compiler will allow comparison of types
+    +------------------------------------+                     for which no given reflexive CanEqual instance exists, following would still compile
+    | case class Apple(size: Int)        |                      +--------------------------------+
+    | val appleTwo = Apple(2)            |                      | case class Orange(size: Int)   |
+    | val appleTwoToo = Apple(2)         |                      | val orangeTwo = Orange(2)      |
+    | appleTwo == appleTwoToo // true    |                      | appleTwo == orangeTwo // false |
+    +------------------------------------+                      +--------------------------------+
+    // in Scala 3, even if no reflexive instances have been defined for the involved types, you can enable "strict equality"
+    or
+    +--------------------------------------+
+    | import scala.language.strictEquality |
+    +--------------------------------------+
+    // you will get
+    // Values of types Apple and Orange cannot be   // unfortunetely same for Apples
+       compared with == or !=
+    +------------------------------+                +--------------------------------+
+    | scala> appleTwo == orangeTwo |                | scala> appleTwo == appleTwoToo |
+    +------------------------------+                +--------------------------------+
+    // to fix apples comparison under strict equality               // or
+    // An explicit CanEqual provider (not idiomatic) (23.11)        // Offering CanEqual through a derives clause.
+    +------------------------------------------------------------+  +-----------------------------------------------------------+
+    | case class Apple(size: Int)                                |  | case class Apple(size: Int) derives CanEqual // idiomatic |   // typeclass derivation
+    | object Apple:                                              |  +-----------------------------------------------------------+
+    |     given canEq: CanEqual[Apple, Apple] = CanEqual.derived |  // feature that allows you to delegate the definition of a given typeclass instance to a member, named derived, in the typeclass’s companion object
+    +------------------------------------------------------------+  // derives clause will cause the compiler to insert a given provider in Apple’s companion object such as the one shown in 23.11
+
+    - Implicit conversions
+    // Scala’s standard library defines an implicit conversion from Int to Long
+    // if you pass Int where Long is expected - compiler will transform Int to Long automatically
+    // Note that Int can be safely converted to Long
+
+    // implicit conversions fell out of favor because they made code more obscure by removing explicitness
+    // Scala 3 alternatives: extension methods and context parameters
+    // few use cases remain for implicit conversions, they are still supported, but will give compiler warning
+
+    // how implicits work
+    // whenever the compiler sees an X, but needs a Y, it will look for an implicit conversion that converts X to Y
+    // example
+    +------------------------------------+
+    | case class Street(value: String)   |
+    | val street = Street("123 Main St") |
+    | val streetStr: String = street     |  // wont work
+    +------------------------------------+  // but this will: // val streetStr: String = street.value
+    // if you dont want to call street.value - offer an implicit conversion from Street to String
+    //accomplish this in Scala 3 by defining a given instance of type Conversion[Street, String]
+    +-----------------------------------------------------+ // implicit conversion from Street to String
+    | abstract class Conversion[-T, +U] extends (T => U): | +------------------------------------------------------------+
+    |     def apply(x: T): U                              | | given streetToString: Conversion[Street, String] = _.value |
+    +-----------------------------------------------------+ +------------------------------------------------------------+
+    // to use implicit conversions without warnings 
+        -language:implicitConversions compiler option
+        or
+        import scala.language.implicitConversions
+    // then this should work
+                                        // will be rewritten if implicit conversion is available
+    +--------------------------------+  +------------------------------------------------+
+    | val streetStr: String = street |  | val streetStr: String = streetToString(street) |
+    +--------------------------------+  +------------------------------------------------+
+
+
     
+
+
     
 
 
