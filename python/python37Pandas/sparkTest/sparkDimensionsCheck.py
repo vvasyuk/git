@@ -1,14 +1,9 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
-import time
+
 
 spark = SparkSession.builder.config("spark.sql.warehouse.dir", "file:///C:/temp").appName("PopularMovies").getOrCreate()
 
-# +--------------------------------+--------------------------------------+-----------------------------+-----+------------+-----------+-----+----------+
-# |account                         |level_                                |employee                     |plc  |non_billable|time_dim   |hrs  |pk        |
-# +--------------------------------+--------------------------------------+-----------------------------+-----+------------+-----------+-----+----------+
-# |HoursActuals.Hours_ActualsImport|TEN07501.00.07 - TEDS Contact Center  |Carter,Richardson - 00410993 |. - .|Billable    |SP1_P2_FY21|16.00|8589934592|
-# |HoursActuals.Hours_ActualsImport|DEL07501.01.01 - DE FOCUS FFP         |Gray,Steven - 00428447       |. - .|Billable    |SP1_P2_FY21|36.00|8589934593|
 
 def dfNotAndIn(df_dp,df_wp,dp_col,wp_col,error_string):
     df = df_dp.alias('df')
@@ -17,6 +12,7 @@ def dfNotAndIn(df_dp,df_wp,dp_col,wp_col,error_string):
     _not_in = joined.filter(col(f"df2.{wp_col}").isNull()).select('df.*').withColumn("error", lit(error_string)).cache()
     _in = joined.filter(col(f"df2.{wp_col}").isNotNull()).select('df.*').cache()
     return _not_in, _in
+
 
 def aggToString(df, column):
     return df.limit(20).agg(concat_ws(",", expr(f"sort_array(collect_list({column}))")).alias("agg_list")).collect()

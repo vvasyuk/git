@@ -3003,46 +3003,276 @@
     // three variants are located in packages scala.collection, scala.collection.immutable, and scala.collection.mutable
 
     -Collections consistency
-    Traversable(1, 2, 3)
-    Iterable("x", "y", "z")
-    Map("x" -> 24, "y" -> 25, "z" -> 26)
-    Set(Color.Red, Color.Green, Color.Blue)
-    SortedSet("hello", "world")
-    Buffer(x, y, z)
-    IndexedSeq(1.0, 2.0)
-    LinearSeq(a, b, c)
-    List(1, 2, 3)
-    HashMap("x" -> 24, "y" -> 25, "z" -> 26)
+    +------------------------------------------+
+    | Traversable(1, 2, 3)                     |
+    | Iterable("x", "y", "z")                  |
+    | Map("x" -> 24, "y" -> 25, "z" -> 26)     |
+    | Set(Color.Red, Color.Green, Color.Blue)  |
+    | SortedSet("hello", "world")              |
+    | Buffer(x, y, z)                          |
+    | IndexedSeq(1.0, 2.0)                     |
+    | LinearSeq(a, b, c)                       |
+    | List(1, 2, 3)                            |
+    | HashMap("x" -> 24, "y" -> 25, "z" -> 26) |
+    +------------------------------------------+
+
     //
     Traversable
         Iterable
-            Seq
-                IndexedSeq
-                    Vector
-                    ResizableArray
-                    GenericArray
-                LinearSeq
-                    MutableList
-                    List
-                    Stream
-                Buffer
-                    ListBuffer
-                    ArrayBuffer
-            Set
-                SortedSet
-                    TreeSet
-                HashSet (mutable)
-                LinkedHashSet
-                HashSet (immutable)
-                BitSet
-                EmptySet, Set1, Set2, Set3, Set4
-            Map
-                SortedMap
-                    TreeMap
-                HashMap (mutable)
-                LinkedHashMap (mutable)
-                HashMap (immutable)
-                EmptyMap, Map1, Map2, Map3, Map4
+    +------------------------------+    +--------------------------------------+    +--------------------------------------+
+    | Seq                          |    | Set                                  |    | Map                                  |
+    |     IndexedSeq               |    |     SortedSet                        |    |     SortedMap                        |
+    |         ArraySeq             |    |         TreeSet                      |    |         TreeMap                      |
+    |         Vector               |    |     HashSet (mutable)                |    |     HashMap (mutable)                |
+    |         ArrayDeque (mutable) |    |     LinkedHashSet                    |    |     LinkedHashMap (mutable)          |
+    |         Queue (mutable)      |    |     HashSet (immutable)              |    |     HashMap (immutable)              |
+    |         Stack (mutable)      |    |     BitSet                           |    |     VectorMap (immutable)            |
+    |         Range                |    |     EmptySet, Set1, Set2, Set3, Set4 |    |     EmptyMap, Map1, Map2, Map3, Map4 |
+    |         NumericRange         |    +--------------------------------------+    +--------------------------------------+
+    |     LinearSeq                |
+    |         List                 |
+    |         LazyList             |
+    |         Queue (immutable)    |
+    |     Buffer                   |
+    |         ListBuffer           |
+    |         ArrayBuffer          |
+    +------------------------------+
+
+    - Trait Iterable
+    // Iteration                                                // Addition
+    +--------------------------------------------------------+  +---------------------------+
+    |     //Executes function f for every element of xs. The |  |     // combines xs and ys |
+    |     //invocation of f is done for its side effect only |  | xs ++ ys                  |
+    | xs.foreach(f)                                          |  | xs.concat(ys)             |
+    |                                                        |  +---------------------------+
+    |     //yields fixed-sized “chunks” of collection        |  // Abstract method
+    | xs.grouped(size)                                       |  +------------------------------------+
+    |                                                        |  |     //  yields every element in xs |
+    |     // yields a sliding fixed-sized window of elements |  | xs.iterator                        |
+    | xs.sliding(size)                                       |  +------------------------------------+
+    +--------------------------------------------------------+
+
+    // Size info                                                    // Maps                                                                 // Conversions
+    +-----------------------------------------------------------+   +------------------------------------------------------------------+    +------------------+
+    | xs.isEmpty                                                |   |     // new collection applying                                   |    | xs.toArray       |
+    | xs.nonEmpty                                               |   |     // function f to every element in xs                         |    | xs.toList        |
+    | xs.size                                                   |   | xs.map(f)                                                        |    | xs.toIterable    |
+    |                                                           |   |                                                                  |    | xs.toSeq         |
+    |     // number of elements if it can be computed in        |   |     // new collection made by applying the                       |    | xs.toIndexedSeq  |
+    |     // constant time, else -1                             |   |     // collection-valued function f to every element in          |    | xs.toSet         |
+    | xs.knownSize                                              |   |     // xs and concatenating the results                          |    | xs.toMap         |
+    |                                                           |   | xs.flatMap(f)                                                    |    | xs.to(SortedSet) |
+    |     // negative value if xs is shorter than the           |   |                                                                  |    +------------------+
+    |     // ys collection, a positive value if it is longer    |   |     // collection obtained from applying the partial             |
+    | xs.sizeCompare(ys)                                        |   |     // function f to every element in xs for which it is defined |
+    |                                                           |   | xs.collect(f)                                                    |
+    |     // Compares the size of the collection with the given |   +------------------------------------------------------------------+
+    |     // value while traversing as few elements as possible |
+    | xs.sizeIs < 42                                            |
+    | xs.sizeIs != 42                                           |
+    +-----------------------------------------------------------+
+
+    // Subcollections                                                       // Element retrieval:
+    +------------------------------------------------------------------+    +-------------------------------------------------------+
+    |     // rest of the collection except xs.head.                    |    |     // first element of the collection                |
+    | xs.tail                                                          |    | xs.head                                               |
+    |                                                                  |    |                                                       |
+    |     // rest of the collection except xs.last.                    |    |     // first element of xs in an option value         |
+    | xs.init                                                          |    | xs.headOption                                         |
+    |                                                                  |    |                                                       |
+    |     // collection consisting of elements in some index           |    |     // last element of the collection                 |
+    |     // range of xs (from from, up to and excluding to)           |    | xs.last                                               |
+    | xs.slice(from, to)                                               |    |                                                       |
+    |                                                                  |    |     // last element of xs in an option value          |
+    |     // collection consisting of the first n elements of xs       |    | xs.lastOption                                         |
+    | xs.take(n)                                                       |    |                                                       |
+    |                                                                  |    |     // option containing the first element in xs that |
+    |     // rest of the collection except xs.take(n)                  |    |     // satisfies p                                    |
+    | xs.drop(n)                                                       |    | xs.find(p)                                            |
+    |                                                                  |    +-------------------------------------------------------+
+    |     // longest prefix of elements in the collection              |    // Zippers
+    |     // that all satisfy p                                        |    +-----------------------------------------------------------------+
+    | xs.takeWhile(p)                                                  |    |     // iterable of pairs of corresponding elements              |
+    |                                                                  |    |     // from xs and ys                                           |
+    |     // collection without the longest prefix of                  |    | xs.zip(ys)                                                      |
+    |     // elements that all satisfy p                               |    |                                                                 |
+    | xs.dropWhile(p)                                                  |    |     // value providing methods for manipulating the             |
+    |                                                                  |    |     // xs and ys collections element-wise                       |
+    |     // collection consisting of the last n elements of xs        |    | xs.lazyZip(ys)                                                  |
+    | xs.takeRight(n)                                                  |    |                                                                 |
+    |                                                                  |    |     // iterable of pairs of corresponding elements from         |
+    |     // rest of the collection except xs.takeRight(n)             |    |     // xs and ys, where the shorter sequence is extended to     |
+    | xs.dropRight(n)                                                  |    |     // match the longer one by appending elements x or y        |
+    |                                                                  |    | xs.zipAll(ys, x, y)                                             |
+    |     // collection consisting of those elements of xs             |    |                                                                 |
+    |     // that satisfy the predicate p                              |    |     // iterable of pairs of elements from xs with their indices |
+    | xs.filter(p)                                                     |    | xs.zipWithIndex                                                 |
+    |                                                                  |    +-----------------------------------------------------------------+
+    |     // non-strict filter of this collection                      |    // Strings
+    |     // All operations on the resulting filter will only apply    |    +--------------------------------------------+
+    |     // to those elements of xs for which the condition p is true |    |     // Adds a string to StringBuilder b    |
+    | xs.withFilter(p)                                                 |    | xs.addString(b, start, sep, end)           |
+    |                                                                  |    |                                            |
+    |     // collection consisting of those elements of xs             |    |     // Converts the collection to a string |
+    |     that do not satisfy the predicate p                          |    | xs.mkString(start, sep, end)               |
+    | xs.filterNot(p)                                                  |    +--------------------------------------------+
+    +------------------------------------------------------------------+
+
+    // Subdivisions                                                             // Element conditions:
+    +----------------------------------------------------------------------+    +---------------------------------------------------+
+    |     // Splits xs at a position, giving the pair of                   |    |     // boolean indicating whether the predicate p |
+    |     // collections (xs.take(n), xs.drop(n))                          |    |     // holds for all elements of xs               |
+    | xs.splitAt(n)                                                        |    | xs.forall(p)                                      |
+    |                                                                      |    |                                                   |
+    |     // Splits xs according to a predicate, giving the pair           |    |     // boolean indicating whether the predicate p |
+    |     // of collections (xs.takeWhile(p), xs.dropWhile(p))             |    |     // holds for some element in xs               |
+    | xs.span(p)                                                           |    | xs.exists(p)                                      |
+    |                                                                      |    |                                                   |
+    |     // Splits xs into a pair of collections                          |    |     // number of elements in xs that satisfy the  |
+    |     // one with elements that satisfy the predicate p                |    |     // predicate p                                |
+    |     // other not - (xs.filter(p), xs.filterNot(p))                   |    | xs.count(p)                                       |
+    | xs.partition(p)                                                      |    +---------------------------------------------------+
+    |                                                                      |    //Folds
+    |     // Transforms each element of xs into an                         |    +-----------------------------------------------------------------+
+    |     // Either[X, Y] value, and splits them into a pair of            |    |     // Applies binary operation op between successive           |
+    |     // collections, one with elements contained in Left,             |    |     // elements of xs, going left to right, starting with z     |
+    |     // the other with elements contained in Right                    |    | xs.foldLeft(z)(op)                                              |
+    | xs.partitionMap(f)                                                   |    |                                                                 |
+    |                                                                      |    |     // going right to left                                      |
+    |     // Partitions xs into a map of collections according             |    | xs.foldRight(z)(op)                                             |
+    |     // to a discriminator function f                                 |    |                                                                 |
+    | xs.groupBy(f)                                                        |    |     // Applies binary operation op between successive           |
+    |                                                                      |    |     // elements of non-empty collection xs, going left to right |
+    |     // Partitions xs into a map of collections according             |    | xs.reduceLeft(op)                                               |
+    |     // to a discriminator function f, and applies the                |    |                                                                 |
+    |     // transformation function g to every element of each collection |    |     // going right to left                                      |
+    | xs.groupMap(f)(g)                                                    |    | xs.reduceRight(op)                                              |
+    |                                                                      |    +-----------------------------------------------------------------+
+    |     // Partitions xs into a map of collections according             |    // Specific folds
+    |     // to a discriminator function f, applies the                    |    +---------------------------------------------------------------+
+    |     // transformation function g to every element of                 |    |     // sum of the numeric element values of collection xs     |
+    |     // each collection, and reduces each collection to a             |    | xs.sum                                                        |
+    |     // single value by combining their elements with the             |    |                                                               |
+    |     // h function.                                                   |    |     // product of the numeric element values of collection xs |
+    | xs.groupMapReduce(f)(g)(h)                                           |    | xs.product                                                    |
+    +----------------------------------------------------------------------+    | xs.min, xs.max                                                |
+                                                                                +---------------------------------------------------------------+
+    // Subcategories of Iterable
+    // way each trait (Seq, Set, Map) implements PartialFunction differs
+    // what apply method does in each
+    +-------------------------------------------------+
+    | Seq(1, 2, 3)(1) == 2                            |
+    | Set('a', 'b', 'c')('b') == true                 |
+    | Map('a' -> 1, 'b' -> 10, 'c' -> 100)('b') == 10 |
+    +-------------------------------------------------+
+
+    - The sequence traits Seq, IndexedSeq, and LinearSeq
+    // Operations in trait Seq
+
+Indexing and length:
+
+    // element of xs at index i
+xs(i)
+xs.apply(i)
+
+xs.isDefinedAt(i) Tests whether i is contained in xs.indices.
+xs.length The length of the sequence (same as size).
+xs.lengthCompare(len) Returns a negative Int if the length of xs is less
+than len, a positive Int if it is greater, and 0 if it
+is equal. Works even if xs is infinite.
+xs.indices The index range of xs, extending from 0 to
+xs.length - 1.
+
+Index search:
+xs.indexOf(x) The index of the first element in xs equal to x
+(several variants exist).
+xs.lastIndexOf(x) The index of the last element in xs equal to x
+(several variants exist).
+xs.indexOfSlice(ys) The first index of xs such that successive
+elements starting from that index form the
+sequence ys.
+xs.lastIndexOfSlice(ys) The last index of xs such that successive elements
+starting from that index form the sequence ys.
+xs.indexWhere(p) The index of the first element in xs that satisfies p
+(several variants exist).
+xs.segmentLength(p, i) The length of the longest uninterrupted segment
+of elements in xs, starting with xs(i), that all
+satisfy the predicate p.
+
+// Additions
+x +: xs
+(or xs.prepended(x))
+A new sequence consisting of x prepended to xs.
+ys ++: xs
+(or xs.prependedAll(ys))
+A new sequence consisting of all the elements of
+ys prepended to xs.
+xs :+ x
+(or xs.appended(x))
+A new sequence that consists of x appended to
+xs.
+xs :++ ys
+(or xs.appendedAll(ys))
+A new sequence that consists of all the elements
+of ys appended to xs. Same as xs ++ ys.
+xs.padTo(len, x) The sequence resulting from appending the value
+x to xs until length len is reached.
+
+Updates:
+xs.patch(i, ys, r) The sequence resulting from replacing r elements
+of xs starting with i by the patch ys.
+xs.updated(i, x) A copy of xs with the element at index i replaced
+by x.
+xs(i) = x (or, written out, xs.update(i, x), only available
+for mutable.Seqs) Changes the element of xs at
+index i to y.
+
+Sorting:
+xs.sorted A new sequence obtained by sorting the elements
+of xs using the standard ordering of the element
+type of xs.
+xs.sortWith(lessThan) A new sequence obtained by sorting the elements
+of xs, using lessThan as comparison operation.
+xs.sortBy(f) A new sequence obtained by sorting the elements
+of xs. Comparison between two elements
+proceeds by mapping the function f over both
+and comparing the results.
+
+Reversals:
+xs.reverse A sequence with the elements of xs in reverse
+order.
+xs.reverseIterator An iterator yielding all the elements of xs in
+reverse order.
+
+Comparison
+xs.sameElements(ys) Tests whether xs and ys contain the same
+elements in the same order.
+xs.startsWith(ys) Tests whether xs starts with sequence ys (several
+variants exist).
+xs.endsWith(ys) Tests whether xs ends with sequence ys (several
+variants exist).
+xs.contains(x) Tests whether xs has an element equal to x.
+xs.search(x) Tests whether the sorted sequence xs has an
+element equal to x, in a possibly more efficient
+way than xs.contains(x).
+xs.containsSlice(ys) Tests whether xs has a contiguous subsequence
+equal to ys.
+xs.corresponds(ys)(p) Tests whether corresponding elements of xs and
+ys satisfy the binary predicate p.
+
+Multiset operations:
+xs.intersect(ys) The multi-set intersection of sequences xs and ys
+that preserves the order of elements in xs.
+xs.diff(ys) The multi-set difference of sequences xs and ys
+that preserves the order of elements in xs.
+xs.distinct A subsequence of xs that contains no duplicated
+element.
+xs.distinctBy(f) A subsequence of xs that contains no duplicated
+element after applying the transforming function
+f.
+
+
+
 
     -Trait Traversable
     // ts only abstract operation is foreach
