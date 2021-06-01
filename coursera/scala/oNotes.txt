@@ -3169,54 +3169,35 @@
     - The sequence traits Seq, IndexedSeq, and LinearSeq
     // Operations in trait Seq
 
-Indexing and length:
+    //Indexing and length:                                  //Index search:                                                 // Additions
+    +---------------------------------------------------+   +----------------------------------------------------------+    +-------------------------------------------------------+
+    |     // element of xs at index i                   |   |     //  index of the first element in xs equal to x      |    |     // new sequence consisting of x prepended to xs   |
+    | xs(i)                                             |   | xs.indexOf(x)                                            |    | x +: xs                                               |
+    | xs.apply(i)                                       |   |                                                          |    | xs.prepended(x)                                       |
+    |                                                   |   |     // index of the last element in xs equal to x        |    |                                                       |
+    |     // Tests whether i is contained in xs.indices |   | xs.lastIndexOf(x)                                        |    |     // new sequence consisting of all the elements of |
+    | xs.isDefinedAt(i)                                 |   |                                                          |    |     // ys prepended to xs                             |
+    |                                                   |   |     // first index of xs, that successive form ys        |    | ys ++: xs                                             |
+    |     // same as size                               |   | xs.indexOfSlice(ys)                                      |    | xs.prependedAll(ys)                                   |
+    | xs.length                                         |   |                                                          |    |                                                       |
+    |                                                   |   |     // last index of xs, that successive form ys         |    |                                                       |
+    |     // negative Int if the length of xs is less   |   | xs.lastIndexOfSlice(ys)                                  |    |     // new sequence that consists of x appended to xs |
+    |     // than len, a positive Int if it is greater  |   |                                                          |    | xs :+ x                                               |
+    | xs.lengthCompare(len)                             |   |     // index of the first element in xs that satisfies p |    | or xs.appended(x)                                     |
+    +---------------------------------------------------+   | xs.indexWhere(p)                                         |    |                                                       |
+                                                            |                                                          |    |     // new sequence that consists of all the elements |
+                                                            |     // length of the longest uninterrupted segment       |    |     // of ys appended to xs. Same as xs ++ ys         |
+                                                            |     // that all satisfy the predicate p                  |    | xs :++ ys                                             |
+                                                            | xs.segmentLength(p, i)                                   |    | or xs.appendedAll(ys)                                 |
+                                                            +----------------------------------------------------------+    |                                                       |
+                                                                                                                            |     // sequence resulting from appending the value    |
+                                                                                                                            |     // x to xs until length len is reached            |
+                                                                                                                            | xs.padTo(len, x)                                      |
+                                                                                                                            +-------------------------------------------------------+
 
-    // element of xs at index i
-xs(i)
-xs.apply(i)
 
-xs.isDefinedAt(i) Tests whether i is contained in xs.indices.
-xs.length The length of the sequence (same as size).
-xs.lengthCompare(len) Returns a negative Int if the length of xs is less
-than len, a positive Int if it is greater, and 0 if it
-is equal. Works even if xs is infinite.
-xs.indices The index range of xs, extending from 0 to
-xs.length - 1.
 
-Index search:
-xs.indexOf(x) The index of the first element in xs equal to x
-(several variants exist).
-xs.lastIndexOf(x) The index of the last element in xs equal to x
-(several variants exist).
-xs.indexOfSlice(ys) The first index of xs such that successive
-elements starting from that index form the
-sequence ys.
-xs.lastIndexOfSlice(ys) The last index of xs such that successive elements
-starting from that index form the sequence ys.
-xs.indexWhere(p) The index of the first element in xs that satisfies p
-(several variants exist).
-xs.segmentLength(p, i) The length of the longest uninterrupted segment
-of elements in xs, starting with xs(i), that all
-satisfy the predicate p.
 
-// Additions
-x +: xs
-(or xs.prepended(x))
-A new sequence consisting of x prepended to xs.
-ys ++: xs
-(or xs.prependedAll(ys))
-A new sequence consisting of all the elements of
-ys prepended to xs.
-xs :+ x
-(or xs.appended(x))
-A new sequence that consists of x appended to
-xs.
-xs :++ ys
-(or xs.appendedAll(ys))
-A new sequence that consists of all the elements
-of ys appended to xs. Same as xs ++ ys.
-xs.padTo(len, x) The sequence resulting from appending the value
-x to xs until length len is reached.
 
 Updates:
 xs.patch(i, ys, r) The sequence resulting from replacing r elements
