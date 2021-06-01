@@ -3169,7 +3169,7 @@
     - The sequence traits Seq, IndexedSeq, and LinearSeq
     // Operations in trait Seq
 
-    //Indexing and length:                                  //Index search:                                                 // Additions
+    //Indexing and length                                   //Index search                                                  // Additions
     +---------------------------------------------------+   +----------------------------------------------------------+    +-------------------------------------------------------+
     |     // element of xs at index i                   |   |     //  index of the first element in xs equal to x      |    |     // new sequence consisting of x prepended to xs   |
     | xs(i)                                             |   | xs.indexOf(x)                                            |    | x +: xs                                               |
@@ -3190,67 +3190,161 @@
                                                             |     // that all satisfy the predicate p                  |    | xs :++ ys                                             |
                                                             | xs.segmentLength(p, i)                                   |    | or xs.appendedAll(ys)                                 |
                                                             +----------------------------------------------------------+    |                                                       |
-                                                                                                                            |     // sequence resulting from appending the value    |
-                                                                                                                            |     // x to xs until length len is reached            |
-                                                                                                                            | xs.padTo(len, x)                                      |
-                                                                                                                            +-------------------------------------------------------+
+    //Updates:                                                                                                              |     // sequence resulting from appending the value    |
+    +-------------------------------------------------------------+                                                         |     // x to xs until length len is reached            |
+    |     // sequence resulting from replacing r elements         |                                                         | xs.padTo(len, x)                                      |
+    |     // of xs starting with i by the patch ys                | // Sorting:                                             +-------------------------------------------------------+
+    | xs.patch(i, ys, r)                                          | +--------------------------------------------------------+  // Reversals
+    |                                                             | |     // new seq sorted using standard ordering for type |  +----------------------------------------------+
+    |     // copy of xs with the element at index i replaced by x | | xs.sorted                                              |  |     // new seq with elements in reverse      |
+    | xs.updated(i, x) A .                                        | |                                                        |  | xs.reverse                                   |
+    |                                                             | |     // new seq sorted using lessThan comparison        |  |                                              |
+    |     // only available for mutable.Seqs                      | | xs.sortWith(lessThan)                                  |  |     // iterator yielding elements in reverse |
+    | xs(i) = x                                                   | |                                                        |  | xs.reverseIterator                           |
+    | or, xs.update(i, x)                                         | |     // new seq sorted using result of f                |  +----------------------------------------------+
+    +-------------------------------------------------------------+ | xs.sortBy(f)                                           |
+                                                                    +--------------------------------------------------------+
+    Comparison                                                  //Multiset operations
+    +-------------------------------------------------------+   +-------------------------------------------------------------+
+    |     // test if xs and ys have same elements           |   |     // intersection of xs and ys that preserves order of xs |
+    | xs.sameElements(ys)                                   |   | xs.intersect(ys)                                            |
+    |                                                       |   |                                                             |
+    |     // test if xs starts with ys                      |   |     // diff between xs and ys that preserves order of xs    |
+    | xs.startsWith(ys)                                     |   | xs.diff(ys)                                                 |
+    |                                                       |   |                                                             |
+    |     // test if xs ends with ys                        |   |     // subseq of xs without duplicates                      |
+    | xs.endsWith(ys)                                       |   | xs.distinct                                                 |
+    |                                                       |   |                                                             |
+    |     // test if xs contains x                          |   |     // subseq of xs without duplicates after applying f     |
+    | xs.contains(x)                                        |   | xs.distinctBy(f)                                            |
+    |                                                       |   +-------------------------------------------------------------+
+    |     // test if sorted seq has x, faster than contains |
+    | xs.search(x)                                          |
+    |                                                       |
+    |     // test if xs has subseq of ys                    |
+    | xs.containsSlice(ys)                                  |
+    |                                                       |
+    |     // test if xs and ys satisfy predicate p          |
+    | xs.corresponds(ys)(p)                                 |
+    +-------------------------------------------------------+
+
+    // Operations in trait mutable.IndexedSeq
+    // Transformations:
+    +----------------------------------------------------------+
+    |     // Transforms all the elements of xs by applying f   |
+    | xs.mapInPlace(f)                                         |
+    |                                                          |
+    |     // Sorts the elements of xs in place                 |
+    | xs.sortInPlace()                                         |
+    |                                                          |
+    |     // Sorts the elements of xs in place according to an |
+    |     // ordering defined on the result of f               |
+    | xs.sortInPlaceBy(f)                                      |
+    |                                                          |
+    |     // sorts with comparison function c                  |
+    | xs.sortInPlaceWith(c)                                    |
+    +----------------------------------------------------------+
+
+    // Buffers
+    // Operations in trait Buffer
+
+    // Appends x to buffer returns buf itself as result             // Removals                                         // Replacement
+    +------------------------------------------------------------+  +-----------------------------------------------+   +---------------------------------------------------+
+    | buf += x                                                   |  |     // Removes element x from buffer          |   |     // Replaces (at most) n elements of buffer by |
+    | buf.append(x)                                              |  | buf -= x                                      |   |     // elements in xs, starting from index i      |
+    |                                                            |  | buf.subtractOne(x)                            |   | buf.patchInPlace(i, xs, n)                        |
+    |     // Appends all elements in xs to buffer                |  |                                               |   +---------------------------------------------------+
+    | buf ++= xs                                                 |  |     // Removes elements in xs from buffer     |
+    | buf.appendAll(xs)                                          |  | buf --= xs                                    |
+    |                                                            |  | buf.subtractAll(xs)                           |   // Cloning
+    |     // Prepends element x to buffer                        |  |                                               |   +---------------------------------------------------+
+    | x +=: buf                                                  |  |     // Removes element at index i from buffer |   |     // A new buffer with the same elements as buf |
+    | buf.prepend(x)                                             |  | buf.remove(i)                                 |   | buf.clone()                                       |
+    |                                                            |  |                                               |   +---------------------------------------------------+
+    |     // Prepends all elements in xs to buffer               |  |     // Removes n elements starting at index i |
+    | xs ++=: buf                                                |  | buf.remove(i, n)                              |
+    | buf.prependAll(xs)                                         |  |                                               |
+    |                                                            |  |     // Removes first n elements from buffer   |
+    |     // Inserts element x at index i in buffer              |  | buf.trimStart(n)                              |
+    | buf.insert(i, x)                                           |  |                                               |
+    |                                                            |  |     // Removes last n elements from buffer    |
+    |     // Inserts all elements in xs at index i in buffer     |  | buf.trimEnd(n)                                |
+    | buf.insertAll(i, xs)                                       |  |                                               |
+    |                                                            |  |     // Removes all elements from buffer       |
+    |     // Appends element x to buffer until it has n in total |  | buf.clear()                                   |
+    | buf.padToInPlace(n, x)                                     |  +-----------------------------------------------+
+    +------------------------------------------------------------+
+
+    - Sets
+    // default implementation of a mutable set uses a hash table to store the set’s elements
+    // default implementation of an immutable set uses a representation that adapts to the number of elements of the set
+    // Empty - singleton object, sets of sizes up to four are represented by a single object that stores all elements as fields
+    // Beyond that size, immutable sets are implemented as compressed hash-array mapped prefix-trees
+    // sets with up to 4 elements faster then mutable sets
+    +-------------------------------------------------------+
+    | val fruit = Set("apple", "orange", "peach", "banana") |
+    | fruit("peach") // true                                |
+    | fruit("potato") // false                              |
+    +-------------------------------------------------------+
+    
+    // Operations in trait Set                      // Removals:                                    // Binary operations:
+    +--------------------------------------------+  +------------------------------------------+    +--------------------------------------+
+    | Tests:                                     |  |     // empty set of the same class as xs |    |     // set intersection of xs and ys |
+    |     // Tests whether x is an element of xs |  | xs.empty                                 |    | xs & ys                              |
+    | xs.contains(x)                             |  +------------------------------------------+    | xs.intersect(ys)                     |
+    | xs(x)                                      |                                                  |                                      |
+    |                                            |                                                  |     // set union of xs and ys        |
+    |     // Tests whether xs is a subset of ys  |                                                  | xs | ys                              |
+    | xs.subsetOf(ys)                            |                                                  | xs.union(ys)                         |
+    +--------------------------------------------+                                                  |                                      |
+                                                                                                    |     // set difference of xs and ys   |
+                                                                                                    | xs &~ ys                             |
+                                                                                                    | xs.diff(ys)                          |
+                                                                                                    +--------------------------------------+
+    // Operations in trait immutable.Set
+    // Additions:                                               //Removals:
+    +-------------------------------------------------------+   +----------------------------------------------------+
+    |     // set containing all elements of xs as well as x |   |     // set containing all elements of xs except    |
+    | xs + x                                                |   | xs - x                                             |
+    | or xs.incl(x)                                         |   | xs.excl(x)                                         |
+    |                                                       |   |                                                    |
+    |     // set containing all elements of xs and ys       |   |     // set containing all elements of xs except ys |
+    | xs ++ ys                                              |   | xs -- ys                                           |
+    | xs.concat(ys)                                         |   | xs.removedAll(ys)                                  |
+    +-------------------------------------------------------+   +----------------------------------------------------+
+
+    // Operations in trait mutable.Set
+    // Additions:                                               // Removals:                                                // Update:
+    +--------------------------------------------------------+  +---------------------------------------------------------+ +--------------------------------------------------+
+    |     // added element x to set xs as a side effect      |  |     // Removes element x from set xs as a side effect   | |     // If boolean argument b is true,            |
+    |     // and returns xs itself                           |  |     // and returns xs itself                            | |     // adds x to xs, otherwise removes x from xs |
+    | xs += x                                                |  | xs -= x                                                 | | xs(x) = b                                        |
+    | xs.addOne(x)                                           |  | xs.subtractOne(x)                                       | | xs.update(x, b)                                  |
+    |                                                        |  |                                                         | +--------------------------------------------------+
+    |     // added elements in ys to set xs as a side effect |  |     // Removes all elements in ys from set xs as a side | // Cloning:
+    |     // and returns xs itself                           |  |     // effect and returns xs itself                     | +-----------------------------------------------------+
+    | xs ++= ys                                              |  | xs --= ys                                               | |     // new mutable set with the same elements as xs |
+    | xs.addAll(ys)                                          |  | xs.subtractAll(ys)                                      | | xs.clone()                                          |
+    |                                                        |  |                                                         | +-----------------------------------------------------+
+    |     // Adds element x to xs and returns true if x was  |  |     // Removes element x from xs and returns true if x  |
+    |     // there before, false if it was there             |  |     // was there, false if wasnt                        |
+    | xs.add(x)                                              |  | xs.remove(x)                                            |
+    +--------------------------------------------------------+  |                                                         |
+                                                                |     // keeps only elements that satisfy predicate       |
+                                                                | xs.filterInPlace(p)                                     |
+                                                                |                                                         |
+                                                                |     // Removes all elements from xs                     |
+                                                                | xs.clear()                                              |
+                                                                +---------------------------------------------------------+
+    // var vs mutable set
+    +----------------------+                                                    +-----------------------------------------+
+    | var s = Set(1, 2, 3) |                                                    | val s = collection.mutable.Set(1, 2, 3) |
+    | s += 4               |    // += and -= on a var of type immutable.Set     | s += 4 // Set(1, 2, 3, 4)               | // s += 4 statement now invokes the += method
+    | s -= 2               |    // s += 4 is an abbreviation for s = s + 4      | s -= 2 // Set(1, 3, 4)                  | // on the mutable set value s, changing the set in place
+    | s // Set(1, 3, 4)    |                                                    | s // Set(1, 3, 4)                       |
+    +----------------------+                                                    +-----------------------------------------+
 
 
-
-
-
-Updates:
-xs.patch(i, ys, r) The sequence resulting from replacing r elements
-of xs starting with i by the patch ys.
-xs.updated(i, x) A copy of xs with the element at index i replaced
-by x.
-xs(i) = x (or, written out, xs.update(i, x), only available
-for mutable.Seqs) Changes the element of xs at
-index i to y.
-
-Sorting:
-xs.sorted A new sequence obtained by sorting the elements
-of xs using the standard ordering of the element
-type of xs.
-xs.sortWith(lessThan) A new sequence obtained by sorting the elements
-of xs, using lessThan as comparison operation.
-xs.sortBy(f) A new sequence obtained by sorting the elements
-of xs. Comparison between two elements
-proceeds by mapping the function f over both
-and comparing the results.
-
-Reversals:
-xs.reverse A sequence with the elements of xs in reverse
-order.
-xs.reverseIterator An iterator yielding all the elements of xs in
-reverse order.
-
-Comparison
-xs.sameElements(ys) Tests whether xs and ys contain the same
-elements in the same order.
-xs.startsWith(ys) Tests whether xs starts with sequence ys (several
-variants exist).
-xs.endsWith(ys) Tests whether xs ends with sequence ys (several
-variants exist).
-xs.contains(x) Tests whether xs has an element equal to x.
-xs.search(x) Tests whether the sorted sequence xs has an
-element equal to x, in a possibly more efficient
-way than xs.contains(x).
-xs.containsSlice(ys) Tests whether xs has a contiguous subsequence
-equal to ys.
-xs.corresponds(ys)(p) Tests whether corresponding elements of xs and
-ys satisfy the binary predicate p.
-
-Multiset operations:
-xs.intersect(ys) The multi-set intersection of sequences xs and ys
-that preserves the order of elements in xs.
-xs.diff(ys) The multi-set difference of sequences xs and ys
-that preserves the order of elements in xs.
-xs.distinct A subsequence of xs that contains no duplicated
-element.
-xs.distinctBy(f) A subsequence of xs that contains no duplicated
-element after applying the transforming function
-f.
 
 
 
