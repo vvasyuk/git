@@ -3617,10 +3617,55 @@
     +--------------------------------------------------+
 
     - Arrays
-
-
-
-
+    // Scala array Array[Int] is represented as a Java int[]
+    // Scala arrays can be generic - you can have an Array[T], where T is a type parameter or abstract type
+    // Scala arrays are compatible with Scala sequences—you can pass an Array[T] where a Seq[T] is required
+    // Scala arrays also support all sequence operations
+    +---------------------------------------------------+   // how scala Arrays support all that?
+    | val a1 = Array(1, 2, 3)                           |   // implicit conversions
+    | val a2 = a1.map(_ * 3)          // Array(3, 6, 9) |   // array is not a child of seq - whenever array is used as seq - implicitly wrap it in a subclass of Seq
+    | val a3 = a2.filter(_ % 2 != 0)  // Array(3, 9)    |   // anothre implicit conversion used to add all seq methods to array (type ArrayOps)
+    | a3.reverse                      // Array(9, 3)    |   
+    +---------------------------------------------------+   // 
+                                                                                            +--------------------------------------------------------------+
+    +----------------------------------------------------------+                            | val seq: collection.Seq[Int] = a1       // ArraySeq(1, 2, 3) |
+    | val seq: collection.Seq[Int] = a1   // ArraySeq(1, 2, 3) |                            | seq.reverse                             // ArraySeq(3, 2, 1) |
+    | val a4: Array[Int] = seq.toArray    // Array(1, 2, 3)    |                            | val ops: collection.ArrayOps[Int] = a1  // Array(1, 2, 3)    |
+    | a1 eq a4                            // false             |    // different pointers   | ops.reverse                             // Array(3, 2, 1)    |
+    +----------------------------------------------------------+                            +--------------------------------------------------------------+
+    // What about genericity?
+    // In Java you cannot write a T[] where T is a type parameter
+    // generic array like Array[T] could be at run time any of Java’s eight primitive array types byte[], short[], char[], int[], long[], float[], double[], boolean[]
+    // Scala compiler maps Array[T] to AnyRef
+    // At run-time, when an element of an array of type Array[T] is accessed or updated there is a sequence of type tests that determine the actual array type, 
+    // followed by the correct array operation on the Java array
+    +-------------------------------------------------+
+    | // This is wrong!                               |
+    | def evenElems[T](xs: Vector[T]): Array[T] =     |
+    |     val arr = new Array[T]((xs.length + 1) / 2) | // could be an Array[Int], or an Array[Boolean] or any other
+    |     for i <- 0 until xs.length by 2 do          | // how is the Scala runtime going to pick the correct one?
+    |         arr(i / 2) = xs(i)                      | // get error because the actual type that corresponds to the type parameter T is erased at runtime
+    |     arr                                         | // need to help the compiler by providing a runtime hint of what the actual type parameter of evenElems is
+    +-------------------------------------------------+ // runtime hint takes the form of a class tag of type scala.reflect.ClassTag
+    +-------------------------------------------------------+    
+    | // This works                                         |   // compiler can generate class tag on its own for String , Int    
+    | import scala.reflect.ClassTag                         |   // for others - pass the class tag using a context bound
+    | def evenElems[T: ClassTag](xs: Vector[T]): Array[T] = |   // when the Array[T] is created, the compiler looks for a class tag for the type parameter T, 
+    |     val arr = new Array[T]((xs.length + 1) / 2)       |   // that is, it will look for an implicit value of type ClassTag[T]
+    |     for i <- 0 until xs.length by 2 do                |   // class tag is used to construct the right kind of array
+    |         arr(i / 2) = xs(i)                            |
+    |     arr                                               |
+    +-------------------------------------------------------+
+    // works automatically
+    +----------------------------------------------------------------------------+
+    | evenElems(Vector(1, 2, 3, 4, 5))                    // Array(1, 3, 5)      |
+    | evenElems(Vector("this", "is", "a", "test", "run")) // Array(this, a, run) |
+    +----------------------------------------------------------------------------+
+    // wont work                                                                //works
+    // demands a class tag for the type parameter U, but none was found         // demand another implicit class tag for U
+    +--------------------------------------------+                              +------------------------------------------------------+
+    | def wrap[U](xs: Vector[U]) = evenElems(xs) |                              | def wrap[U: ClassTag](xs: Vector[U]) = evenElems(xs) |
+    +--------------------------------------------+                              +------------------------------------------------------+
 
 
 
