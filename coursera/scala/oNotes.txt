@@ -3344,23 +3344,299 @@
     | s // Set(1, 3, 4)    |                                                    | s // Set(1, 3, 4)                       |
     +----------------------+                                                    +-----------------------------------------+
 
+    - Maps
+    // Operations in trait Map
+
+    // Lookups:                     // Subcollections:                                          // Transformation:
+    +-----------------------------+ +-------------------------------------------------------+   +--------------------------------------------------------+
+    |     // returns value option | |     // iterable containing each key                   |   |     // map containing only key which satisfy predicate |
+    | ms.get(k)                   | | ms.keys                                               |   | ms.view.filterKeys(p)                                  |
+    |     // value or exception   | |                                                       |   |                                                        |
+    | ms(k)                       | |     // set containing each key                        |   |     // map view after applying f to each value         |
+    | ms apply k                  | | ms.keySet                                             |   | ms.view.mapValues(f)                                   |
+    |                             | |                                                       |   +--------------------------------------------------------+
+    |     // value or default     | |     // iterator yielding each key                     |
+    | ms.getOrElse(k, d)          | | ms.keysIterator                                       |
+    |                             | |                                                       |
+    |     // test if contains key | |     // iterable containing each value associated with |
+    | ms.contains(k)              | |     // a key                                          |
+    |                             | | ms.values                                             |
+    |     // Same as contains     | |                                                       |
+    | ms.isDefinedAt(k)           | |     // iterator yielding each value associated with a |
+    +-----------------------------+ |     // key                                            |
+                                    | ms.valuesIterator                                     |
+                                    +-------------------------------------------------------+
+
+    // Operations in trait immutable.Map
+
+    // Additions and updates:                               Removals:
+    +-----------------------------------------------------+ +--------------------------------------+
+    |     // new map adding k->v                          | |     // new map without k             |
+    | ms + (k -> v)                                       | | ms - k                               |
+    | ms.updated(k, v)                                    | | or ms.removed(k)                     |
+    |                                                     | |                                      |
+    |     // new map concated                             | |     // new map without any key in ks |
+    | ms ++ kvs                                           | | ms -- ks                             |
+    | or ms.concat(kvs)                                   | | ms.removedAll(ks)                    |
+    |                                                     | +--------------------------------------+
+    |     // binding added,updated, or removed for key k. |
+    |     // f takes value as param and returns new value |
+    | ms.updatedWith(k)(f)                                |
+    +-----------------------------------------------------+
+
+    // Operations in trait mutable.Map
+
+    // Additions and updates:                                           // Removals:                                                    // Transformation and cloning:
+    +--------------------------------------------------------------+    +-----------------------------------------------------------+   +-------------------------------------------+
+    |     // Adds key k to value v to map ms as a side effect      |    |     // removes mapping with key k as side effect          |   |     // transform values in map with f     |
+    | ms(k) = v                                                    |    |     // returns itself                                     |   | ms.mapValuesInPlace(f)                    |
+    | ms.update(k, v)                                              |    | ms -= k                                                   |   |                                           |
+    |                                                              |    |                                                           |   |     // new mutable map with same elements |
+    |     // adds k->v to map as side effect, returns itself       |    |     // removes mapping with all keys in ks as side effect |   | ms.clone()                                |
+    | ms += (k -> v)                                               |    |     // returns itself                                     |   +-------------------------------------------+
+    |                                                              |    | ms --= ks                                                 |
+    |     // adds all kvs as side effect, returns itself           |    |                                                           |
+    | ms ++= kvs                                                   |    |     // removes mapping with key k, retruns prev value     |
+    |                                                              |    | ms.remove(k)                                              |
+    |     // adds k->v, returns prev value as option               |    |                                                           |
+    | ms.put(k, v)                                                 |    |     // keeps only keys which satisfy predicate            |
+    |                                                              |    | ms.filterInPlace(p)                                       |
+    |     // if key in map - returns its value, otherwise put k->d |    |                                                           |
+    | ms.getOrElseUpdate(k, d)                                     |    |     // removes all mappings                               |
+    |                                                              |    | ms.clear()                                                |
+    |     // Adds, updates, or removes a binding for key k         |    +-----------------------------------------------------------+
+    |     // f takes value of key and returns new value            |
+    | ms.updateWith(k)(f)                                          |
+    +--------------------------------------------------------------+
+
+    // getOrElseUpdate
+    +----------------------------------------------------------------+
+    | val cache = collection.mutable.Map[String, String]()           |
+    | scala> def cachedF(s: String) = cache.getOrElseUpdate(s, f(s)) |  // second arg is by-name
+    +----------------------------------------------------------------+
+
+    - Concrete immutable collection classes
+
+    // Lists
+    // constant access to head, tail
+    // constant add head operation
+
+    // LazyLists
+    // elements are computed lazily, can be infinitely long                         +----------------------------------------------+
+    +--------------------------------------------+                                  | def fibFrom(a: Int, b: Int): LazyList[Int] = |    // val fibs = fibFrom(1, 1).take(7)
+    | val str = 1 #:: 2 #:: 3 #:: LazyList.empty |  // LazyList(<not computed>)     |     a #:: fibFrom(b, a + b)                  |    // fibs.toList  // List(1, 1, 2, 3, 5, 8, 13)
+    +--------------------------------------------+                                  +----------------------------------------------+
+
+    // Immutable ArraySeqs
+    // to modify element in middle of list takes linear time
+    // ArraySeqs backed by private array, access any element in constant time
+    // but prepending requires linear time
+    // any addition or update requires linear time because underlying array needs to be copies
+
+    // Vectors
+    // prepend is constant for List but linear for ArraySeqs
+    // indexed access is constant for ArraySeqs but linear for List
+    // Vector indexed access and update are effectively constant
+    +---------------------------------------------------+   // Every tree node contains up to 32 elements of the vector or contains up to 32 other tree nodes
+    | val vec = scala.collection.immutable.Vector.empty |   // vectors are immutable, so you cannot change an element of a vector in place, 
+    | val vec2 = vec :+ 1 :+ 2    // Vector(1, 2)       |   // you can create a new vector that differs from a given vector only in a single element
+    | val vec3 = 100 +: vec2      // Vector(100, 1, 2)  |
+    | vec3(0)                     // 100                |
+    +---------------------------------------------------+
+    +---------------------------+                       // Updating an element in the middle of a vector can be done by copying the node that contains the element, and every node that points to it,
+    | val vec = Vector(1, 2, 3) |                       // starting from the root of the tree. This means that a functional update creates between one and five nodes that each contain up to 32 elements or subtrees.
+    | vec updated (2, 4)        |   // Vector(1, 2, 4)  // This is certainly more expensive than an in-place update in a mutable array, but still a lot cheaper than copying the whole vector.
+    | vec                       |   // Vector(1, 2, 3)  // they are currently the default implementation of immutable indexed sequences
+    +---------------------------+                           
+    // vectors are default implementation of indexed sequences
+    +-------------------------------------------------------------+
+    | collection.immutable.IndexedSeq(1, 2, 3) // Vector(1, 2, 3) |
+    +-------------------------------------------------------------+
+
+    // Immutable queues
+    +-----------------------------------------------------+
+    | val empty = scala.collection.immutable.Queue[Int]() |
+    | val has1 = empty.enqueue(1)                         | // has1: Queue[Int] = Queue(1)
+    | val has123 = has1.enqueue(List(2, 3))               | // has123: Queue[Int] = Queue(1, 2, 3)
+    | val (element, has23) = has123.dequeue               | // element: Int = 1; has23: Queue[Int] = Queue(2, 3)
+    +-----------------------------------------------------+
+
+    // Ranges
+    +--------------+
+    | 1 to 3       |    // res31: Range.Inclusive = Range(1, 2, 3)
+    | 5 to 14 by 3 |    // res32: Range = Range(5, 8, 11, 14)
+    | 1 until 3    |    // res33: Range = Range(1, 2)
+    +--------------+                                 
+
+    // Compressed hash-array mapped prefix-trees
+    // Hash tries3 are a standard way to implement immutable sets and maps efficiently
+    // representation is similar to vectors in that they are also trees where every node has 32 elements or 32 subtrees
+    // but selection is done based on a hash code
+    // to find a given key in a map, you use the lowest five bits of the hash code of the key to select the first subtree, the next five bits the next subtree, and so on
+    // Hash tries strike a nice balance between reasonably fast lookups and reasonably efficient functional insertions (+) and deletions (-)
+    // default implementations of immutable maps and sets
+
+    // Red-black trees
+    // TreeSet and TreeMap
+    // operations on them reliably complete in time logarithmic to the size of the tree
+    +---------------------------------------------------+
+    | val set = collection.immutable.TreeSet.empty[Int] |   // also the standard implementation of SortedSet
+    | set + 1 + 3 + 3     // TreeSet(1, 3)              |
+    +---------------------------------------------------+
+
+    // Immutable bit sets
+    // bit set represents a collection of small integers as the bits of a larger integer
+    // bit set containing 3, 2, and 0 would be represented as the integer 1101 in binary, which is 13 in decimal
+    +----------------------------------------------------+
+    | val bits = scala.collection.immutable.BitSet.empty |  // Internally, bit sets use an array of 64-bit Longs
+    | val moreBits = bits + 3 + 4 + 4 // BitSet(3, 4)    |  // first Long in the array is for integers 0 through 63
+    | moreBits(3) // true                                |  // second is for 64 through 127 and so on
+    | moreBits(0) // false                               |  // Testing for inclusion takes constant time. Adding an item to the set takes time proportional 
+    +----------------------------------------------------+  // to the number of Longs in the bit set’s array, which is typically a small number
+
+    // Vector maps
+    // VectorMap represents a map using both a Vector of keys and a HashMap
+    // provides an iterator that returns all the entries in their insertion order
+    +---------------------------------------------------------------+
+    | import scala.collection.immutable.VectorMap                   |
+    | val vm = VectorMap.empty[Int, String]                         |
+    | val vm1 = vm + (1 -> "one") // VectorMap(1 -> one)            |
+    | val vm2 = vm1 + (2 -> "two") // VectorMap(1 -> one, 2 -> two) |   // preserves insertion order
+    | vm2 == Map(2 -> "two", 1 -> "one") // true                    |   // comparison against other maps does not take order into account
+    +---------------------------------------------------------------+
+
+    // List maps
+    // list map represents a map as a linked list of key-value pairs
+    // operations on a list map might have to iterate through the entire list
+    // if first elements in the list are selected much more often than the other elements
+    +----------------------------------------------------------------+
+    | val map = collection.immutable.ListMap(1 -> "one", 2 -> "two") |
+    | map(2) // "two"                                                |
+    +----------------------------------------------------------------+
+
+    - Concrete mutable collection classes
+    // Array buffers
+    +-----------------------------------------------------+
+    | val buf = collection.mutable.ArrayBuffer.empty[Int] | // Appending an item to an array buffer takes amortized constant time
+    | buf += 1      // ArrayBuffer(1)                     | // good whenever the new items are always added to the end
+    | buf += 10     // ArrayBuffer(1, 10)                 | // usefull for building arrays
+    | buf.toArray   // Array(1, 10)                       |
+    +-----------------------------------------------------+
+
+    // List buffers
+    +----------------------------------------------------+
+    | val buf = collection.mutable.ListBuffer.empty[Int] |  // list buffer is like an array buffer except that it uses a linked list internally instead of an array
+    | buf += 1    // ListBuffer(1)                       |
+    | buf += 10   // ListBuffer(1, 10)                   |
+    | buf.toList  // List(1, 10)                         |
+    +----------------------------------------------------+
+
+    // String builders
+    +-----------------------------+
+    | val buf = new StringBuilder | // array buffer is useful for building arrays, and a list buffer is useful for building lists, 
+    | buf += 'a'      // a        | // a string builder is useful for building strings
+    | buf ++= "bcdef" // abcdef   |
+    | buf.toString    // abcdef   |
+    +-----------------------------+
+
+    // ArrayDeque
+    // mutable sequence that supports efficient addition of elements in the front and in the end
+    // Internally it uses a resizable array
+    // If you need to append and prepend elements to a buffer, use an ArrayDeque instead of an ArrayBuffer
+
+    // Queues
+    +--------------------------------------------------------+
+    | val queue = new scala.collection.mutable.Queue[String] |  // instead of enqueue, you use the += and ++= operators to append
+    | queue += "a"                // Queue(a)                |  // on a mutable queue, the dequeue method will just remove the head element from the queue and return it
+    | queue ++= List("b", "c")    // Queue(a, b, c)          |
+    | queue                       // Queue(a, b, c)          |
+    | queue.dequeue               // a                       |
+    | queue                       // Queue(b, c)             |
+    +--------------------------------------------------------+
+
+    // Stacks
+    // Scala does not offer immutable stack because of list 
+    +-----------------------------------------------------+
+    | val stack = new scala.collection.mutable.Stack[Int] |
+    | stack.push(1)   // Stack(1)                         |
+    | stack           // Stack(1)                         |
+    | stack.push(2)   // Stack(2, 1)                      |
+    | stack           // Stack(2, 1)                      |
+    | stack.top       // 2                                |
+    | stack           // Stack(2, 1)                      |
+    | stack.pop       // 2                                |
+    | stack           // Stack(1)                         |
+    +-----------------------------------------------------+
+
+    // Mutable ArraySeqs
+    // mutable sequences of fixed size that store their elements internally in an Array[AnyRef]
+    // use an ArraySeq if you want an array for its performance characteristics
+    // but you also want to create generic instances of the sequence where you do not know the type of the elements and do not have a ClassTag to provide it at run-time
+
+    // Hash tables
+    +----------------------------------------------------------------------------+
+    | val map = collection.mutable.HashMap.empty[Int,String]                     |// hash table stores its elements in an underlying array, placing each item at a position in the array determined by the hash code of that item
+    | map += (1 -> "make a web site") // Map(1 -> make a web site)               |// Adding element takes is constant time, as long as there isn’t already another element in the array that has the same hash code
+    | map += (3 -> "profit!")         // Map(1 -> make a web site, 3 -> profit!) |// very fast so long as the objects placed in them have a good distribution of hash codes
+    | map(1)                          // make a web site                         |// default mutable map and set types in Scala are based on hash tables
+    | map.contains(2) // false                                                   |
+    +----------------------------------------------------------------------------+
+
+    // Weak hash maps
+    // garbage collector does not follow links from the map to the keys stored in it
+    // meaning key and its value will disappear from the map if there is no other reference to that key
+    // useful for caching, where you want to re-use an expensive function’s result if the function is called again on the same key
+    // If keys and function results are stored in a regular hash map, the map could grow without bounds, and no key would ever become garbage
+    // in weak hash maps - as soon as a key object becomes unreachable, its entry is removed from the weak hash map
+
+    // Concurrent maps
+    // can be accessed by several threads at once
+    +------------------------------------------------------------------+
+    |     // Adds key/value binding k -> v unless k is present         |
+    | m.putIfAbsent(k, v)                                              |
+    |                                                                  |
+    |     // Removes entry for k if it is currently mapped to v        |
+    | m.remove(k, v)                                                   |
+    |                                                                  |
+    |     // Replaces value associated with key k to new, if it        |
+    |     // was previously bound to old                               |
+    | m.replace(k, old, new)                                           |
+    |                                                                  |
+    |     // Replaces value associated with key k to v, if it          |
+    |     // was previously bound to some value                        |
+    | m.replace(k, v) Replaces value associated with key k to v, if it |
+    +------------------------------------------------------------------+
+
+    // Mutable bit sets
+    // can be modified in place
+    +--------------------------------------------------+
+    | val bits = scala.collection.mutable.BitSet.empty |
+    | bits += 1   // BitSet(1)                         |
+    | bits += 3   // BitSet(1, 3)                      |
+    | bits        // BitSet(1, 3)                      |
+    +--------------------------------------------------+
+
+    - Arrays
+
+
+
 
 
 
 
 
     -Trait Traversable
-    // ts only abstract operation is foreach
-    def foreach[U](f: Elem => U)
-    Abstract method:
-    xs foreach f Executes function f for every element of xs.
-    Addition:
+        // ts only abstract operation is foreach
+        def foreach[U](f: Elem => U)
+        Abstract method:
+        xs foreach f Executes function f for every element of xs.
+        Addition:
         xs ++ ys            // A collection consisting of the elements of both xs and ys. ys is a TraversableOnce collection, i.e., either a Traversable or an Iterator.
-    Maps:
+        Maps:
         xs map f            // The collection obtained from applying the function f to every element in xs.
         xs flatMap f        // The collection obtained from applying the collection-valued function f to every element in xs and concatenating the results.
         xs collect f        // The collection obtained from applying the partial function f to every element in xs for which it is defined and collecting the results.
-    Conversions:
+        Conversions:
         xs.toArray          // Converts the collection to an array.
         xs.toList           // Converts the collection to a list.
         xs.toIterable       // Converts the collection to an iterable.
@@ -3369,436 +3645,436 @@
         xs.toStream         // Converts the collection to a stream (a lazily computed sequence).
         xs.toSet            // Converts the collection to a set.
         xs.toMap            // Converts a collection of key/value pairs to a map.
-    Copying:
+        Copying:
         xs copyToBuffer buf             // Copies all elements of the collection to buffer buf.
         xs copyToArray(arr, s, len)     // Copies at most len elements of arr, starting at index s. The last two arguments are optional.
-    Size info:
+        Size info:
         xs.isEmpty          // Tests whether the collection is empty.
         xs.nonEmpty         // Tests whether the collection contains elements.
         xs.size             // The number of elements in the collection.
         xs.hasDefiniteSize  // True if xs is known to have finite size.
-    Element retrieval:
+        Element retrieval:
         xs.head             // The first element of the collection (or, some element, if no order is defined).
         xs.headOption       // The first element of xs in an option value, or None if xs is empty.
         xs.last             // The last element of the collection (or, some element, if no order is defined).
         xs.lastOption       // The last element of xs in an option value, or None if xs is empty.
         xs find p           // An option containing the first element in xs that satisfies p, or None if no element qualifies.
-    Subcollections:
-        xs.tail             // The rest of the collection except xs.head.
-        xs.init             // The rest of the collection except xs.last.
-        xs slice (from, to) // A collection consisting of elements in some index range of xs (from from, up to and excluding to).
-        xs take n           // A collection consisting of the first n elements of xs (or, some arbitrary n elements, if no order is defined).
-        xs drop n           // The rest of the collection except xs take n.
-        xs takeWhile p      // The longest prefix of elements in the collection that all satisfy p.
-        xs dropWhile p      // The collection without the longest prefix of elements that all satisfy p
-        xs filter p         // The collection consisting of those elements of xs that satisfy the predicate p.
-        xs withFilter p     // A non-strict filter of this collection. All operations on the resulting filter will only apply to those elements of xs for which the condition p is true.
-        xs filterNot p      // The collection consisting of those elements of xs that do not satisfy the predicate p.
-    Subdivisions:
-        xs splitAt n        // Splits xs at a position, giving the pair of collections (xs take n, xs drop n).
-        xs span p           // Splits xs according to a predicate, giving the pair of collections (xs takeWhile p, xs.dropWhile p).
-        xs partition p      // Splits xs into a pair of collections; one with elements that satisfy the predicate p, the other with elements that do not, giving the pair of collections (xs filter p, xs.filterNot p).
-        xs groupBy f        // Partitions xs into a map of collections according to a discriminator function f.
-    Element conditions:
-        xs forall p         // A boolean indicating whether the predicate p holds for all elements of xs.
-        xs exists p         // A boolean indicating whether the predicate p holds for some element in xs.
-        xs count p          // The number of elements in xs that satisfy the predicate p.
-    Folds:
-        (z /: xs)(op)       // Applies binary operation op between successive elements of xs, going left to right, starting with z.
-        (xs :\ z)(op)       // Applies binary operation op between successive elements of xs, going right to left, starting with z.
-        xs.foldLeft(z)(op)  // Same as (z /: xs)(op).
-        xs.foldRight(z)(op) // Same as (xs :\ z)(op).
-        xs reduceLeft op    // Applies binary operation op between successive elements of non-empty collection xs, going left to right.
-        xs reduceRight op   // Applies binary operation op between successive elements of non-empty collection xs, going right to left.
-    Specific folds:
-        xs.sum              // The sum of the numeric element values of collection xs.
-        xs.product          // The product of the numeric element values of collection xs.
-        xs.min              // The minimum of the ordered element values of collection xs.
-        xs.max              // The maximum of the ordered element values of collection xs.
-    Strings:
-        xs addString (b, start, sep, end)   // Adds a string to StringBuilder b that shows all elements of xs between separators sep enclosed in strings start and end. start, sep, and end are all optional.
-        xs mkString (start, sep, end)       // Converts the collection to a string that shows all elements of xs between separators sep enclosed in strings start and end. start, sep, and end are all optional.
-        xs.stringPrefix                     // The collection name at the beginning of the string returned from xs.toString.
-    Views:
-        xs.view             // Produces a view over xs.
-        xs view (from, to)  // Produces a view that represents the elements in some index range of xs
+        Subcollections:
+            xs.tail             // The rest of the collection except xs.head.
+            xs.init             // The rest of the collection except xs.last.
+            xs slice (from, to) // A collection consisting of elements in some index range of xs (from from, up to and excluding to).
+            xs take n           // A collection consisting of the first n elements of xs (or, some arbitrary n elements, if no order is defined).
+            xs drop n           // The rest of the collection except xs take n.
+            xs takeWhile p      // The longest prefix of elements in the collection that all satisfy p.
+            xs dropWhile p      // The collection without the longest prefix of elements that all satisfy p
+            xs filter p         // The collection consisting of those elements of xs that satisfy the predicate p.
+            xs withFilter p     // A non-strict filter of this collection. All operations on the resulting filter will only apply to those elements of xs for which the condition p is true.
+            xs filterNot p      // The collection consisting of those elements of xs that do not satisfy the predicate p.
+        Subdivisions:
+            xs splitAt n        // Splits xs at a position, giving the pair of collections (xs take n, xs drop n).
+            xs span p           // Splits xs according to a predicate, giving the pair of collections (xs takeWhile p, xs.dropWhile p).
+            xs partition p      // Splits xs into a pair of collections; one with elements that satisfy the predicate p, the other with elements that do not, giving the pair of collections (xs filter p, xs.filterNot p).
+            xs groupBy f        // Partitions xs into a map of collections according to a discriminator function f.
+        Element conditions:
+            xs forall p         // A boolean indicating whether the predicate p holds for all elements of xs.
+            xs exists p         // A boolean indicating whether the predicate p holds for some element in xs.
+            xs count p          // The number of elements in xs that satisfy the predicate p.
+        Folds:
+            (z /: xs)(op)       // Applies binary operation op between successive elements of xs, going left to right, starting with z.
+            (xs :\ z)(op)       // Applies binary operation op between successive elements of xs, going right to left, starting with z.
+            xs.foldLeft(z)(op)  // Same as (z /: xs)(op).
+            xs.foldRight(z)(op) // Same as (xs :\ z)(op).
+            xs reduceLeft op    // Applies binary operation op between successive elements of non-empty collection xs, going left to right.
+            xs reduceRight op   // Applies binary operation op between successive elements of non-empty collection xs, going right to left.
+        Specific folds:
+            xs.sum              // The sum of the numeric element values of collection xs.
+            xs.product          // The product of the numeric element values of collection xs.
+            xs.min              // The minimum of the ordered element values of collection xs.
+            xs.max              // The maximum of the ordered element values of collection xs.
+        Strings:
+            xs addString (b, start, sep, end)   // Adds a string to StringBuilder b that shows all elements of xs between separators sep enclosed in strings start and end. start, sep, and end are all optional.
+            xs mkString (start, sep, end)       // Converts the collection to a string that shows all elements of xs between separators sep enclosed in strings start and end. start, sep, and end are all optional.
+            xs.stringPrefix                     // The collection name at the beginning of the string returned from xs.toString.
+        Views:
+            xs.view             // Produces a view over xs.
+            xs view (from, to)  // Produces a view that represents the elements in some index range of xs
 
     -Trait Iterable
-    def foreach[U](f: Elem => U): Unit = {
-        val it = iterator
-        while (it.hasNext) f(it.next())
-    }
-    val xs = List(1, 2, 3, 4, 5)                    // xs: List[Int] = List(1, 2, 3, 4, 5)
-    val git = xs grouped 3                          // git: Iterator[List[Int]] = non-empty iterator
-    git.next()                                      // res2: List[Int] = List(1, 2, 3)
-    git.next()                                      // res3: List[Int] = List(4, 5)
-    val sit = xs sliding 3                          // sit: Iterator[List[Int]] = non-empty iterator
-    sit.next()                                      // res4: List[Int] = List(1, 2, 3)
-    sit.next()                                      // res5: List[Int] = List(2, 3, 4)
-    sit.next()                                      // res6: List[Int] = List(3, 4, 5)
-    Abstract method:
-        xs.iterator             // An iterator that yields every element in xs, in the same order as foreach traverses elements
-    Other iterators:
-        xs grouped size         // An iterator that yields fixed-sized “chunks” of this collection
-        xs sliding size         // An iterator that yields a sliding fixed-sized window of elements in this collection
-    Subcollections:
-        xs takeRight n          // A collection consisting of the last n elements of xs (or, some arbitrary n elements, if no order is defined)
-        xs dropRight n          // The rest of the collection except xs takeRight n
-    Zippers:
-        xs zip ys               // An iterable of pairs of corresponding elements from xs and ys
-        xs zipAll (ys, x, y)    // An iterable of pairs of corresponding elements from xs and ys, where the shorter sequence is extended to match the longer one by appending elements x or y
-        xs.zipWithIndex         // An iterable of pairs of elements from xs with their indicies
-    Comparison:
-        xs sameElements ys      // Tests whether xs and ys contain the same elements in the same order
-
-    -Why have both Traversable and Iterable?
-    // to implement foreach for iterable is harder then for  traversable
-    sealed abstract class Tree extends Traversable[Int] {
-        def foreach[U](f: Int => U) = this match {
-        case Node(elem) => f(elem)
-        case Branch(l, r) => l foreach f; r foreach f
+        def foreach[U](f: Elem => U): Unit = {
+            val it = iterator
+            while (it.hasNext) f(it.next())
         }
-    }
+        val xs = List(1, 2, 3, 4, 5)                    // xs: List[Int] = List(1, 2, 3, 4, 5)
+        val git = xs grouped 3                          // git: Iterator[List[Int]] = non-empty iterator
+        git.next()                                      // res2: List[Int] = List(1, 2, 3)
+        git.next()                                      // res3: List[Int] = List(4, 5)
+        val sit = xs sliding 3                          // sit: Iterator[List[Int]] = non-empty iterator
+        sit.next()                                      // res4: List[Int] = List(1, 2, 3)
+        sit.next()                                      // res5: List[Int] = List(2, 3, 4)
+        sit.next()                                      // res6: List[Int] = List(3, 4, 5)
+        Abstract method:
+            xs.iterator             // An iterator that yields every element in xs, in the same order as foreach traverses elements
+        Other iterators:
+            xs grouped size         // An iterator that yields fixed-sized “chunks” of this collection
+            xs sliding size         // An iterator that yields a sliding fixed-sized window of elements in this collection
+        Subcollections:
+            xs takeRight n          // A collection consisting of the last n elements of xs (or, some arbitrary n elements, if no order is defined)
+            xs dropRight n          // The rest of the collection except xs takeRight n
+        Zippers:
+            xs zip ys               // An iterable of pairs of corresponding elements from xs and ys
+            xs zipAll (ys, x, y)    // An iterable of pairs of corresponding elements from xs and ys, where the shorter sequence is extended to match the longer one by appending elements x or y
+            xs.zipWithIndex         // An iterable of pairs of elements from xs with their indicies
+        Comparison:
+            xs sameElements ys      // Tests whether xs and ys contain the same elements in the same order
+
+        -Why have both Traversable and Iterable?
+        // to implement foreach for iterable is harder then for  traversable
+        sealed abstract class Tree extends Traversable[Int] {
+            def foreach[U](f: Int => U) = this match {
+            case Node(elem) => f(elem)
+            case Branch(l, r) => l foreach f; r foreach f
+            }
+        }
 
     -The sequence traits Seq, IndexedSeq, and LinearSeq
-    //sequence is a kind of iterable that has a length and whose elements have fixed index positions, starting from 0
-    Indexing and length:
-        xs(i)               // (or, written out, xs apply i) The element of xs at index i.
-        xs isDefinedAt i    // Tests whether i is contained in xs.indices.
-        xs.length           // The length of the sequence (same as size).
-        xs.lengthCompare ys // Returns -1 if xs is shorter than ys, +1 if it is longer, and 0 is they have the same length. Works even if one of the sequences is infinite.
-        xs.indices          // The index range of xs, extending from 0 to xs.length - 1.
-    Index search:
-        xs indexOf x        // The index of the first element in xs equal to x (several variants exist).
-        xs lastIndexOf x    // The index of the last element in xs equal to x (several variants exist).
-        xs indexOfSlice ys  // The first index of xs such that successive elements starting from that index form the sequence ys.
-        xs lastIndexOfSlice ys  // The last index of xs such that successive elements starting from that index form the sequence ys.
-        xs indexWhere p     // The index of the first element in xs that satisfies p (several variants exist).
-        xs segmentLength (p, i) // The length of the longest uninterrupted segment of elements in xs, starting with xs(i), that all satisfy the predicate p.
-        xs prefixLength p   // The length of the longest prefix of elements in xs that all satisfy the predicate p.
-    Additions:
-        x +: xs             // A new sequence consisting of x prepended to xs.
-        xs :+ x             // A new sequence that consists of x append to xs.
-        xs padTo (len, x)   // The sequence resulting from appending the value x to xs until length len is reached.
-    Updates:
-        xs patch (i, ys, r) // The sequence resulting from replacing r elements of xs starting with i by the patch ys.
-        xs updated (i, x)   // A copy of xs with the element at index i replaced by x.
-        xs(i) = x           // (or, written out, xs.update(i, x), only available for mutable.Seqs) Changes the element of xs at index i to y.
-    Sorting:
-        xs.sorted           // A new sequence obtained by sorting the elements of xs using the standard ordering of the element type of xs.
-        xs sortWith lessThan    // A new sequence obtained by sorting the elements of xs, using lessThan as comparison operation.
-        xs sortBy f         // A new sequence obtained by sorting the elements of xs. Comparison between two elements proceeds by mapping the function f over both and comparing the results.
-    Reversals:
-        xs.reverse          // A sequence with the elements of xs in reverse order.
-        xs.reverseIterator  // An iterator yielding all the elements of xs in reverse order.
-        xs reverseMap f     // A sequence obtained by mapping f over the elements of xs in reverse order.
-    Comparisons:
-        xs startsWith ys    // Tests whether xs starts with sequence ys (several variants exist).
-        xs endsWith ys      // Tests whether xs ends with sequence ys (several variants exist).
-        xs contains x       // Tests whether xs has an element equal to x.
-        xs containsSlice ys // Tests whether xs has a contiguous subsequence equal to ys. (xs corresponds ys)(p) Tests whether corresponding elements of xs and ys satisfy the binary predicate p.
-    Multiset operations:
-        xs intersect ys     // The multi-set intersection of sequences xs and ys that preserves the order of elements in xs.
-        xs diff ys          // The multi-set difference of sequences xs and ys that preserves the order of elements in xs.
-        xs union ys         // Multiset union; same as xs ++ ys.
-        xs.distinct         // A subsequence of xs that contains no duplicated element.
+        //sequence is a kind of iterable that has a length and whose elements have fixed index positions, starting from 0
+        Indexing and length:
+            xs(i)               // (or, written out, xs apply i) The element of xs at index i.
+            xs isDefinedAt i    // Tests whether i is contained in xs.indices.
+            xs.length           // The length of the sequence (same as size).
+            xs.lengthCompare ys // Returns -1 if xs is shorter than ys, +1 if it is longer, and 0 is they have the same length. Works even if one of the sequences is infinite.
+            xs.indices          // The index range of xs, extending from 0 to xs.length - 1.
+        Index search:
+            xs indexOf x        // The index of the first element in xs equal to x (several variants exist).
+            xs lastIndexOf x    // The index of the last element in xs equal to x (several variants exist).
+            xs indexOfSlice ys  // The first index of xs such that successive elements starting from that index form the sequence ys.
+            xs lastIndexOfSlice ys  // The last index of xs such that successive elements starting from that index form the sequence ys.
+            xs indexWhere p     // The index of the first element in xs that satisfies p (several variants exist).
+            xs segmentLength (p, i) // The length of the longest uninterrupted segment of elements in xs, starting with xs(i), that all satisfy the predicate p.
+            xs prefixLength p   // The length of the longest prefix of elements in xs that all satisfy the predicate p.
+        Additions:
+            x +: xs             // A new sequence consisting of x prepended to xs.
+            xs :+ x             // A new sequence that consists of x append to xs.
+            xs padTo (len, x)   // The sequence resulting from appending the value x to xs until length len is reached.
+        Updates:
+            xs patch (i, ys, r) // The sequence resulting from replacing r elements of xs starting with i by the patch ys.
+            xs updated (i, x)   // A copy of xs with the element at index i replaced by x.
+            xs(i) = x           // (or, written out, xs.update(i, x), only available for mutable.Seqs) Changes the element of xs at index i to y.
+        Sorting:
+            xs.sorted           // A new sequence obtained by sorting the elements of xs using the standard ordering of the element type of xs.
+            xs sortWith lessThan    // A new sequence obtained by sorting the elements of xs, using lessThan as comparison operation.
+            xs sortBy f         // A new sequence obtained by sorting the elements of xs. Comparison between two elements proceeds by mapping the function f over both and comparing the results.
+        Reversals:
+            xs.reverse          // A sequence with the elements of xs in reverse order.
+            xs.reverseIterator  // An iterator yielding all the elements of xs in reverse order.
+            xs reverseMap f     // A sequence obtained by mapping f over the elements of xs in reverse order.
+        Comparisons:
+            xs startsWith ys    // Tests whether xs starts with sequence ys (several variants exist).
+            xs endsWith ys      // Tests whether xs ends with sequence ys (several variants exist).
+            xs contains x       // Tests whether xs has an element equal to x.
+            xs containsSlice ys // Tests whether xs has a contiguous subsequence equal to ys. (xs corresponds ys)(p) Tests whether corresponding elements of xs and ys satisfy the binary predicate p.
+        Multiset operations:
+            xs intersect ys     // The multi-set intersection of sequences xs and ys that preserves the order of elements in xs.
+            xs diff ys          // The multi-set difference of sequences xs and ys that preserves the order of elements in xs.
+            xs union ys         // Multiset union; same as xs ++ ys.
+            xs.distinct         // A subsequence of xs that contains no duplicated element.
 
-    -Buffers
-    // allow not only updates of existing elements but also element insertions, element removals, and efficient additions of new elements at the end of the buffer
-    Additions:
-        buf += x                //Appends element x to buffer buf, and returns buf itself as result
-        buf += (x, y, z)        //Appends given elements to buffer
-        buf ++= xs              //Appends all elements in xs to buffer
-        x +=: buf               //Prepends element x to buffer
-        xs ++=: buf             //Prepends all elements in xs to buffer
-        buf insert (i, x)       //Inserts element x at index i in buffer
-        buf insertAll (i, xs)   //Inserts all elements in xs at index i in buffer
-    Removals:
-        buf -= x                // Removes element x from buffer
-        buf remove i            // Removes element at index i from buffer
-        buf remove (i, n)       // Removes n elements starting at index i from buffer
-        buf trimStart n         // Removes first n elements from buffer
-        buf trimEnd n           // Removes last n elements from buffer
-        buf.clear()             // Removes all elements from buffer
-    Cloning:
-        buf.clone               // A new buffer with the same elements as buf
+        -Buffers
+        // allow not only updates of existing elements but also element insertions, element removals, and efficient additions of new elements at the end of the buffer
+        Additions:
+            buf += x                //Appends element x to buffer buf, and returns buf itself as result
+            buf += (x, y, z)        //Appends given elements to buffer
+            buf ++= xs              //Appends all elements in xs to buffer
+            x +=: buf               //Prepends element x to buffer
+            xs ++=: buf             //Prepends all elements in xs to buffer
+            buf insert (i, x)       //Inserts element x at index i in buffer
+            buf insertAll (i, xs)   //Inserts all elements in xs at index i in buffer
+        Removals:
+            buf -= x                // Removes element x from buffer
+            buf remove i            // Removes element at index i from buffer
+            buf remove (i, n)       // Removes n elements starting at index i from buffer
+            buf trimStart n         // Removes first n elements from buffer
+            buf trimEnd n           // Removes last n elements from buffer
+            buf.clear()             // Removes all elements from buffer
+        Cloning:
+            buf.clone               // A new buffer with the same elements as buf
 
     -Sets
-    // Iterables that contain no duplicate elements
-    Tests:
-        xs contains x           // Tests whether x is an element of xs 
-        xs(x)                   // Same as xs contains x
-        xs subsetOf ys          // Tests whether xs is a subset of ys
-    Additions:
-        xs + x                  // The set containing all elements of xs as well as x
-        xs + (x, y, z)          // The set containing all elements of xs as well as the given additional elements
-        xs ++ ys                // The set containing all elements of xs as well as all elements of ys
-    Removals:
-        xs - x                  // The set containing all elements of xs except x
-        xs - (x, y, z)          // The set containing all elements of xs except the given elements
-        xs -- ys                // The set containing all elements of xs except the elements of ys
-        xs.empty                // An empty set of the same class as xs
-    Binary operations:
-        xs & ys                 // The set intersection of xs and ys
-        xs intersect ys         // Same as xs & ys
-        xs | ys                 // The set union of xs and ys
-        xs union ys             // Same as xs | ys
-        xs &~ ys                // The set difference of xs and ys
-        xs diff ys              // Same as xs &~ ys
+        // Iterables that contain no duplicate elements
+        Tests:
+            xs contains x           // Tests whether x is an element of xs 
+            xs(x)                   // Same as xs contains x
+            xs subsetOf ys          // Tests whether xs is a subset of ys
+        Additions:
+            xs + x                  // The set containing all elements of xs as well as x
+            xs + (x, y, z)          // The set containing all elements of xs as well as the given additional elements
+            xs ++ ys                // The set containing all elements of xs as well as all elements of ys
+        Removals:
+            xs - x                  // The set containing all elements of xs except x
+            xs - (x, y, z)          // The set containing all elements of xs except the given elements
+            xs -- ys                // The set containing all elements of xs except the elements of ys
+            xs.empty                // An empty set of the same class as xs
+        Binary operations:
+            xs & ys                 // The set intersection of xs and ys
+            xs intersect ys         // Same as xs & ys
+            xs | ys                 // The set union of xs and ys
+            xs union ys             // Same as xs | ys
+            xs &~ ys                // The set difference of xs and ys
+            xs diff ys              // Same as xs &~ ys
 
-    // Mutable sets:
-    Additions:
-        xs += x             // Adds element x to set xs as a side effect and returns xs itself
-        xs += (x, y, z)     // Adds the given elements to set xs as a side effect and returns xs itself
-        xs ++= ys           // Adds all elements in ys to set xs as a side effect and returns xs itself
-        xs add x            // Adds element x to xs and returns true if x was not previously contained in the set, false if it was previously contained
-    Removals:
-        xs -= x             // Removes element x from set xs as a side effect and returns xs itself
-        xs -= (x, y, z)     // Removes the given elements from set xs as a side effect and returns xs itself
-        xs --= ys           // Removes all elements in ys from set xs as a side effect and returns xs itself
-        xs remove x         // Removes element x from xs and returns true if x was previously contained in the set, false if it was not previously contained
-        xs retain p         // Keeps only those elements in xs that satisfy
-    predicate p
-        xs.clear()          // Removes all elements from xs
-    Update:
-        xs(x) = b           // (or, written out, xs.update(x, b)) If boolean argument b is true, adds x to xs, otherwise removes x from xs
-    Cloning:
-        xs.clone            // A new mutable set with the same elements as xs
-    // example
-    var s = Set(1, 2, 3)    // s: scala.collection.immutable.Set[Int] = Set(1, 2, 3)
-    s += 4; s -= 2          // we used += and -= on a var of type immutable.Set. s += 4 is an abbreviation for s = s + 4. So this invokes the addition method + on the set s and then assigns the result back to the s variable
-    s                       // res10: scala.collection.immutable.Set[Int] = Set(1, 3, 4)
-    // mutable
-    val s = collection.mutable.Set(1, 2, 3)     // s: scala.collection.mutable.Set[Int] = Set(1, 2, 3)
-    s += 4                  // res11: s.type = Set(1, 2, 3, 4)
-    s -= 2                  // res12: s.type = Set(1, 3, 4)
+        // Mutable sets:
+        Additions:
+            xs += x             // Adds element x to set xs as a side effect and returns xs itself
+            xs += (x, y, z)     // Adds the given elements to set xs as a side effect and returns xs itself
+            xs ++= ys           // Adds all elements in ys to set xs as a side effect and returns xs itself
+            xs add x            // Adds element x to xs and returns true if x was not previously contained in the set, false if it was previously contained
+        Removals:
+            xs -= x             // Removes element x from set xs as a side effect and returns xs itself
+            xs -= (x, y, z)     // Removes the given elements from set xs as a side effect and returns xs itself
+            xs --= ys           // Removes all elements in ys from set xs as a side effect and returns xs itself
+            xs remove x         // Removes element x from xs and returns true if x was previously contained in the set, false if it was not previously contained
+            xs retain p         // Keeps only those elements in xs that satisfy
+        predicate p
+            xs.clear()          // Removes all elements from xs
+        Update:
+            xs(x) = b           // (or, written out, xs.update(x, b)) If boolean argument b is true, adds x to xs, otherwise removes x from xs
+        Cloning:
+            xs.clone            // A new mutable set with the same elements as xs
+        // example
+        var s = Set(1, 2, 3)    // s: scala.collection.immutable.Set[Int] = Set(1, 2, 3)
+        s += 4; s -= 2          // we used += and -= on a var of type immutable.Set. s += 4 is an abbreviation for s = s + 4. So this invokes the addition method + on the set s and then assigns the result back to the s variable
+        s                       // res10: scala.collection.immutable.Set[Int] = Set(1, 3, 4)
+        // mutable
+        val s = collection.mutable.Set(1, 2, 3)     // s: scala.collection.mutable.Set[Int] = Set(1, 2, 3)
+        s += 4                  // res11: s.type = Set(1, 2, 3, 4)
+        s -= 2                  // res12: s.type = Set(1, 3, 4)
 
     -Maps
-    // Iterables of pairs of keys and values
-    Map("x" -> 24, "y" -> 25, "z" -> 26)        // exactly the same as Map(("x", 24), ("y", 25), ("z", 26))
-    Lookups:
-        ms get k            // The value associated with key k in map ms as an option, or None if not found
-        ms(k)               // (or, written out, ms apply k) The value associated with key k in map ms, or a thrown exception if not found
-        ms getOrElse (k, d) // The value associated with key k in map ms, or the default value d if not found
-        ms contains k       // Tests whether ms contains a mapping for key k
-        ms isDefinedAt k    // Same as contains
-    Additions and updates:
-        ms + (k -> v)           // The map containing all mappings of ms as well as the mapping k -> v from key k to value v
-        ms + (k -> v, l -> w)   // The map containing all mappings of ms as well as
-    the given key/value pairs
-        ms ++ kvs           // The map containing all mappings of ms as well as all key/value pairs of kvs
-        ms updated (k, v)   // Same as ms + (k -> v)
-    Removals:
-        ms - k              // The map containing all mappings of ms except for any mapping of key k
-        ms - (k, l, m)      // The map containing all mappings of ms except for any mapping with the given keys
-        ms -- ks            // The map containing all mappings of ms except for any mapping with a key in ks
-    Subcollections:
-        ms.keys             // An iterable containing each key in ms
-        ms.keySet           // A set containing each key in ms
-        ms.keysIterator     // An iterator yielding each key in ms
-        ms.values           // An iterable containing each value associated with a key in ms
-        ms.valuesIterator   // An iterator yielding each value associated with a key in ms
-    Transformation:
-        ms filterKeys p     // A map view containing only those mappings in ms where the key satisfies predicate p
-        ms mapValues f      // A map view resulting from applying function f to each value associated with a key in ms
-    // mutable
-    Additions and updates:
-        ms(k) = v           // (or, written out, ms.update(k, v)) Adds mapping from key k to value v to map ms as a side effect, overwriting any previous mapping of k
-        ms += (k -> v)      // Adds mapping from key k to value v to map ms as a side effect and returns ms itself
-        ms += (k -> v, l -> w)  // Adds the given mappings to ms as a side effect and returns ms itself
-        ms ++= kvs          // Adds all mappings in kvs to ms as a side effect and returns ms itself
-        ms put (k, v)       // Adds mapping from key k to value v to ms and returns any value previously associated with k as an option
-        ms getOrElseUpdate (k, d)   // If key k is defined in map ms, returns its associated value. Otherwise, updates ms with the mapping k -> d and returns d
-    Removals:
-        ms -= k             // Removes mapping with key k from ms as a side effect and returns ms itself
-        ms -= (k, l, m)     // Removes mappings with the given keys from ms as a side effect and returns ms itself
-        ms --= ks           // Removes all keys in ks from ms as a side effect and returns ms itself
-        ms remove k         // Removes any mapping with key k from ms and returns any value previously associated with k as an option
-        ms retain p         // Keeps only those mappings in ms that have a key satisfying predicate p.
-        ms.clear()          // Removes all mappings from ms
-    Transformation and cloning:
-        ms transform f      // Transforms all associated values in map ms with function f
-        ms.clone            //Returns a new mutable map with the same mappings as ms
-    // getOrElseUpdate is useful for accessing maps that act as caches.
-    val cache = collection.mutable.Map[String, String]()
-    def cachedF(s: String) = cache.getOrElseUpdate(s, f(s))
-    cachedF("abc")          // taking my time.  res16: String = cba
-    cachedF("abc")          // res17: String = cba
-    def cachedF(arg: String) = cache get arg match {
-        case Some(result) => result
-        case None =>
-            val result = f(arg)
-            cache(arg) = result
-            result
-    }
+        // Iterables of pairs of keys and values
+        Map("x" -> 24, "y" -> 25, "z" -> 26)        // exactly the same as Map(("x", 24), ("y", 25), ("z", 26))
+        Lookups:
+            ms get k            // The value associated with key k in map ms as an option, or None if not found
+            ms(k)               // (or, written out, ms apply k) The value associated with key k in map ms, or a thrown exception if not found
+            ms getOrElse (k, d) // The value associated with key k in map ms, or the default value d if not found
+            ms contains k       // Tests whether ms contains a mapping for key k
+            ms isDefinedAt k    // Same as contains
+        Additions and updates:
+            ms + (k -> v)           // The map containing all mappings of ms as well as the mapping k -> v from key k to value v
+            ms + (k -> v, l -> w)   // The map containing all mappings of ms as well as
+        the given key/value pairs
+            ms ++ kvs           // The map containing all mappings of ms as well as all key/value pairs of kvs
+            ms updated (k, v)   // Same as ms + (k -> v)
+        Removals:
+            ms - k              // The map containing all mappings of ms except for any mapping of key k
+            ms - (k, l, m)      // The map containing all mappings of ms except for any mapping with the given keys
+            ms -- ks            // The map containing all mappings of ms except for any mapping with a key in ks
+        Subcollections:
+            ms.keys             // An iterable containing each key in ms
+            ms.keySet           // A set containing each key in ms
+            ms.keysIterator     // An iterator yielding each key in ms
+            ms.values           // An iterable containing each value associated with a key in ms
+            ms.valuesIterator   // An iterator yielding each value associated with a key in ms
+        Transformation:
+            ms filterKeys p     // A map view containing only those mappings in ms where the key satisfies predicate p
+            ms mapValues f      // A map view resulting from applying function f to each value associated with a key in ms
+        // mutable
+        Additions and updates:
+            ms(k) = v           // (or, written out, ms.update(k, v)) Adds mapping from key k to value v to map ms as a side effect, overwriting any previous mapping of k
+            ms += (k -> v)      // Adds mapping from key k to value v to map ms as a side effect and returns ms itself
+            ms += (k -> v, l -> w)  // Adds the given mappings to ms as a side effect and returns ms itself
+            ms ++= kvs          // Adds all mappings in kvs to ms as a side effect and returns ms itself
+            ms put (k, v)       // Adds mapping from key k to value v to ms and returns any value previously associated with k as an option
+            ms getOrElseUpdate (k, d)   // If key k is defined in map ms, returns its associated value. Otherwise, updates ms with the mapping k -> d and returns d
+        Removals:
+            ms -= k             // Removes mapping with key k from ms as a side effect and returns ms itself
+            ms -= (k, l, m)     // Removes mappings with the given keys from ms as a side effect and returns ms itself
+            ms --= ks           // Removes all keys in ks from ms as a side effect and returns ms itself
+            ms remove k         // Removes any mapping with key k from ms and returns any value previously associated with k as an option
+            ms retain p         // Keeps only those mappings in ms that have a key satisfying predicate p.
+            ms.clear()          // Removes all mappings from ms
+        Transformation and cloning:
+            ms transform f      // Transforms all associated values in map ms with function f
+            ms.clone            //Returns a new mutable map with the same mappings as ms
+        // getOrElseUpdate is useful for accessing maps that act as caches.
+        val cache = collection.mutable.Map[String, String]()
+        def cachedF(s: String) = cache.getOrElseUpdate(s, f(s))
+        cachedF("abc")          // taking my time.  res16: String = cba
+        cachedF("abc")          // res17: String = cba
+        def cachedF(arg: String) = cache get arg match {
+            case Some(result) => result
+            case None =>
+                val result = f(arg)
+                cache(arg) = result
+                result
+        }
 
     -Concrete immutable collection classes
     -Lists
-    //constant-time access to first element, rest of the list, cons operation for adding a new element to the front of the list
+        //constant-time access to first element, rest of the list, cons operation for adding a new element to the front of the list
 
     -Streams
-    // like a list except that its elements are computed lazily, Otherwise, streams have the same performance characteristics as lists
-    val str = 1 #:: 2 #:: 3 #:: Stream.empty        // str: scala.collection.immutable.Stream[Int] = Stream(1, ?)
-    def fibFrom(a: Int, b: Int): Stream[Int] =      // without #:: every call to the function would result in another call
-        a #:: fibFrom(b, a + b)                     // fibFrom: (a: Int, b: Int)Stream[Int]
-    val fibs = fibFrom(1, 1).take(7)                // fibs: scala.collection.immutable.Stream[Int] = Stream(1, ?)
-    fibs.toList                                     // res23: List[Int] = List(1, 1, 2, 3, 5, 8, 13)
+        // like a list except that its elements are computed lazily, Otherwise, streams have the same performance characteristics as lists
+        val str = 1 #:: 2 #:: 3 #:: Stream.empty        // str: scala.collection.immutable.Stream[Int] = Stream(1, ?)
+        def fibFrom(a: Int, b: Int): Stream[Int] =      // without #:: every call to the function would result in another call
+            a #:: fibFrom(b, a + b)                     // fibFrom: (a: Int, b: Int)Stream[Int]
+        val fibs = fibFrom(1, 1).take(7)                // fibs: scala.collection.immutable.Stream[Int] = Stream(1, ?)
+        fibs.toList                                     // res23: List[Int] = List(1, 1, 2, 3, 5, 8, 13)
 
     -Vectors
-    // efficient access to elements beyond the head
-    val vec = scala.collection.immutable.Vector.empty
-    val vec2 = vec :+ 1 :+ 2                        // vec2: scala.collection.immutable.Vector[Int] = Vector(1, 2)
-    val vec3 = 100 +: vec2                          // vec3: scala.collection.immutable.Vector[Int] = Vector(100, 1, 2)
-    vec3(0)                                         // res24: Int = 100
-    // Every tree node contains up to 32 elements of the vector or contains up to 32 other tree nodes
-    // ectors are immutable, so you cannot change an element of a vector in place, you can create a new vector that differs from a given vector only in a single element
-    val vec = Vector(1, 2, 3)
-    vec updated (2, 4)                              // res25: scala.collection.immutable.Vector[Int] = Vector(1, 2, 4)
-    vec                                             // res26: scala.collection.immutable.Vector[Int] = Vector(1, 2, 3)
-    // Updating an element in the middle of a vector can be done by copying the node that contains the element, and every node that points to it,
-    // starting from the root of the tree. This means that a functional update creates between one and five nodes that each contain up to 32 elements or subtrees.
-    // This is certainly more expensive than an in-place update in a mutable array, but still a lot cheaper than copying the whole vector.
-    // they are currently the default implementation of immutable indexed sequences
-    collection.immutable.IndexedSeq(1, 2, 3)        // res27: scala.collection.immutable.IndexedSeq[Int] = Vector(1, 2, 3)
+        // efficient access to elements beyond the head
+        val vec = scala.collection.immutable.Vector.empty
+        val vec2 = vec :+ 1 :+ 2                        // vec2: scala.collection.immutable.Vector[Int] = Vector(1, 2)
+        val vec3 = 100 +: vec2                          // vec3: scala.collection.immutable.Vector[Int] = Vector(100, 1, 2)
+        vec3(0)                                         // res24: Int = 100
+        // Every tree node contains up to 32 elements of the vector or contains up to 32 other tree nodes
+        // ectors are immutable, so you cannot change an element of a vector in place, you can create a new vector that differs from a given vector only in a single element
+        val vec = Vector(1, 2, 3)
+        vec updated (2, 4)                              // res25: scala.collection.immutable.Vector[Int] = Vector(1, 2, 4)
+        vec                                             // res26: scala.collection.immutable.Vector[Int] = Vector(1, 2, 3)
+        // Updating an element in the middle of a vector can be done by copying the node that contains the element, and every node that points to it,
+        // starting from the root of the tree. This means that a functional update creates between one and five nodes that each contain up to 32 elements or subtrees.
+        // This is certainly more expensive than an in-place update in a mutable array, but still a lot cheaper than copying the whole vector.
+        // they are currently the default implementation of immutable indexed sequences
+        collection.immutable.IndexedSeq(1, 2, 3)        // res27: scala.collection.immutable.IndexedSeq[Int] = Vector(1, 2, 3)
 
     -Immutable stacks
-    // push an element onto a stack with push, pop an element with pop
-    val stack = scala.collection.immutable.Stack.empty
-    val hasOne = stack.push(1)                      // hasOne: scala.collection.immutable.Stack[Int] = Stack(1)
-    stack                                           // res28: scala.collection.immutable.Stack[Nothing] = Stack()
-    hasOne.top                                      // res29: Int = 1
-    hasOne.pop                                      // res30: scala.collection.immutable.Stack[Int] = Stack()
-    // rarely in Scala programs because their functionality is subsumed by lists
+        // push an element onto a stack with push, pop an element with pop
+        val stack = scala.collection.immutable.Stack.empty
+        val hasOne = stack.push(1)                      // hasOne: scala.collection.immutable.Stack[Int] = Stack(1)
+        stack                                           // res28: scala.collection.immutable.Stack[Nothing] = Stack()
+        hasOne.top                                      // res29: Int = 1
+        hasOne.pop                                      // res30: scala.collection.immutable.Stack[Int] = Stack()
+        // rarely in Scala programs because their functionality is subsumed by lists
 
     -Immutable queues
-    val empty = scala.collection.immutable.Queue[Int]()
-    val has1 = empty.enqueue(1)                     // has1: scala.collection.immutable.Queue[Int] = Queue(1)
-    val has123 = has1.enqueue(List(2, 3))           // has123: scala.collection.immutable.Queue[Int] = Queue(1, 2, 3)
-    val (element, has23) = has123.dequeue           // element: Int = 1; has23: scala.collection.immutable.Queue[Int] = Queue(2, 3)
+        val empty = scala.collection.immutable.Queue[Int]()
+        val has1 = empty.enqueue(1)                     // has1: scala.collection.immutable.Queue[Int] = Queue(1)
+        val has123 = has1.enqueue(List(2, 3))           // has123: scala.collection.immutable.Queue[Int] = Queue(1, 2, 3)
+        val (element, has23) = has123.dequeue           // element: Int = 1; has23: scala.collection.immutable.Queue[Int] = Queue(2, 3)
 
     -Ranges
-    1 to 3                                          // res31: scala.collection.immutable.Range.Inclusive = Range(1, 2, 3)
-    5 to 14 by 3                                    // res32: scala.collection.immutable.Range = Range(5, 8, 11, 14)
-    1 until 3                                       // res33: scala.collection.immutable.Range = Range(1, 2)
+        1 to 3                                          // res31: scala.collection.immutable.Range.Inclusive = Range(1, 2, 3)
+        5 to 14 by 3                                    // res32: scala.collection.immutable.Range = Range(5, 8, 11, 14)
+        1 until 3                                       // res33: scala.collection.immutable.Range = Range(1, 2)
 
     -Hash tries
-    // standard way to implement immutable sets and maps efficiently
-    // trees where every node has 32 elements or 32 subtrees, but selection is done based on a hash code.
-    // to find a given key in a map, you use the lowest five bits of the hash code of the key to select the first subtree, the next five bits the next subtree, and so on
+        // standard way to implement immutable sets and maps efficiently
+        // trees where every node has 32 elements or 32 subtrees, but selection is done based on a hash code.
+        // to find a given key in a map, you use the lowest five bits of the hash code of the key to select the first subtree, the next five bits the next subtree, and so on
 
     -Red-black trees
-    // balanced binary trees where some nodes are designated “red” and others “black.” standard implementation of SortedSet in Scala
-    val set = collection.immutable.TreeSet.empty[Int]   // set: scala.collection.immutable.TreeSet[Int] = TreeSet()
-    set + 1 + 3 + 3                                     // res34: scala.collection.immutable.TreeSet[Int] = TreeSet(1, 3)
+        // balanced binary trees where some nodes are designated “red” and others “black.” standard implementation of SortedSet in Scala
+        val set = collection.immutable.TreeSet.empty[Int]   // set: scala.collection.immutable.TreeSet[Int] = TreeSet()
+        set + 1 + 3 + 3                                     // res34: scala.collection.immutable.TreeSet[Int] = TreeSet(1, 3)
 
     -Immutable bit sets
-    // bit set containing 3, 2, and 0 would be represented as the integer 1101 in binary, which is 13 in decimal
-    val bits = scala.collection.immutable.BitSet.empty
-    val moreBits = bits + 3 + 4 + 4                     // moreBits: scala.collection.immutable.BitSet = BitSet(3, 4)
-    moreBits(3)                                         // res35: Boolean = true
-    moreBits(0)                                         //res36: Boolean = false
+        // bit set containing 3, 2, and 0 would be represented as the integer 1101 in binary, which is 13 in decimal
+        val bits = scala.collection.immutable.BitSet.empty
+        val moreBits = bits + 3 + 4 + 4                     // moreBits: scala.collection.immutable.BitSet = BitSet(3, 4)
+        moreBits(3)                                         // res35: Boolean = true
+        moreBits(0)                                         //res36: Boolean = false
 
     -List maps
-    val map = collection.immutable.ListMap( 1 -> "one", 2 -> "two")     // 
-    map(2)                                              // res37: String = "two"
+        val map = collection.immutable.ListMap( 1 -> "one", 2 -> "two")     // 
+        map(2)                                              // res37: String = "two"
 
     -Concrete mutable collection classes
     -Array buffers
-    // holds an arra
-    y and a size, can have data efficiently added to the end, Appending an item to an array buffer takes amortized constant time
-    // good whenever the new items are always added to the end
-    // useful for building arrays
-    val buf = collection.mutable.ArrayBuffer.empty[Int]
-    buf += 1                                        // res38: buf.type = ArrayBuffer(1)
-    buf += 10                                       // res39: buf.type = ArrayBuffer(1, 10)
-    buf.toArray                                     // res40: Array[Int] = Array(1, 10)
-    -List buffers
-    // like an array buffer except that it uses a linked list internally instead of an array
-    // if need to convert the buffer to a list once it is built up, use a list buffer instead of an array buffer
-    // useful for building lists
-    val buf = collection.mutable.ListBuffer.empty[Int]
-    buf += 1                                        // res41: buf.type = ListBuffer(1)
-    buf += 10                                       // res42: buf.type = ListBuffer(1, 10)
-    buf.toList                                      // res43: List[Int] = List(1, 10)
+        // holds an arra
+        y and a size, can have data efficiently added to the end, Appending an item to an array buffer takes amortized constant time
+        // good whenever the new items are always added to the end
+        // useful for building arrays
+        val buf = collection.mutable.ArrayBuffer.empty[Int]
+        buf += 1                                        // res38: buf.type = ArrayBuffer(1)
+        buf += 10                                       // res39: buf.type = ArrayBuffer(1, 10)
+        buf.toArray                                     // res40: Array[Int] = Array(1, 10)
+        -List buffers
+        // like an array buffer except that it uses a linked list internally instead of an array
+        // if need to convert the buffer to a list once it is built up, use a list buffer instead of an array buffer
+        // useful for building lists
+        val buf = collection.mutable.ListBuffer.empty[Int]
+        buf += 1                                        // res41: buf.type = ListBuffer(1)
+        buf += 10                                       // res42: buf.type = ListBuffer(1, 10)
+        buf.toList                                      // res43: List[Int] = List(1, 10)
     -String builders
-    // useful for building strings
-    val buf = new StringBuilder
-    buf += 'a'                                      // res44: buf.type = a
-    buf ++= "bcdef"                                 // res45: buf.type = abcdef
-    buf.toString                                    // res46: String = abcdef
+        // useful for building strings
+        val buf = new StringBuilder
+        buf += 'a'                                      // res44: buf.type = a
+        buf ++= "bcdef"                                 // res45: buf.type = abcdef
+        buf.toString                                    // res46: String = abcdef
     -Linked lists
-    // LinkedList.empty.isEmpty
-    // best operated on sequentially. In addition, linked lists make it easy to insert an element or linked list into another linked list
+        // LinkedList.empty.isEmpty
+        // best operated on sequentially. In addition, linked lists make it easy to insert an element or linked list into another linked list
     -Double linked lists
-    // DoubleLinkedLists
-    // main benefit of that additional link is that it makes element removal very fast
+        // DoubleLinkedLists
+        // main benefit of that additional link is that it makes element removal very fast
     -Mutable lists
-    // MutableList
-    // list append a constant time operation because it avoids having to traverse the list in search for its terminal node
-    // MutableList is currently the standard implementation of mutable.LinearSeq in Scala
+        // MutableList
+        // list append a constant time operation because it avoids having to traverse the list in search for its terminal node
+        // MutableList is currently the standard implementation of mutable.LinearSeq in Scala
     -Queues
-    val queue = new scala.collection.mutable.Queue[String]
-    queue += "a"                                    // res47: queue.type = Queue(a)
-    queue ++= List("b", "c")                        // res48: queue.type = Queue(a, b, c)
-    queue                                           // res49: scala.collection.mutable.Queue[String] = Queue(a, b, c)
-    queue.dequeue                                   // res50: String = a
-    queue                                           // res51: scala.collection.mutable.Queue[String] = Queue(b, c)
+        val queue = new scala.collection.mutable.Queue[String]
+        queue += "a"                                    // res47: queue.type = Queue(a)
+        queue ++= List("b", "c")                        // res48: queue.type = Queue(a, b, c)
+        queue                                           // res49: scala.collection.mutable.Queue[String] = Queue(a, b, c)
+        queue.dequeue                                   // res50: String = a
+        queue                                           // res51: scala.collection.mutable.Queue[String] = Queue(b, c)
     -Array sequences
-    // ArraySeq
-    // if you want an array for its performance characteristics, but you also want to create generic instances of the sequence where you do not know the type of the elements and do not have a ClassTag to provide it at run-time
+        // ArraySeq
+        // if you want an array for its performance characteristics, but you also want to create generic instances of the sequence where you do not know the type of the elements and do not have a ClassTag to provide it at run-time
     -Stacks
-    val stack = new scala.collection.mutable.Stack[Int]
-    stack.push(1)                                   // res52: stack.type = Stack(1)
-    stack                                           // res53: scala.collection.mutable.Stack[Int] = Stack(1)
-    stack.push(2)                                   // res54: stack.type = Stack(2, 1)
-    stack                                           // res55: scala.collection.mutable.Stack[Int] = Stack(2, 1)
-    stack.top                                       // res56: Int = 2
-    stack                                           // res57: scala.collection.mutable.Stack[Int] = Stack(2, 1)
-    stack.pop                                       // res58: Int = 2
-    stack                                           // res59: scala.collection.mutable.Stack[Int] = Stack(1)
+        val stack = new scala.collection.mutable.Stack[Int]
+        stack.push(1)                                   // res52: stack.type = Stack(1)
+        stack                                           // res53: scala.collection.mutable.Stack[Int] = Stack(1)
+        stack.push(2)                                   // res54: stack.type = Stack(2, 1)
+        stack                                           // res55: scala.collection.mutable.Stack[Int] = Stack(2, 1)
+        stack.top                                       // res56: Int = 2
+        stack                                           // res57: scala.collection.mutable.Stack[Int] = Stack(2, 1)
+        stack.pop                                       // res58: Int = 2
+        stack                                           // res59: scala.collection.mutable.Stack[Int] = Stack(1)
     -Array stacks
-    // gets resized as needed
-    // fast indexing and is generally slightly more efficient for most operations than a normal mutable stack
+        // gets resized as needed
+        // fast indexing and is generally slightly more efficient for most operations than a normal mutable stack
     -Hash tables
-    // stores its elements in an underlying array
-    // To get a guaranteed iteration order, use a linked hash map or set instead of a regular one
-    val map = collection.mutable.HashMap.empty[Int,String]
-    map += (1 -> "make a web site")                 // res60: map.type = Map(1 > make a web site)
-    map += (3 -> "profit!")                         // res61: map.type = Map(1 -> make a web site, 3 -> profit!)
-    map(1)                                          // res62: String = make a web site
-    map contains 2                                  // res63: Boolean = false
+        // stores its elements in an underlying array
+        // To get a guaranteed iteration order, use a linked hash map or set instead of a regular one
+        val map = collection.mutable.HashMap.empty[Int,String]
+        map += (1 -> "make a web site")                 // res60: map.type = Map(1 > make a web site)
+        map += (3 -> "profit!")                         // res61: map.type = Map(1 -> make a web site, 3 -> profit!)
+        map(1)                                          // res62: String = make a web site
+        map contains 2                                  // res63: Boolean = false
     -Weak hash maps
-    // key and its associated value will disappear from the map if there is no other reference to that key
-    // As soon as a key object becomes unreachable, it’s entry is removed from the weak hash map
+        // key and its associated value will disappear from the map if there is no other reference to that key
+        // As soon as a key object becomes unreachable, it’s entry is removed from the weak hash map
     -Concurrent Maps
-    // can be accessed by several threads at once
+        // can be accessed by several threads at once
     -Mutable bit sets
-    // more efficient at updating than immutable ones, because they don’t have to copy around Longs that haven’t changed.
-    val bits = scala.collection.mutable.BitSet.empty
-    bits += 1                                       // res64: bits.type = BitSet(1)
-    bits += 3                                       // res65: bits.type = BitSet(1, 3)
-    bits                                            // res66: scala.collection.mutable.BitSet = BitSet(1, 3)
+        // more efficient at updating than immutable ones, because they don’t have to copy around Longs that haven’t changed.
+        val bits = scala.collection.mutable.BitSet.empty
+        bits += 1                                       // res64: bits.type = BitSet(1)
+        bits += 3                                       // res65: bits.type = BitSet(1, 3)
+        bits                                            // res66: scala.collection.mutable.BitSet = BitSet(1, 3)
 
     -Arrays
-    // Scala array Array[Int] is represented as a Java int[]
-    // compatible with Scala sequences—you can pass an Array[T] where a Seq[T] (thanks to implicit conversions)
-    val a1 = Array(1, 2, 3)                         // a1: Array[Int] = Array(1, 2, 3)
-    val a2 = a1 map (_ * 3)                         // a2: Array[Int] = Array(3, 6, 9)
-    val a3 = a2 filter (_ % 2 != 0)                 // a3: Array[Int] = Array(3, 9)
-    a3.reverse                                      // res1: Array[Int] = Array(9, 3)
-    // whenever an array would be used as a Seq, implicitly wrap it in a subclass of Seq. The name of that subclass is scala.collection.mutable.WrappedArray
-    val seq: Seq[Int] = a1                          // seq: Seq[Int] = WrappedArray(1, 2, 3)
-    val a4: Array[Int] = seq.toArray                // a4: Array[Int] = Array(1, 2, 3)
-    a1 eq a4                                        // res2: Boolean = true
+        // Scala array Array[Int] is represented as a Java int[]
+        // compatible with Scala sequences—you can pass an Array[T] where a Seq[T] (thanks to implicit conversions)
+        val a1 = Array(1, 2, 3)                         // a1: Array[Int] = Array(1, 2, 3)
+        val a2 = a1 map (_ * 3)                         // a2: Array[Int] = Array(3, 6, 9)
+        val a3 = a2 filter (_ % 2 != 0)                 // a3: Array[Int] = Array(3, 9)
+        a3.reverse                                      // res1: Array[Int] = Array(9, 3)
+        // whenever an array would be used as a Seq, implicitly wrap it in a subclass of Seq. The name of that subclass is scala.collection.mutable.WrappedArray
+        val seq: Seq[Int] = a1                          // seq: Seq[Int] = WrappedArray(1, 2, 3)
+        val a4: Array[Int] = seq.toArray                // a4: Array[Int] = Array(1, 2, 3)
+        a1 eq a4                                        // res2: Boolean = true
 
     -Strings
-    // operations are supported by two implicit conversions (conversion maps a String to a WrappedString, which is a subclass of immutable.IndexedSeq)
-    val str = "hello"                               
-    str.reverse                                     // res6: String = olleh
-    str.map(_.toUpper)                              // res7: String = HELLO
-    str drop 3                                      // res8: String = lo
-    str slice (1, 4)                                // res9: String = ell
-    val s: Seq[Char] = str                          // s: Seq[Char] = WrappedString(h, e, l, l, o)
+        // operations are supported by two implicit conversions (conversion maps a String to a WrappedString, which is a subclass of immutable.IndexedSeq)
+        val str = "hello"                               
+        str.reverse                                     // res6: String = olleh
+        str.map(_.toUpper)                              // res7: String = HELLO
+        str drop 3                                      // res8: String = lo
+        str slice (1, 4)                                // res9: String = ell
+        val s: Seq[Char] = str                          // s: Seq[Char] = WrappedString(h, e, l, l, o)
 
     -Performance characteristics
     // Performance characteristics of sequence types
