@@ -1,17 +1,296 @@
+###############
+# DB
+###############
+    - ACID
+        Atomicity
+            Transactions are often composed of multiple statements. Atomicity guarantees that each transaction is treated as a single "unit" which either succeeds completely, or fails completely
+
+        Consistency
+            Consistency ensures that a transaction can only bring the database from one valid state to another
+            data written to the database must be valid according to all defined rules, including constraints, cascades, triggers, and any combination thereof
+
+        Isolation
+            multiple transactions reading and writing to a table at the same time
+            Isolation ensures that concurrent execution of transactions leaves the database in the same state that would have been obtained if the transactions were executed sequentially
+
+        Durability
+            Durability guarantees that once a transaction has been committed, it will remain committed even in the case of a system failure
+
+    - CAP theorem
+        Cheap, Fast, and Good: Pick Two
+        distributed system can deliver only two of three desired characteristics: consistency, availability, and partition tolerance (the ‘C,’ ‘A’ and ‘P’ in CAP).
+
+        - Consistency
+            every node in a distributed cluster returns the same, most recent, successful write
+            all clients see the same data at the same time no matter which node they connect to
+            For this to happen, whenever data is written to one node, it must be instantly forwarded or replicated to all the other nodes in the system before the write is deemed ‘successful.’
+
+        - Availability
+            every non-failing node returns a response for all read and write requests in a reasonable amount of time
+            any client making a request for data gets a response even if one or more nodes are down
+            all working nodes in the distributed system return a valid response for any request, without exception
+
+        - Partition tolerance
+                the system continues to function and upholds its consistency guarantees in spite of network partitions
+                partition is a communications break within a distributed system - a lost or temporarily delayed connection between two nodes.
+                Partition tolerance means that the cluster must continue to work despite any number of communication breakdowns between nodes in the system            
+
+        cp (consistent and partition tolerant) - availability is sacrificed only in the case of a network partition
+        ca (consistent and available) - ca systems are consistent and available systems in the absence of any network partition. often a single node's db servers are categorized as ca systems. single node db
+        ap (available and partition tolerant) - these are systems that are available and partition tolerant but cannot guarantee consistency.
+
+    - SQL/ NoSQL
+        Unlike vertically scalable SQL (relational) counterparts, NoSQL databases are horizontally scalable and distributed by design—they can rapidly scale across a growing network consisting of multiple interconnected nodes
+        NoSQL databases:
+            CP database: consistency and partition tolerance at the expense of availability. When a partition occurs between any two nodes, the system has to shut down the non-consistent node (i.e., make it unavailable) until the partition is resolved.
+            AP database: delivers availability and partition tolerance at the expense of consistency. When a partition occurs, all nodes remain available but those at the wrong end of a partition might return an older version of data than others
+            CA database: CA database delivers consistency and availability across all nodes. It can’t do this if there is a partition between any two nodes in the system, however, and therefore can’t deliver fault tolerance
+
+        MongoDB = CP - stores data as json doc. Resolves network partitions by maintaining consistency, while compromising on availability.
+                       MongoDB is a single-master system. Each replica set can have only one primary node that receives all the write operations. other nodes in the same replica set are secondary nodes that replicate the primary node's operation log and apply it to their own data set
+                       When the primary node becomes unavailable, the secondary node with the most recent operation log will be elected as the new primary node
+        Cassandra - AP - has a masterless architecture, and as a result, it has multiple points of failure, rather than a single one
+                         delivers availability and partition tolerance but can't deliver consistency all the time
+                         no master node, all the nodes must be available continuously
+                         provides eventual consistency by allowing clients to write to any nodes at any time and reconciling inconsistencies as quickly as possible                       
+        Ignite = CP or AP - In TRANSACTIONAL atomicity mode, you get an CP system with the option of fully ACID compliant transactions
+                            In ATOMIC atomicity mode, you gain the speed and uptime guarantees of AP system
+
+###############
+# Java basics
+###############
+    - Primitive types:
+        Integers:
+         byte    (8 bits)  127
+         char    (16 bits) char c = 'A'; char c = 65;
+         short   (16 bits) 32,767
+         int     (32 bits) 2,147,483,647
+         long    (64 bits) long l = 65L
+        Floating 
+         float   (32 bits) float f = 65f
+         double  (64 bits) double d = 65.55;
+        Other
+         boolean (1 bits)
+    - static block
+        executed once class is loaded into memory
+    - base class, its methods
+        Object methods: equals, hashCode, getClass, clone, toString, notify, wait, finalize
+    - contract between equals, hashcode
+        if object are equal - hashcodes are equal; if hashes are equal - objects are not 100% equal
+    - access modifies
+        protected vs default: protected is visible from other packages classes if derived from it
+    - volatile
+        threads gang bang - can modify var in memory directly and its visible to other threads
+        transient - not put into serialized
+    - StringBuilder vs StringBuffer
+        StringBuffer is syncronized; StringBuilder is not
+    - mutable/immutable
+        immutable - cannot be changed after construction (String), are thread safe, good map keys
+        how to make class immutable: class final, no setters, all fields are private and final, collections unmodifiable, return new Date(mutableField.getTime())
+    - overload/override
+        overload - same methods in class with diff params
+        overriding - methods with same signature in parent/ child
+    = how to replace multi inheritance
+        extend multiple times, implement one time
+    - can interface inherit from another interface
+        yes
+    -what is marker interface
+        without methods or fields
+    -regular vs static initialization block
+        static - when class is loaded 
+
+###############
+# Memory and GC
+###############
+    -how is virtual heap space divided
+        Young generation:
+        Eden space: pool from which memory is allocated for objects
+        Survivour space: contains objects which survived gc collection of eden
+        Tenured space(old generation): pool containing objects that have existed for some time in survivour space
+        Permanent: classes, methods
+    -how to force gc
+        System.gc()
+
+###############
+# Exceptions
+###############
+                +-----------+
+                | Throwable |
+                +-----------+
+                      |
+                +---------------+
+                |               |
+            +-------+   +-----------+
+        VM->| Error |   | Exception |
+            +-------+   +-----------+
+                            |
+            +---------------+---------------+
+            |               |               |
+    +-------------++---------------++------------------+
+    | IOException || ClassNotFound || RuntimeException |
+    +-------------++---------------++------------------+
+    - Exceptions - checked except for Runtime,Error
+    - diff between Error and UncheckedExceptions
+        Unchecked - error should not be cought; Error - fatal and out of control of program
+    - could we have try, and finally without catch
+        yes
+    - when finally is not executed
+        System.exit(), JVM crashes, endless loop in try
+    - NoClassDefFoundError vs ClassNotFoundException
+        - NoClassDefFoundError: class is present at compile time, but was missing at runtime
+        - ClassNotFoundException - class not found in classpath
+
+###############
+# Exceptions
+###############
+                    +----------+                        +-----+
+                    | Iterable |                        | Map |
+                    +----------+                        +-----+
+                        |                               -HashMap
+        +---------------+---------------+               -LinkedHashMap
+        |               |               |               -TreeMap
+    +------+        +-------+       +-----+             
+    | List |        | Queue |       | Set |
+    +------+        +-------+       +-----+
+    -ArrayList      -PriorityQueue  -HashSet
+    -LinkedList     -Dequeu         -LinkedHashSet
+    -Vector                         -TreeSet
+
+    - java 8 hashmap implementation - '>8 nodes' -> red-black tree; '<8 nodes' -> linkedList
+    - diff between ArrayList and LinkedList
+        - delete: A-shift all; L-change links of neighbors;
+        - L uses more memory cause of links
+        - L is better when lots of inserts, deletes
+        - A - search is better
+    - Stack bs Queue
+        stack - LIFO
+        queue - fifo
+    - TreeMap
+        uses red-black tree, softs by key; logn access
+
+
+###############
+# Multithreading
+###############
+    - run vs start
+        Thread implements Runnable, run does nothing
+        +------------------------------+
+        | HelloThread extends Thread() |
+        | new HelloThread().start()    |
+        +------------------------------+
+    -threadlocal
+        allows to store data that will be accessed only by specific thread
+    - thread lifecycle
+
+    +-----+                                 +------------+
+    | New |                                 | Terminated |
+    +-----+                                 +------------+
+           \ admitted     interrupted     / exit
+            +----------+ <------------- +---------+
+            | Runnable | schedule       | Running |
+            +----------+ -------------->+---------+
+                notify()\  dispatcher  / wait()
+                        +--------------+
+                        | Non-Runnable |
+                        +--------------+
+    - CAS
+        you can think of i++ as a single operation but its a read nad write
+        basically CAS says - maybe value in address V is A - if true - set it to B
+        +--------------------------------------------------------------------------+
+        | public final int incrementAndGet() {                                     |
+        |     for (;;) {                                                           |
+        |         int current = get();                                             |    // read value from memory
+        |         int next = current + 1;                                          |    
+        |         if (compareAndSet(current, next)) return next;                   |    // compare expected with fact if true - update
+        |         }                                                                |
+        | }                                                                        |
+        | public final boolean compareAndSet(int expect, int update) {             |
+        |     return unsafe.compareAndSwapInt(this, valueOffset, expect, update);  |
+        | }                                                                        |
+        +--------------------------------------------------------------------------+
+
+
+###############
+# CS basics
+###############
+    - complexity algs
+        1<logn<n<nlogn<n^2<n^3<2^n
+    - merge sort is stable, quick sort is not stable
+    -ways to traverse graph
+        - BFS
+        - DFS
+
+###############
+# swap example
+###############
+    +--------------------------------+                  - variable in lambda should be final
+    | Dog aDog = new Dog("Max")      |                  +----------------------------------------+
+    | foo(aDog)                      |                  | int a = 0                              |
+    | aDog.getName().equals("Max")   |  // false        | IntStream.range(0,10).forEach(x->a+x;) |
+    | public static void foo(Dog d){ |                  +----------------------------------------+
+    |     d = new Dog("Bob")         |              
+    | }                              |              
+    +--------------------------------+              
+
+###############
+# design patterns
+###############
+    -Structual
+        Facade: hides complexity, provides interface to client
+        Proxy: class represents functionality of other class. Proxy used to get real class when needed
+        Decorator: adds functionality to existing object without changing it. Wraps original class, providing additional functionality
+        Strategy: class behaviour can be changed at runtime
+        +---------------------------------+ +----------------------------------+    +-----------------------------+ +--------------------------------------+
+        | interface Strategy{             | | class Add implements Strategy{   |    | class Context{              | | new Context(new Add()).executeS(1,2) |
+        |     int operation(int a, int b) | |     int operation(int a, int b){ |    |     Strategy s              | +--------------------------------------+
+        | }                               | |         a+b                      |    |     executeS(int a, int b){ |
+        +---------------------------------+ |     }                            |    |         s.operation(a,b)    |
+                                            | }                                |    |     }                       |
+                                            +----------------------------------+    | }                           |
+                                                                                    +-----------------------------+
+    -Behaviour
+        Observer: if one obj.notified -> all related should be notified
+        +--------------------------+    +---------------------+
+        | Subject                  |    | Observer            |
+        | -has list of subscribers |    | - implements update |
+        | -calls observers update  |    +---------------------+
+        +--------------------------+
+        
+    -Factory: such object creates instances of classes based on some conditions
+    -Singleton: makes sure only one instance of class will be created
+        +-----------------------+
+        | private static fields |
+        | private constructor   |
+        | factory method        |
+        | or                    |
+        | Enum                  |
+        +-----------------------+
+  
+        
+
+
+###############
+# OOP
+###############
+    - inheritance vs composition
+        inheritance: class Apple extends Fruit
+        composition: class Apple{ Fruit f = new Fruit();}
+    - coupling & cohesion
+        low cohesion: class does a lot of diff work; high cohesion: class does one thing
+        losely coupling: changing something in one class should not affect the other
+
+
+
+
+
+###############
+# CS basics
+###############
+
+
 ###########
-#Primitive types:
+#
 ###########
- Integers:
-  byte    (8 bits)  127
-  char    (16 bits) char c = 'A'; char c = 65;
-  short   (16 bits) 32,767
-  int     (32 bits) 2,147,483,647
-  long    (64 bits) long l = 65L
- Floating 
-  float   (32 bits) float f = 65f
-  double  (64 bits) double d = 65.55;
- Other
-  boolean (1 bits)
 
 ###########
 #Bit operations:
