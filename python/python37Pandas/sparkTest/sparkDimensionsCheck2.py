@@ -41,62 +41,58 @@ def joinBadData(df, df2):
 
 spark = SparkSession.builder.config("spark.sql.warehouse.dir", "file:///C:/temp").appName("PopularMovies").getOrCreate()
 date = '20210521'
-df_ah = spark.read.pa   rquet("C:/work/project/test/dimensions_check/actuakl_hours").withColumn('pk', monotonically_increasing_id())
+dfAH = spark.read.parquet("C:/work/project/test/dimensions_check/actuakl_hours").withColumn('pk', monotonically_increasing_id()).cache()
 
-# | -- account: string(nullable=true)
-# | -- level_: string(nullable=true)
-# | -- employee: string(nullable=true)
-# | -- plc: string(nullable=true)
-# | -- non_billable: string(nullable=true)
-# | -- time_dim: string(nullable=true)
-# | -- hrs: string(nullable=true)
 
 print("Actual Hours matching with wdap d_time")
-df_dtime_list = spark.read.parquet("C:/work/project/test/dimensions_check/d_time")
-(df_dtime_not_in, df_dtime_in) = dfNotAndIn(df_dp=df_ah,df_wp=df_dtime_list,dp_col='time_dim',wp_col='dp_hrs',entity='dtime')
-df_dtime_in = df_dtime_in.select('df.*','df2.subperiod_code')
+dfDtimeList = spark.read.parquet("C:/work/project/test/dimensions_check/d_time")
+(dfDtimeNotIn, dfDtimeIn) = dfNotAndIn(df_dp=dfAH, df_wp=dfDtimeList, dp_col='time_dim', wp_col='dp_hrs', entity='dtime')
+dfDtimeIn = dfDtimeIn.select('df.*', 'df2.subperiod_code')
 
 print("Actual Hours matching with wdap accounts")
-df_acc_lList = spark.read.parquet("C:/work/project/test/dimensions_check/account_list")#.select(col('code'))
-df_acc_lList.printSchema()
-(df_acc_not_in, df_acc_in) = dfNotAndIn(df_dp=df_ah,df_wp=df_acc_lList,dp_col='account',wp_col='code',entity='accounts')
-df_acc_in = df_acc_in.select('df.pk')
+dfAccList = spark.read.parquet("C:/work/project/test/dimensions_check/account_list")#.select(col('code'))
+(dfAccNotIn, dfAccIn) = dfNotAndIn(df_dp=dfAH, df_wp=dfAccList, dp_col='account', wp_col='code', entity='accounts')
+dfAccIn = dfAccIn.select('df.pk')
 
 print("Actual Hours matching with wdap levels")
-df_levels_list = spark.read.parquet("C:/work/project/test/dimensions_check/levels_list").select(col('name'))
-(df_lev_not_in, df_lev_in) = dfNotAndIn(df_dp=df_ah,df_wp=df_levels_list,dp_col='level_',wp_col='name',entity='levels')
-df_lev_in = df_lev_in.select('df.pk')
+dfLevelsList = spark.read.parquet("C:/work/project/test/dimensions_check/levels_list").select(col('name'))
+    #.filter(col('name').like('%TEN07501.00.07 - TEDS Contact Center%'))
+(dfLevNotIn, dfLevIn) = dfNotAndIn(df_dp=dfAH, df_wp=dfLevelsList, dp_col='level_', wp_col='name', entity='levels')
+dfLevIn = dfLevIn.select('df.pk')
 
 print("Actual Hours matching with wdap employees")
-df_employee_list = spark.read.parquet("C:/work/project/test/dimensions_check/employee_list").select(col('v_name'))
-(df_emp_not_in, df_emp_in) = dfNotAndIn(df_dp=df_ah,df_wp=df_employee_list,dp_col='employee',wp_col='v_name',entity='employees')
-df_emp_in = df_emp_in.select('df.pk')
+dfEmployeeList = spark.read.parquet("C:/work/project/test/dimensions_check/employee_list").select(col('v_name'))
+    #.filter(col('v_name').like('%00562230%')).show(100,False)
+# Carter,Richardson - 00410993
+# Gray,Steven - 00428447
+# Isabella,Goldsmith - 00562230
+(dfEmpNotIn, dfEmpIn) = dfNotAndIn(df_dp=dfAH, df_wp=dfEmployeeList, dp_col='employee', wp_col='v_name', entity='employees')
+dfEmpIn = dfEmpIn.select('df.pk')
 
 print("Actual Hours matching with wdap plc")
-df_plc_list = spark.read.parquet("C:/work/project/test/dimensions_check/plc_list")
-(df_plc_not_in, df_plc_in) = dfNotAndIn(df_dp=df_ah,df_wp=df_plc_list,dp_col='plc',wp_col='v_name',entity='plc')
-df_plc_in = df_plc_in.select('df.pk')
-#
-#
-bad_acc = joinBadData(df_dtime_not_in, df_acc_not_in)
-bad_acc_lev = joinBadData(bad_acc, df_lev_not_in)
-bad_acc_lev_emp = joinBadData(bad_acc_lev, df_emp_not_in)
-bad_acc_lev_emp_plc = joinBadData(bad_acc_lev_emp, df_plc_not_in).cache()
+dfPlcList = spark.read.parquet("C:/work/project/test/dimensions_check/plc_list")
+(dfPlcNotIn, dfPlcIn) = dfNotAndIn(df_dp=dfAH, df_wp=dfPlcList, dp_col='plc', wp_col='v_name', entity='plc')
+dfPlcIn = dfPlcIn.select('df.pk')
 
-bad_acc_lev_emp_plc.repartition(1).write.parquet("C:\\work\\project\\test\\dimensions_check\\bad_data_parquet")
+badAcc = joinBadData(dfDtimeNotIn, dfAccNotIn)
+badAccLev = joinBadData(badAcc, dfLevNotIn)
+badAccLevEmp = joinBadData(badAccLev, dfEmpNotIn)
+badAccLevEmpPlc = joinBadData(badAccLevEmp, dfPlcNotIn).cache()
 
-# bad notify
+#badAccLevEmpPlc.repartition(1).write.parquet("C:\\work\\project\\test\\dimensions_check\\bad_data_parquet")
+
+#bad notify
 print("generating bad notify")
-bad_notification = aggToString(bad_acc_lev_emp_plc, 'error')
-print(bad_notification)
+badNotification = aggToString(badAccLevEmpPlc, 'error')
+print(badNotification)
 
-# good
-dtime_in_intersect_acc = joinDfsWithPk(df_dtime_in, df_acc_in, 'pk')
-dtime_in_intersect_acc_lev = joinDfsWithPk(dtime_in_intersect_acc, df_lev_in, 'pk')
-dtime_in_intersect_acc_lev_emp = joinDfsWithPk(dtime_in_intersect_acc_lev, df_emp_in, 'pk')
-dtime_in_intersect_acc_lev_emp_plc = joinDfsWithPk(dtime_in_intersect_acc_lev_emp, df_plc_in, 'pk')
+#good
+dtimeInIntersectAcc = joinDfsWithPk(dfDtimeIn, dfAccIn, 'pk')
+dtimeInIntersectAccLev = joinDfsWithPk(dtimeInIntersectAcc, dfLevIn, 'pk')
+dtimeInIntersectAccLevEmp = joinDfsWithPk(dtimeInIntersectAccLev, dfEmpIn, 'pk')
+dtimeInIntersectAccLevEmpPlc = joinDfsWithPk(dtimeInIntersectAccLevEmp, dfPlcIn, 'pk')
 
-dtime_in_intersect_acc_lev_emp_plc\
+dtimeInIntersectAccLevEmpPlc\
     .withColumn('Account',when(col('account') == 'Hours', 'HoursActuals.Hours_ActualsImport').when(col('account') == 'Cost', 'HoursActuals.Cost_ActualsImport').otherwise(col('account')))\
     .withColumn('hrs',when(col('hrs').isNull(), 0).otherwise(col('hrs')))\
     .withColumnRenamed('level_', 'Level').withColumnRenamed('employee', 'Employee').withColumnRenamed('plc', 'PLC')\
