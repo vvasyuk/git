@@ -296,39 +296,39 @@ O(n^2) > O(n log n) > O(n) > O(log n) > O(n)
     #         for(int i = 0; i < N; i++) {                                         #        #     a[j] = swap;                                         #
     #             int min = i;                                                     #        # }                                                        #
     #             for (int j = i+1; j < N; j++) if (less(a[j], a[min])) min = j;   #        ############################################################
-    #             exch(a, i, min);                                                 #
-    #         }                                                                    #
-    #     }                                                                        #
-    #     private static boolean less(Comparable v, Comparable w) {                #
-    #         return v.compareTo(w) < 0;                                           #
-    #     }                                                                        #
-    #     private static void exch(Comparable[] a, int i, int j) {                 #
-    #         Comparable swap = a[i];                                              #
-    #         a[i] = a[j];                                                         #
-    #         a[j] = swap;                                                         #
-    #     }                                                                        #
-    # }                                                                            #
-    ################################################################################
-
+    #             exch(a, i, min);                                                 #        // Scala
+    #         }                                                                    #        +-------------------------------------------+
+    #     }                                                                        #        | def maxSort(a:Array[Double]):Unit = {     |
+    #     private static boolean less(Comparable v, Comparable w) {                #        |   for (i <- (0 until a.length).reverse) { |
+    #         return v.compareTo(w) < 0;                                           #        |     var max = i                           |
+    #     }                                                                        #        |     for (j <- (0 until i).reverse) {      |
+    #     private static void exch(Comparable[] a, int i, int j) {                 #        |       if (a(j) > a(max)) max = j          |
+    #         Comparable swap = a[i];                                              #        |     }                                     |
+    #         a[i] = a[j];                                                         #        |     val tmp = a(i)                        |
+    #         a[j] = swap;                                                         #        |     a(i) = a(max)                         |
+    #     }                                                                        #        |     a(max) = tmp                          |
+    # }                                                                            #        |   }                                       |
+    ################################################################################        | }                                         |
+                                                                                            +-------------------------------------------+       
 
 - insertion sort
     ・In iteration i, swap a[i] with each larger entry to its left.
 
-    ##############################################################################
-    # public class Insertion {                                                   #
-    #     public static void sort(Comparable[] a) {                              #
-    #         int N = a.length;                                                  #
-    #         for (int i = 0; i < N; i ++)                                       #
-    #             for (int j = i; j > 0; j --)                                   #
-    #                 if (less(a[j], a[j - 1]))                                  #
-    #                     exch(a, j, j - 1);                                     #
-    #                 else                                                       #
-    #                     break;                                                 #
-    # }                                                                          #
-    # private static boolean less(Comparable v, Comparable w) { /* as before */  #
-    # }                                                                          #
-    # private static void exch(Comparable[] a, int i, int j) { /* as before */   #
-    # }}                                                                         #
+    ##############################################################################  // scals
+    # public class Insertion {                                                   #  +---------------------------------------------------------+
+    #     public static void sort(Comparable[] a) {                              #  | def insertionSort(input: List[Int]): List[Int] = {      |
+    #         int N = a.length;                                                  #  |   input.foldLeft(List[Int]())( (acc, element) => {      |
+    #         for (int i = 0; i < N; i ++)                                       #  |     val (firstHalf, secondHalf) = acc.span(_ < element) |
+    #             for (int j = i; j > 0; j --)                                   #  |     //inserting the element at the right place          |
+    #                 if (less(a[j], a[j - 1]))                                  #  |     firstHalf ::: element :: secondHalf                 |
+    #                     exch(a, j, j - 1);                                     #  |   })                                                    |
+    #                 else                                                       #  | }                                                       |
+    #                     break;                                                 #  +---------------------------------------------------------+
+    # }                                                                          #  
+    # private static boolean less(Comparable v, Comparable w) { /* as before */  #  
+    # }                                                                          #  
+    # private static void exch(Comparable[] a, int i, int j) { /* as before */   #  
+    # }}                                                                         #  
     ##############################################################################
     
     
