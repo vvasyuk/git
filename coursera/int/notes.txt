@@ -1,4 +1,107 @@
 ###############
+# Algs
+###############
+    - selection (n^2)                               // or
+    +-------------------------------------------+   +------------------------------------------+    +----------------------------------+
+    | def maxSort(a:Array[Double]):Unit = {     |   | def selectionSort(arr):                  |    | def findSmallest(arr):           |
+    |   for (i <- (0 until a.length).reverse) { |   |     newArr = []                          |    |     smallest = arr[0]            |    // Stores the smallest value
+    |     var max = i                           |   |     for i in range(len(arr)):            |    |     smallest_index = 0           |    // Stores the index of the smallest value
+    |     for (j <- (0 until i).reverse) {      |   |         smallest = findSmallest(arr)     |    |     for i in range(1, len(arr)): |
+    |       if (a(j) > a(max)) max = j          |   |         newArr.append(arr.pop(smallest)) |    |         if arr[i] < smallest:    |
+    |     }                                     |   |     return newArr                        |    |             smallest = arr[i]    |
+    |     val tmp = a(i)                        |   +------------------------------------------+    |             smallest_index = i   |
+    |     a(i) = a(max)                         |                                                   |     return smallest_index        |
+    |     a(max) = tmp                          |                                                   +----------------------------------+
+    |   }                                       |
+    | }                                         |
+    +-------------------------------------------+
+
+    - insertionSort (n^2)
+    +---------------------------------------------------------+
+    | def insertionSort(input: List[Int]): List[Int] = {      |
+    |   input.foldLeft(List[Int]())( (acc, element) => {      |
+    |     val (firstHalf, secondHalf) = acc.span(_ < element) |
+    |     //inserting the element at the right place          |
+    |     firstHalf ::: element :: secondHalf                 |
+    |   })                                                    |
+    | }                                                       |
+    +---------------------------------------------------------+
+
+    - heap sort (n log n)
+    // values in parent leaves are greater then in childs   
+    +------------------------------------------------------------------------------------+  |   /**Pushes an illegally located element down the heap to restore heap property.*/ |
+    | object HeapSort {                                                                  |  |   @annotation.tailrec                                                              |
+    |   def main(args: Array[String]): Unit = {                                          |  |   def heapify(a: Array[Int], loc: Int, lastLeaf: Int): Unit = {                    |
+    |     var mess = Array(3, 9, 8, 13, 2, 5, 4);                                        |  |     val l = left(loc)                                                              |
+    |                                                                                    |  |     val r = right(loc)                                                             |
+    |     sort(mess)                                                                     |  |                                                                                    |
+    |    // buildHeap(mess, mess.length-1)                                               |  |     var max = loc                                                                  |
+    |                                                                                    |  |                                                                                    |
+    |     mess.foreach( println )                                                        |  |     if(l <= lastLeaf && a(l) > a(max)) max = l                                     |
+    |   }                                                                                |  |     if(r <= lastLeaf && a(r) > a(max)) max = r                                     |
+    |                                                                                    |  |                                                                                    |
+    |   def sort(a: Array[Int]): Unit = {                                                |  |     if(max != loc) {                                                               |
+    |     var m = a.length - 1                                                           |  |       swap(a, max, loc)                                                            |
+    |     buildHeap(a, m)                                                                |  |       heapify(a, max, lastLeaf)                                                    |
+    |     while (m >= 1) {                                                               |  |     }                                                                              |
+    |       swap(a, 0, m)                                                                |  |   }                                                                                |
+    |       m-=1                                                                         |  |                                                                                    |
+    |       heapify(a, 0, m)                                                             |  |   /**Returns position of left child (possibly empty). */                           |
+    |     }                                                                              |  |   def left(loc: Int): Int = {                                                      |
+    |   }                                                                                |  |     return 2*loc                                                                   |
+    |                                                                                    |  |   }                                                                                |
+    |   def buildHeap(a: Array[Int], m: Int): Unit = {                                   |  |                                                                                    |
+    |     for (i <- m/2 to 0 by -1) {                                                    |  |   /**Returns position of right child (possibly empty). */                          |
+    |       heapify(a, i, m)                                                             |  |   def right(loc: Int): Int = {                                                     |
+    |     }                                                                              |  |     return 2*loc+1                                                                 |
+    |   }                                                                                |  |   }                                                                                |
+    |                                                                                    |  |                                                                                    |
+                                                                                            |   def swap(a: Array[Int], i: Int, j:Int): Unit = {                                 |
+                                                                                            |     val staging = a(i)                                                             |
+                                                                                            |     a(i) = a(j)                                                                    |
+                                                                                            |     a(j) = staging                                                                 |
+                                                                                            |   }                                                                                |
+                                                                                            | }                                                                                  |
+                                                                                            +------------------------------------------------------------------------------------+
+
+    - merge sort (n log n)
+    +---------------------------------------------------------------------------+
+    | def msort[T](less: (T, T) => Boolean)(xs: List[T]): List[T] =             |
+    |   def merge(xs: List[T], ys: List[T]): List[T] =                          |
+    |    (xs, ys) match                                                         |
+    |       case (Nil, _) => ys                                                 |
+    |       case (_, Nil) => xs                                                 |
+    |       case (x :: xs1, y :: ys1) => if less(x, y) then x :: merge(xs1, ys) |
+    |                                    else y :: merge(xs, ys1)               |
+    |   val n = xs.length / 2                                                   |
+    |   if n == 0 then xs                                                       |
+    |   else                                                                    |
+    |     val (ys, zs) = xs.splitAt(n)                                          |
+    |     merge(msort(less)(ys), msort(less)(zs))                               |
+    +---------------------------------------------------------------------------+
+
+    - quicksort (n log n)
+    +---------------------------------------------------------------------------------+
+    | object QuickSortFP extends App {                                                |
+    |     val r = scala.util.Random                                                   |
+    |     val randomArray = (for (i <- 1 to 10000000) yield r.nextInt(10000)).toArray |
+    |     val sortedArray = quickSort(randomArray)                                    |
+    |                                                                                 |
+    |     def quickSort(xs: Array[Int]): Array[Int] = {                               |
+    |         if (xs.length <= 1) xs                                                  |
+    |         else {                                                                  |
+    |             val pivot = xs(xs.length / 2)                                       |
+    |             Array.concat(                                                       |
+    |                 quickSort(xs filter (pivot > _),                                |
+    |                 xs filter (pivot == _),                                         |
+    |                 quickSort(xs filter (pivot < _))                                |
+    |         }                                                                       |
+    |     }                                                                           |
+    | }                                                                               |
+    +---------------------------------------------------------------------------------+
+
+
+###############
 # DB
 ###############
     - ACID
