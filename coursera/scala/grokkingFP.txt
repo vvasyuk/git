@@ -1019,7 +1019,7 @@
 
 
 ####################
-# IO as values
+# Streams as values
 ####################
     - problem: currency exchange when rate is trending (0.81, 0.82, 0.85), given exchangeTable API which fetch given cur to all other curs
         example: users wants to exhange 1000 USD to EUR but only when 3 prev rates are increasing (trending)
@@ -1247,7 +1247,79 @@
             +----------------------------------------------------------------------------------------------+
            
          
+####################
+# Concurrent Programs
+####################
+    - task: gathers tourist "check-ins" in cities, provides ranking of cities
+        1. process a stream of check-ins from people (a Stream[IO, City])
+        2. program should allow to get the current top three cities ranking, while the check-ins are still being processed
 
+    - model
+    +---------------------------------------------------------------+
+    | case class City(name: String) extends AnyVal                  |
+    | case class CityStats(city: City, checkIns: Int)               |   // check-ins counter for a given City
+    | def processCheckIns(checkIns: Stream[IO, City]): IO[Unit]     |   // function that processes each check-in one-by-one and produces a current ranking
+    +---------------------------------------------------------------+   // function should return a program which, once executed, prints seven ranking updates (including the first, empty ranking) to the console and returns a Unit value: ()
+    
+    - step 1: Sequential IOs
+    // sequantial thinking                                                                                                    
+    +----------------------------------+                                                                                        +---------------------------------------------------------------------------------------------+
+    | val checkIns: Stream[IO, City] = |    // stream to test solution                                                          | processCheckIns(checkIns).unsafeRunSync()                                                   |
+    |     Stream(                      |    // checkIns is a Stream of six programs that will return cities when executed       | List()                                                                                      |
+    |         City(“Sydney”),          |    // programs will be evaluated in the given order                                    | List(CityStats(City(Sydney),1))                                                             |
+    |         City(“Sydney”),          |                                                                                        | List(CityStats(City(Sydney),2))                                                             |
+    |         City(“Cape Town”),       |                                                                                        | List(CityStats(City(Sydney),2), CityStats(City(Cape Town),1))v                              |
+    |         City(“Singapore”),       |                                                                                        | List(CityStats(City(Sydney),2), CityStats(City(Singapore),1), CityStats(City(Cape Town),1)) |
+    |         City(“Cape Town”),       |                                                                                        | List(CityStats(City(Cape Town),2), CityStats(City(Sydney),2), CityStats(City(Singapore),1)) |
+    |         City(“Sydney”)           |                                                                                        | List(CityStats(City(Sydney),3), CityStats(City(Cape Town),2), CityStats(City(Singapore),1)) |
+    |     ).covary[IO]                 |    // covary transforms a Stream of pure values into a stream of IO-based values       | ()                                                                                          |
+    +----------------------------------+                                                                                        +---------------------------------------------------------------------------------------------+
+
+    // first version (bad: more elements in map - more to sort)
+    // map to list, tuple to CityStats, sort, take 3                        // going through a stream and accumulating values                   // after .map(topCities) - we have Stream of List[City]
+    +------------------------------------------------------------------+    // use scan to accumulate as a Map[City, Int]                       // use foreach function that takes an IO value describing a program that needs
+    | def topCities(cityCheckIns: Map[City, Int]): List[CityStats] = { |    +---------------------------------------------------------------+      to be executed for each element of the stream
+    |     cityCheckIns.toList                                          |    | checkIns.scan(Map.empty[City, Int])((cityCheckIns, city) => { |   //
+    |         .map {                                                   |    |     val newCheckIns = cityCheckIns.get(city) match {          |   +----------------------------------------------------------------------+
+    |             case (city, checkIns) => CityStats(city, checkIns)   |    |         case None => 1                                        |   | def processCheckIns(checkIns: Stream[IO, City]): IO[Unit] = {        |
+    |         }                                                        |    |         case Some(checkIns) => checkIns + 1                   |   |     checkIns.scan(Map.empty[City, Int])((cityCheckIns, city) =>      |
+    |         .sortBy(_.checkIns)                                      |    |     }                                                         |   |         cityCheckIns.updatedWith(city)(_.map(_ + 1).orElse(Some(1))) |
+    |         .reverse                                                 |    |     cityCheckIns.updated(city, newCheckIns)                   |   |     )                                                                |
+    |         .take(3)                                                 |    | })                                                            |   |     .map(topCities)                                                  |
+    | }                                                                |    +---------------------------------------------------------------+   |     .foreach(IO.println)                                             |
+    +------------------------------------------------------------------+                                                                        |     .compile.drain                                                   |
+                                                                                                                                                | }                                                                    |
+                                                                                                                                                +----------------------------------------------------------------------+
+    // second version
+    // create larger stream                                                                         // first version will take some time
+    +--------------------------------------------------------------------------------------------+  +--------------------------------------------+
+    | val checkIns: Stream[IO, City] =                                                           |  | processCheckIns(checkIns).unsafeRunSync()  |
+    | Stream(City(“Sydney”), City(“Dublin”), City(“Cape Town”), City(“Lima”), City(“Singapore”)) |  | ... // a long, long time (several minutes) |
+    |     .repeatN(100_000)                                                                      |  +--------------------------------------------+
+    |     .append(Stream.range(0, 100_000).map(i => City(s"City $i")))                           |
+    |     .append(Stream(City(“Sydney”), City(“Sydney”), City(“Lima”)))                          |
+    |     .covary[IO]                                                                            |
+    +--------------------------------------------------------------------------------------------+
+    // Batching implementation
+    // trade-off: bigger batch - lower frequency of ranking updates
+       need to handle edge cases like you have 590_000 check-ins and 5 mins silence
+    +----------------------------------------------------------------------+
+    | def processCheckIns(checkIns: Stream[IO, City]): IO[Unit] = {        |
+    |     checkIns.scan(Map.empty[City, Int])((cityCheckIns, city) =>      |    // Each check-in is processed and produces an accumulator Map, as was the case before
+    |         cityCheckIns.updatedWith(city)(_.map(_ + 1).orElse(Some(1))) |    // in this version, we batch (chunk) the accumulators into batches of 100_000 elements
+    |     )                                                                |    // then take only the last accumulator from a batch to compute the ranking
+    |     .chunkN(100_000)                                                 |    // takes a number n and transforms n elements into a single collection-like element which is then emitted
+    |     .map(_.last)                                                     |       (Sydney, Dublin, Cape Town, Lima) -> chunkN(2) -> ((Sydney, Dublin), (Cape Town, Lima))
+    |     .unNone                                                          |
+    |     .map(topCities)                                                  |
+    |     .foreach(IO.println)                                             |
+    |     .compile.drain                                                   |
+    | }                                                                    |
+    +----------------------------------------------------------------------+
+
+
+    - step 2: IOs with fibers
+    - step 3: Concurrent IOs and asynchronous access
 
 
 
