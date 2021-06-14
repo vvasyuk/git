@@ -7,22 +7,40 @@ spark.sparkContext.setLogLevel("ERROR")
 
 df = spark.createDataFrame(
     [
-        ('1', 'one', 'a'),
-        ('2', 'two', 'b'),
-        ('2', 'twotwo', 'bb'),
-        ('3', 'threee', 'c'),
+        ('11', 'one', 'a'),
+        ('22', 'two', 'b'),
+        ('33', 'twotwo', 'bb'),
+        ('44', 'threee', 'c'),
     ],
     ['id','col1', 'col3']
 )
 
 df2 = spark.createDataFrame(
     [
-        ('2', 'two', 'b'),
+        ('22', 'two', 'b'),
     ],
     ['id', 'col1', 'col3']
 )
-# df.show(10,False)
-# df2.show(10,False)
 
-dfnotIn = df.join(df2, df['id']==df2['id'], 'left_anti')
-dfnotIn.show(10,False)
+df3 = spark.createDataFrame(
+    [
+        ('33', 'two', 'b'),
+    ],
+    ['id', 'col1', 'col3']
+)
+
+# dfnotIn = df.join(df2, df['id']==df2['id'], 'left_anti')
+# dfnotIn.show(10,False)
+
+# not in twice
+dfnotInTwice = df.join(df2, df['id']==df2['id'], 'left_anti')\
+    .join(df3, df['id']==df3['id'], 'left_anti')
+dfnotInTwice.show(10,False)
+
+# only in first lookup
+dfInFirst = df.join(df2, df['id']==df2['id'])
+dfInFirst.show(10,False)
+
+# only in second lookup
+dfInSecond = df.join(df3, df['id']==df3['id'])
+dfInSecond.show(10,False)
