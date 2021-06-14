@@ -1,0 +1,41 @@
+###############
+# week1
+###############
+    // use case classes, sealed traits, enumarations to model domain
+    // 1. think of nouns and model them with case classes, etc
+        general nouns - traits
+
+
+    // example 1                                                                            // example 2
+    +----------------------------------------------------------------------------------+    +-------------------------------------------------------------------------------+
+    | case class Experience(duration Int, definition: Double, network: Network)        |    | case class Card(shape: Shape, number: Number, color: Color, shading: Shading) |
+    |                                                                                  |    |                                                                               |
+    | enum Network:                                                                    |    | enum Shape:                                                                   |
+    |     case Fixed, Mobile                                                           |    |     case Diamond, Squiggle, Oval                                              |
+    |                                                                                  |    |                                                                               |
+    | val lowQuality = 0.3    // MB/s                                                  |    | enum Color:                                                                   |
+    | val highQuality = 0.6    // MB/s                                                 |    |     case Red, Green, Purple                                                   |
+    |                                                                                  |    |                                                                               |
+    | val thirtyMinutes = 30 * 60 // seconds                                           |    | enum Shading:                                                                 |
+    |                                                                                  |    |     case Open, Striped, Solid                                                 |
+    | val highQualityAndMobile = Experience(thirtyMinutes, lowQuality, Network.Mobile) |    |                                                                               |
+    |                                                                                  |    | enum Number:                                                                  |
+    | val dataCenterEnergy = 0.000072                                                  |    |     case One, Two, Three                                                      |
+    | val kgCO2PerKwh = 0.5                                                            |    |                                                                               |
+    |                                                                                  |    | val deck = List(                                                              |
+    | def networkEnergy(network: Network): Double = network match                      |    |     Card(Shape.Diamond, Number.One, Color.Purple, Shading.Striped),           |
+    |     case Network.Fixed => 0.00043                                                |    |     Card(Shape.Squiggle, Number.Two, Color.Red, Shading.Open),                |
+    |     case Network.Mobile => 0.00088                                               |    |     Card(Shape.Oval, Number.Three, Color.Green, Shading.Solid)                |
+    |                                                                                  |    | )                                                                             |
+    | def footprint(experience: Experience): Double =                                  |    |                                                                               |
+    |     val megabytes = experience.duration * experience.definition                  |    | def isvalidSet(card1: Card, card2: Card, card3: Card):                        |
+    |     val energy = dataCenterEnergy + networkEnergy(experience.network)            |    |     checkShapeProperty(card1, card2, card3) &&                                |
+    |     energy * megabytes * kgCO2PerKwh                                             |    |     checkNumberProperty(card1, card2, card3) &&                               |
+    |                                                                                  |    |     checkShadingProperty(card1, card2, card3) &&                              |
+    | footprint(highQualityAndMobile) // 0.13554                                       |    |     checkColorProperty(card1, card2, card3)                                   |
+    +----------------------------------------------------------------------------------+    |                                                                               |
+                                                                                            | def checkShapeProperty(card1: Card, card2: Card, card3: Card): Boolean =      |
+                                                                                            |     def allSame = card1.shape == card2.shape && card1.shape == card3.shape    |
+                                                                                            |     def addDiff = card1.shape != card2.shape && card1.shape != card3.shape    |
+                                                                                            |     allSame || addDiff                                                        |
+                                                                                            +-------------------------------------------------------------------------------+
