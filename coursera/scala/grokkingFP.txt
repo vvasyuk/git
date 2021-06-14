@@ -1337,7 +1337,7 @@
     | new Thread(task).start();                                         |   // can get ConcurrentModificationException
     +-------------------------------------------------------------------+
    
-    // synchronization primitives are the most popular
+    // synchronization primitives are the most popular in Java
     // Monitors and locks
     +-----------------------------------------------------------------------+
     | var cityCheckIns = new HashMap<String, Integer>();                    |
@@ -1396,6 +1396,18 @@
     +-----------------------------------------------------------------------------------------------------+ | });                                                                                        |
                                                                                                             +--------------------------------------------------------------------------------------------+
 
+    // functional tools for multithreading
+    // functional atomic reference - allow us to safely store a changing value using just pure functions and IO values
+    // Ref[IO, A] is an immutable value that represents an asynchronous concurrent mutable reference to an immutable value of type A
+    // like Java’s AtomicReference? It required us to use immutable values. We used copies, but real immutable values are far easier to use
+    +---------------------------------+ 
+    | Ref[IO, A]                      | // value representing a concurrently accessible mutable reference
+    | def update(f: A => A): IO[Unit] | // alternative to CAS, Ref type internals take care of everything (possibility of value A being changed by another thread)
+    | // Thread #1                    | // Nothing is executed until somebody, outside of the functional core, executes this IO value
+    | ref.update(_ + 1).unsafeRunSync | // when both threads are finished we will have value 3 
+    | // Thread #2                    |
+    | ref.update(_ + 2).unsafeRunSync |
+    +---------------------------------+
 
 
     - step 3: Concurrent IOs and asynchronous access
