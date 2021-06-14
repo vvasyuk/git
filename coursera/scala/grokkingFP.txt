@@ -1317,8 +1317,87 @@
     | }                                                                    |
     +----------------------------------------------------------------------+
 
-
     - step 2: IOs with fibers
+    // we could use n threads to process batches of check-ins in parallel and a single thread that updates the ranking
+    // exposes us to a problem of shared mutable state
+    // ranking functionality needs access to the current checkIns Map, which is updated by the check-in processing functionality
+    // all execution threads will need to access the same memory address, which additionally changes over time
+
+    // dealing with threads in Java 8+
+    +-------------------------------------------------------------------+
+    | var cityCheckIns = new HashMap<String, Integer>();                |   // mutable HashMap that models our concurrent state
+    | Runnable task = () -> {                                           |
+    | for(int i = 0; i < 1000; i++) {                                   |
+    |     var cityName = i % 2 == 0 ? "Cairo" : "Auckland";             |
+    |         cityCheckIns.compute(cityName,                            |
+    |         (city, checkIns) -> checkIns != null ? checkIns + 1 : 1); |
+    |     }                                                             |
+    | };                                                                |
+    | new Thread(task).start();                                         |   // as a result map will contain much less then 100 elements
+    | new Thread(task).start();                                         |   // can get ConcurrentModificationException
+    +-------------------------------------------------------------------+
+   
+    // synchronization primitives are the most popular
+    // Monitors and locks
+    +-----------------------------------------------------------------------+
+    | var cityCheckIns = new HashMap<String, Integer>();                    |
+    | Runnable task = () -> {                                               |
+    |     for(int i = 0; i < 1000; i++) {                                   |
+    |         var cityName = i % 2 == 0 ? “Cairo” : “Auckland”;             |
+    |         synchronized (cityCheckIns) {                                 |   // only a single thread uses it at a time
+    |             cityCheckIns.compute(cityName,                            |   // keeps track of all other threads that want to use (or acquire) the resource and notifies them once it becomes available
+    |             (city, checkIns) -> checkIns != null ? checkIns + 1 : 1); |
+    |         }                                                             |
+    |     }                                                                 |
+    | };                                                                    |
+    +-----------------------------------------------------------------------+
+    
+    // The actor model
+    +-------------------------------------------------------------------------------+
+    | class CheckInsActor extends AbstractActor {                                   |    // Actors encapsulate the state and the only way we can interact with an actor and its state is by sending and receiving asynchronous messages
+    |     private Map<String, Integer> cityCheckIns = new HashMap<>();              |    // making sure only a single thread has access to its state at a given time
+    |     public Receive createReceive() {                                          |
+    |         return receiveBuilder()                                               |
+    |             .match(StoreCheckIn.class, message -> {                           |
+    |                 cityCheckIns.compute(message.cityName,                        |
+    |                     (city, checkIns) -> checkIns != null ? checkIns + 1 : 1); |
+    |             }).match(GetCurrentCheckIns.class, message -> {                   |
+    |                 getSender().tell(new HashMap<>(cityCheckIns), null);          |
+    |             }).build();                                                       |
+    |     }                                                                         |
+    | }                                                                             |
+    +-------------------------------------------------------------------------------+
+
+    // Thread-safe data structures
+    +-----------------------------------------------------------------------+
+    | var cityCheckIns = new ConcurrentHashMap<String, Integer>();          |
+    | Runnable task = () -> {                                               |
+    |     for(int i = 0; i < 1000; i++) {                                   |
+    |         var cityName = i % 2 == 0 ? “Cairo” : “Auckland”;             |
+    |         cityCheckIns.compute(cityName,                                |
+    |             (city, checkIns) -> checkIns != null ? checkIns + 1 : 1); |
+    | }                                                                     |
+    +-----------------------------------------------------------------------+
+
+    // Atomic references
+    // makes use of the compare-and-set which do not use locks
+    +-----------------------------------------------------------------------------------------------------+
+    | var cityCheckIns = new AtomicReference<>(new HashMap<String, Integer>());                           | // compareAndSet function that takes two values:
+    | Runnable task = () -> {                                                                             |    the first is what we think is the current value stored inside the atomic reference
+    |     for(int i = 0; i < 1000; i++) {                                                                 |    the second is the value we'd like to store there
+    |         var cityName = i % 2 == 0 ? “Cairo” : “Auckland”;                                           |
+    |         var updated = false;                                                                        | // function returns true if the value was successfully replaced and false if the current value we provided is not valid 
+    |         while(!updated) {                                                                           | // functional java
+    |             var currentCheckIns = cityCheckIns.get();                                               | +--------------------------------------------------------------------------------------------+
+    |             var newCheckIns = new HashMap<>(currentCheckIns);                                       | | cityCheckIns.updateAndGet(oldCheckIns -> {                                                 |
+    |             newCheckIns.compute(cityName, (city, checkIns) -> checkIns != null ? checkIns + 1 : 1); | |     var newCheckIns = new HashMap<>(oldCheckIns);                                          |
+    |             updated = cityCheckIns.compareAndSet(currentCheckIns, newCheckIns);                     | |     newCheckIns.compute(cityName,(city, checkIns) -> checkIns != null ? checkIns + 1 : 1); |
+    |         }                                                                                           | |     return newCheckIns;                                                                    |
+    +-----------------------------------------------------------------------------------------------------+ | });                                                                                        |
+                                                                                                            +--------------------------------------------------------------------------------------------+
+
+
+
     - step 3: Concurrent IOs and asynchronous access
 
 
