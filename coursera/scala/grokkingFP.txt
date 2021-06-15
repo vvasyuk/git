@@ -1490,11 +1490,134 @@
     +---------------------------------------------------------------------------------------+
     | List.fill(100)(IO.sleep(1.second).flatMap(_ => castTheDie())).parSequence.map(_.sum)) |
     +---------------------------------------------------------------------------------------+
-                                                                                            
-                                                                                        
-                                                                                        
 
+    // check-ins with concurrency
+    // previous version                                                             
+    +--------------------------------------------------------------------------+    
+    | def processCheckIns(checkIns: Stream[IO, City]): IO[Unit] = {            |    
+    |     checkIns                                                             |    
+    |         .scan(Map.empty[City, Int])((cityCheckIns, city) =>              |    
+    |             cityCheckIns.updatedWith(city)(_.map(_ + 1).orElse(Some(1))) |    
+    |         )                                                                |    
+    |     .map(topCities)                                                      |    
+    |     .foreach(IO.println)                                                 |    
+    |     .compile.drain                                                       |    
+    | }                                                                        |    
+    +--------------------------------------------------------------------------+    
+
+    // concurrent version
+    +----------------------------------------------------------------------------------------+
+    | def processCheckIns(checkIns: Stream[IO, City]): IO[Unit] = {                          |
+    |     for {                                                                              |
+    |         storedCheckIns <- Ref.of[IO, Map[City, Int]](Map.empty)                        |  // concurrent ref
+    |         storedRanking <- Ref.of[IO, List[CityStats]](List.empty)                       |  // concurrent ref
+    |         rankingProgram = updateRanking(storedCheckIns, storedRanking)                  |  // updating the ranking infinitely
+    |         checkInsProgram = checkIns.evalMap(storeCheckIn(storedCheckIns)).compile.drain |  // updates counter in map after reading, compile.drain - transforms the stream into an IO[Unit] value
+    |         _ <- List(rankingProgram, checkInsProgram).parSequence                         |  // evalMap - maps each city element with the provided function and evaluates it (making side effect for each element in stream)
+    |     } yield ()                                                                         |
+    | }                                                                                      |
+    +----------------------------------------------------------------------------------------+
+    // storeCheckIn
+    +-------------------------------------------------------------------------------------+
+    | def storeCheckIn(storedCheckIns: Ref[IO, Map[City, Int]])(city: City): IO[Unit] = { |
+    |     storedCheckIns.update(_.updatedWith(city)(_ match {                             |
+    |         case None => Some(1)                                                        |
+    |         case Some(checkIns) => Some(checkIns + 1)                                   |
+    |     }))                                                                             |
+    +-------------------------------------------------------------------------------------+
+
+    // implementing updateRanking to run infinitely
+    // recursion                                                        // foreverM function                                        // foreverM with flatMap
+    +----------------------------------------------------------------+  +---------------------------------------------------------+ +----------------------------------------------+
+    | def updateRanking(                                             |  | def updateRanking(                                      | | def updateRanking(                           |
+    |     storedCheckIns: Ref[IO, Map[City, Int]],                   |  |     storedCheckIns: Ref[IO, Map[City, Int]],            | |     storedCheckIns: Ref[IO, Map[City, Int]], |
+    |     storedRanking: Ref[IO, List[CityStats]]                    |  |     storedRanking: Ref[IO, List[CityStats]]             | |     storedRanking: Ref[IO, List[CityStats]]  |
+    | ): IO[Nothing] = {                                             |  | ): IO[Nothing] = {                                      | | ): IO[Nothing] = {                           |
+    |     for {                                                      |  |     (for {                                              | |     storedCheckIns.get                       |
+    |         newRanking <- storedCheckIns.get.map(topCities)        |  |         newRanking <- storedCheckIns.get.map(topCities) | |         .map(topCities)                      |
+    |         _ <- storedRanking.set(newRanking)                     |  |         _ <- storedRanking.set(newRanking)              | |         .flatMap(storedRanking.set)          |
+    |         result <- updateRanking(storedCheckIns, storedRanking) |  |     } yield ()).foreverM                                | |         .foreverM                            |
+    |     } yield result                                             |  | }                                                       | | }                                            |
+    | }                                                              |  +---------------------------------------------------------+ +----------------------------------------------+
+    +----------------------------------------------------------------+
+    // Update this function to a version that works exactly the same, but additionally prints the current ranking every one second
+    +----------------------------------------------------------------------------------------+
+    | def processCheckIns(checkIns: Stream[IO, City]): IO[Unit] = {                          |
+    |     for {                                                                              |
+    |         storedCheckIns <- Ref.of[IO, Map[City, Int]](Map.empty)                        |
+    |         storedRanking <- Ref.of[IO, List[CityStats]](List.empty)                       |
+    |         rankingProgram = updateRanking(storedCheckIns, storedRanking)                  |
+    |         checkInsProgram = checkIns.evalMap(storeCheckIn(storedCheckIns)).compile.drain |
+    |         outputProgram = IO.sleep(1.second).flatMap(_ => storedRanking.get)             |  // new IO value that describes a program which first sleeps for one second
+    |                         .flatMap(IO.println).foreverM                                  |     then gets a current value of the ranking, then prints it to the console, and finally repeats the process from the start, forever
+    |         result <- List(rankingProgram,                                                 |  // include this value in List of IO`s, running them concurrently on thread pool provided later
+    |                        checkInsProgram,                                                |  +--------------------------------------------+
+    |                        outputProgram).parSequence                                      |  | import cats.effect.unsafe.implicits.global |  // providing thread pool
+    |     } yield result                                                                     |  | processCheckIns(checkIns).unsafeRunSync()  |
+    | }                                                                                      |  | List(CityStats(City(Sydney),100002), ...)  |
+    +----------------------------------------------------------------------------------------+  +--------------------------------------------+
+ 
     - step 3: Concurrent IOs and asynchronous access
+    // problem - access to the ranking is not the most user-friendly approach (println)
+    // current API
+    +-----------------------------------------------------------+   // spawns some threads, that process incoming check-ins, update ranking
+    | def processCheckIns(checkIns: Stream[IO, City]): IO[Unit] |   // API does not give users a way to consume results
+    +-----------------------------------------------------------+   // we can isolate check-ins from generating rankings, start threads asynchronously
+    // current solution is synchronous - we must wait until it completes
+
+    // Designing functional asynchronous programs
+    // We need a function that returns a program which, when executed, spawns all the threads, connects them together 
+       using concurrent references and returns immediately giving back a handle that allows us to access the current ranking any time
+    +--------------------------------------------------------------------------------------+
+    | case class ProcessingCheckIns( currentRanking: IO[List[CityStats]], stop: IO[Unit] ) |    // allows the user to explicitly stop all the underlying fibers once they don’t need the ranking anymore
+    +--------------------------------------------------------------------------------------+
+    // it is now part of return
+    +-------------------------------------------------------------------------+
+    | def processCheckIns(checkIns: Stream[IO, City]): IO[ProcessingCheckIns] |
+    +-------------------------------------------------------------------------+
+
+    +---------------------------------------------+
+    | for {                                       | // IO value, when executed, runs processing and ranking fibers concurrently and returns immediately
+    |     processing <- processCheckIns(checkIns) | // spawns all fibers and immediately returns the ProcessingCheckIns value that holds two IO values
+    |     ranking <- processing.currentRanking    |    one that returns the current ranking and one that stops all the fibers
+    |     _ <- IO.println(ranking)                | // prints the current ranking
+    |     _ <- IO.sleep(1.second)                 | // sleeps for one second
+    |     ... // more things here                 | // does "more things"
+    |     newRanking <- processing.currentRanking | // gets an up-to-date version of the ranking
+    |     _ <- processing.stop                    | // stops the processing
+    | } yield newRanking                          | // yields a ranking
+    +---------------------------------------------+
+    // how to do it?
+    // Managing fibers manually
+    +---------------------------+
+    | def start: IO[FiberIO[A]] |   // returns a description of a program, which, when executed, will start a new fiber and immediately return a "handle" - FiberIO[A] value
+    | def cancel: IO[Unit]      |   // returns an IO[Unit] - a program which, when executed, cancels the underlying fiber
+    +---------------------------+
+    // example    
+    +---------------------------------------------------------------+
+    | for {                                                         |
+    |     fiber <- IO.sleep(300.millis)                             |   // starts a fiber which prints "hello" every 300 milliseconds infinitely 
+    |             .flatMap(_ => IO.println(“hello”)).foreverM.start |      and returns a handle to it
+    |     _ <- IO.sleep(1.second)                                   |
+    |     _ <- fiber.cancel                                         |   // after a second a fiber is canceled
+    |     _ <- IO.sleep(1.second)                                   |   // most likely will print hello 3 times
+    | } yield ()                                                    |
+    +---------------------------------------------------------------+
+
+    +----------------------------------------------------------------------------------------+
+    | def processCheckIns(checkIns: Stream[IO, City]): IO[ProcessingCheckIns] = {            |
+    |     for {                                                                              |
+    |         storedCheckIns <- Ref.of[IO, Map[City, Int]](Map.empty)                        |
+    |         storedRanking <- Ref.of[IO, List[CityStats]](List.empty)                       |
+    |         rankingProgram = updateRanking(storedCheckIns, storedRanking)                  |
+    |         checkInsProgram = checkIns.evalMap(storeCheckIn(storedCheckIns)).compile.drain |
+    |         fiber <- List(rankingProgram,                                                  |  // run yet another fiber that will be the "parent" of the two fibers responsible for storing check-ins and updating the ranking
+    |                       checkInsProgram).parSequence.start                               |
+    |     } yield ProcessingCheckIns(storedRanking.get, fiber.cancel)                        |  // client responsible for reading the rankings
+    | }                                                                                      |
+    +----------------------------------------------------------------------------------------+
+
+
 
 
 
