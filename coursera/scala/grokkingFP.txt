@@ -1408,7 +1408,91 @@
     | // Thread #2                    |
     | ref.update(_ + 2).unsafeRunSync |
     +---------------------------------+
+    // using ref values
+    +------------------------------+
+    | def of(a: A): IO[Ref[IO, A]] |    // creates ref value, returning desc of program, which when executed will return immutable Ref value that represents concurrent mutable reference
+    | def get: IO[A]               |
+    +------------------------------+
+    +-----------------------------------+
+    | val example: IO[Int] = for {      |
+    |     counter <- Ref.of[IO, Int](0) |   // each function returns IO value so we can flatMap on it
+    |     _ <- counter.update(_ + 3)    |   // update uses CAS
+    |     result <- counter.get         |
+    | } yield result                    |
+    | example.unsafeRunSync()           |
+    | // 3                              |
+    +-----------------------------------+
 
+    // adding concurrency
+    // three IO`s in sequence
+    +-----------------------------------------------+
+    | val exampleSequential: IO[Int] = for {        |
+    |     counter <- Ref.of[IO, Int](0)             |
+    |     _ <- List(counter.update(_ + 2),          |   // update returns IO
+    |               counter.update(_ + 3),          |   // calling sequence on list of IO`s - returns single IO
+    |               counter.update(_ + 4)).sequence |      which when executed will execute all IO`s from list and return results in a list
+    |     result <- counter.get                     |
+    | } yield result                                |
+    | exampleSequential.unsafeRunSync()             |
+    | // 9                                          |
+    +-----------------------------------------------+
+    // three IO`s in parallel
+    +--------------------------------------------------+
+    | val exampleSequential: IO[Int] = for {           |
+    |     counter <- Ref.of[IO, Int](0)                |
+    |     _ <- List(counter.update(_ + 2),             |    // parSequence takes a List of IO values and returns an IO value describing a program that, 
+    |               counter.update(_ + 3),             |       when executed, will execute all the IO programs and return their results in a List
+    |               counter.update(_ + 4)).parSequence |       runs IO`s in parallel, each in its own "thread"
+    |     result <- counter.get                        |    // scala uses virtual threads "fibers" to run executable code in different threads
+    | } yield result                                   |
+    | exampleSequential.unsafeRunSync()                |
+    | // 9                                             |
+    +--------------------------------------------------+
+    // sequence vs parSequence
+    +--------------------------------------------------------------------------------------------------+
+    | for {                                                                                            |
+    |     counter <- Ref.of[IO, Int](0)                                                                |
+    |     program1 = counter.update(_ + 2)                                                             |
+    |     program2 = IO.sleep(FiniteDuration(1, TimeUnit.SECONDS)).flatMap(_ => counter.update(_ + 3)) |    // IO.sleep - desc a program when executed sleeps for n seconds
+    |     program3 = IO.sleep(FiniteDuration(1, TimeUnit.SECONDS)).flatMap(_ => counter.update(_ + 4)) |    // when using sleep with flatMap we get a sequence program
+    |     _ <- List(program1, program2, program3)."parSequence/sequence"                               |    // sequence will run at least two seconds
+    |     result <- counter.get                                                                        |    // parSequence will run at least one second
+    | } yield result                                                                                   |
+    +--------------------------------------------------------------------------------------------------+
+    // Practicing concurrent IOs
+    +---------------------------+
+    | def castTheDie(): IO[Int] |
+    +---------------------------+
+    // wait 1 second                                                // cast two dies concurrently
+    // cast the dice twice concurrently, return sum                 // store result in concurr concurrently accessible ref, return res
+    +------------------------------------------------------------+  +-----------------------------------------------------------------------------+
+    | import scala.concurrent.duration._                         |  | for {                                                                       |
+    | for {                                                      |  |     storedCasts <- Ref.of[IO, List[Int]](List.empty)                        |
+    |     _ <- IO.sleep(1.second)                                |  |     singleCast = castTheDie()                                               |
+    |     result <- List(castTheDie(), castTheDie()).parSequence |  |                  .flatMap(result => storedCasts.update(_.appended(result))) |
+    | } yield result                                             |  |     _ <- List(singleCast, singleCast).parSequence                           |
+    +------------------------------------------------------------+  |     casts <- storedCasts.get                                                |
+                                                                    | } yield casts                                                               |
+                                                                    +-----------------------------------------------------------------------------+
+    // cast three dies concurrently                                                     // cast one hundred dies concurrently
+    // store each result in a concurrently accessible ref that holds a List             // store the total number of sixes in a concurrently accessible reference                                                       
+    +-----------------------------------------------------------------------------+     +---------------------------------------------------------------------------+
+    | for {                                                                       |     | for {                                                                     |
+    |     storedCasts <- Ref.of[IO, List[Int]](List.empty)                        |     |     storedCasts <- Ref.of[IO, Int](0)                                     |
+    |     singleCast = castTheDie()                                               |     |     singleCast = castTheDie().flatMap(result =>                           |
+    |                  .flatMap(result => storedCasts.update(_.appended(result))) |     |                  if (result == 6) storedCasts.update(_ + 1) else IO.unit) |
+    |     _ <- List.fill(3)(singleCast).parSequence                               |     |     _ <- List.fill(100)(singleCast).parSequence                           |
+    |     casts <- storedCasts.get                                                |     |     casts <- storedCasts.get                                              |
+    | } yield casts                                                               |     | } yield casts                                                             |
+    +-----------------------------------------------------------------------------+     +---------------------------------------------------------------------------+
+    // cast one hundred dies concurrently, waiting one second before each of
+       them, and return their sum (without using a concurrent reference)
+    +---------------------------------------------------------------------------------------+
+    | List.fill(100)(IO.sleep(1.second).flatMap(_ => castTheDie())).parSequence.map(_.sum)) |
+    +---------------------------------------------------------------------------------------+
+                                                                                            
+                                                                                        
+                                                                                        
 
     - step 3: Concurrent IOs and asynchronous access
 
