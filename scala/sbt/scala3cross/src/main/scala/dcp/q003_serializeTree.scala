@@ -6,6 +6,8 @@ import dcp.common.tree.emptyNode
 
 import scala.collection.mutable
 
+// Given the root to a binary tree, implement serialize(root), which serializes the tree into a string, and deserialize(s), which deserializes the string back into the tree.
+
 object q003_serializeTree {
   def main(args: Array[String]): Unit =
 // 4*2-1
