@@ -22,13 +22,21 @@ object q003_serializeTree {
     val n1 = Node(1, n3, n4)
     val n2 = Node(2, n5, n6)
     val root = Node(0, n1, n2)
-//    println(root.beautify)
-//    println(MyTree.countNodes(root))
-    println(deserialize(root))
+    println(root.beautify)
+    val deserialized = deserialize(root)
+    println(deserialized)
+
+    val serialized = serialize(deserialized)
+    println(serialized.beautify)
 
 
   def deserialize(root: MyTree): String = MyTree.deserialize(root)
-}
+  def serialize(s: String): MyTree =
+    def _serializeHelp(idx: Int, arr: Array[Int]): MyTree =
+      if idx <= arr.size-1 then
+        Node(arr(idx), _serializeHelp(idx*2, arr), _serializeHelp(idx*2+1, arr))
+      else
+        emptyNode
 
-// TODO: deserialize to a string with comma separator
-// TODO: serialize string into array and array into tree
+    val arr = ("-1," + s).split(",").map(_.toInt)
+    _serializeHelp(1, arr)
