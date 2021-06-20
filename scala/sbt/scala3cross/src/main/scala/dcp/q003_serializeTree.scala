@@ -8,15 +8,15 @@ import scala.collection.mutable
 
 // Given the root to a binary tree, implement serialize(root), which serializes the tree into a string, and deserialize(s), which deserializes the string back into the tree.
 
-object q003_serializeTree {
+object q003_serializeTree
   def main(args: Array[String]): Unit =
-// 4*2-1
-// 4*2-1
-//        0
-//    1       2
-//  3   4   5   6
-// 3 3 4 4 5 5 6 6
-  
+    // 4*2-1
+    // 4*2-1
+    //        0
+    //    1       2
+    //  3   4   5   6
+    // 3 3 4 4 5 5 6 6
+
     val n3 = Node(3)
     val n4 = Node(4)
     val n5 = Node(5)
@@ -33,12 +33,15 @@ object q003_serializeTree {
 
 
   def deserialize(root: MyTree): String = MyTree.deserialize(root)
+
   def serialize(s: String): MyTree =
     def _serializeHelp(idx: Int, arr: Array[Int]): MyTree =
-      if idx <= arr.size-1 then
-        Node(arr(idx), _serializeHelp(idx*2, arr), _serializeHelp(idx*2+1, arr))
+      if idx <= arr.size - 1 then
+        Node(arr(idx), _serializeHelp(idx * 2, arr), _serializeHelp(idx * 2 + 1, arr))
       else
         emptyNode
 
     val arr = ("-1," + s).split(",").map(_.toInt)
     _serializeHelp(1, arr)
+
+
