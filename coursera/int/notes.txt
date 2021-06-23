@@ -16,6 +16,20 @@
     | }                                         |
     +-------------------------------------------+
 
+    - recursion                             // base case
+    +------------------------------------+  +------------------------+  +------------------------------+
+    | def look_for_key(box):             |  | def countdown(i):      |  | def fact(x):                 |
+    |     for item in box:               |  |     print i            |  |     if x == 1:               |
+    |         if item.is_a_box():        |  |     if i <= 0:         |  |         return 1             |
+    |             look_for_key(item)     |  |         return         |  |     else:                    |
+    |         elif item.is_a_key():      |  |     else:              |  |         return x * fact(x-1) |
+    |             print "found the key!" |  |         countdown(i-1) |  +------------------------------+
+    +------------------------------------+  +------------------------+
+
+
+
+
+
     - insertionSort (n^2)
     +---------------------------------------------------------+
     | def insertionSort(input: List[Int]): List[Int] = {      |
@@ -81,16 +95,16 @@
     +---------------------------------------------------------------------------+
 
     - quicksort (n log n)
-    +---------------------------------------------------------------------------------+
-    | object QuickSortFP extends App {                                                |
-    |     val r = scala.util.Random                                                   |
-    |     val randomArray = (for (i <- 1 to 10000000) yield r.nextInt(10000)).toArray |
-    |     val sortedArray = quickSort(randomArray)                                    |
-    |                                                                                 |
-    |     def quickSort(xs: Array[Int]): Array[Int] = {                               |
-    |         if (xs.length <= 1) xs                                                  |
-    |         else {                                                                  |
-    |             val pivot = xs(xs.length / 2)                                       |
+    +---------------------------------------------------------------------------------+ +---------------------------------------------------------------+
+    | object QuickSortFP extends App {                                                | | def quicksort(array):                                         |
+    |     val r = scala.util.Random                                                   | |     if len(array) < 2:                                        |
+    |     val randomArray = (for (i <- 1 to 10000000) yield r.nextInt(10000)).toArray | |         return array                                          |
+    |     val sortedArray = quickSort(randomArray)                                    | |     else:                                                     |
+    |                                                                                 | |         pivot = array[0] Recursive case                       |
+    |     def quickSort(xs: Array[Int]): Array[Int] = {                               | |         less = [i for i in array[1:] if i <= pivot]           |
+    |         if (xs.length <= 1) xs                                                  | |         greater = [i for i in array[1:] if i > pivot]         |
+    |         else {                                                                  | |         return quicksort(less) + [pivot] + quicksort(greater) |
+    |             val pivot = xs(xs.length / 2)                                       | +---------------------------------------------------------------+
     |             Array.concat(                                                       |
     |                 quickSort(xs filter (pivot > _),                                |
     |                 xs filter (pivot == _),                                         |
@@ -100,6 +114,17 @@
     | }                                                                               |
     +---------------------------------------------------------------------------------+
 
+    - hash tables
+    // collisions
+    ┌─┐ ┌──────┬────┐ ┌──────┬────┐
+    │ │►│apples│0.67│►│avokad│1.49│
+    ├─┤ └──────┴────┘ └──────┴────┘
+    │ │
+    ├─┤
+    │ │
+    └─┘    
+
+    - BFS
 
 ###############
 # DB
