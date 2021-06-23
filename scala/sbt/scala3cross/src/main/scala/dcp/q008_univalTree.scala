@@ -2,7 +2,7 @@ package dcp
 
 import dcp.common.tree.MyTree
 import dcp.common.tree.Node
-import dcp.common.tree.emptyNode
+import dcp.common.tree.EmptyNode
 
 // A unival tree (which stands for "universal value") is a tree where all nodes under it have the same value.
 //
@@ -31,15 +31,15 @@ object q008_univalTree {
 
   def univalCount(root: MyTree): Int =
     def _helper(r: MyTree): (Int, Boolean) = r match{
-      case emptyNode => (1, true)
+      case EmptyNode => (0, true)
       case n: Node   => {
         val (leftCount, leftUnival) = _helper(n.left)
         val (rightCount, rightUnival) = _helper(n.right)
         val total = leftCount + rightCount
 
         val res = if leftUnival && rightUnival then
-          if n.left != emptyNode && n.value != getChildValue(n.left, n=>n.value).get then (total, false)
-          else if n.right != emptyNode && n.value != getChildValue(n.right, n=>n.value).get then (total, false)
+          if n.left != EmptyNode && n.value != getChildValue(n.left, n=>n.value).get then (total, false)
+          else if n.right != EmptyNode && n.value != getChildValue(n.right, n=>n.value).get then (total, false)
           else (total+1, true)
         else
           (total, false)
@@ -50,7 +50,7 @@ object q008_univalTree {
     _helper(root)._1
 
   def getChildValue(root: MyTree, f: Node=>Int): Option[Int] = root match{
-    case emptyNode => None
+    case EmptyNode => None
     case n: Node => Some(f(n))
   }
 }

@@ -20,8 +20,8 @@ trait MyTree:
     } res.append(" " * arrPads(i)._1 + arr(i).mkString(" " * arrPads(i)._2) + "\n")
     res.toString()
 
-object emptyNode extends MyTree
-case class Node(value: Int, left: MyTree = emptyNode, right: MyTree = emptyNode) extends MyTree
+object EmptyNode extends MyTree
+case class Node(value: Int, left: MyTree = EmptyNode, right: MyTree = EmptyNode) extends MyTree
 
 object MyTree:
   def depth(root: MyTree): Int =

@@ -2,7 +2,7 @@ package dcp
 
 import dcp.common.tree.MyTree
 import dcp.common.tree.Node
-import dcp.common.tree.emptyNode
+import dcp.common.tree.EmptyNode
 
 import scala.collection.mutable
 
@@ -39,7 +39,7 @@ object q003_serializeTree
       if idx <= arr.size - 1 then
         Node(arr(idx), _serializeHelp(idx * 2, arr), _serializeHelp(idx * 2 + 1, arr))
       else
-        emptyNode
+        EmptyNode
 
     val arr = ("-1," + s).split(",").map(_.toInt)
     _serializeHelp(1, arr)
