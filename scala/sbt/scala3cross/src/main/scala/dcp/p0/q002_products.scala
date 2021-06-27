@@ -1,4 +1,4 @@
-package dcp
+package dcp.p0
 
 object q002_products {
   def main(args: Array[String]): Unit = {

@@ -1,4 +1,5 @@
-package dcp
+package dcp.p0
+
 import scala.collection.mutable.HashSet
 
 object q001_twoSum {

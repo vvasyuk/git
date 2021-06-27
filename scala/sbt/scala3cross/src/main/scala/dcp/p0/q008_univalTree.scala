@@ -1,8 +1,6 @@
-package dcp
+package dcp.p0
 
-import dcp.common.tree.MyTree
-import dcp.common.tree.Node
-import dcp.common.tree.EmptyNode
+import dcp.common.tree.{EmptyNode, MyTree, Node}
 
 // A unival tree (which stands for "universal value") is a tree where all nodes under it have the same value.
 //

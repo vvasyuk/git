@@ -1,15 +1,13 @@
-package dcp
+package dcp.p0
 
-import dcp.common.tree.MyTree
-import dcp.common.tree.Node
-import dcp.common.tree.EmptyNode
+import dcp.common.tree.{EmptyNode, MyTree, Node}
 
 import scala.collection.mutable
 
 // Given the root to a binary tree, implement serialize(root), which serializes the tree into a string, and deserialize(s), which deserializes the string back into the tree.
 
-object q003_serializeTree
-  def main(args: Array[String]): Unit =
+object q003_serializeTree{
+  def main(args: Array[String]): Unit ={
     // 4*2-1
     // 4*2-1
     //        0
@@ -30,7 +28,7 @@ object q003_serializeTree
 
     val serialized = serialize(deserialized)
     println(serialized.beautify)
-
+  }
 
   def deserialize(root: MyTree): String = MyTree.deserialize(root)
 
@@ -43,5 +41,5 @@ object q003_serializeTree
 
     val arr = ("-1," + s).split(",").map(_.toInt)
     _serializeHelp(1, arr)
-
+}
 
