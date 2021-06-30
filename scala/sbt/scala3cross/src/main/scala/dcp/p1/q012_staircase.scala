@@ -10,8 +10,24 @@ package dcp.p1
 //1, 1, 2
 //2, 2
 
-object q012_staircase {
-  def main(args: Array[String]): Unit = {
 
-  }
+//+---+---+---+---+
+//| 1 | 1 | 1 | 1 |
+//+---+---+---+---+
+//  5   3   2   1
+object q012_staircase {
+
+  def main(args: Array[String]): Unit = println(staircase(4))
+  
+
+  def staircase(i: Int): Int =
+    val arr = Array.fill(i+1)(0)
+    arr(i-1) = 1
+    arr(i) = 1
+      
+    for(
+      x <- (0 to i-2).reverse
+    ) arr(x) = arr(x+1) + arr(x+2)
+    println(s"array state: ${arr.mkString(",")}")
+    arr(0)
 }
