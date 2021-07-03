@@ -26,14 +26,14 @@ object currencyExchangeIO {
     table.get(currencyToExtract)
 
 
-  def retry[A](action: IO[A], maxRetries: Int): IO[A] = {
+  def retry[A](action: IO[A], maxRetries: Int): IO[A] =
     List
       .range(0, maxRetries)
       .map(_ => action)
       .foldLeft(action)((program, nextAction) => {
         program.orElse(nextAction)
       })
-  }
+  
 
 
   def lastRates(from: Currency, to: Currency): IO[List[BigDecimal]] =
