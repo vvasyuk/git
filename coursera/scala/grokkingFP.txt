@@ -1039,7 +1039,7 @@
             +----------------------------------------------------------------------------+              +--------------------------------------------------------------+
             | def trending(rates: List[BigDecimal]): Boolean                             |  //          | def trending(rates: List[BigDecimal]): Boolean = {           |
             | trending(List.empty)                                                       |  // false    |     rates.size > 1 &&                                        |
-            | trending(List(BigDecimal(1), BigDecimal(2), BigDecimal(3), BigDecimal(8))) |  // true     |     rates.zip(rates.drop(1))                                 |
+            | trending(List(BigDecimal(1), BigDecimal(2), BigDecimal(3), BigDecimal(8))) |  // true     |     rates.zip(rates.drop(1))                                 |    // this way we can compare current with next
             | trending(List(BigDecimal(1), BigDecimal(4), BigDecimal(3), BigDecimal(8))) |  // false    |         .forall(ratePair => ratePair match {                 |
             +----------------------------------------------------------------------------+              |             case (previousRate, rate) => rate > previousRate |
                                                                                                         |         })                                                   |
