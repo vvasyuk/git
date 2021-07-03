@@ -12,6 +12,8 @@ import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.FiniteDuration
 import scala.jdk.CollectionConverters.MapHasAsScala
 
+
+// PROBLEMS: we analyse three elements and discard them, we don't use a sliding window, each computation is isolated, no time between calls
 object currencyExchangeIORec {
   case class Currency(name: String) extends AnyVal
 
