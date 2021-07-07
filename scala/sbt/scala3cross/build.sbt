@@ -1,4 +1,4 @@
-val scala2Version = "2.13.5"
+val scala2Version = "2.13.6"
 val scala3Version = "3.0.0"
 
 lazy val root = project
@@ -10,6 +10,7 @@ lazy val root = project
     libraryDependencies ++= Seq(
         "com.novocode" % "junit-interface" % "0.11" % "test",
         "org.typelevel" %% "cats-effect" % "3.1.1"
+//        "co.fs2"        %% "fs2-core"    % "3.0.6"
     ),
 
     // To make the default compiler and REPL use Dotty
